@@ -374,6 +374,18 @@
   {
    "action": "/ZComDen/ZComDen/Editor/IA_Den_Back",
    "key": "Escape"
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Catalog",
+   "key": "Tab"
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Layouts",
+   "key": "L"
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Storeroom",
+   "key": "H"
   }
  ]
 }

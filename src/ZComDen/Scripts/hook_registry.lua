@@ -49,6 +49,20 @@ function M.start(key, options)
         end, callback)
     end
 
+    function self:register_console(name, callback)
+        self:bind("console:" .. name, function(dispatch)
+            RegisterConsoleCommandHandler(name, dispatch)
+        end, callback)
+    end
+
+    -- Removes one hook (its function may already be gone: then there's nothing left to unhook).
+    function self:unregister_hook(path)
+        local hook = self.hooks[path]
+        if not hook then return true end
+        self.hooks[path] = nil
+        return pcall(UnregisterHook, path, hook.pre_id, hook.post_id)
+    end
+
     function self:register_hook(path, pre, post)
         assert(self.alive, "cannot register a hook after teardown")
         local prior = self.hooks[path]
@@ -111,12 +125,15 @@ function M.start(key, options)
                 failures[#failures + 1] = path .. ": " .. tostring(err)
             end
         end
-        if #failures > 0 then error(table.concat(failures, "\n")) end
-
+        -- The cleanup runs whatever happened above: a hook whose function was garbage collected can't be
+        -- unregistered, and that mustn't leave the Den edited or stop the next instance from starting.
         if self.on_teardown then
             local cleanup = self.on_teardown
             self.on_teardown = nil
             cleanup(reason)
+        end
+        if #failures > 0 then
+            print("[" .. key .. "] teardown: hooks that couldn't be removed:\n" .. table.concat(failures, "\n") .. "\n")
         end
     end
 

@@ -52,6 +52,9 @@ COMMANDS = [
     ("IA_Den_Reset", "reset", ["R"]),
     ("IA_Den_Snap", "snap", ["G"]),
     ("IA_Den_Back", "back", ["Escape"]),
+    ("IA_Den_Catalog", "catalog", ["Tab"]),
+    ("IA_Den_Layouts", "layouts", ["L"]),
+    ("IA_Den_Storeroom", "storeroom", ["H"]),
 ]
 
 NUDGE_REPEAT = 0.12
@@ -219,14 +222,18 @@ PANEL = "(R=0.015,G=0.02,B=0.03,A=0.86)"
 BUTTON = "(R=0.16,G=0.2,B=0.27,A=1)"
 WHITE = "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)"
 DIM = "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)"
+INK = "(SpecifiedColor=(R=0.02,G=0.025,B=0.035,A=1),ColorUseRule=UseColor_Specified)"
 GOLD = "(SpecifiedColor=(R=1,G=0.78,B=0.35,A=1),ColorUseRule=UseColor_Specified)"
 
 HINTS = ("WASD fly, Space/Ctrl up/down, Shift fast, hold RMB to look\n"
          "LMB select and drag (Shift: up/down), wheel or Q/E rotate (Shift: fine), +/- scale\n"
-         "Arrows/PgUp/PgDn nudge, G snap, X store, C copy, R reset, Z/Y undo/redo, F focus, Esc back")
+         "Arrows/PgUp/PgDn nudge, G snap, X store, C copy, R reset, Z/Y undo/redo, F focus, Esc back\n"
+         "Tab catalog: click an item, then click in the Den to place it (Shift+click places more)\n"
+         "H storeroom (stored props), L layouts (this campaign's own layout, presets)")
 
 # Toolbar buttons: (widget name, label, Lua event)
-TOOLBAR = [("Undo", "Undo", "undo"), ("Redo", "Redo", "redo"), ("Store", "Store", "store"), ("Copy", "Copy", "duplicate"),
+TOOLBAR = [("Catalog", "Catalog", "catalog"), ("Storeroom", "Storeroom", "storeroom"), ("Layouts", "Layouts", "layouts"),
+           ("Undo", "Undo", "undo"), ("Redo", "Redo", "redo"), ("Store", "Store", "store"), ("Copy", "Copy", "duplicate"),
            ("Reset", "Reset", "reset"), ("Snap", "Snap: off", "snap"), ("Reach", "Reach: 20 m", "reach"), ("Lock", "Structure: locked", "lock"),
            ("Save", "Save", "save"), ("Exit", "Exit", "exit")]
 CONFIRM = [("ConfirmSave", "Save", "confirm_save"), ("ConfirmDiscard", "Discard", "confirm_discard"),
@@ -253,9 +260,9 @@ def button(name, label, size=13):
 
 
 def toolbar():
-    rows = [TOOLBAR[:5], TOOLBAR[5:]]  # edits / settings and file
-    panel = {"class": "/Script/UMG.SizeBox", "name": "Frame", "props": {"WidthOverride": 600, "bOverride_WidthOverride": "true"},
-             "slot": {"LayoutData": "(Offsets=(Left=24,Top=24,Right=600,Bottom=200))", "bAutoSize": "true"},
+    rows = [TOOLBAR[:3], TOOLBAR[3:8], TOOLBAR[8:]]  # panels / edits / settings and file
+    panel = {"class": "/Script/UMG.SizeBox", "name": "Frame", "props": {"WidthOverride": 660, "bOverride_WidthOverride": "true"},
+             "slot": {"LayoutData": "(Offsets=(Left=24,Top=24,Right=660,Bottom=200))", "bAutoSize": "true"},
              "children": [{"class": "/Script/UMG.Border", "name": "Panel",
                            "props": {"BrushColor": PANEL, "Padding": "(Left=16,Top=12,Right=16,Bottom=12)"},
                            "children": [{"class": "/Script/UMG.VerticalBox", "name": "Column", "children": [
@@ -292,8 +299,259 @@ def toolbar():
     }
 
 
+ITEM = ROOT + "BP_DenCatalogItem"
+
+
+def catalog_item():
+    """One row of a catalog list. Lua writes only FString fields (never FText properties)."""
+    return {"kind": "blueprint", "path": ITEM, "parent": "/Script/CoreUObject.Object",
+            "variables": [{"name": n, "type": "string", "default": ""} for n in ("Key", "Title", "Detail")]
+            # The thumbnail (a texture Lua imported from Saved\ZComDen\thumbs), or none yet.
+            + [{"name": "Thumb", "type": "object:/Script/Engine.Texture2D"}]}
+
+
+def list_entry(name, tree, fields, picture=None):
+    """A ListView/TileView entry: copies the item's strings into its text blocks when it's assigned, and with
+    `picture` (an Image widget) shows the item's Thumb there, or hides the image while there's none."""
+    nodes = [{"id": "set", "kind": "event", "name": "OnListItemObjectSet"},
+             {"id": "cast", "kind": "cast", "class": ITEM}]
+    links = [["set.then", "cast.execute"], ["set.ListItemObject", "cast.Object"]]
+    last = "cast.then"
+    for i, (field, widget) in enumerate(fields):
+        nodes += [{"id": f"get{i}", "kind": "get", "var": f"{ITEM}:{field}"},
+                  {"id": f"w{i}", "kind": "get", "var": widget},
+                  {"id": f"text{i}", "kind": "call", "function": "/Script/UMG.TextBlock:SetText"}]
+        links += [[last, f"text{i}.execute"], ["cast.AsBP Den Catalog Item", f"get{i}.self"],
+                  [f"get{i}.{field}", f"text{i}.InText"], [f"w{i}.{widget}", f"text{i}.self"]]
+        last = f"text{i}.then"
+    if picture:
+        nodes += [{"id": "thumb", "kind": "get", "var": f"{ITEM}:Thumb"},
+                  {"id": "has", "kind": "call", "function": "/Script/Engine.KismetSystemLibrary:IsValid"},
+                  {"id": "if", "kind": "branch"},
+                  {"id": "pic", "kind": "get", "var": picture},
+                  {"id": "brush", "kind": "call", "function": "/Script/UMG.Image:SetBrushFromTexture", "defaults": {"bMatchSize": "false"}},
+                  {"id": "show", "kind": "call", "function": "/Script/UMG.Widget:SetVisibility", "defaults": {"InVisibility": "Visible"}},
+                  {"id": "hide", "kind": "call", "function": "/Script/UMG.Widget:SetVisibility", "defaults": {"InVisibility": "Hidden"}}]
+        links += [["cast.AsBP Den Catalog Item", "thumb.self"], ["thumb.Thumb", "has.Object"],
+                  [last, "if.execute"], ["has.ReturnValue", "if.Condition"],
+                  ["if.then", "brush.execute"], ["thumb.Thumb", "brush.Texture"], [f"pic.{picture}", "brush.self"],
+                  ["brush.then", "show.execute"], [f"pic.{picture}", "show.self"],
+                  ["if.else", "hide.execute"], [f"pic.{picture}", "hide.self"]]
+    return {"kind": "widget", "path": ROOT + name, "interfaces": ["/Script/UMG.UserObjectListEntry"],
+            "tree": tree, "graph": {"nodes": nodes, "links": links}}
+
+
+def catalog_entry():
+    picture = {"class": "/Script/UMG.SizeBox", "name": "PictureBox",
+               "props": {"WidthOverride": 112, "bOverride_WidthOverride": "true", "HeightOverride": 112, "bOverride_HeightOverride": "true"},
+               "slot": {"HorizontalAlignment": "HAlign_Center", "Padding": "(Left=0,Top=0,Right=0,Bottom=4)"},
+               "children": [{"class": "/Script/UMG.Image", "name": "Picture", "variable": True, "props": {"Visibility": "Hidden"}}]}
+    tree = {"class": "/Script/UMG.Border", "name": "Frame",
+            "props": {"BrushColor": "(R=0.07,G=0.09,B=0.13,A=0.95)", "Padding": "(Left=6,Top=6,Right=6,Bottom=6)"},
+            "children": [{"class": "/Script/UMG.VerticalBox", "name": "Lines", "children": [
+                picture,
+                text("Name", "", 11, variable=True, wrap=True),
+                text("Size", "", 10, DIM, variable=True, wrap=True)]}]}
+    return list_entry("WBP_DenCatalogEntry", tree, [("Title", "Name"), ("Detail", "Size")], picture="Picture")
+
+
+def catalog_shelf():
+    tree = {"class": "/Script/UMG.Border", "name": "Frame",
+            "props": {"BrushColor": "(R=0,G=0,B=0,A=0)", "Padding": "(Left=6,Top=3,Right=6,Bottom=3)"},
+            "children": [text("Label", "", 12, variable=True)]}
+    return list_entry("WBP_DenCatalogShelf", tree, [("Title", "Label")])
+
+
+def catalog():
+    """The catalog panel: search, shelves (folders) on the left, meshes on the right."""
+    lists = {"bIsFocusable": "false", "SelectionMode": "Single"}
+    shelves = {"class": "/Script/UMG.SizeBox", "name": "ShelfBox", "props": {"WidthOverride": 230, "bOverride_WidthOverride": "true"},
+               "slot": {"Padding": "(Left=0,Top=0,Right=8,Bottom=0)"},
+               "children": [{"class": "/Script/UMG.ListView", "name": "Shelves", "variable": True,
+                             "props": dict(lists, EntryWidgetClass=ROOT + "WBP_DenCatalogShelf")}]}
+    items = {"class": "/Script/UMG.TileView", "name": "Items", "variable": True,
+             "props": dict(lists, EntryWidgetClass=ROOT + "WBP_DenCatalogEntry", EntryWidth=128, EntryHeight=184),
+             "slot": {"Size": "(SizeRule=Fill,Value=1.0)"}}
+    panel = {"class": "/Script/UMG.Border", "name": "Panel",
+             "props": {"BrushColor": PANEL, "Padding": "(Left=14,Top=12,Right=14,Bottom=12)"},
+             # Pinned to the right edge, stretched top to bottom: Left is the x position (from the right edge) and
+             # Right is the width; Top and Bottom are margins.
+             "slot": {"LayoutData": "(Anchors=(Minimum=(X=1,Y=0),Maximum=(X=1,Y=1)),Offsets=(Left=-814,Top=24,Right=790,Bottom=24))"},
+             "children": [{"class": "/Script/UMG.VerticalBox", "name": "Column", "children": [
+                 text("Title", "Catalog", 20, GOLD),
+                 {"class": "/Script/UMG.EditableTextBox", "name": "Search", "variable": True,
+                  # The default box is light grey: dark text reads on it (the default text was too pale).
+                  "props": {"HintText": "Search every mesh (type, then pick from the list)",
+                            "WidgetStyle.ForegroundColor": INK, "WidgetStyle.FocusedForegroundColor": INK,
+                            "WidgetStyle.TextStyle.ColorAndOpacity": INK},
+                  "slot": {"Padding": "(Left=0,Top=8,Right=0,Bottom=8)"}},
+                 {"class": "/Script/UMG.HorizontalBox", "name": "Lists", "slot": {"Size": "(SizeRule=Fill,Value=1.0)"},
+                  "children": [shelves, items]},
+                 text("Footer", "", 11, DIM, variable=True, wrap=True, slot={"Padding": "(Left=0,Top=8,Right=0,Bottom=0)"}),
+             ]}]}
+    nodes = [{"id": "search", "kind": "bound_event", "widget": "Search", "delegate": "OnTextChanged"},
+             {"id": "search_lua", "kind": "call", "function": "self:Lua_Event", "defaults": {"Name": "search"}}]
+    links = [["search.then", "search_lua.execute"], ["search.Text", "search_lua.Arg"]]
+    for widget, event in (("Shelves", "shelf"), ("Items", "item")):
+        w = widget.lower()
+        nodes += [{"id": w, "kind": "bound_event", "widget": widget, "delegate": "BP_OnItemClicked"},
+                  {"id": w + "_cast", "kind": "cast", "class": ITEM},
+                  {"id": w + "_key", "kind": "get", "var": f"{ITEM}:Key"},
+                  {"id": w + "_lua", "kind": "call", "function": "self:Lua_Event", "defaults": {"Name": event}}]
+        links += [[w + ".then", w + "_cast.execute"], [w + ".Item", w + "_cast.Object"],
+                  [w + "_cast.then", w + "_lua.execute"], [w + "_cast.AsBP Den Catalog Item", w + "_key.self"],
+                  [w + "_key.Key", w + "_lua.Arg"]]
+    return {"kind": "widget", "path": ROOT + "WBP_DenCatalog",
+            "tree": {"class": "/Script/UMG.CanvasPanel", "name": "Root", "children": [panel]},
+            "functions": [{"name": "Lua_Event", "inputs": [{"name": "Name", "type": "string"}, {"name": "Arg", "type": "string"}]}],
+            "graph": {"nodes": nodes, "links": links}}
+
+
+LUA_EVENT = [{"name": "Lua_Event", "inputs": [{"name": "Name", "type": "string"}, {"name": "Arg", "type": "string"}]}]
+
+
+class Graph:
+    """Bound events that call Lua_Event(name, arg)."""
+
+    def __init__(self):
+        self.nodes, self.links = [], []
+
+    def click(self, widget, event):
+        """A button: Lua_Event(event, "")."""
+        self.nodes += [{"id": widget, "kind": "bound_event", "widget": widget, "delegate": "OnClicked"},
+                       {"id": widget + "_lua", "kind": "call", "function": "self:Lua_Event", "defaults": {"Name": event}}]
+        self.links.append([widget + ".then", widget + "_lua.execute"])
+
+    def click_with_text(self, widget, event, box):
+        """A button that sends the text of an EditableTextBox along."""
+        self.click(widget, event)
+        self.nodes += [{"id": widget + "_box", "kind": "get", "var": box},
+                       {"id": widget + "_text", "kind": "call", "function": "/Script/UMG.EditableTextBox:GetText"}]
+        self.links += [[widget + "_box." + box, widget + "_text.self"], [widget + "_text.ReturnValue", widget + "_lua.Arg"]]
+
+    def commit(self, box, event):
+        """An EditableTextBox: Lua_Event(event, text) when Enter is pressed or it loses focus."""
+        self.nodes += [{"id": box, "kind": "bound_event", "widget": box, "delegate": "OnTextCommitted"},
+                       {"id": box + "_lua", "kind": "call", "function": "self:Lua_Event", "defaults": {"Name": event}}]
+        self.links += [[box + ".then", box + "_lua.execute"], [box + ".Text", box + "_lua.Arg"]]
+
+    def item(self, view, event):
+        """A ListView/TileView: Lua_Event(event, item.Key) for a clicked item."""
+        w = view.lower()
+        self.nodes += [{"id": w, "kind": "bound_event", "widget": view, "delegate": "BP_OnItemClicked"},
+                       {"id": w + "_cast", "kind": "cast", "class": ITEM},
+                       {"id": w + "_key", "kind": "get", "var": f"{ITEM}:Key"},
+                       {"id": w + "_lua", "kind": "call", "function": "self:Lua_Event", "defaults": {"Name": event}}]
+        self.links += [[w + ".then", w + "_cast.execute"], [w + ".Item", w + "_cast.Object"],
+                       [w + "_cast.then", w + "_lua.execute"], [w + "_cast.AsBP Den Catalog Item", w + "_key.self"],
+                       [w + "_key.Key", w + "_lua.Arg"]]
+
+    def spec(self):
+        return {"nodes": self.nodes, "links": self.links}
+
+
+def box(name, hint, width=None, select_all=False):
+    w = {"class": "/Script/UMG.EditableTextBox", "name": name, "variable": True,
+         "props": {"HintText": hint, "WidgetStyle.ForegroundColor": INK, "WidgetStyle.FocusedForegroundColor": INK,
+                   "WidgetStyle.TextStyle.ColorAndOpacity": INK}}
+    if select_all:
+        w["props"]["SelectAllTextWhenFocused"] = "true"
+    if width:
+        return {"class": "/Script/UMG.SizeBox", "name": name + "Box",
+                "props": {"WidthOverride": width, "bOverride_WidthOverride": "true"}, "children": [w]}
+    return w
+
+
+def side_panel(path, title, children):
+    """A panel on the right of the screen, where the catalog sits (only one of them shows at a time)."""
+    panel = {"class": "/Script/UMG.Border", "name": "Panel",
+             "props": {"BrushColor": PANEL, "Padding": "(Left=14,Top=12,Right=14,Bottom=12)"},
+             "slot": {"LayoutData": "(Anchors=(Minimum=(X=1,Y=0),Maximum=(X=1,Y=1)),Offsets=(Left=-814,Top=24,Right=790,Bottom=24))"},
+             "children": [{"class": "/Script/UMG.VerticalBox", "name": "Column", "children": [text("Title", title, 20, GOLD)] + children}]}
+    return {"class": "/Script/UMG.CanvasPanel", "name": "Root", "children": [panel]}
+
+
+def row(name, children, padding="(Left=0,Top=6,Right=0,Bottom=6)"):
+    return {"class": "/Script/UMG.HorizontalBox", "name": name, "slot": {"Padding": padding}, "children": children}
+
+
+def layouts():
+    g = Graph()
+    tree = side_panel(ROOT + "WBP_DenLayouts", "Layouts", [
+        text("ScopeText", "", 13, variable=True, wrap=True, slot={"Padding": "(Left=0,Top=8,Right=0,Bottom=6)"}),
+        row("ScopeRow", [button("ScopeButton", "Give this campaign its own layout", 14)]),
+        text("ScopeHint", "Its own layout starts as a copy of what you see now. Going back to the home layout deletes the "
+             "campaign's copy (a backup is kept in Saved\\ZComDen\\backups).", 11, DIM, wrap=True),
+        text("PresetsTitle", "Presets", 17, GOLD, slot={"Padding": "(Left=0,Top=16,Right=0,Bottom=4)"}),
+        text("PresetsHint", "Named snapshots of a whole layout, in Saved\\ZComDen\\presets. Loading one replaces what you see "
+             "(Z undoes it); Save keeps it.", 11, DIM, wrap=True),
+        row("SaveRow", [box("PresetName", "New preset name", width=360), button("SavePreset", "Save current as preset", 14)]),
+        {"class": "/Script/UMG.ListView", "name": "Presets", "variable": True,
+         "props": {"bIsFocusable": "false", "SelectionMode": "Single", "EntryWidgetClass": ROOT + "WBP_DenCatalogShelf"},
+         "slot": {"Size": "(SizeRule=Fill,Value=1.0)"}},
+        row("PresetRow", [button("LoadPreset", "Load selected", 14), button("DeletePreset", "Delete selected", 14)]),
+        text("Footer", "", 12, DIM, variable=True, wrap=True),
+    ])
+    g.click("ScopeButton", "scope")
+    g.click_with_text("SavePreset", "save_preset", "PresetName")
+    g.commit("PresetName", "save_preset")
+    g.item("Presets", "preset")
+    g.click("LoadPreset", "load_preset")
+    g.click("DeletePreset", "delete_preset")
+    return {"kind": "widget", "path": ROOT + "WBP_DenLayouts", "tree": tree, "functions": LUA_EVENT, "graph": g.spec()}
+
+
+def storeroom():
+    g = Graph()
+    tree = side_panel(ROOT + "WBP_DenStoreroom", "Storeroom", [
+        text("StoredText", "", 13, variable=True, wrap=True, slot={"Padding": "(Left=0,Top=8,Right=0,Bottom=6)"}),
+        {"class": "/Script/UMG.TileView", "name": "Stored", "variable": True,
+         "props": {"bIsFocusable": "false", "SelectionMode": "Single", "EntryWidgetClass": ROOT + "WBP_DenCatalogEntry",
+                   "EntryWidth": 128, "EntryHeight": 184},
+         "slot": {"Size": "(SizeRule=Fill,Value=1.0)"}},
+        row("StoredRow", [button("RestoreAll", "Restore everything", 14)]),
+        text("DormantTitle", "Waiting for their objects", 17, GOLD, slot={"Padding": "(Left=0,Top=12,Right=0,Bottom=4)"}),
+        text("DormantText", "", 11, DIM, variable=True, wrap=True),
+        {"class": "/Script/UMG.SizeBox", "name": "DormantBox",
+         "props": {"HeightOverride": 150, "bOverride_HeightOverride": "true"},
+         "children": [{"class": "/Script/UMG.ListView", "name": "Dormant", "variable": True,
+                       "props": {"bIsFocusable": "false", "SelectionMode": "Single",
+                                 "EntryWidgetClass": ROOT + "WBP_DenCatalogShelf"}}]},
+        text("Footer", "", 12, DIM, variable=True, wrap=True),
+    ])
+    g.item("Stored", "restore")
+    g.click("RestoreAll", "restore_all")
+    g.item("Dormant", "forget")
+    return {"kind": "widget", "path": ROOT + "WBP_DenStoreroom", "tree": tree, "functions": LUA_EVENT, "graph": g.spec()}
+
+
+FIELDS = [("X", "set_x"), ("Y", "set_y"), ("Z", "set_z"), ("Pitch", "set_pitch"), ("Yaw", "set_yaw"), ("Roll", "set_roll"),
+          ("Scale", "set_scale")]
+
+
+def transform():
+    """Exact numbers for the selection, under the toolbar (FFXIV's advanced placement)."""
+    g = Graph()
+    cells = []
+    for name, event in FIELDS:
+        cells.append({"class": "/Script/UMG.VerticalBox", "name": name + "Cell", "slot": {"Padding": "(Left=0,Top=0,Right=6,Bottom=0)"},
+                      "children": [text(name + "Label", name, 11, DIM), box("Field" + name, name, width=96, select_all=True)]})
+        g.commit("Field" + name, event)
+    panel = {"class": "/Script/UMG.Border", "name": "Panel", "variable": True,
+             "props": {"BrushColor": PANEL, "Padding": "(Left=16,Top=10,Right=16,Bottom=12)", "Visibility": "Collapsed"},
+             "slot": {"LayoutData": "(Anchors=(Minimum=(X=0,Y=1),Maximum=(X=0,Y=1)),Alignment=(X=0,Y=1),"
+                                    "Offsets=(Left=24,Top=-24,Right=660,Bottom=0))", "bAutoSize": "true"},
+             "children": [{"class": "/Script/UMG.VerticalBox", "name": "Column", "children": [
+                 text("Title", "Exact placement (cm, degrees; Enter applies)", 12, DIM),
+                 row("Fields", cells, padding="(Left=0,Top=4,Right=0,Bottom=0)")]}]}
+    return {"kind": "widget", "path": ROOT + "WBP_DenTransform",
+            "tree": {"class": "/Script/UMG.CanvasPanel", "name": "Root", "children": [panel]},
+            "functions": LUA_EVENT, "graph": g.spec()}
+
+
 def main():
-    specs = input_actions() + [mapping_context(), rig(), toolbar()]
+    specs = input_actions() + [mapping_context(), rig(), toolbar(), catalog_item(), catalog_entry(), catalog_shelf(), catalog(),
+                               layouts(), storeroom(), transform()]
     if OUT.exists():
         shutil.rmtree(OUT)
     OUT.mkdir()

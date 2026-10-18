@@ -5,3 +5,4 @@ unreal/ZComDen/Content/
 unreal/ZComDen/Saved/
 unreal/ZComDen/Intermediate/
 unreal/ZComDen/Metadata/
+/src/*/MXM/values.lua

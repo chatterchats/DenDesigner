@@ -191,9 +191,13 @@ function M.new(ctx)
             local scale = math.max(entry.s[1], entry.s[2], entry.s[3])
             solid = e ~= nil and math.max(e.X, e.Y, e.Z) * 2 * scale > M.SOLID_SIZE
         end
-        -- Not solid: pawns walk through, but visibility traces (the editor's clicks) still hit it.
+        -- Not solid: pawns walk through, but visibility traces (the editor's clicks) still hit it. A mesh with no
+        -- collision body can't be hit at all: the editor picks those by their bounds (box_pick).
         component:SetCollisionProfileName(FName("BlockAll"), true)
         if not solid then component:SetCollisionResponseToChannel(ECC_PAWN, ECR_IGNORE) end
+        record.box_pick = not g.valid(mesh.BodySetup)
+        -- The editor's placement preview: no collision at all, so traces under the cursor go through it.
+        if entry.ghost then component:SetCollisionEnabled(NO_COLLISION) end
         -- After the component: an actor spawned without a root loses its spawn transform.
         host:K2_SetActorLocationAndRotation(vec(entry.t), rot(entry.r), false, {}, true)
         host:SetActorScale3D(vec(entry.s))

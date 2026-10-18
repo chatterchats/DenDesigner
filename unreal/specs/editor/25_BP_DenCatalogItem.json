@@ -1,0 +1,26 @@
+{
+ "kind": "blueprint",
+ "path": "/ZComDen/ZComDen/Editor/BP_DenCatalogItem",
+ "parent": "/Script/CoreUObject.Object",
+ "variables": [
+  {
+   "name": "Key",
+   "type": "string",
+   "default": ""
+  },
+  {
+   "name": "Title",
+   "type": "string",
+   "default": ""
+  },
+  {
+   "name": "Detail",
+   "type": "string",
+   "default": ""
+  },
+  {
+   "name": "Thumb",
+   "type": "object:/Script/Engine.Texture2D"
+  }
+ ]
+}

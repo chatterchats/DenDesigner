@@ -1,7 +1,9 @@
 -- Offline tests for history.lua and pick.lua (LuaJIT, no game). Usage: luajit tests/editor_test.lua src/ZComDen
 local src = assert(arg[1], "usage: editor_test.lua <mod dir>")
 package.path = src .. "/Scripts/?.lua;" .. package.path
-local json, Layout, History, Pick = require("json"), require("layout"), require("history"), require("pick")
+local json, Layout, History, Pick, Catalog = require("json"), require("layout"), require("history"), require("pick"), require("catalog")
+local Thumbs = require("thumbs")
+local Keys = require("keys")
 
 local failures, checks = 0, 0
 local function check(cond, what)
@@ -105,6 +107,85 @@ check(Pick.unit(true, true) == "actor" and Pick.unit(true, false) == "component"
     "whole actor only for a StaticMeshActor's own mesh")
 check(Pick.label("/Game/X/SM_Hub_Pit_ConferenceChair_01.SM_Hub_Pit_ConferenceChair_01", BAR) == "Hub Pit ConferenceChair 01  (Bar A)",
     "labels read well: " .. Pick.label("/Game/X/SM_Hub_Pit_ConferenceChair_01.SM_Hub_Pit_ConferenceChair_01", BAR))
+
+-- catalog ----------------------------------------------------------------------------------------------------
+local data = require("catalog_data")
+local t0 = os.clock()
+local cat = Catalog.new(data)
+check(cat.count > 4000 and #data.items % Catalog.STRIDE == 0, "the generated catalog loads (" .. cat.count .. " meshes)")
+check(os.clock() - t0 < 0.5, "and indexes quickly")
+local total = 0
+for _, shelf in ipairs(cat.shelves) do
+    local items = cat:shelf_items(shelf.key)
+    total = total + #items
+    for _, i in ipairs(items) do
+        if cat:item(i).shelf ~= tonumber(shelf.key) then check(false, "item " .. i .. " is on shelf " .. shelf.title); break end
+    end
+end
+check(total == cat.count, "every mesh is on exactly one shelf")
+local bad = 0
+for i = 1, cat.count do
+    local item = cat:item(i)
+    if not item.path:match("^/[%w_]+/[^%.]+%.[%w_%-]+$") or item.size[1] < 0 then bad = bad + 1 end
+end
+check(bad == 0, "every path is a loadable object path (" .. bad .. " bad)")
+local cauldron = "/Game/Game/Environments/Faction/Universal/Props/Wares/UNI_Wares_Cauldron_Rogue_A/SM_UNI_Wares_Cauldron_Rogue_A.SM_UNI_Wares_Cauldron_Rogue_A"
+check(cat:find(cauldron) ~= nil, "the cauldron from Phase 0 is in it")
+local found, n = cat:search("cauldron rogue")
+check(n >= 1 and cat:item(found[1]).path:find("Cauldron", 1, true) ~= nil, "search matches every word")
+local _, crates = cat:search("crate")
+check(crates > 10, "a broad search finds many (" .. crates .. ")")
+local many = select(2, cat:search("a"))
+check(#cat:search("a") == Catalog.SEARCH_LIMIT and many > Catalog.SEARCH_LIMIT, "results are capped, the total isn't")
+check(#cat:search("   ") == 0, "a blank search finds nothing")
+cat:remember(cauldron); cat:remember("/Game/X/SM_Y.SM_Y"); cat:remember(cauldron)
+check(cat.recent[1] == cauldron and #cat.recent == 2, "recent keeps the latest first, once")
+check(#cat:shelf_items("recent") == 1, "recent shows only meshes the catalog knows")
+check(Catalog.name_of(cauldron) == "Wares Cauldron Rogue A", "names read well: " .. Catalog.name_of(cauldron))
+check(Catalog.size_text({ 72, 71, 40 }) == "72 x 71 x 40 cm" and Catalog.size_text({ 450, 120, 300 }) == "4.5 x 1.2 x 3.0 m", "sizes read well")
+local slow = os.clock()
+for _ = 1, 10 do cat:search("chair") end
+check((os.clock() - slow) / 10 < 0.02, string.format("a search takes under 20 ms (%.1f ms)", (os.clock() - slow) * 100))
+
+-- thumbnails ----------------------------------------------------------------------------------------------
+local cube = Thumbs.distance({ 50, 50, 50 }, Thumbs.VIEW, Thumbs.FOV)
+local rug = Thumbs.distance({ 100, 70, 1 }, Thumbs.VIEW, Thumbs.FOV)
+local pole = Thumbs.distance({ 5, 5, 150 }, Thumbs.VIEW, Thumbs.FOV)
+local function sphere_fit(e) return math.sqrt(e[1] ^ 2 + e[2] ^ 2 + e[3] ^ 2) / math.sin(math.rad(Thumbs.FOV / 2)) end
+check(cube > 50 and rug > 100 and pole > 150, "the camera stands outside the box")
+check(rug <= sphere_fit({ 100, 70, 1 }) * Thumbs.MARGIN and pole <= sphere_fit({ 5, 5, 150 }) * Thumbs.MARGIN,
+    "never farther than a bounding-sphere fit (plus the margin)")
+check(Thumbs.distance({ 10, 10, 10 }, Thumbs.VIEW, Thumbs.FOV) * 10 - Thumbs.distance({ 100, 100, 100 }, Thumbs.VIEW, Thumbs.FOV) < 1e-6,
+    "framing scales with size")
+local a, b = Thumbs.file_name(cauldron), Thumbs.file_name(cauldron:gsub("Rogue", "Rogui"))
+check(a:match("^SM_UNI_Wares_Cauldron_Rogue_A_%x%x%x%x%x%x%x%x%.png$") ~= nil, "picture files are named readably: " .. a)
+check(a ~= b and Thumbs.file_name(cauldron) == a, "and stably, unique per path")
+
+-- keys -----------------------------------------------------------------------------------------------------
+check(Keys.key_name(0x51) == "Q" and Keys.key_name(0x35) == "Five" and Keys.key_name(0x63) == "NumPadThree"
+    and Keys.key_name(0x7B) == "F12" and Keys.key_name(0xA2) == "LeftControl" and Keys.key_name(0x07) == nil,
+    "virtual-key codes become Unreal key names")
+local function plan(values) return Keys.plan(function(k) return values[k] end) end
+local names = plan({})
+check(names.key_forward == "W" and names.key_down == "LeftControl" and names.key_catalog == "Tab", "no settings: the shipped keys")
+names = plan({ key_forward = 0x5A, key_undo = 0x55 })  -- AZERTY-style: forward on Z, undo moves to U
+check(names.key_forward == "Z" and names.key_undo == "U", "rebinding works")
+local clash, problems = plan({ key_forward = 0x5A })     -- Z is undo's key
+check(clash.key_forward == "W" and clash.key_undo == "Z" and #problems == 1, "a key that's taken keeps the shipped one")
+local reserved, why = plan({ key_store = 0x1B })         -- Escape
+check(reserved.key_store == "X" and why[1]:find("can't be used") ~= nil, "reserved keys are refused")
+local settings_doc = dofile(src .. "/MXM/settings.lua")
+local listed = {}
+for _, e in ipairs(settings_doc.settings) do if e.key then listed[e.key] = e end end
+local missing = 0
+for _, b in ipairs(Keys.BINDINGS) do if not (listed[b[1]] and listed[b[1]].default == b[4]) then missing = missing + 1 end end
+check(missing == 0 and settings_doc.id == "ZComDenDesigner", "every binding is in the MXM settings with its shipped key")
+
+-- editor.lua defines a local select(prop) for the selection: Lua's select("#", ...) after it calls that instead
+-- (it once made a bogus selection on every deferred command).
+local editor_src = io.open(src .. "/Scripts/editor.lua"):read("*a")
+local shadow_at = editor_src:find("local function select%(")
+check(shadow_at and not editor_src:find('select%("#"', shadow_at), "no select(\"#\", ...) after the local select()")
 
 print(string.format("editor_test: %d checks, %d failures", checks, failures))
 os.exit(failures == 0 and 0 or 1)

@@ -1,14 +1,24 @@
--- Den Designer v0.2.0 (Phase 2: the editor; Ctrl+Home in the Den)
+-- Den Designer v0.4.0 (the editor, Ctrl+Home in the Den: catalog, storeroom, layouts and presets; MXM settings)
 -- Saves to %LOCALAPPDATA%\SWZeroCompany\Saved\ZComDen, never the game's saves. Loader-thread composition only:
 -- all Unreal work starts on the game thread (the final scheduled action below).
-local VERSION = "0.2.0"
+local VERSION = "0.4.0"
 local source = debug.getinfo(1, "S").source:gsub("^@", "")
 local directory = assert(source:match("^(.*[/\\])"), "Scripts directory unavailable")
 -- Explicit path: never resolve another mod's generic module names.
 package.path = directory .. "?.lua;" .. package.path
+-- Every module is read from disk again on each (re)load: UE4SS serves cached sources to require, dofile and
+-- loadfile (io.open reads the file as it is), so a reload (`zcomden reload`) would otherwise run the old code.
+local function fresh(path)
+    local f = io.open(path, "rb")
+    if not f then return nil end
+    local text = f:read("*a")
+    f:close()
+    return load(text, "@" .. path)
+end
 for _, module in ipairs({ "hook_registry", "actions", "logging", "game", "json", "layout", "store", "resolve", "apply", "den_watch",
-                          "history", "pick", "highlight", "editor" }) do
+                          "history", "pick", "highlight", "catalog", "catalog_data", "thumbs", "keys", "MXM", "editor" }) do
     package.loaded[module] = nil
+    package.preload[module] = fresh(directory .. module .. ".lua")
 end
 local Runtime = require("hook_registry")
 local Actions = require("actions")
@@ -42,13 +52,21 @@ local function start()
             return context ~= nil and g.make_directories(context, folders)
         end,
     })
-    local ctx = { runtime = runtime, actions = actions, log = log, g = g, store = store, dir = directory }
+    -- Settings from the Mixamoo Mod Config Manager when it's installed; its schema defaults otherwise.
+    local ok_settings, settings = pcall(require, "MXM")
+    if not ok_settings then
+        log("WARNING: settings unavailable (%s); using defaults", tostring(settings))
+        settings = { Get = function(_, fallback) return fallback end }
+    end
+    local ctx = { runtime = runtime, actions = actions, log = log, g = g, store = store, dir = directory, settings = settings }
     local watch = require("den_watch").new(ctx)
     watch:install()
     ctx.watch = watch
     local editor = require("editor").new(ctx)
     -- Installed after the watch: on a reload the editor closes before the Den edits are undone.
-    editor:install(Key.HOME, { ModifierKey.CONTROL })
+    local modifier = ({ ctrl = ModifierKey.CONTROL, shift = ModifierKey.SHIFT, alt = ModifierKey.ALT })[settings.Get("toggle_modifier", "ctrl")]
+    local toggle = tonumber(settings.Get("toggle_key", 0x24)) or Key.HOME
+    editor:install(toggle, modifier and { modifier } or {})
     watch.on_leave[#watch.on_leave + 1] = function(reason) editor:abort(reason) end
     logger:transition("runtime", "ready", "layouts=" .. base)
 end

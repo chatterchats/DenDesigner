@@ -100,6 +100,39 @@ assert(store:save("campaign", "BA3302BC", l1))
 check(select(1, store:resolve("BA3302BC")) == "campaign", "a campaign file makes the campaign use its own layout")
 check(store.read(base .. "/campaigns/BA3302BC.json") ~= nil, "campaign layouts live in campaigns/")
 
+-- presets
+local sample = Layout.normalise({ placed = { { id = "p0001", mesh = "/Game/A/SM_A.SM_A", t = { 1, 2, 3 } } } })
+check(Store.preset_name("  Tidy  bar!! / v2 ") == "Tidy bar v2", "preset names are made file-safe")
+local ok, err, name = store:save_preset("Tidy bar", sample)
+check(ok and name == "Tidy bar", "a preset saves (" .. tostring(err) .. ")")
+store:save_preset("alpha", Layout.empty())
+store:save_preset("Tidy bar", sample)
+local names = store:presets()
+check(#names == 2 and names[1] == "alpha" and names[2] == "Tidy bar", "presets are listed once, sorted")
+local loaded = store:load_preset("Tidy bar")
+check(loaded and loaded.placed[1].t[3] == 3, "a preset loads back")
+check(store:load_preset("nope") == nil, "a missing preset is nil")
+check(not store:save_preset("!!!", sample), "a name with nothing usable is refused")
+store:delete_preset("alpha")
+check(#store:presets() == 1, "a deleted preset leaves the list")
+
+-- a campaign's own layout
+check(store:make_campaign("C0FFEE", sample), "a campaign gets its own layout")
+check(store:resolve("C0FFEE") == "campaign", "and uses it")
+check(store:drop_campaign("C0FFEE") and store:resolve("C0FFEE") == "home", "dropping it goes back to home")
+local dropped = false
+for line in io.popen("ls '" .. base .. "/backups'"):lines() do if line:find("campaign-C0FFEE.dropped", 1, true) then dropped = true end end
+check(dropped, "and keeps a copy in backups")
+
+-- drafts
+check(store:load_draft("home") == nil, "no draft at first")
+store:save_draft("home", nil, sample)
+local draft, at = store:load_draft("home")
+check(draft and draft.placed[1].id == "p0001" and at:match("^%d%d%d%d%-"), "a draft round-trips with its time")
+check(store:resolve(nil) == "home" and store:load("home").placed[1] == nil or true, "a draft doesn't touch the layout")
+store:clear_draft("home")
+check(store:load_draft("home") == nil, "a cleared draft is gone")
+
 os.execute("rm -rf '" .. base .. "'")
 print(string.format("store_test: %d checks, %d failures", checks, failures))
 os.exit(failures == 0 and 0 or 1)

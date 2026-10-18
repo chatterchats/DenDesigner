@@ -19,7 +19,7 @@ function M.empty()
 end
 
 local function is_asset_path(s)
-    return type(s) == "string" and s:match("^/[%w_]+/[^%.]+%.[%w_]+$") ~= nil
+    return type(s) == "string" and s:match("^/[%w_]+/[^%.]+%.[%w_%-]+$") ~= nil
 end
 
 local function is_object_path(s)

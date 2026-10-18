@@ -9,11 +9,11 @@
     "class": "/Script/UMG.SizeBox",
     "name": "Frame",
     "props": {
-     "WidthOverride": 600,
+     "WidthOverride": 660,
      "bOverride_WidthOverride": "true"
     },
     "slot": {
-     "LayoutData": "(Offsets=(Left=24,Top=24,Right=600,Bottom=200))",
+     "LayoutData": "(Offsets=(Left=24,Top=24,Right=660,Bottom=200))",
      "bAutoSize": "true"
     },
     "children": [
@@ -79,6 +79,84 @@
          {
           "class": "/Script/UMG.WrapBox",
           "name": "Row0",
+          "children": [
+           {
+            "class": "/Script/UMG.Button",
+            "name": "Catalog",
+            "variable": true,
+            "props": {
+             "BackgroundColor": "(R=0.16,G=0.2,B=0.27,A=1)",
+             "IsFocusable": "false"
+            },
+            "slot": {
+             "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+            },
+            "children": [
+             {
+              "class": "/Script/UMG.TextBlock",
+              "name": "CatalogLabel",
+              "props": {
+               "Text": "Catalog",
+               "Font.Size": 13,
+               "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)"
+              },
+              "variable": true
+             }
+            ]
+           },
+           {
+            "class": "/Script/UMG.Button",
+            "name": "Storeroom",
+            "variable": true,
+            "props": {
+             "BackgroundColor": "(R=0.16,G=0.2,B=0.27,A=1)",
+             "IsFocusable": "false"
+            },
+            "slot": {
+             "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+            },
+            "children": [
+             {
+              "class": "/Script/UMG.TextBlock",
+              "name": "StoreroomLabel",
+              "props": {
+               "Text": "Storeroom",
+               "Font.Size": 13,
+               "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)"
+              },
+              "variable": true
+             }
+            ]
+           },
+           {
+            "class": "/Script/UMG.Button",
+            "name": "Layouts",
+            "variable": true,
+            "props": {
+             "BackgroundColor": "(R=0.16,G=0.2,B=0.27,A=1)",
+             "IsFocusable": "false"
+            },
+            "slot": {
+             "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+            },
+            "children": [
+             {
+              "class": "/Script/UMG.TextBlock",
+              "name": "LayoutsLabel",
+              "props": {
+               "Text": "Layouts",
+               "Font.Size": 13,
+               "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)"
+              },
+              "variable": true
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "class": "/Script/UMG.WrapBox",
+          "name": "Row1",
           "children": [
            {
             "class": "/Script/UMG.Button",
@@ -204,7 +282,7 @@
          },
          {
           "class": "/Script/UMG.WrapBox",
-          "name": "Row1",
+          "name": "Row2",
           "children": [
            {
             "class": "/Script/UMG.Button",
@@ -332,7 +410,7 @@
           "class": "/Script/UMG.TextBlock",
           "name": "Hints",
           "props": {
-           "Text": "WASD fly, Space/Ctrl up/down, Shift fast, hold RMB to look\nLMB select and drag (Shift: up/down), wheel or Q/E rotate (Shift: fine), +/- scale\nArrows/PgUp/PgDn nudge, G snap, X store, C copy, R reset, Z/Y undo/redo, F focus, Esc back",
+           "Text": "WASD fly, Space/Ctrl up/down, Shift fast, hold RMB to look\nLMB select and drag (Shift: up/down), wheel or Q/E rotate (Shift: fine), +/- scale\nArrows/PgUp/PgDn nudge, G snap, X store, C copy, R reset, Z/Y undo/redo, F focus, Esc back\nTab catalog: click an item, then click in the Den to place it (Shift+click places more)\nH storeroom (stored props), L layouts (this campaign's own layout, presets)",
            "Font.Size": 11,
            "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)"
           },
@@ -487,6 +565,48 @@
  ],
  "graph": {
   "nodes": [
+   {
+    "id": "Catalog",
+    "kind": "bound_event",
+    "widget": "Catalog",
+    "delegate": "OnClicked"
+   },
+   {
+    "id": "Catalog_lua",
+    "kind": "call",
+    "function": "self:Lua_Event",
+    "defaults": {
+     "Name": "catalog"
+    }
+   },
+   {
+    "id": "Storeroom",
+    "kind": "bound_event",
+    "widget": "Storeroom",
+    "delegate": "OnClicked"
+   },
+   {
+    "id": "Storeroom_lua",
+    "kind": "call",
+    "function": "self:Lua_Event",
+    "defaults": {
+     "Name": "storeroom"
+    }
+   },
+   {
+    "id": "Layouts",
+    "kind": "bound_event",
+    "widget": "Layouts",
+    "delegate": "OnClicked"
+   },
+   {
+    "id": "Layouts_lua",
+    "kind": "call",
+    "function": "self:Lua_Event",
+    "defaults": {
+     "Name": "layouts"
+    }
+   },
    {
     "id": "Undo",
     "kind": "bound_event",
@@ -671,6 +791,18 @@
    }
   ],
   "links": [
+   [
+    "Catalog.then",
+    "Catalog_lua.execute"
+   ],
+   [
+    "Storeroom.then",
+    "Storeroom_lua.execute"
+   ],
+   [
+    "Layouts.then",
+    "Layouts_lua.execute"
+   ],
    [
     "Undo.then",
     "Undo_lua.execute"

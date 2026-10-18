@@ -1,0 +1,505 @@
+{
+ "kind": "widget",
+ "path": "/ZComDen/ZComDen/Editor/WBP_DenTransform",
+ "tree": {
+  "class": "/Script/UMG.CanvasPanel",
+  "name": "Root",
+  "children": [
+   {
+    "class": "/Script/UMG.Border",
+    "name": "Panel",
+    "variable": true,
+    "props": {
+     "BrushColor": "(R=0.015,G=0.02,B=0.03,A=0.86)",
+     "Padding": "(Left=16,Top=10,Right=16,Bottom=12)",
+     "Visibility": "Collapsed"
+    },
+    "slot": {
+     "LayoutData": "(Anchors=(Minimum=(X=0,Y=1),Maximum=(X=0,Y=1)),Alignment=(X=0,Y=1),Offsets=(Left=24,Top=-24,Right=660,Bottom=0))",
+     "bAutoSize": "true"
+    },
+    "children": [
+     {
+      "class": "/Script/UMG.VerticalBox",
+      "name": "Column",
+      "children": [
+       {
+        "class": "/Script/UMG.TextBlock",
+        "name": "Title",
+        "props": {
+         "Text": "Exact placement (cm, degrees; Enter applies)",
+         "Font.Size": 12,
+         "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)"
+        }
+       },
+       {
+        "class": "/Script/UMG.HorizontalBox",
+        "name": "Fields",
+        "slot": {
+         "Padding": "(Left=0,Top=4,Right=0,Bottom=0)"
+        },
+        "children": [
+         {
+          "class": "/Script/UMG.VerticalBox",
+          "name": "XCell",
+          "slot": {
+           "Padding": "(Left=0,Top=0,Right=6,Bottom=0)"
+          },
+          "children": [
+           {
+            "class": "/Script/UMG.TextBlock",
+            "name": "XLabel",
+            "props": {
+             "Text": "X",
+             "Font.Size": 11,
+             "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)"
+            }
+           },
+           {
+            "class": "/Script/UMG.SizeBox",
+            "name": "FieldXBox",
+            "props": {
+             "WidthOverride": 96,
+             "bOverride_WidthOverride": "true"
+            },
+            "children": [
+             {
+              "class": "/Script/UMG.EditableTextBox",
+              "name": "FieldX",
+              "variable": true,
+              "props": {
+               "HintText": "X",
+               "WidgetStyle.ForegroundColor": "(SpecifiedColor=(R=0.02,G=0.025,B=0.035,A=1),ColorUseRule=UseColor_Specified)",
+               "WidgetStyle.FocusedForegroundColor": "(SpecifiedColor=(R=0.02,G=0.025,B=0.035,A=1),ColorUseRule=UseColor_Specified)",
+               "WidgetStyle.TextStyle.ColorAndOpacity": "(SpecifiedColor=(R=0.02,G=0.025,B=0.035,A=1),ColorUseRule=UseColor_Specified)",
+               "SelectAllTextWhenFocused": "true"
+              }
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "class": "/Script/UMG.VerticalBox",
+          "name": "YCell",
+          "slot": {
+           "Padding": "(Left=0,Top=0,Right=6,Bottom=0)"
+          },
+          "children": [
+           {
+            "class": "/Script/UMG.TextBlock",
+            "name": "YLabel",
+            "props": {
+             "Text": "Y",
+             "Font.Size": 11,
+             "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)"
+            }
+           },
+           {
+            "class": "/Script/UMG.SizeBox",
+            "name": "FieldYBox",
+            "props": {
+             "WidthOverride": 96,
+             "bOverride_WidthOverride": "true"
+            },
+            "children": [
+             {
+              "class": "/Script/UMG.EditableTextBox",
+              "name": "FieldY",
+              "variable": true,
+              "props": {
+               "HintText": "Y",
+               "WidgetStyle.ForegroundColor": "(SpecifiedColor=(R=0.02,G=0.025,B=0.035,A=1),ColorUseRule=UseColor_Specified)",
+               "WidgetStyle.FocusedForegroundColor": "(SpecifiedColor=(R=0.02,G=0.025,B=0.035,A=1),ColorUseRule=UseColor_Specified)",
+               "WidgetStyle.TextStyle.ColorAndOpacity": "(SpecifiedColor=(R=0.02,G=0.025,B=0.035,A=1),ColorUseRule=UseColor_Specified)",
+               "SelectAllTextWhenFocused": "true"
+              }
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "class": "/Script/UMG.VerticalBox",
+          "name": "ZCell",
+          "slot": {
+           "Padding": "(Left=0,Top=0,Right=6,Bottom=0)"
+          },
+          "children": [
+           {
+            "class": "/Script/UMG.TextBlock",
+            "name": "ZLabel",
+            "props": {
+             "Text": "Z",
+             "Font.Size": 11,
+             "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)"
+            }
+           },
+           {
+            "class": "/Script/UMG.SizeBox",
+            "name": "FieldZBox",
+            "props": {
+             "WidthOverride": 96,
+             "bOverride_WidthOverride": "true"
+            },
+            "children": [
+             {
+              "class": "/Script/UMG.EditableTextBox",
+              "name": "FieldZ",
+              "variable": true,
+              "props": {
+               "HintText": "Z",
+               "WidgetStyle.ForegroundColor": "(SpecifiedColor=(R=0.02,G=0.025,B=0.035,A=1),ColorUseRule=UseColor_Specified)",
+               "WidgetStyle.FocusedForegroundColor": "(SpecifiedColor=(R=0.02,G=0.025,B=0.035,A=1),ColorUseRule=UseColor_Specified)",
+               "WidgetStyle.TextStyle.ColorAndOpacity": "(SpecifiedColor=(R=0.02,G=0.025,B=0.035,A=1),ColorUseRule=UseColor_Specified)",
+               "SelectAllTextWhenFocused": "true"
+              }
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "class": "/Script/UMG.VerticalBox",
+          "name": "PitchCell",
+          "slot": {
+           "Padding": "(Left=0,Top=0,Right=6,Bottom=0)"
+          },
+          "children": [
+           {
+            "class": "/Script/UMG.TextBlock",
+            "name": "PitchLabel",
+            "props": {
+             "Text": "Pitch",
+             "Font.Size": 11,
+             "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)"
+            }
+           },
+           {
+            "class": "/Script/UMG.SizeBox",
+            "name": "FieldPitchBox",
+            "props": {
+             "WidthOverride": 96,
+             "bOverride_WidthOverride": "true"
+            },
+            "children": [
+             {
+              "class": "/Script/UMG.EditableTextBox",
+              "name": "FieldPitch",
+              "variable": true,
+              "props": {
+               "HintText": "Pitch",
+               "WidgetStyle.ForegroundColor": "(SpecifiedColor=(R=0.02,G=0.025,B=0.035,A=1),ColorUseRule=UseColor_Specified)",
+               "WidgetStyle.FocusedForegroundColor": "(SpecifiedColor=(R=0.02,G=0.025,B=0.035,A=1),ColorUseRule=UseColor_Specified)",
+               "WidgetStyle.TextStyle.ColorAndOpacity": "(SpecifiedColor=(R=0.02,G=0.025,B=0.035,A=1),ColorUseRule=UseColor_Specified)",
+               "SelectAllTextWhenFocused": "true"
+              }
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "class": "/Script/UMG.VerticalBox",
+          "name": "YawCell",
+          "slot": {
+           "Padding": "(Left=0,Top=0,Right=6,Bottom=0)"
+          },
+          "children": [
+           {
+            "class": "/Script/UMG.TextBlock",
+            "name": "YawLabel",
+            "props": {
+             "Text": "Yaw",
+             "Font.Size": 11,
+             "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)"
+            }
+           },
+           {
+            "class": "/Script/UMG.SizeBox",
+            "name": "FieldYawBox",
+            "props": {
+             "WidthOverride": 96,
+             "bOverride_WidthOverride": "true"
+            },
+            "children": [
+             {
+              "class": "/Script/UMG.EditableTextBox",
+              "name": "FieldYaw",
+              "variable": true,
+              "props": {
+               "HintText": "Yaw",
+               "WidgetStyle.ForegroundColor": "(SpecifiedColor=(R=0.02,G=0.025,B=0.035,A=1),ColorUseRule=UseColor_Specified)",
+               "WidgetStyle.FocusedForegroundColor": "(SpecifiedColor=(R=0.02,G=0.025,B=0.035,A=1),ColorUseRule=UseColor_Specified)",
+               "WidgetStyle.TextStyle.ColorAndOpacity": "(SpecifiedColor=(R=0.02,G=0.025,B=0.035,A=1),ColorUseRule=UseColor_Specified)",
+               "SelectAllTextWhenFocused": "true"
+              }
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "class": "/Script/UMG.VerticalBox",
+          "name": "RollCell",
+          "slot": {
+           "Padding": "(Left=0,Top=0,Right=6,Bottom=0)"
+          },
+          "children": [
+           {
+            "class": "/Script/UMG.TextBlock",
+            "name": "RollLabel",
+            "props": {
+             "Text": "Roll",
+             "Font.Size": 11,
+             "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)"
+            }
+           },
+           {
+            "class": "/Script/UMG.SizeBox",
+            "name": "FieldRollBox",
+            "props": {
+             "WidthOverride": 96,
+             "bOverride_WidthOverride": "true"
+            },
+            "children": [
+             {
+              "class": "/Script/UMG.EditableTextBox",
+              "name": "FieldRoll",
+              "variable": true,
+              "props": {
+               "HintText": "Roll",
+               "WidgetStyle.ForegroundColor": "(SpecifiedColor=(R=0.02,G=0.025,B=0.035,A=1),ColorUseRule=UseColor_Specified)",
+               "WidgetStyle.FocusedForegroundColor": "(SpecifiedColor=(R=0.02,G=0.025,B=0.035,A=1),ColorUseRule=UseColor_Specified)",
+               "WidgetStyle.TextStyle.ColorAndOpacity": "(SpecifiedColor=(R=0.02,G=0.025,B=0.035,A=1),ColorUseRule=UseColor_Specified)",
+               "SelectAllTextWhenFocused": "true"
+              }
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "class": "/Script/UMG.VerticalBox",
+          "name": "ScaleCell",
+          "slot": {
+           "Padding": "(Left=0,Top=0,Right=6,Bottom=0)"
+          },
+          "children": [
+           {
+            "class": "/Script/UMG.TextBlock",
+            "name": "ScaleLabel",
+            "props": {
+             "Text": "Scale",
+             "Font.Size": 11,
+             "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)"
+            }
+           },
+           {
+            "class": "/Script/UMG.SizeBox",
+            "name": "FieldScaleBox",
+            "props": {
+             "WidthOverride": 96,
+             "bOverride_WidthOverride": "true"
+            },
+            "children": [
+             {
+              "class": "/Script/UMG.EditableTextBox",
+              "name": "FieldScale",
+              "variable": true,
+              "props": {
+               "HintText": "Scale",
+               "WidgetStyle.ForegroundColor": "(SpecifiedColor=(R=0.02,G=0.025,B=0.035,A=1),ColorUseRule=UseColor_Specified)",
+               "WidgetStyle.FocusedForegroundColor": "(SpecifiedColor=(R=0.02,G=0.025,B=0.035,A=1),ColorUseRule=UseColor_Specified)",
+               "WidgetStyle.TextStyle.ColorAndOpacity": "(SpecifiedColor=(R=0.02,G=0.025,B=0.035,A=1),ColorUseRule=UseColor_Specified)",
+               "SelectAllTextWhenFocused": "true"
+              }
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "functions": [
+  {
+   "name": "Lua_Event",
+   "inputs": [
+    {
+     "name": "Name",
+     "type": "string"
+    },
+    {
+     "name": "Arg",
+     "type": "string"
+    }
+   ]
+  }
+ ],
+ "graph": {
+  "nodes": [
+   {
+    "id": "FieldX",
+    "kind": "bound_event",
+    "widget": "FieldX",
+    "delegate": "OnTextCommitted"
+   },
+   {
+    "id": "FieldX_lua",
+    "kind": "call",
+    "function": "self:Lua_Event",
+    "defaults": {
+     "Name": "set_x"
+    }
+   },
+   {
+    "id": "FieldY",
+    "kind": "bound_event",
+    "widget": "FieldY",
+    "delegate": "OnTextCommitted"
+   },
+   {
+    "id": "FieldY_lua",
+    "kind": "call",
+    "function": "self:Lua_Event",
+    "defaults": {
+     "Name": "set_y"
+    }
+   },
+   {
+    "id": "FieldZ",
+    "kind": "bound_event",
+    "widget": "FieldZ",
+    "delegate": "OnTextCommitted"
+   },
+   {
+    "id": "FieldZ_lua",
+    "kind": "call",
+    "function": "self:Lua_Event",
+    "defaults": {
+     "Name": "set_z"
+    }
+   },
+   {
+    "id": "FieldPitch",
+    "kind": "bound_event",
+    "widget": "FieldPitch",
+    "delegate": "OnTextCommitted"
+   },
+   {
+    "id": "FieldPitch_lua",
+    "kind": "call",
+    "function": "self:Lua_Event",
+    "defaults": {
+     "Name": "set_pitch"
+    }
+   },
+   {
+    "id": "FieldYaw",
+    "kind": "bound_event",
+    "widget": "FieldYaw",
+    "delegate": "OnTextCommitted"
+   },
+   {
+    "id": "FieldYaw_lua",
+    "kind": "call",
+    "function": "self:Lua_Event",
+    "defaults": {
+     "Name": "set_yaw"
+    }
+   },
+   {
+    "id": "FieldRoll",
+    "kind": "bound_event",
+    "widget": "FieldRoll",
+    "delegate": "OnTextCommitted"
+   },
+   {
+    "id": "FieldRoll_lua",
+    "kind": "call",
+    "function": "self:Lua_Event",
+    "defaults": {
+     "Name": "set_roll"
+    }
+   },
+   {
+    "id": "FieldScale",
+    "kind": "bound_event",
+    "widget": "FieldScale",
+    "delegate": "OnTextCommitted"
+   },
+   {
+    "id": "FieldScale_lua",
+    "kind": "call",
+    "function": "self:Lua_Event",
+    "defaults": {
+     "Name": "set_scale"
+    }
+   }
+  ],
+  "links": [
+   [
+    "FieldX.then",
+    "FieldX_lua.execute"
+   ],
+   [
+    "FieldX.Text",
+    "FieldX_lua.Arg"
+   ],
+   [
+    "FieldY.then",
+    "FieldY_lua.execute"
+   ],
+   [
+    "FieldY.Text",
+    "FieldY_lua.Arg"
+   ],
+   [
+    "FieldZ.then",
+    "FieldZ_lua.execute"
+   ],
+   [
+    "FieldZ.Text",
+    "FieldZ_lua.Arg"
+   ],
+   [
+    "FieldPitch.then",
+    "FieldPitch_lua.execute"
+   ],
+   [
+    "FieldPitch.Text",
+    "FieldPitch_lua.Arg"
+   ],
+   [
+    "FieldYaw.then",
+    "FieldYaw_lua.execute"
+   ],
+   [
+    "FieldYaw.Text",
+    "FieldYaw_lua.Arg"
+   ],
+   [
+    "FieldRoll.then",
+    "FieldRoll_lua.execute"
+   ],
+   [
+    "FieldRoll.Text",
+    "FieldRoll_lua.Arg"
+   ],
+   [
+    "FieldScale.then",
+    "FieldScale_lua.execute"
+   ],
+   [
+    "FieldScale.Text",
+    "FieldScale_lua.Arg"
+   ]
+  ]
+ }
+}

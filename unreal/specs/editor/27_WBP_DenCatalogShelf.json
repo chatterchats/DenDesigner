@@ -1,0 +1,82 @@
+{
+ "kind": "widget",
+ "path": "/ZComDen/ZComDen/Editor/WBP_DenCatalogShelf",
+ "interfaces": [
+  "/Script/UMG.UserObjectListEntry"
+ ],
+ "tree": {
+  "class": "/Script/UMG.Border",
+  "name": "Frame",
+  "props": {
+   "BrushColor": "(R=0,G=0,B=0,A=0)",
+   "Padding": "(Left=6,Top=3,Right=6,Bottom=3)"
+  },
+  "children": [
+   {
+    "class": "/Script/UMG.TextBlock",
+    "name": "Label",
+    "props": {
+     "Text": "",
+     "Font.Size": 12,
+     "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)"
+    },
+    "variable": true
+   }
+  ]
+ },
+ "graph": {
+  "nodes": [
+   {
+    "id": "set",
+    "kind": "event",
+    "name": "OnListItemObjectSet"
+   },
+   {
+    "id": "cast",
+    "kind": "cast",
+    "class": "/ZComDen/ZComDen/Editor/BP_DenCatalogItem"
+   },
+   {
+    "id": "get0",
+    "kind": "get",
+    "var": "/ZComDen/ZComDen/Editor/BP_DenCatalogItem:Title"
+   },
+   {
+    "id": "w0",
+    "kind": "get",
+    "var": "Label"
+   },
+   {
+    "id": "text0",
+    "kind": "call",
+    "function": "/Script/UMG.TextBlock:SetText"
+   }
+  ],
+  "links": [
+   [
+    "set.then",
+    "cast.execute"
+   ],
+   [
+    "set.ListItemObject",
+    "cast.Object"
+   ],
+   [
+    "cast.then",
+    "text0.execute"
+   ],
+   [
+    "cast.AsBP Den Catalog Item",
+    "get0.self"
+   ],
+   [
+    "get0.Title",
+    "text0.InText"
+   ],
+   [
+    "w0.Label",
+    "text0.self"
+   ]
+  ]
+ }
+}

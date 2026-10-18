@@ -45,9 +45,10 @@ function M.new(ctx)
     end
 
     -- The editor saved `layout` to the current file: it's already in the Den, so don't reapply it.
+    -- Also after the editor gave this campaign its own layout: the scope follows whichever file is in use.
     function self:adopt(layout)
-        local _, path = store:resolve(self.campaign)
-        self.path, self.text, self.layout = path, store.read(path) or "", Layout.copy(layout)
+        local scope, path = store:resolve(self.campaign)
+        self.scope, self.path, self.text, self.layout = scope, path, store.read(path) or "", Layout.copy(layout)
     end
 
     -- Reapplies the file (the editor's Discard).

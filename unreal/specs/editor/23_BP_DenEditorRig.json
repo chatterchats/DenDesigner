@@ -416,6 +416,48 @@
     }
    },
    {
+    "id": "catalog",
+    "kind": "input_action",
+    "action": "/ZComDen/ZComDen/Editor/IA_Den_Catalog"
+   },
+   {
+    "id": "catalog_lua",
+    "kind": "call",
+    "function": "self:Lua_Action",
+    "defaults": {
+     "Name": "catalog",
+     "Value": "1"
+    }
+   },
+   {
+    "id": "layouts",
+    "kind": "input_action",
+    "action": "/ZComDen/ZComDen/Editor/IA_Den_Layouts"
+   },
+   {
+    "id": "layouts_lua",
+    "kind": "call",
+    "function": "self:Lua_Action",
+    "defaults": {
+     "Name": "layouts",
+     "Value": "1"
+    }
+   },
+   {
+    "id": "storeroom",
+    "kind": "input_action",
+    "action": "/ZComDen/ZComDen/Editor/IA_Den_Storeroom"
+   },
+   {
+    "id": "storeroom_lua",
+    "kind": "call",
+    "function": "self:Lua_Action",
+    "defaults": {
+     "Name": "storeroom",
+     "Value": "1"
+    }
+   },
+   {
     "id": "tick",
     "kind": "event",
     "name": "ReceiveTick"
@@ -619,6 +661,18 @@
    [
     "back.Started",
     "back_lua.execute"
+   ],
+   [
+    "catalog.Started",
+    "catalog_lua.execute"
+   ],
+   [
+    "layouts.Started",
+    "layouts_lua.execute"
+   ],
+   [
+    "storeroom.Started",
+    "storeroom_lua.execute"
    ],
    [
     "tick.then",
