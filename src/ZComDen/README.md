@@ -1,4 +1,4 @@
-# Den Designer v0.4.0
+# Den Designer v0.4.1
 
 Decorate the Den, the way FFXIV's housing editor lets you decorate a house. Fly a free camera around the Den, pick up
 the furniture that's there and move, turn, scale, copy or store it, and place any of nearly 5,000 props from across

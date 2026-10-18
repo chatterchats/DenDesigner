@@ -4,7 +4,7 @@ return {
     id      = "ZComDenDesigner",
     name    = "Den Designer",
     author  = "chatterchats",
-    version = "0.4.0",
+    version = "0.4.1",
     description = "Decorate the Den: Ctrl+Home in the Den opens the editor. Changes below apply the next time the editor opens.",
 
     settings = {

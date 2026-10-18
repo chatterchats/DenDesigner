@@ -27,6 +27,23 @@
    "name": "LookRate",
    "type": "float",
    "default": "2.5"
+  },
+  {
+   "name": "TraceHit",
+   "type": "bool",
+   "default": "false"
+  },
+  {
+   "name": "TracePoint",
+   "type": "vector"
+  },
+  {
+   "name": "TraceNormal",
+   "type": "vector"
+  },
+  {
+   "name": "TraceComponent",
+   "type": "object:/Script/Engine.PrimitiveComponent"
   }
  ],
  "functions": [
@@ -63,6 +80,107 @@
      "name": "DeltaSeconds",
      "type": "float"
     }
+   ]
+  },
+  {
+   "name": "TraceLine",
+   "inputs": [
+    {
+     "name": "Start",
+     "type": "vector"
+    },
+    {
+     "name": "End",
+     "type": "vector"
+    }
+   ],
+   "nodes": [
+    {
+     "id": "trace",
+     "kind": "call",
+     "function": "/Script/Engine.KismetSystemLibrary:LineTraceSingle",
+     "defaults": {
+      "TraceChannel": "TraceTypeQuery1",
+      "bTraceComplex": "true",
+      "DrawDebugType": "None",
+      "bIgnoreSelf": "true"
+     }
+    },
+    {
+     "id": "brk",
+     "kind": "call",
+     "function": "/Script/Engine.GameplayStatics:BreakHitResult"
+    },
+    {
+     "id": "hit",
+     "kind": "set",
+     "var": "TraceHit"
+    },
+    {
+     "id": "point",
+     "kind": "set",
+     "var": "TracePoint"
+    },
+    {
+     "id": "normal",
+     "kind": "set",
+     "var": "TraceNormal"
+    },
+    {
+     "id": "comp",
+     "kind": "set",
+     "var": "TraceComponent"
+    }
+   ],
+   "links": [
+    [
+     "entry.then",
+     "trace.execute"
+    ],
+    [
+     "entry.Start",
+     "trace.Start"
+    ],
+    [
+     "entry.End",
+     "trace.End"
+    ],
+    [
+     "trace.OutHit",
+     "brk.Hit"
+    ],
+    [
+     "trace.then",
+     "hit.execute"
+    ],
+    [
+     "trace.ReturnValue",
+     "hit.TraceHit"
+    ],
+    [
+     "hit.then",
+     "point.execute"
+    ],
+    [
+     "brk.ImpactPoint",
+     "point.TracePoint"
+    ],
+    [
+     "point.then",
+     "normal.execute"
+    ],
+    [
+     "brk.ImpactNormal",
+     "normal.TraceNormal"
+    ],
+    [
+     "normal.then",
+     "comp.execute"
+    ],
+    [
+     "brk.HitComponent",
+     "comp.TraceComponent"
+    ]
    ]
   }
  ],

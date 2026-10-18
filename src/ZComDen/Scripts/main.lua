@@ -1,13 +1,14 @@
--- Den Designer v0.4.0 (the editor, Ctrl+Home in the Den: catalog, storeroom, layouts and presets; MXM settings)
+-- Den Designer v0.4.1 (the editor, Ctrl+Home in the Den: catalog, storeroom, layouts and presets; MXM settings)
 -- Saves to %LOCALAPPDATA%\SWZeroCompany\Saved\ZComDen, never the game's saves. Loader-thread composition only:
 -- all Unreal work starts on the game thread (the final scheduled action below).
-local VERSION = "0.4.0"
+local VERSION = "0.4.1"
 local source = debug.getinfo(1, "S").source:gsub("^@", "")
 local directory = assert(source:match("^(.*[/\\])"), "Scripts directory unavailable")
 -- Explicit path: never resolve another mod's generic module names.
 package.path = directory .. "?.lua;" .. package.path
--- Every module is read from disk again on each (re)load: UE4SS serves cached sources to require, dofile and
--- loadfile (io.open reads the file as it is), so a reload (`zcomden reload`) would otherwise run the old code.
+-- Every module is read from disk again on each (re)load. UE4SS serves cached sources to require, dofile and
+-- loadfile, and its own searcher comes before package.preload, so ours goes first in package.searchers
+-- (replacing the one a previous load put there); io.open reads the file as it is now.
 local function fresh(path)
     local f = io.open(path, "rb")
     if not f then return nil end
@@ -15,11 +16,25 @@ local function fresh(path)
     f:close()
     return load(text, "@" .. path)
 end
-for _, module in ipairs({ "hook_registry", "actions", "logging", "game", "json", "layout", "store", "resolve", "apply", "den_watch",
-                          "history", "pick", "highlight", "catalog", "catalog_data", "thumbs", "keys", "MXM", "editor" }) do
+local MODULES = { "hook_registry", "actions", "logging", "game", "json", "layout", "store", "resolve", "apply", "den_watch",
+                  "history", "pick", "highlight", "catalog", "catalog_data", "thumbs", "keys", "MXM", "editor" }
+local ours = {}
+for _, module in ipairs(MODULES) do
     package.loaded[module] = nil
-    package.preload[module] = fresh(directory .. module .. ".lua")
+    ours[module] = true
 end
+local searchers = package.searchers or package.loaders
+for i = #searchers, 1, -1 do
+    if searchers[i] == rawget(_G, "ZComDenSearcher") then table.remove(searchers, i) end
+end
+local function searcher(name)
+    if not ours[name] then return nil end
+    local chunk, err = fresh(directory .. name .. ".lua")
+    if not chunk then return "\n\tZComDen: " .. tostring(err) end
+    return chunk
+end
+rawset(_G, "ZComDenSearcher", searcher)
+table.insert(searchers, 1, searcher)
 local Runtime = require("hook_registry")
 local Actions = require("actions")
 local Logging = require("logging")

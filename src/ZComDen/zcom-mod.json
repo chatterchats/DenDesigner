@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "community.den-designer",
   "name": "Den Designer",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "author": "Chats",
   "description": "Decorate the Den, FFXIV-housing style: fly a camera around, move, turn, scale, copy or store its furniture, and place nearly 5,000 props from across the game. Layouts are saved outside your save games.",
   "game": {

@@ -168,15 +168,13 @@ function M.new(ctx)
         return v(o.X, o.Y, o.Z), v(d.X, d.Y, d.Z)
     end
 
-    local function trace(o, d, ignore, length)
-        local hit = {}
-        local ok, blocked = pcall(function()
-            return g.kismet():LineTraceSingle(s.rig, o, add(o, mul(d, length or M.TRACE)), 0, true, ignore or {}, 0, hit, true,
-                { R = 1, G = 0, B = 0, A = 1 }, { R = 0, G = 1, B = 0, A = 1 }, 0)
-        end)
-        if not ok or not blocked then return nil end
-        local component = hit.Component and g.unwrap(hit.Component)
-        local p, n = hit.ImpactPoint, hit.ImpactNormal
+    -- A visibility trace run by the rig's own TraceLine (Blueprint): Lua reads back a hit flag, two vectors and
+    -- a component instead of having UE4SS convert a whole FHitResult (weak pointers, names) every frame.
+    local function trace(o, d, length)
+        local rig = s.rig
+        local ok = pcall(function() rig:TraceLine(o, add(o, mul(d, length or M.TRACE))) end)
+        if not ok or rig.TraceHit ~= true then return nil end
+        local p, n, component = rig.TracePoint, rig.TraceNormal, rig.TraceComponent
         return { component = g.valid(component) and component or nil, point = v(p.X, p.Y, p.Z), normal = v(n.X, n.Y, n.Z) }
     end
 
@@ -187,15 +185,23 @@ function M.new(ctx)
         return v(o.X, o.Y, o.Z), v(e.X, e.Y, e.Z)
     end
 
-    -- What the rules need to know about a hit component; cached per component while the editor is open.
+    -- What the rules need to know about a hit component. The facts are cached per component path; the objects
+    -- (owner, the thing to select) come fresh from the component under the cursor every time, because a cached
+    -- reference to something the game has destroyed can't safely be touched again.
+    local function with_objects(f, component, owner)
+        local live = { owner = owner }
+        if f.kind == "placed" or f.unit == "actor" then live.object = owner else live.object = component end
+        return setmetatable(live, { __index = f })
+    end
+
     local function facts(component)
         local path = g.path(component)
         local f = s.facts[path]
-        if f and f.unlocked == self.unlocked then return f end
+        if f and f.unlocked == self.unlocked then return with_objects(f, component, (g.call(component, "GetOwner"))) end
         local owner = (g.call(component, "GetOwner"))
         local owner_path = g.valid(owner) and g.path(owner) or "?"
         local mesh = component.StaticMesh
-        f = { path = path, owner = owner, owner_path = owner_path, unlocked = self.unlocked,
+        f = { path = path, owner_path = owner_path, unlocked = self.unlocked,
               placed = apply:placed_id(owner_path), mesh_component = g.is_a(component, CLASSES.mesh),
               instanced = g.is_a(component, CLASSES.instanced), pawn = g.valid(owner) and g.is_a(owner, CLASSES.pawn),
               mesh = g.valid(mesh) and g.path(mesh) or nil }
@@ -210,25 +216,25 @@ function M.new(ctx)
         f.ok, f.reason = Pick.allowed(f)
         if f.ok then
             if f.placed then
-                f.kind, f.key, f.object = "placed", f.placed, owner
+                f.kind, f.key = "placed", f.placed
             else
                 local root = (g.call(owner, "K2_GetRootComponent"))
                 local is_root = g.valid(root) and g.path(root) == path
-                local unit = Pick.unit(g.is_a(owner, CLASSES.static_actor), is_root)
+                f.unit = Pick.unit(g.is_a(owner, CLASSES.static_actor), is_root)
                 f.kind = "vanilla"
-                f.key, f.object = unit == "actor" and owner_path or path, unit == "actor" and owner or component
+                f.key = f.unit == "actor" and owner_path or path
             end
             f.label = Pick.label(f.mesh, not f.placed and path or nil)
         end
         s.facts[path] = f
-        return f
+        return with_objects(f, component, owner)
     end
 
     -- The first thing under the cursor within reach. Placed meshes without a collision body can't be traced, so
     -- they're tested by their bounds.
     local function pick(o, d)
         local reach = M.REACHES[self.reach]
-        local hit = trace(o, d, nil, reach)
+        local hit = trace(o, d, reach)
         local nearest = hit and math.sqrt(dot(sub(hit.point, o), sub(hit.point, o))) or reach
         for id, record in pairs(apply.placed) do
             if record.box_pick and id ~= "ghost" and g.valid(record.component) then
@@ -347,7 +353,7 @@ function M.new(ctx)
             if len < 1e-3 then drag.normal = v(1, 0, 0) else drag.normal = mul(drag.normal, 1 / len) end
             drag.grab = ray_plane(o, d, drag.base, drag.normal)
         else
-            local hit = trace(o, d, drag.ignore)
+            local hit = trace(o, d)
             if hit and hit.normal.Z >= M.FLOOR then
                 drag.grab, drag.plane_z = hit.point, hit.point.Z
             else
@@ -358,12 +364,27 @@ function M.new(ctx)
         if drag.grab then drag.offset = sub(drag.base, drag.grab) end
     end
 
+    -- While dragged, the object ignores the visibility channel, so the cursor's trace finds what's under it.
+    local VISIBILITY, IGNORE = 0, 0
+    local function ignore_traces(drag, component)
+        local ok, response = pcall(function() return component:GetCollisionResponseToChannel(VISIBILITY) end)
+        if not ok then return end
+        drag.ignored, drag.response = component, response
+        pcall(function() component:SetCollisionResponseToChannel(VISIBILITY, IGNORE) end)
+    end
+    local function restore_traces(drag)
+        local component = drag and drag.ignored
+        if not component then return end
+        drag.ignored = nil
+        if g.valid(component) then pcall(function() component:SetCollisionResponseToChannel(VISIBILITY, drag.response) end) end
+    end
+
     local function begin_drag(o, d)
         local sel = s.sel
         local t = pose(sel)
-        local owner = sel.kind == "placed" and sel.object or (g.call(sel.component, "GetOwner"))
-        s.drag = { current = v(t[1], t[2], t[3]), ignore = g.valid(owner) and { owner } or {} }
+        s.drag = { current = v(t[1], t[2], t[3]) }
         s.drag.start = s.drag.current
+        ignore_traces(s.drag, sel.component)
         rebase(o, d)
     end
 
@@ -377,7 +398,7 @@ function M.new(ctx)
             if not p then return end
             target = v(drag.base.X, drag.base.Y, drag.base.Z + (p.Z - drag.grab.Z))
         else
-            local hit = trace(o, d, drag.ignore)
+            local hit = trace(o, d)
             local anchor
             if hit and hit.normal.Z >= M.FLOOR then
                 anchor, drag.plane_z = hit.point, hit.point.Z
@@ -394,6 +415,7 @@ function M.new(ctx)
     local function end_drag(cancel)
         local drag, sel = s.drag, s.sel
         s.drag = nil
+        restore_traces(drag)
         if not drag or not sel then return end
         local t = cancel and drag.start or drag.current
         local state = changed(sel, function(st) st.t = { t.X, t.Y, t.Z } end)
@@ -446,7 +468,7 @@ function M.new(ctx)
 
     function update_ghost(o, d)
         local ghost = s.ghost
-        local hit = trace(o, d, nil, M.REACHES[self.reach])
+        local hit = trace(o, d, M.REACHES[self.reach])
         local p = snap_xy(hit and hit.point or add(o, mul(d, M.GHOST_DISTANCE)))
         local e = ghost.entry
         e.t = { p.X, p.Y, p.Z - ghost.bottom * e.s[3] }
@@ -506,17 +528,15 @@ function M.new(ctx)
         local list = s.panel.Items
         list:ClearListItems()
         thumbs:forget_queue()
+        -- A picture may arrive after this listing was replaced: then its item is gone and mustn't be touched.
+        s.listing = (s.listing or 0) + 1
+        local listing, session = s.listing, s
         for _, i in ipairs(indices) do
             local item = self.catalog:item(i)
             local entry = list_item(item.path, item.name, Catalog.size_text(item.size) .. (item.solid and "" or "\nno collision"))
-            local picture = thumbs:loaded(item.path)
-            if picture then
-                entry.Thumb = picture
-            else
-                thumbs:request(item.path, function(_, texture)
-                    if g.valid(entry) then entry.Thumb = texture; refresh_tiles() end
-                end)
-            end
+            thumbs:request(item.path, function(_, texture)
+                if s == session and s.listing == listing then entry.Thumb = texture; refresh_tiles() end
+            end)
             list:AddItem(entry)
         end
         panel_text("Footer", footer .. "\nClick a mesh, then click in the Den to place it. Shift+click places more; Esc cancels.")
@@ -703,21 +723,19 @@ function M.new(ctx)
         table.sort(stored); table.sort(dormant)
         local list = w.Stored
         list:ClearListItems()
+        s.stored_listing = (s.stored_listing or 0) + 1
+        local listing, session = s.stored_listing, s
         for _, key in ipairs(stored) do
             local mesh = vanilla_mesh(key)
             local e = s.doc.vanilla[key]
             local item = list_item(key, Pick.label(mesh, key), (e.t or e.r or e.s) and "moved, then stored" or "stored", w)
             if mesh then
-                local picture = thumbs:loaded(mesh)
-                if picture then item.Thumb = picture
-                else
-                    thumbs:request(mesh, function(_, texture)
-                        if g.valid(item) then
-                            item.Thumb = texture
-                            pcall(function() if g.valid(w) then w.Stored:RegenerateAllEntries() end end)
-                        end
-                    end)
-                end
+                thumbs:request(mesh, function(_, texture)
+                    if s == session and s.stored_listing == listing then
+                        item.Thumb = texture
+                        pcall(function() w.Stored:RegenerateAllEntries() end)
+                    end
+                end)
             end
             list:AddItem(item)
         end
@@ -817,6 +835,8 @@ function M.new(ctx)
 
     function history_changed()
         s.facts = {}
+        -- Whatever was hovered may have just been destroyed (removed, undone): let go while it can still be checked.
+        if s.hover then highlight:clear(s.hover); s.hover = nil end
         if s.side == "storeroom" then pcall(refresh_storeroom) end
         if not self.autosave then return end
         s.draft_due = os.clock() + M.DRAFT_MS / 1000
@@ -1070,7 +1090,6 @@ function M.new(ctx)
         if not (state.t or state.r or state.s) then state = nil end
         commit("Restore", { kind = "vanilla", key = key }, state)
         note("storeroom", "Put %s back.", Pick.label(vanilla_mesh(key), key))
-        refresh_storeroom()
         refresh()
     end
 
@@ -1090,7 +1109,6 @@ function M.new(ctx)
         revalidate()
         history_changed()
         note("storeroom", "Put %d prop%s back (Z undoes).", #changes, #changes == 1 and "" or "s")
-        refresh_storeroom()
         refresh()
     end
 
@@ -1098,7 +1116,6 @@ function M.new(ctx)
         if not s.doc.vanilla[key] then return end
         commit("Forget", { kind = "vanilla", key = key }, nil)
         note("storeroom", "Forgot the edit for %s.", Pick.label(vanilla_mesh(key) or key:match("([^%.:]+)$"), key))
-        refresh_storeroom()
         refresh()
     end
 
@@ -1222,11 +1239,13 @@ function M.new(ctx)
     end
 
     local function unhook()
+        if self.kit and self.kit.kept then return end  -- kept classes keep their hooks for the whole game
         for _, path in ipairs(hooked) do runtime:unregister_hook(path) end
         hooked = {}
     end
 
     local function hook()
+        if #hooked > 0 then return end
         register(RIG_CLASS .. ":Lua_Action", guarded(function(rig, name, value)
             if not ours(rig) then return end
             local action = str(name)
@@ -1339,14 +1358,28 @@ function M.new(ctx)
     function self:open()
         local why, pc = why_not()
         if why then log("Editor | can't open: %s", why); return false, why end
-        local rig_class, toolbar_class = g.load_class(RIG_CLASS), g.load_class(TOOLBAR_CLASS)
-        local classes = { catalog = g.load_class(CATALOG_CLASS), layouts = g.load_class(LAYOUTS_CLASS),
-                          storeroom = g.load_class(STOREROOM_CLASS), transform = g.load_class(TRANSFORM_CLASS) }
-        local item_class = g.load_class(ITEM_CLASS)
-        local imc = g.load_object(IMC)
-        local complete = rig_class and toolbar_class and item_class and imc
-        for _, class in pairs(classes) do complete = complete and class end
-        if not complete then
+        -- Loaded once and kept for the whole game (g.keep_alive); without that, loaded again every time, never
+        -- reused from a Lua reference (a class the game unloaded can't be touched).
+        if not (self.kit and self.kit.kept) then
+            local kit = { rig = g.load_class(RIG_CLASS), toolbar = g.load_class(TOOLBAR_CLASS), item = g.load_class(ITEM_CLASS),
+                          imc = g.load_object(IMC),
+                          classes = { catalog = g.load_class(CATALOG_CLASS), layouts = g.load_class(LAYOUTS_CLASS),
+                                      storeroom = g.load_class(STOREROOM_CLASS), transform = g.load_class(TRANSFORM_CLASS) } }
+            local all = { kit.rig, kit.toolbar, kit.item, kit.imc }
+            for _, class in pairs(kit.classes) do all[#all + 1] = class end
+            local complete = #all == 8
+            for i = 1, 8 do complete = complete and all[i] ~= nil end
+            if complete then
+                kit.kept = g.keep_alive(all)
+                if not kit.kept then log("WARNING: editor | couldn't keep the kit loaded; hooks follow each session") end
+            end
+            kit.complete = complete
+            self.kit = kit
+        end
+        local kit = self.kit
+        local rig_class, toolbar_class, item_class, imc, classes = kit.rig, kit.toolbar, kit.item, kit.imc, kit.classes
+        if not kit.complete then
+            self.kit = nil
             log("ERROR: editor | kit assets missing (is ~mods/ZComDen_P installed?)")
             return false, "kit assets missing"
         end
@@ -1413,6 +1446,7 @@ function M.new(ctx)
         if not self.active then return end
         self.active = false
         local dirty = s.history and s.history:dirty()
+        if s.drag then restore_traces(s.drag); s.drag = nil end
         actions:cancel_group("den-search", reason)
         actions:cancel_group("den-input", reason)
         actions:cancel_group("den-draft", reason)

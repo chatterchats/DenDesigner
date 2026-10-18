@@ -161,6 +161,27 @@ local a, b = Thumbs.file_name(cauldron), Thumbs.file_name(cauldron:gsub("Rogue",
 check(a:match("^SM_UNI_Wares_Cauldron_Rogue_A_%x%x%x%x%x%x%x%x%.png$") ~= nil, "picture files are named readably: " .. a)
 check(a ~= b and Thumbs.file_name(cauldron) == a, "and stably, unique per path")
 
+-- thumbnails: a picture asked for twice while queued reaches both askers (the Storeroom rebuilds its list)
+do
+    local folder = os.tmpname(); os.remove(folder); os.execute("mkdir -p '" .. folder .. "'")
+    local path = "/Game/A/SM_Box.SM_Box"
+    local f = io.open(folder .. "\\" .. Thumbs.file_name(path), "wb"); f:write("png"); f:close()
+    local scheduled = {}
+    local fake_texture = { IsValid = function() return true end }
+    local g = { valid = function(o) return o ~= nil end, any_context = function() return {} end,
+                rendering = function() return {} end, make_directories = function() return true end,
+                call = function(_, method) if method == "ImportFileAsTexture2D" then return fake_texture end end }
+    local ctx = { g = g, log = function() end,
+                  actions = { schedule_after = function(_, _, _, fn) scheduled[#scheduled + 1] = fn end, cancel_group = function() end } }
+    local thumbs = Thumbs.new(ctx, folder)
+    local got = {}
+    thumbs:request(path, function(_, t) got[#got + 1] = "old " .. tostring(t ~= nil) end)
+    thumbs:request(path, function(_, t) got[#got + 1] = "new " .. tostring(t ~= nil) end)
+    table.remove(scheduled, 1)()
+    check(#got == 2 and got[1] == "old true" and got[2] == "new true", "both requests for a queued picture get it (" .. table.concat(got, ", ") .. ")")
+    os.execute("rm -rf '" .. folder .. "'")
+end
+
 -- keys -----------------------------------------------------------------------------------------------------
 check(Keys.key_name(0x51) == "Q" and Keys.key_name(0x35) == "Five" and Keys.key_name(0x63) == "NumPadThree"
     and Keys.key_name(0x7B) == "F12" and Keys.key_name(0xA2) == "LeftControl" and Keys.key_name(0x07) == nil,

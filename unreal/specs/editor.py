@@ -208,14 +208,42 @@ def rig():
             {"name": "Speed", "type": "float", "default": "900.0"},
             {"name": "FastMultiplier", "type": "float", "default": "3.0"},
             {"name": "LookRate", "type": "float", "default": "2.5"},
+            # TraceLine's results (read by Lua right after the call).
+            {"name": "TraceHit", "type": "bool", "default": "false"},
+            {"name": "TracePoint", "type": "vector"},
+            {"name": "TraceNormal", "type": "vector"},
+            {"name": "TraceComponent", "type": "object:/Script/Engine.PrimitiveComponent"},
         ],
         "functions": [
             {"name": "Lua_Action", "inputs": [{"name": "Name", "type": "string"}, {"name": "Value", "type": "float"}]},
             {"name": "Lua_Vector", "inputs": [{"name": "Name", "type": "string"}, {"name": "Value", "type": "vector"}]},
             {"name": "Lua_Tick", "inputs": [{"name": "DeltaSeconds", "type": "float"}]},
+            trace_line(),
         ],
         "graph": {"nodes": nodes, "links": links},
     }
+
+
+def trace_line():
+    """TraceLine(Start, End): a visibility trace (complex collision) whose hit lands in the rig's Trace* variables.
+    Lua reads plain values back instead of having UE4SS convert a whole FHitResult every frame."""
+    nodes = [  # "entry" (the function's entry node) is predefined
+        {"id": "trace", "kind": "call", "function": "/Script/Engine.KismetSystemLibrary:LineTraceSingle",
+         "defaults": {"TraceChannel": "TraceTypeQuery1", "bTraceComplex": "true", "DrawDebugType": "None", "bIgnoreSelf": "true"}},
+        {"id": "brk", "kind": "call", "function": "/Script/Engine.GameplayStatics:BreakHitResult"},
+        {"id": "hit", "kind": "set", "var": "TraceHit"},
+        {"id": "point", "kind": "set", "var": "TracePoint"},
+        {"id": "normal", "kind": "set", "var": "TraceNormal"},
+        {"id": "comp", "kind": "set", "var": "TraceComponent"},
+    ]
+    links = [["entry.then", "trace.execute"], ["entry.Start", "trace.Start"], ["entry.End", "trace.End"],
+             ["trace.OutHit", "brk.Hit"],
+             ["trace.then", "hit.execute"], ["trace.ReturnValue", "hit.TraceHit"],
+             ["hit.then", "point.execute"], ["brk.ImpactPoint", "point.TracePoint"],
+             ["point.then", "normal.execute"], ["brk.ImpactNormal", "normal.TraceNormal"],
+             ["normal.then", "comp.execute"], ["brk.HitComponent", "comp.TraceComponent"]]
+    return {"name": "TraceLine", "inputs": [{"name": "Start", "type": "vector"}, {"name": "End", "type": "vector"}],
+            "nodes": nodes, "links": links}
 
 
 PANEL = "(R=0.015,G=0.02,B=0.03,A=0.86)"

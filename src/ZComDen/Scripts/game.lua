@@ -150,6 +150,33 @@ function M.new(log)
         return g.valid(component) and component or nil
     end
 
+    -- Keeps objects loaded for the rest of the game: the asset manager lives as long as the engine and holds
+    -- what's in its ObjectReferenceList. A class the game unloads takes its functions with it, and UE4SS can still
+    -- hold data about them (hooks, property lookups): crashes 2026-10-18. Returns true when every object is held.
+    function g.keep_alive(objects)
+        local manager = FindFirstOf("AssetManager")
+        if not g.valid(manager) then return false end
+        local ok, held = pcall(function()
+            local list = manager.ObjectReferenceList
+            local present = {}
+            for i = 1, list:GetArrayNum() do
+                local item = list[i]
+                if item and g.valid(item) then present[g.path(item)] = true end
+            end
+            for _, object in ipairs(objects) do
+                if g.valid(object) and not present[g.path(object)] then
+                    list[list:GetArrayNum() + 1] = object
+                    present[g.path(object)] = true
+                end
+            end
+            for _, object in ipairs(objects) do
+                if not present[g.path(object)] then return false end
+            end
+            return true
+        end)
+        return ok and held == true
+    end
+
     function g.is_a(object, class_path)
         local class = StaticFindObject(class_path)
         return class ~= nil and (g.call(object, "IsA", class)) == true

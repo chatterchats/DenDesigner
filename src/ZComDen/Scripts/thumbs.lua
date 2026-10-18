@@ -4,6 +4,9 @@
 -- as a texture for its catalog tile. The studio exists only while pictures are being rendered.
 --
 -- Rendering loads meshes, so it runs from scheduled actions (the game thread's tick), never inside a hook.
+-- No texture is kept here: a picture is imported from its PNG and handed to the list item that shows it, in the
+-- same tick. Only the list keeps it alive, and a Lua reference to a texture the game has since freed is not safe
+-- to touch at all (even IsValid reads the freed memory: crashes 2026-10-18).
 local M = {}
 
 M.SIZE = 128            -- pixels
@@ -56,7 +59,7 @@ end
 function M.new(ctx, folder)
     local g, log, actions = ctx.g, ctx.log, ctx.actions
     -- enabled: the "Pictures in the catalog" setting; off, nothing new is rendered (pictures on disk still show).
-    local self = { folder = folder, textures = {}, queue = {}, queued = {}, rendered = 0, enabled = true }
+    local self = { folder = folder, queue = {}, queued = {}, rendered = 0, enabled = true }
     local studio      -- { hosts, prop, mesh_component, key, fill, camera, capture, target }
     local running = false
     local idle_since
@@ -71,23 +74,13 @@ function M.new(ctx, folder)
         return false
     end
 
-    -- The picture for `path` if it's already in memory, else nil (cheap: no disk access).
-    function self:loaded(path)
-        local texture = self.textures[path]
-        if texture and g.valid(texture) then return texture end
-        return nil
-    end
-
-    -- The picture for `path` if it's rendered (loading it from disk if needed), else nil.
+    -- A new texture of the picture for `path`, imported from its PNG, or nil if it isn't rendered yet. Hand it
+    -- to whatever shows it in the same tick.
     function self:texture(path)
-        local texture = self.textures[path]
-        if texture and g.valid(texture) then return texture end
-        self.textures[path] = nil
         local file = self:file(path)
         if not exists(file) then return nil end
-        texture = (g.call(g.rendering(), "ImportFileAsTexture2D", g.any_context(), file))
-        if g.valid(texture) then self.textures[path] = texture; return texture end
-        return nil
+        local texture = (g.call(g.rendering(), "ImportFileAsTexture2D", g.any_context(), file))
+        return g.valid(texture) and texture or nil
     end
 
     local function teardown()
@@ -152,11 +145,18 @@ function M.new(ctx, folder)
         studio.camera:K2_SetActorRotation(look, true)
         studio.capture:CaptureScene()
         g.rendering():ExportRenderTarget(context, studio.target, self.folder, M.file_name(path))
-        self.textures[path] = nil
         local texture = self:texture(path)
         if not texture then return nil, "export failed" end
         self.rendered = self.rendered + 1
         return texture
+    end
+
+    -- Each callback gets its own texture: whatever shows it keeps it alive.
+    local function deliver(job, texture)
+        for i, done in ipairs(job.done) do
+            local t = i == 1 and texture or self:texture(job.path)
+            if t then pcall(done, job.path, t) end
+        end
     end
 
     local step
@@ -180,14 +180,14 @@ function M.new(ctx, folder)
             self.queued[job.path] = nil
             local texture = self:texture(job.path)
             if texture then
-                job.done(job.path, texture)
+                deliver(job, texture)
             elseif not self.enabled then
                 -- Pictures are off: only those already on disk are shown.
             else
                 rendered_one = true
                 local ok, rendered, why = pcall(render, job.path)
                 if not ok then why, rendered = rendered, nil end
-                if rendered then job.done(job.path, rendered)
+                if rendered then deliver(job, rendered)
                 else log("WARNING: thumbnail %s | %s", job.path, tostring(why)) end
                 break
             end
@@ -198,10 +198,17 @@ function M.new(ctx, folder)
     end
 
     -- Queues `path`; done(path, texture) runs when its picture is ready.
+    -- A path asked for again while it's still queued gets the new callback too: a list rebuilt before its
+    -- pictures arrived (the Storeroom, after a store or restore) must still get them.
     function self:request(path, done)
-        if self.queued[path] then return end
-        self.queued[path] = true
-        self.queue[#self.queue + 1] = { path = path, done = done }
+        local job = self.queued[path]
+        if job then
+            job.done[#job.done + 1] = done
+            return
+        end
+        job = { path = path, done = { done } }
+        self.queued[path] = job
+        self.queue[#self.queue + 1] = job
         if not running then
             running, idle_since = true, nil
             local ok = pcall(function() g.make_directories(g.any_context(), { self.folder }) end)
@@ -227,7 +234,7 @@ function M.new(ctx, folder)
         running = false
         actions:cancel_group("den-thumbs", "left the Den")
         self:forget_queue()
-        studio, self.textures = nil, {}
+        studio = nil
     end
 
     return self

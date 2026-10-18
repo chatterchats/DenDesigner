@@ -32,7 +32,7 @@ assert f"Den Designer v{version}" in (SOURCE / "README.md").read_text(), "README
 def scripts():
     """Every script, each reachable from main.lua through require() (or main.lua's module list)."""
     mods = {p.stem: p for p in SCRIPTS.glob("*.lua")}
-    listed = set(re.findall(r'"(\w+)"', re.search(r"for _, module in ipairs\(\{(.*?)\}\)", (SCRIPTS / "main.lua").read_text(),
+    listed = set(re.findall(r'"(\w+)"', re.search(r"local MODULES = \{(.*?)\}", (SCRIPTS / "main.lua").read_text(),
                                                    re.S).group(1)))
     seen, pending = set(), ["main"]
     while pending:
