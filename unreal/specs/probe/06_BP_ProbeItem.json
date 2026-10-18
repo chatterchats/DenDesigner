@@ -1,0 +1,2 @@
+{"kind": "blueprint", "path": "/ZComDen/ZComDen/Probe/BP_ProbeItem", "parent": "/Script/CoreUObject.Object",
+ "variables": [{"name": "Title", "type": "string", "default": "Item"}]}

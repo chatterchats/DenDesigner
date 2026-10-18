@@ -1,0 +1,5 @@
+{
+ "kind": "input_action",
+ "path": "/ZComDen/ZComDen/Editor/IA_Den_Reset",
+ "value_type": "Boolean"
+}

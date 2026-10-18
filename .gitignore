@@ -1,0 +1,7 @@
+dist/
+*.log
+__pycache__/
+unreal/ZComDen/Content/
+unreal/ZComDen/Saved/
+unreal/ZComDen/Intermediate/
+unreal/ZComDen/Metadata/

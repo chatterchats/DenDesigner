@@ -1,0 +1,379 @@
+{
+ "kind": "mapping_context",
+ "path": "/ZComDen/ZComDen/Editor/IMC_DenEditor",
+ "mappings": [
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Move",
+   "key": "W"
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Move",
+   "key": "S",
+   "modifiers": [
+    {
+     "class": "/Script/EnhancedInput.InputModifierNegate"
+    }
+   ]
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Move",
+   "key": "D",
+   "modifiers": [
+    {
+     "class": "/Script/EnhancedInput.InputModifierSwizzleAxis",
+     "props": {
+      "Order": "YXZ"
+     }
+    }
+   ]
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Move",
+   "key": "A",
+   "modifiers": [
+    {
+     "class": "/Script/EnhancedInput.InputModifierSwizzleAxis",
+     "props": {
+      "Order": "YXZ"
+     }
+    },
+    {
+     "class": "/Script/EnhancedInput.InputModifierNegate"
+    }
+   ]
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Move",
+   "key": "SpaceBar",
+   "modifiers": [
+    {
+     "class": "/Script/EnhancedInput.InputModifierSwizzleAxis",
+     "props": {
+      "Order": "ZYX"
+     }
+    }
+   ]
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Move",
+   "key": "LeftControl",
+   "modifiers": [
+    {
+     "class": "/Script/EnhancedInput.InputModifierSwizzleAxis",
+     "props": {
+      "Order": "ZYX"
+     }
+    },
+    {
+     "class": "/Script/EnhancedInput.InputModifierNegate"
+    }
+   ]
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_LookHold",
+   "key": "RightMouseButton"
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Look",
+   "key": "Mouse2D",
+   "triggers": [
+    {
+     "class": "/Script/EnhancedInput.InputTriggerChordAction",
+     "props": {
+      "ChordAction": "/ZComDen/ZComDen/Editor/IA_Den_LookHold"
+     }
+    }
+   ]
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Fast",
+   "key": "LeftShift"
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Alt",
+   "key": "LeftAlt"
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Select",
+   "key": "LeftMouseButton"
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_RotateFine",
+   "key": "MouseWheelAxis",
+   "triggers": [
+    {
+     "class": "/Script/EnhancedInput.InputTriggerChordAction",
+     "props": {
+      "ChordAction": "/ZComDen/ZComDen/Editor/IA_Den_Fast"
+     }
+    }
+   ]
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Scale",
+   "key": "MouseWheelAxis",
+   "triggers": [
+    {
+     "class": "/Script/EnhancedInput.InputTriggerChordAction",
+     "props": {
+      "ChordAction": "/ZComDen/ZComDen/Editor/IA_Den_Alt"
+     }
+    }
+   ]
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Rotate",
+   "key": "MouseWheelAxis"
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Rotate",
+   "key": "Q",
+   "modifiers": [
+    {
+     "class": "/Script/EnhancedInput.InputModifierNegate"
+    }
+   ],
+   "triggers": [
+    {
+     "class": "/Script/EnhancedInput.InputTriggerPulse",
+     "props": {
+      "Interval": 0.15,
+      "bTriggerOnStart": "true"
+     }
+    }
+   ]
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Rotate",
+   "key": "E",
+   "triggers": [
+    {
+     "class": "/Script/EnhancedInput.InputTriggerPulse",
+     "props": {
+      "Interval": 0.15,
+      "bTriggerOnStart": "true"
+     }
+    }
+   ]
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Scale",
+   "key": "Equals",
+   "triggers": [
+    {
+     "class": "/Script/EnhancedInput.InputTriggerPulse",
+     "props": {
+      "Interval": 0.15,
+      "bTriggerOnStart": "true"
+     }
+    }
+   ]
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Scale",
+   "key": "Hyphen",
+   "modifiers": [
+    {
+     "class": "/Script/EnhancedInput.InputModifierNegate"
+    }
+   ],
+   "triggers": [
+    {
+     "class": "/Script/EnhancedInput.InputTriggerPulse",
+     "props": {
+      "Interval": 0.15,
+      "bTriggerOnStart": "true"
+     }
+    }
+   ]
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Scale",
+   "key": "Add",
+   "triggers": [
+    {
+     "class": "/Script/EnhancedInput.InputTriggerPulse",
+     "props": {
+      "Interval": 0.15,
+      "bTriggerOnStart": "true"
+     }
+    }
+   ]
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Scale",
+   "key": "Subtract",
+   "modifiers": [
+    {
+     "class": "/Script/EnhancedInput.InputModifierNegate"
+    }
+   ],
+   "triggers": [
+    {
+     "class": "/Script/EnhancedInput.InputTriggerPulse",
+     "props": {
+      "Interval": 0.15,
+      "bTriggerOnStart": "true"
+     }
+    }
+   ]
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Nudge",
+   "key": "Up",
+   "triggers": [
+    {
+     "class": "/Script/EnhancedInput.InputTriggerPulse",
+     "props": {
+      "Interval": 0.12,
+      "bTriggerOnStart": "true"
+     }
+    }
+   ]
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Nudge",
+   "key": "Down",
+   "modifiers": [
+    {
+     "class": "/Script/EnhancedInput.InputModifierNegate"
+    }
+   ],
+   "triggers": [
+    {
+     "class": "/Script/EnhancedInput.InputTriggerPulse",
+     "props": {
+      "Interval": 0.12,
+      "bTriggerOnStart": "true"
+     }
+    }
+   ]
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Nudge",
+   "key": "Right",
+   "modifiers": [
+    {
+     "class": "/Script/EnhancedInput.InputModifierSwizzleAxis",
+     "props": {
+      "Order": "YXZ"
+     }
+    }
+   ],
+   "triggers": [
+    {
+     "class": "/Script/EnhancedInput.InputTriggerPulse",
+     "props": {
+      "Interval": 0.12,
+      "bTriggerOnStart": "true"
+     }
+    }
+   ]
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Nudge",
+   "key": "Left",
+   "modifiers": [
+    {
+     "class": "/Script/EnhancedInput.InputModifierSwizzleAxis",
+     "props": {
+      "Order": "YXZ"
+     }
+    },
+    {
+     "class": "/Script/EnhancedInput.InputModifierNegate"
+    }
+   ],
+   "triggers": [
+    {
+     "class": "/Script/EnhancedInput.InputTriggerPulse",
+     "props": {
+      "Interval": 0.12,
+      "bTriggerOnStart": "true"
+     }
+    }
+   ]
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Nudge",
+   "key": "PageUp",
+   "modifiers": [
+    {
+     "class": "/Script/EnhancedInput.InputModifierSwizzleAxis",
+     "props": {
+      "Order": "ZYX"
+     }
+    }
+   ],
+   "triggers": [
+    {
+     "class": "/Script/EnhancedInput.InputTriggerPulse",
+     "props": {
+      "Interval": 0.12,
+      "bTriggerOnStart": "true"
+     }
+    }
+   ]
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Nudge",
+   "key": "PageDown",
+   "modifiers": [
+    {
+     "class": "/Script/EnhancedInput.InputModifierSwizzleAxis",
+     "props": {
+      "Order": "ZYX"
+     }
+    },
+    {
+     "class": "/Script/EnhancedInput.InputModifierNegate"
+    }
+   ],
+   "triggers": [
+    {
+     "class": "/Script/EnhancedInput.InputTriggerPulse",
+     "props": {
+      "Interval": 0.12,
+      "bTriggerOnStart": "true"
+     }
+    }
+   ]
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Store",
+   "key": "Delete"
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Store",
+   "key": "X"
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Duplicate",
+   "key": "C"
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Undo",
+   "key": "Z"
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Redo",
+   "key": "Y"
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Focus",
+   "key": "F"
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Reset",
+   "key": "R"
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Snap",
+   "key": "G"
+  },
+  {
+   "action": "/ZComDen/ZComDen/Editor/IA_Den_Back",
+   "key": "Escape"
+  }
+ ]
+}

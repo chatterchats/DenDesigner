@@ -1,0 +1,97 @@
+{
+  "kind": "mapping_context",
+  "path": "/ZComDen/ZComDen/Probe/IMC_Probe",
+  "mappings": [
+    {
+      "action": "/ZComDen/ZComDen/Probe/IA_Probe_Move",
+      "key": "W"
+    },
+    {
+      "action": "/ZComDen/ZComDen/Probe/IA_Probe_Move",
+      "key": "S",
+      "modifiers": [
+        {
+          "class": "/Script/EnhancedInput.InputModifierNegate"
+        }
+      ]
+    },
+    {
+      "action": "/ZComDen/ZComDen/Probe/IA_Probe_Move",
+      "key": "D",
+      "modifiers": [
+        {
+          "class": "/Script/EnhancedInput.InputModifierSwizzleAxis",
+          "props": {
+            "Order": "YXZ"
+          }
+        }
+      ]
+    },
+    {
+      "action": "/ZComDen/ZComDen/Probe/IA_Probe_Move",
+      "key": "A",
+      "modifiers": [
+        {
+          "class": "/Script/EnhancedInput.InputModifierSwizzleAxis",
+          "props": {
+            "Order": "YXZ"
+          }
+        },
+        {
+          "class": "/Script/EnhancedInput.InputModifierNegate"
+        }
+      ]
+    },
+    {
+      "action": "/ZComDen/ZComDen/Probe/IA_Probe_Move",
+      "key": "SpaceBar",
+      "modifiers": [
+        {
+          "class": "/Script/EnhancedInput.InputModifierSwizzleAxis",
+          "props": {
+            "Order": "ZYX"
+          }
+        }
+      ]
+    },
+    {
+      "action": "/ZComDen/ZComDen/Probe/IA_Probe_Move",
+      "key": "LeftControl",
+      "modifiers": [
+        {
+          "class": "/Script/EnhancedInput.InputModifierSwizzleAxis",
+          "props": {
+            "Order": "ZYX"
+          }
+        },
+        {
+          "class": "/Script/EnhancedInput.InputModifierNegate"
+        }
+      ]
+    },
+    {
+      "action": "/ZComDen/ZComDen/Probe/IA_Probe_LookHold",
+      "key": "RightMouseButton"
+    },
+    {
+      "action": "/ZComDen/ZComDen/Probe/IA_Probe_Look",
+      "key": "Mouse2D",
+      "triggers": [
+        {
+          "class": "/Script/EnhancedInput.InputTriggerChordAction",
+          "props": {
+            "ChordAction": "/ZComDen/ZComDen/Probe/IA_Probe_LookHold"
+          }
+        }
+      ]
+    },
+    {
+      "action": "/ZComDen/ZComDen/Probe/IA_Probe_Click",
+      "key": "LeftMouseButton"
+    },
+    {
+      "action": "/ZComDen/ZComDen/Probe/IA_Probe_Fast",
+      "key": "LeftShift"
+    }
+  ]
+}

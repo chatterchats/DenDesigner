@@ -1,0 +1,728 @@
+{
+ "kind": "widget",
+ "path": "/ZComDen/ZComDen/Editor/WBP_DenToolbar",
+ "tree": {
+  "class": "/Script/UMG.CanvasPanel",
+  "name": "Root",
+  "children": [
+   {
+    "class": "/Script/UMG.SizeBox",
+    "name": "Frame",
+    "props": {
+     "WidthOverride": 600,
+     "bOverride_WidthOverride": "true"
+    },
+    "slot": {
+     "LayoutData": "(Offsets=(Left=24,Top=24,Right=600,Bottom=200))",
+     "bAutoSize": "true"
+    },
+    "children": [
+     {
+      "class": "/Script/UMG.Border",
+      "name": "Panel",
+      "props": {
+       "BrushColor": "(R=0.015,G=0.02,B=0.03,A=0.86)",
+       "Padding": "(Left=16,Top=12,Right=16,Bottom=12)"
+      },
+      "children": [
+       {
+        "class": "/Script/UMG.VerticalBox",
+        "name": "Column",
+        "children": [
+         {
+          "class": "/Script/UMG.TextBlock",
+          "name": "Title",
+          "props": {
+           "Text": "Den Designer",
+           "Font.Size": 20,
+           "ColorAndOpacity": "(SpecifiedColor=(R=1,G=0.78,B=0.35,A=1),ColorUseRule=UseColor_Specified)"
+          }
+         },
+         {
+          "class": "/Script/UMG.TextBlock",
+          "name": "Scope",
+          "props": {
+           "Text": "",
+           "Font.Size": 12,
+           "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)"
+          },
+          "variable": true
+         },
+         {
+          "class": "/Script/UMG.TextBlock",
+          "name": "Selection",
+          "props": {
+           "Text": "Nothing selected",
+           "Font.Size": 15,
+           "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+           "AutoWrapText": "true"
+          },
+          "variable": true,
+          "slot": {
+           "Padding": "(Left=0,Top=8,Right=0,Bottom=0)"
+          }
+         },
+         {
+          "class": "/Script/UMG.TextBlock",
+          "name": "Status",
+          "props": {
+           "Text": "",
+           "Font.Size": 12,
+           "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)",
+           "AutoWrapText": "true"
+          },
+          "variable": true,
+          "slot": {
+           "Padding": "(Left=0,Top=2,Right=0,Bottom=10)"
+          }
+         },
+         {
+          "class": "/Script/UMG.WrapBox",
+          "name": "Row0",
+          "children": [
+           {
+            "class": "/Script/UMG.Button",
+            "name": "Undo",
+            "variable": true,
+            "props": {
+             "BackgroundColor": "(R=0.16,G=0.2,B=0.27,A=1)",
+             "IsFocusable": "false"
+            },
+            "slot": {
+             "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+            },
+            "children": [
+             {
+              "class": "/Script/UMG.TextBlock",
+              "name": "UndoLabel",
+              "props": {
+               "Text": "Undo",
+               "Font.Size": 13,
+               "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)"
+              },
+              "variable": true
+             }
+            ]
+           },
+           {
+            "class": "/Script/UMG.Button",
+            "name": "Redo",
+            "variable": true,
+            "props": {
+             "BackgroundColor": "(R=0.16,G=0.2,B=0.27,A=1)",
+             "IsFocusable": "false"
+            },
+            "slot": {
+             "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+            },
+            "children": [
+             {
+              "class": "/Script/UMG.TextBlock",
+              "name": "RedoLabel",
+              "props": {
+               "Text": "Redo",
+               "Font.Size": 13,
+               "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)"
+              },
+              "variable": true
+             }
+            ]
+           },
+           {
+            "class": "/Script/UMG.Button",
+            "name": "Store",
+            "variable": true,
+            "props": {
+             "BackgroundColor": "(R=0.16,G=0.2,B=0.27,A=1)",
+             "IsFocusable": "false"
+            },
+            "slot": {
+             "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+            },
+            "children": [
+             {
+              "class": "/Script/UMG.TextBlock",
+              "name": "StoreLabel",
+              "props": {
+               "Text": "Store",
+               "Font.Size": 13,
+               "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)"
+              },
+              "variable": true
+             }
+            ]
+           },
+           {
+            "class": "/Script/UMG.Button",
+            "name": "Copy",
+            "variable": true,
+            "props": {
+             "BackgroundColor": "(R=0.16,G=0.2,B=0.27,A=1)",
+             "IsFocusable": "false"
+            },
+            "slot": {
+             "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+            },
+            "children": [
+             {
+              "class": "/Script/UMG.TextBlock",
+              "name": "CopyLabel",
+              "props": {
+               "Text": "Copy",
+               "Font.Size": 13,
+               "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)"
+              },
+              "variable": true
+             }
+            ]
+           },
+           {
+            "class": "/Script/UMG.Button",
+            "name": "Reset",
+            "variable": true,
+            "props": {
+             "BackgroundColor": "(R=0.16,G=0.2,B=0.27,A=1)",
+             "IsFocusable": "false"
+            },
+            "slot": {
+             "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+            },
+            "children": [
+             {
+              "class": "/Script/UMG.TextBlock",
+              "name": "ResetLabel",
+              "props": {
+               "Text": "Reset",
+               "Font.Size": 13,
+               "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)"
+              },
+              "variable": true
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "class": "/Script/UMG.WrapBox",
+          "name": "Row1",
+          "children": [
+           {
+            "class": "/Script/UMG.Button",
+            "name": "Snap",
+            "variable": true,
+            "props": {
+             "BackgroundColor": "(R=0.16,G=0.2,B=0.27,A=1)",
+             "IsFocusable": "false"
+            },
+            "slot": {
+             "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+            },
+            "children": [
+             {
+              "class": "/Script/UMG.TextBlock",
+              "name": "SnapLabel",
+              "props": {
+               "Text": "Snap: off",
+               "Font.Size": 13,
+               "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)"
+              },
+              "variable": true
+             }
+            ]
+           },
+           {
+            "class": "/Script/UMG.Button",
+            "name": "Reach",
+            "variable": true,
+            "props": {
+             "BackgroundColor": "(R=0.16,G=0.2,B=0.27,A=1)",
+             "IsFocusable": "false"
+            },
+            "slot": {
+             "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+            },
+            "children": [
+             {
+              "class": "/Script/UMG.TextBlock",
+              "name": "ReachLabel",
+              "props": {
+               "Text": "Reach: 20 m",
+               "Font.Size": 13,
+               "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)"
+              },
+              "variable": true
+             }
+            ]
+           },
+           {
+            "class": "/Script/UMG.Button",
+            "name": "Lock",
+            "variable": true,
+            "props": {
+             "BackgroundColor": "(R=0.16,G=0.2,B=0.27,A=1)",
+             "IsFocusable": "false"
+            },
+            "slot": {
+             "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+            },
+            "children": [
+             {
+              "class": "/Script/UMG.TextBlock",
+              "name": "LockLabel",
+              "props": {
+               "Text": "Structure: locked",
+               "Font.Size": 13,
+               "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)"
+              },
+              "variable": true
+             }
+            ]
+           },
+           {
+            "class": "/Script/UMG.Button",
+            "name": "Save",
+            "variable": true,
+            "props": {
+             "BackgroundColor": "(R=0.16,G=0.2,B=0.27,A=1)",
+             "IsFocusable": "false"
+            },
+            "slot": {
+             "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+            },
+            "children": [
+             {
+              "class": "/Script/UMG.TextBlock",
+              "name": "SaveLabel",
+              "props": {
+               "Text": "Save",
+               "Font.Size": 13,
+               "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)"
+              },
+              "variable": true
+             }
+            ]
+           },
+           {
+            "class": "/Script/UMG.Button",
+            "name": "Exit",
+            "variable": true,
+            "props": {
+             "BackgroundColor": "(R=0.16,G=0.2,B=0.27,A=1)",
+             "IsFocusable": "false"
+            },
+            "slot": {
+             "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+            },
+            "children": [
+             {
+              "class": "/Script/UMG.TextBlock",
+              "name": "ExitLabel",
+              "props": {
+               "Text": "Exit",
+               "Font.Size": 13,
+               "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)"
+              },
+              "variable": true
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "class": "/Script/UMG.TextBlock",
+          "name": "Hints",
+          "props": {
+           "Text": "WASD fly, Space/Ctrl up/down, Shift fast, hold RMB to look\nLMB select and drag (Shift: up/down), wheel or Q/E rotate (Shift: fine), +/- scale\nArrows/PgUp/PgDn nudge, G snap, X store, C copy, R reset, Z/Y undo/redo, F focus, Esc back",
+           "Font.Size": 11,
+           "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)"
+          },
+          "slot": {
+           "Padding": "(Left=0,Top=6,Right=0,Bottom=0)"
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "class": "/Script/UMG.Border",
+    "name": "Confirm",
+    "variable": true,
+    "props": {
+     "BrushColor": "(R=0.015,G=0.02,B=0.03,A=0.86)",
+     "Padding": "(Left=24,Top=18,Right=24,Bottom=14)",
+     "Visibility": "Collapsed"
+    },
+    "slot": {
+     "LayoutData": "(Anchors=(Minimum=(X=0.5,Y=0.4),Maximum=(X=0.5,Y=0.4)),Alignment=(X=0.5,Y=0.5))",
+     "bAutoSize": "true"
+    },
+    "children": [
+     {
+      "class": "/Script/UMG.VerticalBox",
+      "name": "ConfirmColumn",
+      "children": [
+       {
+        "class": "/Script/UMG.TextBlock",
+        "name": "ConfirmTitle",
+        "props": {
+         "Text": "Save your Den changes?",
+         "Font.Size": 18,
+         "ColorAndOpacity": "(SpecifiedColor=(R=1,G=0.78,B=0.35,A=1),ColorUseRule=UseColor_Specified)"
+        }
+       },
+       {
+        "class": "/Script/UMG.TextBlock",
+        "name": "ConfirmText",
+        "props": {
+         "Text": "",
+         "Font.Size": 13,
+         "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)"
+        },
+        "variable": true,
+        "slot": {
+         "Padding": "(Left=0,Top=6,Right=0,Bottom=12)"
+        }
+       },
+       {
+        "class": "/Script/UMG.HorizontalBox",
+        "name": "ConfirmRow",
+        "children": [
+         {
+          "class": "/Script/UMG.Button",
+          "name": "ConfirmSave",
+          "variable": true,
+          "props": {
+           "BackgroundColor": "(R=0.16,G=0.2,B=0.27,A=1)",
+           "IsFocusable": "false"
+          },
+          "slot": {
+           "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+          },
+          "children": [
+           {
+            "class": "/Script/UMG.TextBlock",
+            "name": "ConfirmSaveLabel",
+            "props": {
+             "Text": "Save",
+             "Font.Size": 15,
+             "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)"
+            },
+            "variable": true
+           }
+          ]
+         },
+         {
+          "class": "/Script/UMG.Button",
+          "name": "ConfirmDiscard",
+          "variable": true,
+          "props": {
+           "BackgroundColor": "(R=0.16,G=0.2,B=0.27,A=1)",
+           "IsFocusable": "false"
+          },
+          "slot": {
+           "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+          },
+          "children": [
+           {
+            "class": "/Script/UMG.TextBlock",
+            "name": "ConfirmDiscardLabel",
+            "props": {
+             "Text": "Discard",
+             "Font.Size": 15,
+             "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)"
+            },
+            "variable": true
+           }
+          ]
+         },
+         {
+          "class": "/Script/UMG.Button",
+          "name": "ConfirmCancel",
+          "variable": true,
+          "props": {
+           "BackgroundColor": "(R=0.16,G=0.2,B=0.27,A=1)",
+           "IsFocusable": "false"
+          },
+          "slot": {
+           "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+          },
+          "children": [
+           {
+            "class": "/Script/UMG.TextBlock",
+            "name": "ConfirmCancelLabel",
+            "props": {
+             "Text": "Keep editing",
+             "Font.Size": 15,
+             "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)"
+            },
+            "variable": true
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "functions": [
+  {
+   "name": "Lua_Event",
+   "inputs": [
+    {
+     "name": "Name",
+     "type": "string"
+    },
+    {
+     "name": "Arg",
+     "type": "string"
+    }
+   ]
+  }
+ ],
+ "graph": {
+  "nodes": [
+   {
+    "id": "Undo",
+    "kind": "bound_event",
+    "widget": "Undo",
+    "delegate": "OnClicked"
+   },
+   {
+    "id": "Undo_lua",
+    "kind": "call",
+    "function": "self:Lua_Event",
+    "defaults": {
+     "Name": "undo"
+    }
+   },
+   {
+    "id": "Redo",
+    "kind": "bound_event",
+    "widget": "Redo",
+    "delegate": "OnClicked"
+   },
+   {
+    "id": "Redo_lua",
+    "kind": "call",
+    "function": "self:Lua_Event",
+    "defaults": {
+     "Name": "redo"
+    }
+   },
+   {
+    "id": "Store",
+    "kind": "bound_event",
+    "widget": "Store",
+    "delegate": "OnClicked"
+   },
+   {
+    "id": "Store_lua",
+    "kind": "call",
+    "function": "self:Lua_Event",
+    "defaults": {
+     "Name": "store"
+    }
+   },
+   {
+    "id": "Copy",
+    "kind": "bound_event",
+    "widget": "Copy",
+    "delegate": "OnClicked"
+   },
+   {
+    "id": "Copy_lua",
+    "kind": "call",
+    "function": "self:Lua_Event",
+    "defaults": {
+     "Name": "duplicate"
+    }
+   },
+   {
+    "id": "Reset",
+    "kind": "bound_event",
+    "widget": "Reset",
+    "delegate": "OnClicked"
+   },
+   {
+    "id": "Reset_lua",
+    "kind": "call",
+    "function": "self:Lua_Event",
+    "defaults": {
+     "Name": "reset"
+    }
+   },
+   {
+    "id": "Snap",
+    "kind": "bound_event",
+    "widget": "Snap",
+    "delegate": "OnClicked"
+   },
+   {
+    "id": "Snap_lua",
+    "kind": "call",
+    "function": "self:Lua_Event",
+    "defaults": {
+     "Name": "snap"
+    }
+   },
+   {
+    "id": "Reach",
+    "kind": "bound_event",
+    "widget": "Reach",
+    "delegate": "OnClicked"
+   },
+   {
+    "id": "Reach_lua",
+    "kind": "call",
+    "function": "self:Lua_Event",
+    "defaults": {
+     "Name": "reach"
+    }
+   },
+   {
+    "id": "Lock",
+    "kind": "bound_event",
+    "widget": "Lock",
+    "delegate": "OnClicked"
+   },
+   {
+    "id": "Lock_lua",
+    "kind": "call",
+    "function": "self:Lua_Event",
+    "defaults": {
+     "Name": "lock"
+    }
+   },
+   {
+    "id": "Save",
+    "kind": "bound_event",
+    "widget": "Save",
+    "delegate": "OnClicked"
+   },
+   {
+    "id": "Save_lua",
+    "kind": "call",
+    "function": "self:Lua_Event",
+    "defaults": {
+     "Name": "save"
+    }
+   },
+   {
+    "id": "Exit",
+    "kind": "bound_event",
+    "widget": "Exit",
+    "delegate": "OnClicked"
+   },
+   {
+    "id": "Exit_lua",
+    "kind": "call",
+    "function": "self:Lua_Event",
+    "defaults": {
+     "Name": "exit"
+    }
+   },
+   {
+    "id": "ConfirmSave",
+    "kind": "bound_event",
+    "widget": "ConfirmSave",
+    "delegate": "OnClicked"
+   },
+   {
+    "id": "ConfirmSave_lua",
+    "kind": "call",
+    "function": "self:Lua_Event",
+    "defaults": {
+     "Name": "confirm_save"
+    }
+   },
+   {
+    "id": "ConfirmDiscard",
+    "kind": "bound_event",
+    "widget": "ConfirmDiscard",
+    "delegate": "OnClicked"
+   },
+   {
+    "id": "ConfirmDiscard_lua",
+    "kind": "call",
+    "function": "self:Lua_Event",
+    "defaults": {
+     "Name": "confirm_discard"
+    }
+   },
+   {
+    "id": "ConfirmCancel",
+    "kind": "bound_event",
+    "widget": "ConfirmCancel",
+    "delegate": "OnClicked"
+   },
+   {
+    "id": "ConfirmCancel_lua",
+    "kind": "call",
+    "function": "self:Lua_Event",
+    "defaults": {
+     "Name": "confirm_cancel"
+    }
+   }
+  ],
+  "links": [
+   [
+    "Undo.then",
+    "Undo_lua.execute"
+   ],
+   [
+    "Redo.then",
+    "Redo_lua.execute"
+   ],
+   [
+    "Store.then",
+    "Store_lua.execute"
+   ],
+   [
+    "Copy.then",
+    "Copy_lua.execute"
+   ],
+   [
+    "Reset.then",
+    "Reset_lua.execute"
+   ],
+   [
+    "Snap.then",
+    "Snap_lua.execute"
+   ],
+   [
+    "Reach.then",
+    "Reach_lua.execute"
+   ],
+   [
+    "Lock.then",
+    "Lock_lua.execute"
+   ],
+   [
+    "Save.then",
+    "Save_lua.execute"
+   ],
+   [
+    "Exit.then",
+    "Exit_lua.execute"
+   ],
+   [
+    "ConfirmSave.then",
+    "ConfirmSave_lua.execute"
+   ],
+   [
+    "ConfirmDiscard.then",
+    "ConfirmDiscard_lua.execute"
+   ],
+   [
+    "ConfirmCancel.then",
+    "ConfirmCancel_lua.execute"
+   ]
+  ]
+ }
+}

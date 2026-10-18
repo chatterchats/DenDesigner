@@ -1,0 +1,22 @@
+{
+  "kind": "widget",
+  "path": "/ZComDen/ZComDen/Probe/WBP_ProbeEntry",
+  "interfaces": ["/Script/UMG.UserObjectListEntry"],
+  "tree": {"class": "/Script/UMG.Border", "name": "Frame",
+    "props": {"BrushColor": "(R=0.08,G=0.1,B=0.14,A=0.95)", "Padding": "(Left=8,Top=6,Right=8,Bottom=6)"},
+    "children": [{"class": "/Script/UMG.TextBlock", "name": "Label", "variable": true, "props": {"Text": "Item", "Font.Size": 14}}]},
+  "graph": {
+    "nodes": [
+      {"id": "set", "kind": "event", "name": "OnListItemObjectSet"},
+      {"id": "cast", "kind": "cast", "class": "/ZComDen/ZComDen/Probe/BP_ProbeItem"},
+      {"id": "title", "kind": "get", "var": "/ZComDen/ZComDen/Probe/BP_ProbeItem:Title"},
+      {"id": "label", "kind": "get", "var": "Label"},
+      {"id": "settext", "kind": "call", "function": "/Script/UMG.TextBlock:SetText"}
+    ],
+    "links": [
+      ["set.then", "cast.execute"], ["set.ListItemObject", "cast.Object"],
+      ["cast.then", "settext.execute"], ["cast.AsBP Probe Item", "title.self"],
+      ["title.Title", "settext.InText"], ["label.Label", "settext.self"]
+    ]
+  }
+}

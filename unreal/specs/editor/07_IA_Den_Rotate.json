@@ -1,0 +1,5 @@
+{
+ "kind": "input_action",
+ "path": "/ZComDen/ZComDen/Editor/IA_Den_Rotate",
+ "value_type": "Axis1D"
+}
