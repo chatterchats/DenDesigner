@@ -1,0 +1,37 @@
+{
+  "kind": "widget",
+  "path": "/DenDesignerGF/Runtime/WBP_DenStartupNotice",
+  "tree": {
+    "class": "/Script/UMG.CanvasPanel",
+    "name": "Root",
+    "props": {
+      "Visibility": "HitTestInvisible"
+    },
+    "children": [
+      {
+        "class": "/Script/UMG.Border",
+        "name": "Panel",
+        "props": {
+          "BrushColor": "(R=0.012,G=0.016,B=0.024,A=1)",
+          "Padding": "(Left=20,Top=14,Right=20,Bottom=14)"
+        },
+        "slot": {
+          "LayoutData": "(Anchors=(Minimum=(X=0.5,Y=1),Maximum=(X=0.5,Y=1)),Offsets=(Left=-320,Top=-150,Right=640,Bottom=110))"
+        },
+        "children": [
+          {
+            "class": "/Script/UMG.TextBlock",
+            "name": "Message",
+            "props": {
+              "Text": "",
+              "Font.Size": 16,
+              "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+              "AutoWrapText": "true"
+            },
+            "variable": true
+          }
+        ]
+      }
+    ]
+  }
+}

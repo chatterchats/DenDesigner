@@ -1,0 +1,44 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Editor/BP_DenCatalogItem",
+  "parent": "/Script/CoreUObject.Object",
+  "variables": [
+    {
+      "name": "Key",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "Title",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "Detail",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "Preview",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "Thumb",
+      "type": "object:/Script/Engine.Texture2D"
+    },
+    {
+      "name": "EditorBus",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenEditorBus"
+    },
+    {
+      "name": "AssetPath",
+      "type": "string"
+    },
+    {
+      "name": "ThumbnailDocument",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+    }
+  ],
+  "functions": []
+}

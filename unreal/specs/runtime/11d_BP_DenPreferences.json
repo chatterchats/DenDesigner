@@ -1,0 +1,2093 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenPreferences",
+  "parent": "/DenDesignerGF/Runtime/BP_DenPreferencesStore",
+  "variables": [
+    {
+      "name": "PreferencesKey",
+      "type": "string",
+      "default": "preferences"
+    }
+  ],
+  "functions": [
+    {
+      "name": "OpenPreferences",
+      "outputs": [
+        {
+          "name": "Document",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenPreferencesSave"
+        },
+        {
+          "name": "Status",
+          "type": "int"
+        }
+      ],
+      "locals": [
+        {
+          "name": "ResultDocument",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenPreferencesSave"
+        },
+        {
+          "name": "ResultStatus",
+          "type": "int",
+          "default": "7"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "key",
+          "kind": "get",
+          "var": "PreferencesKey"
+        },
+        {
+          "id": "load",
+          "kind": "call",
+          "function": "self:LoadPreferences",
+          "defaults": {
+            "Draft": "false",
+            "BeforeRevision": "0"
+          }
+        },
+        {
+          "id": "status",
+          "kind": "set",
+          "var": "local:ResultStatus"
+        },
+        {
+          "id": "valid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "loaded",
+          "kind": "branch"
+        },
+        {
+          "id": "document",
+          "kind": "set",
+          "var": "local:ResultDocument"
+        },
+        {
+          "id": "create",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:CreateSaveGameObject",
+          "defaults": {
+            "SaveGameClass": "/DenDesignerGF/Runtime/BP_DenPreferencesSave"
+          }
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenPreferencesSave"
+        },
+        {
+          "id": "fresh",
+          "kind": "set",
+          "var": "local:ResultDocument"
+        },
+        {
+          "id": "failed",
+          "kind": "set",
+          "var": "local:ResultStatus",
+          "defaults": {
+            "ResultStatus": "7"
+          }
+        },
+        {
+          "id": "outDocument",
+          "kind": "get",
+          "var": "local:ResultDocument"
+        },
+        {
+          "id": "outStatus",
+          "kind": "get",
+          "var": "local:ResultStatus"
+        }
+      ],
+      "links": [
+        [
+          "key.PreferencesKey",
+          "load.Key"
+        ],
+        [
+          "load.Status",
+          "status.ResultStatus"
+        ],
+        [
+          "load.Document",
+          "valid.Object"
+        ],
+        [
+          "valid.ReturnValue",
+          "loaded.Condition"
+        ],
+        [
+          "load.Document",
+          "document.ResultDocument"
+        ],
+        [
+          "create.ReturnValue",
+          "cast.Object"
+        ],
+        [
+          "cast.AsBP Den Preferences Save",
+          "fresh.ResultDocument"
+        ],
+        [
+          "entry.then",
+          "load.execute"
+        ],
+        [
+          "load.then",
+          "status.execute"
+        ],
+        [
+          "status.then",
+          "loaded.execute"
+        ],
+        [
+          "loaded.then",
+          "document.execute"
+        ],
+        [
+          "document.then",
+          "result.execute"
+        ],
+        [
+          "loaded.else",
+          "create.execute"
+        ],
+        [
+          "create.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "fresh.execute"
+        ],
+        [
+          "fresh.then",
+          "result.execute"
+        ],
+        [
+          "cast.CastFailed",
+          "failed.execute"
+        ],
+        [
+          "failed.then",
+          "result.execute"
+        ],
+        [
+          "outDocument.ResultDocument",
+          "result.Document"
+        ],
+        [
+          "outStatus.ResultStatus",
+          "result.Status"
+        ]
+      ]
+    },
+    {
+      "name": "ChangePreference",
+      "inputs": [
+        {
+          "name": "Key",
+          "type": "string"
+        },
+        {
+          "name": "Value",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Document",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenPreferencesSave"
+        },
+        {
+          "name": "Status",
+          "type": "int"
+        },
+        {
+          "name": "Changed",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "ResultDocument",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenPreferencesSave"
+        },
+        {
+          "name": "ResultStatus",
+          "type": "int",
+          "default": "7"
+        },
+        {
+          "name": "ResultChanged",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "open",
+          "kind": "call",
+          "function": "self:OpenPreferences",
+          "defaults": {}
+        },
+        {
+          "id": "status",
+          "kind": "set",
+          "var": "local:ResultStatus"
+        },
+        {
+          "id": "healthy",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "writable",
+          "kind": "branch"
+        },
+        {
+          "id": "document",
+          "kind": "set",
+          "var": "local:ResultDocument"
+        },
+        {
+          "id": "mutate",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:WritePreference",
+          "defaults": {}
+        },
+        {
+          "id": "accepted",
+          "kind": "branch"
+        },
+        {
+          "id": "changed",
+          "kind": "branch"
+        },
+        {
+          "id": "key",
+          "kind": "get",
+          "var": "PreferencesKey"
+        },
+        {
+          "id": "save",
+          "kind": "call",
+          "function": "self:SavePreferences",
+          "defaults": {
+            "Draft": "false",
+            "BaseRevision": "0",
+            "BaseID": ""
+          }
+        },
+        {
+          "id": "savedstatus",
+          "kind": "set",
+          "var": "local:ResultStatus"
+        },
+        {
+          "id": "saved",
+          "kind": "set",
+          "var": "local:ResultDocument"
+        },
+        {
+          "id": "changedresult",
+          "kind": "set",
+          "var": "local:ResultChanged"
+        },
+        {
+          "id": "success",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "invalid",
+          "kind": "set",
+          "var": "local:ResultStatus",
+          "defaults": {
+            "ResultStatus": "7"
+          }
+        },
+        {
+          "id": "unchanged",
+          "kind": "set",
+          "var": "local:ResultStatus",
+          "defaults": {
+            "ResultStatus": "1"
+          }
+        },
+        {
+          "id": "outDocument",
+          "kind": "get",
+          "var": "local:ResultDocument"
+        },
+        {
+          "id": "outStatus",
+          "kind": "get",
+          "var": "local:ResultStatus"
+        },
+        {
+          "id": "outChanged",
+          "kind": "get",
+          "var": "local:ResultChanged"
+        }
+      ],
+      "links": [
+        [
+          "open.Status",
+          "status.ResultStatus"
+        ],
+        [
+          "open.Status",
+          "healthy.A"
+        ],
+        [
+          "healthy.ReturnValue",
+          "writable.Condition"
+        ],
+        [
+          "open.Document",
+          "document.ResultDocument"
+        ],
+        [
+          "open.Document",
+          "mutate.self"
+        ],
+        [
+          "entry.Key",
+          "mutate.Key"
+        ],
+        [
+          "entry.Value",
+          "mutate.Value"
+        ],
+        [
+          "mutate.Accepted",
+          "accepted.Condition"
+        ],
+        [
+          "mutate.Changed",
+          "changed.Condition"
+        ],
+        [
+          "document.then",
+          "mutate.execute"
+        ],
+        [
+          "mutate.then",
+          "accepted.execute"
+        ],
+        [
+          "accepted.then",
+          "changed.execute"
+        ],
+        [
+          "changed.then",
+          "save.execute"
+        ],
+        [
+          "accepted.else",
+          "invalid.execute"
+        ],
+        [
+          "invalid.then",
+          "result.execute"
+        ],
+        [
+          "changed.else",
+          "unchanged.execute"
+        ],
+        [
+          "unchanged.then",
+          "result.execute"
+        ],
+        [
+          "key.PreferencesKey",
+          "save.Key"
+        ],
+        [
+          "open.Document",
+          "save.Document"
+        ],
+        [
+          "save.Status",
+          "savedstatus.ResultStatus"
+        ],
+        [
+          "save.SavedDocument",
+          "saved.ResultDocument"
+        ],
+        [
+          "save.Status",
+          "success.A"
+        ],
+        [
+          "success.ReturnValue",
+          "changedresult.ResultChanged"
+        ],
+        [
+          "entry.then",
+          "open.execute"
+        ],
+        [
+          "open.then",
+          "status.execute"
+        ],
+        [
+          "status.then",
+          "writable.execute"
+        ],
+        [
+          "writable.then",
+          "document.execute"
+        ],
+        [
+          "writable.else",
+          "result.execute"
+        ],
+        [
+          "save.then",
+          "savedstatus.execute"
+        ],
+        [
+          "savedstatus.then",
+          "saved.execute"
+        ],
+        [
+          "saved.then",
+          "changedresult.execute"
+        ],
+        [
+          "changedresult.then",
+          "result.execute"
+        ],
+        [
+          "outDocument.ResultDocument",
+          "result.Document"
+        ],
+        [
+          "outStatus.ResultStatus",
+          "result.Status"
+        ],
+        [
+          "outChanged.ResultChanged",
+          "result.Changed"
+        ]
+      ]
+    },
+    {
+      "name": "RememberRecent",
+      "inputs": [
+        {
+          "name": "Path",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Document",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenPreferencesSave"
+        },
+        {
+          "name": "Status",
+          "type": "int"
+        },
+        {
+          "name": "Changed",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "ResultDocument",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenPreferencesSave"
+        },
+        {
+          "name": "ResultStatus",
+          "type": "int",
+          "default": "7"
+        },
+        {
+          "name": "ResultChanged",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "open",
+          "kind": "call",
+          "function": "self:OpenPreferences",
+          "defaults": {}
+        },
+        {
+          "id": "status",
+          "kind": "set",
+          "var": "local:ResultStatus"
+        },
+        {
+          "id": "healthy",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "writable",
+          "kind": "branch"
+        },
+        {
+          "id": "document",
+          "kind": "set",
+          "var": "local:ResultDocument"
+        },
+        {
+          "id": "recent",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:RecentMeshes",
+          "defaults": {}
+        },
+        {
+          "id": "length",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "nonempty",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "has",
+          "kind": "branch"
+        },
+        {
+          "id": "first",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {
+            "Index": "0"
+          }
+        },
+        {
+          "id": "equal",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "same",
+          "kind": "branch"
+        },
+        {
+          "id": "mutate",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:RememberMesh",
+          "defaults": {}
+        },
+        {
+          "id": "accepted",
+          "kind": "branch"
+        },
+        {
+          "id": "key",
+          "kind": "get",
+          "var": "PreferencesKey"
+        },
+        {
+          "id": "save",
+          "kind": "call",
+          "function": "self:SavePreferences",
+          "defaults": {
+            "Draft": "false",
+            "BaseRevision": "0",
+            "BaseID": ""
+          }
+        },
+        {
+          "id": "savedstatus",
+          "kind": "set",
+          "var": "local:ResultStatus"
+        },
+        {
+          "id": "saved",
+          "kind": "set",
+          "var": "local:ResultDocument"
+        },
+        {
+          "id": "changedresult",
+          "kind": "set",
+          "var": "local:ResultChanged"
+        },
+        {
+          "id": "success",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "invalid",
+          "kind": "set",
+          "var": "local:ResultStatus",
+          "defaults": {
+            "ResultStatus": "7"
+          }
+        },
+        {
+          "id": "unchanged",
+          "kind": "set",
+          "var": "local:ResultStatus",
+          "defaults": {
+            "ResultStatus": "1"
+          }
+        },
+        {
+          "id": "outDocument",
+          "kind": "get",
+          "var": "local:ResultDocument"
+        },
+        {
+          "id": "outStatus",
+          "kind": "get",
+          "var": "local:ResultStatus"
+        },
+        {
+          "id": "outChanged",
+          "kind": "get",
+          "var": "local:ResultChanged"
+        }
+      ],
+      "links": [
+        [
+          "open.Status",
+          "status.ResultStatus"
+        ],
+        [
+          "open.Status",
+          "healthy.A"
+        ],
+        [
+          "healthy.ReturnValue",
+          "writable.Condition"
+        ],
+        [
+          "open.Document",
+          "document.ResultDocument"
+        ],
+        [
+          "open.Document",
+          "recent.self"
+        ],
+        [
+          "recent.Paths",
+          "length.TargetArray"
+        ],
+        [
+          "length.ReturnValue",
+          "nonempty.A"
+        ],
+        [
+          "nonempty.ReturnValue",
+          "has.Condition"
+        ],
+        [
+          "recent.Paths",
+          "first.TargetArray"
+        ],
+        [
+          "entry.Path",
+          "equal.A"
+        ],
+        [
+          "first.Item",
+          "equal.B"
+        ],
+        [
+          "equal.ReturnValue",
+          "same.Condition"
+        ],
+        [
+          "open.Document",
+          "mutate.self"
+        ],
+        [
+          "entry.Path",
+          "mutate.Path"
+        ],
+        [
+          "mutate.Accepted",
+          "accepted.Condition"
+        ],
+        [
+          "document.then",
+          "recent.execute"
+        ],
+        [
+          "recent.then",
+          "has.execute"
+        ],
+        [
+          "has.then",
+          "same.execute"
+        ],
+        [
+          "same.then",
+          "unchanged.execute"
+        ],
+        [
+          "unchanged.then",
+          "result.execute"
+        ],
+        [
+          "has.else",
+          "mutate.execute"
+        ],
+        [
+          "mutate.then",
+          "accepted.execute"
+        ],
+        [
+          "accepted.then",
+          "save.execute"
+        ],
+        [
+          "same.else",
+          "mutate.execute"
+        ],
+        [
+          "accepted.else",
+          "invalid.execute"
+        ],
+        [
+          "invalid.then",
+          "result.execute"
+        ],
+        [
+          "key.PreferencesKey",
+          "save.Key"
+        ],
+        [
+          "open.Document",
+          "save.Document"
+        ],
+        [
+          "save.Status",
+          "savedstatus.ResultStatus"
+        ],
+        [
+          "save.SavedDocument",
+          "saved.ResultDocument"
+        ],
+        [
+          "save.Status",
+          "success.A"
+        ],
+        [
+          "success.ReturnValue",
+          "changedresult.ResultChanged"
+        ],
+        [
+          "entry.then",
+          "open.execute"
+        ],
+        [
+          "open.then",
+          "status.execute"
+        ],
+        [
+          "status.then",
+          "writable.execute"
+        ],
+        [
+          "writable.then",
+          "document.execute"
+        ],
+        [
+          "writable.else",
+          "result.execute"
+        ],
+        [
+          "save.then",
+          "savedstatus.execute"
+        ],
+        [
+          "savedstatus.then",
+          "saved.execute"
+        ],
+        [
+          "saved.then",
+          "changedresult.execute"
+        ],
+        [
+          "changedresult.then",
+          "result.execute"
+        ],
+        [
+          "outDocument.ResultDocument",
+          "result.Document"
+        ],
+        [
+          "outStatus.ResultStatus",
+          "result.Status"
+        ],
+        [
+          "outChanged.ResultChanged",
+          "result.Changed"
+        ]
+      ]
+    },
+    {
+      "name": "ResetSettings",
+      "outputs": [
+        {
+          "name": "Document",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenPreferencesSave"
+        },
+        {
+          "name": "Status",
+          "type": "int"
+        },
+        {
+          "name": "Changed",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "ResultDocument",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenPreferencesSave"
+        },
+        {
+          "name": "ResultStatus",
+          "type": "int",
+          "default": "7"
+        },
+        {
+          "name": "ResultChanged",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "open",
+          "kind": "call",
+          "function": "self:OpenPreferences",
+          "defaults": {}
+        },
+        {
+          "id": "status",
+          "kind": "set",
+          "var": "local:ResultStatus"
+        },
+        {
+          "id": "healthy",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "writable",
+          "kind": "branch"
+        },
+        {
+          "id": "rows",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:Entries"
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "length",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "row",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "fields",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenPreference"
+        },
+        {
+          "id": "settingkey0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "fly_speed"
+          }
+        },
+        {
+          "id": "settingkey1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "fast_multiplier"
+          }
+        },
+        {
+          "id": "settingkey2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "look_speed"
+          }
+        },
+        {
+          "id": "settingkey3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "toggle_key"
+          }
+        },
+        {
+          "id": "settingkey4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "toggle_modifier"
+          }
+        },
+        {
+          "id": "settingkey5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "snap"
+          }
+        },
+        {
+          "id": "settingkey6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "reach"
+          }
+        },
+        {
+          "id": "settingkey7",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "gimbal"
+          }
+        },
+        {
+          "id": "settingkey8",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "unlock_structure"
+          }
+        },
+        {
+          "id": "settingkey9",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "select_floors"
+          }
+        },
+        {
+          "id": "settingkey10",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "select_walls"
+          }
+        },
+        {
+          "id": "settingkey11",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "autosave"
+          }
+        },
+        {
+          "id": "settingkey12",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "thumbnails"
+          }
+        },
+        {
+          "id": "settingkey13",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "key_forward"
+          }
+        },
+        {
+          "id": "settingkey14",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "key_back"
+          }
+        },
+        {
+          "id": "settingkey15",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "key_left"
+          }
+        },
+        {
+          "id": "settingkey16",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "key_right"
+          }
+        },
+        {
+          "id": "settingkey17",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "key_up"
+          }
+        },
+        {
+          "id": "settingkey18",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "key_down"
+          }
+        },
+        {
+          "id": "settingkey19",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "key_fast"
+          }
+        },
+        {
+          "id": "settingkey20",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "key_turn_left"
+          }
+        },
+        {
+          "id": "settingkey21",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "key_turn_right"
+          }
+        },
+        {
+          "id": "settingkey22",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "key_store"
+          }
+        },
+        {
+          "id": "settingkey23",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "key_copy"
+          }
+        },
+        {
+          "id": "settingkey24",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "key_undo"
+          }
+        },
+        {
+          "id": "settingkey25",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "key_redo"
+          }
+        },
+        {
+          "id": "settingkey26",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "key_focus"
+          }
+        },
+        {
+          "id": "settingkey27",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "key_reset"
+          }
+        },
+        {
+          "id": "settingkey28",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "key_snap"
+          }
+        },
+        {
+          "id": "settingkey29",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "key_catalog"
+          }
+        },
+        {
+          "id": "settingkey30",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "key_storeroom"
+          }
+        },
+        {
+          "id": "settingkey31",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "key_layouts"
+          }
+        },
+        {
+          "id": "settingkey32",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "key_gimbal"
+          }
+        },
+        {
+          "id": "settingkeyany0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany7",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany8",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany9",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany10",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany11",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany12",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany13",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany14",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany15",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany16",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany17",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany18",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany19",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany20",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany21",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany22",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany23",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany24",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany25",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany26",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany27",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany28",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany29",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany30",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany31",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "setting",
+          "kind": "branch"
+        },
+        {
+          "id": "remove",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Remove",
+          "defaults": {}
+        },
+        {
+          "id": "changed",
+          "kind": "set",
+          "var": "local:ResultChanged",
+          "defaults": {
+            "ResultChanged": "true"
+          }
+        },
+        {
+          "id": "next",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "add",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "dirty",
+          "kind": "branch"
+        },
+        {
+          "id": "document",
+          "kind": "set",
+          "var": "local:ResultDocument"
+        },
+        {
+          "id": "key",
+          "kind": "get",
+          "var": "PreferencesKey"
+        },
+        {
+          "id": "save",
+          "kind": "call",
+          "function": "self:SavePreferences",
+          "defaults": {
+            "Draft": "false",
+            "BaseRevision": "0",
+            "BaseID": ""
+          }
+        },
+        {
+          "id": "savedstatus",
+          "kind": "set",
+          "var": "local:ResultStatus"
+        },
+        {
+          "id": "saved",
+          "kind": "set",
+          "var": "local:ResultDocument"
+        },
+        {
+          "id": "success",
+          "kind": "set",
+          "var": "local:ResultChanged"
+        },
+        {
+          "id": "ok",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "unchanged",
+          "kind": "set",
+          "var": "local:ResultStatus",
+          "defaults": {
+            "ResultStatus": "1"
+          }
+        },
+        {
+          "id": "outDocument",
+          "kind": "get",
+          "var": "local:ResultDocument"
+        },
+        {
+          "id": "outStatus",
+          "kind": "get",
+          "var": "local:ResultStatus"
+        },
+        {
+          "id": "outChanged",
+          "kind": "get",
+          "var": "local:ResultChanged"
+        }
+      ],
+      "links": [
+        [
+          "open.Status",
+          "status.ResultStatus"
+        ],
+        [
+          "open.Status",
+          "healthy.A"
+        ],
+        [
+          "healthy.ReturnValue",
+          "writable.Condition"
+        ],
+        [
+          "open.Document",
+          "rows.self"
+        ],
+        [
+          "rows.Entries",
+          "length.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "length.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "rows.Entries",
+          "row.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "row.Index"
+        ],
+        [
+          "row.Item",
+          "fields.ST_DenPreference"
+        ],
+        [
+          "fields.Key",
+          "settingkey0.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey1.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey2.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey3.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey4.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey5.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey6.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey7.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey8.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey9.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey10.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey11.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey12.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey13.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey14.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey15.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey16.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey17.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey18.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey19.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey20.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey21.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey22.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey23.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey24.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey25.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey26.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey27.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey28.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey29.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey30.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey31.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey32.A"
+        ],
+        [
+          "settingkey0.ReturnValue",
+          "settingkeyany0.A"
+        ],
+        [
+          "settingkey1.ReturnValue",
+          "settingkeyany0.B"
+        ],
+        [
+          "settingkeyany0.ReturnValue",
+          "settingkeyany1.A"
+        ],
+        [
+          "settingkey2.ReturnValue",
+          "settingkeyany1.B"
+        ],
+        [
+          "settingkeyany1.ReturnValue",
+          "settingkeyany2.A"
+        ],
+        [
+          "settingkey3.ReturnValue",
+          "settingkeyany2.B"
+        ],
+        [
+          "settingkeyany2.ReturnValue",
+          "settingkeyany3.A"
+        ],
+        [
+          "settingkey4.ReturnValue",
+          "settingkeyany3.B"
+        ],
+        [
+          "settingkeyany3.ReturnValue",
+          "settingkeyany4.A"
+        ],
+        [
+          "settingkey5.ReturnValue",
+          "settingkeyany4.B"
+        ],
+        [
+          "settingkeyany4.ReturnValue",
+          "settingkeyany5.A"
+        ],
+        [
+          "settingkey6.ReturnValue",
+          "settingkeyany5.B"
+        ],
+        [
+          "settingkeyany5.ReturnValue",
+          "settingkeyany6.A"
+        ],
+        [
+          "settingkey7.ReturnValue",
+          "settingkeyany6.B"
+        ],
+        [
+          "settingkeyany6.ReturnValue",
+          "settingkeyany7.A"
+        ],
+        [
+          "settingkey8.ReturnValue",
+          "settingkeyany7.B"
+        ],
+        [
+          "settingkeyany7.ReturnValue",
+          "settingkeyany8.A"
+        ],
+        [
+          "settingkey9.ReturnValue",
+          "settingkeyany8.B"
+        ],
+        [
+          "settingkeyany8.ReturnValue",
+          "settingkeyany9.A"
+        ],
+        [
+          "settingkey10.ReturnValue",
+          "settingkeyany9.B"
+        ],
+        [
+          "settingkeyany9.ReturnValue",
+          "settingkeyany10.A"
+        ],
+        [
+          "settingkey11.ReturnValue",
+          "settingkeyany10.B"
+        ],
+        [
+          "settingkeyany10.ReturnValue",
+          "settingkeyany11.A"
+        ],
+        [
+          "settingkey12.ReturnValue",
+          "settingkeyany11.B"
+        ],
+        [
+          "settingkeyany11.ReturnValue",
+          "settingkeyany12.A"
+        ],
+        [
+          "settingkey13.ReturnValue",
+          "settingkeyany12.B"
+        ],
+        [
+          "settingkeyany12.ReturnValue",
+          "settingkeyany13.A"
+        ],
+        [
+          "settingkey14.ReturnValue",
+          "settingkeyany13.B"
+        ],
+        [
+          "settingkeyany13.ReturnValue",
+          "settingkeyany14.A"
+        ],
+        [
+          "settingkey15.ReturnValue",
+          "settingkeyany14.B"
+        ],
+        [
+          "settingkeyany14.ReturnValue",
+          "settingkeyany15.A"
+        ],
+        [
+          "settingkey16.ReturnValue",
+          "settingkeyany15.B"
+        ],
+        [
+          "settingkeyany15.ReturnValue",
+          "settingkeyany16.A"
+        ],
+        [
+          "settingkey17.ReturnValue",
+          "settingkeyany16.B"
+        ],
+        [
+          "settingkeyany16.ReturnValue",
+          "settingkeyany17.A"
+        ],
+        [
+          "settingkey18.ReturnValue",
+          "settingkeyany17.B"
+        ],
+        [
+          "settingkeyany17.ReturnValue",
+          "settingkeyany18.A"
+        ],
+        [
+          "settingkey19.ReturnValue",
+          "settingkeyany18.B"
+        ],
+        [
+          "settingkeyany18.ReturnValue",
+          "settingkeyany19.A"
+        ],
+        [
+          "settingkey20.ReturnValue",
+          "settingkeyany19.B"
+        ],
+        [
+          "settingkeyany19.ReturnValue",
+          "settingkeyany20.A"
+        ],
+        [
+          "settingkey21.ReturnValue",
+          "settingkeyany20.B"
+        ],
+        [
+          "settingkeyany20.ReturnValue",
+          "settingkeyany21.A"
+        ],
+        [
+          "settingkey22.ReturnValue",
+          "settingkeyany21.B"
+        ],
+        [
+          "settingkeyany21.ReturnValue",
+          "settingkeyany22.A"
+        ],
+        [
+          "settingkey23.ReturnValue",
+          "settingkeyany22.B"
+        ],
+        [
+          "settingkeyany22.ReturnValue",
+          "settingkeyany23.A"
+        ],
+        [
+          "settingkey24.ReturnValue",
+          "settingkeyany23.B"
+        ],
+        [
+          "settingkeyany23.ReturnValue",
+          "settingkeyany24.A"
+        ],
+        [
+          "settingkey25.ReturnValue",
+          "settingkeyany24.B"
+        ],
+        [
+          "settingkeyany24.ReturnValue",
+          "settingkeyany25.A"
+        ],
+        [
+          "settingkey26.ReturnValue",
+          "settingkeyany25.B"
+        ],
+        [
+          "settingkeyany25.ReturnValue",
+          "settingkeyany26.A"
+        ],
+        [
+          "settingkey27.ReturnValue",
+          "settingkeyany26.B"
+        ],
+        [
+          "settingkeyany26.ReturnValue",
+          "settingkeyany27.A"
+        ],
+        [
+          "settingkey28.ReturnValue",
+          "settingkeyany27.B"
+        ],
+        [
+          "settingkeyany27.ReturnValue",
+          "settingkeyany28.A"
+        ],
+        [
+          "settingkey29.ReturnValue",
+          "settingkeyany28.B"
+        ],
+        [
+          "settingkeyany28.ReturnValue",
+          "settingkeyany29.A"
+        ],
+        [
+          "settingkey30.ReturnValue",
+          "settingkeyany29.B"
+        ],
+        [
+          "settingkeyany29.ReturnValue",
+          "settingkeyany30.A"
+        ],
+        [
+          "settingkey31.ReturnValue",
+          "settingkeyany30.B"
+        ],
+        [
+          "settingkeyany30.ReturnValue",
+          "settingkeyany31.A"
+        ],
+        [
+          "settingkey32.ReturnValue",
+          "settingkeyany31.B"
+        ],
+        [
+          "settingkeyany31.ReturnValue",
+          "setting.Condition"
+        ],
+        [
+          "rows.Entries",
+          "remove.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "remove.IndexToRemove"
+        ],
+        [
+          "i.Cursor",
+          "add.A"
+        ],
+        [
+          "add.ReturnValue",
+          "next.Cursor"
+        ],
+        [
+          "outChanged.ResultChanged",
+          "dirty.Condition"
+        ],
+        [
+          "open.Document",
+          "document.ResultDocument"
+        ],
+        [
+          "key.PreferencesKey",
+          "save.Key"
+        ],
+        [
+          "open.Document",
+          "save.Document"
+        ],
+        [
+          "save.Status",
+          "savedstatus.ResultStatus"
+        ],
+        [
+          "save.SavedDocument",
+          "saved.ResultDocument"
+        ],
+        [
+          "save.Status",
+          "ok.A"
+        ],
+        [
+          "ok.ReturnValue",
+          "success.ResultChanged"
+        ],
+        [
+          "entry.then",
+          "open.execute"
+        ],
+        [
+          "open.then",
+          "status.execute"
+        ],
+        [
+          "status.then",
+          "writable.execute"
+        ],
+        [
+          "writable.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "setting.execute"
+        ],
+        [
+          "setting.then",
+          "remove.execute"
+        ],
+        [
+          "remove.then",
+          "changed.execute"
+        ],
+        [
+          "changed.then",
+          "loop.execute"
+        ],
+        [
+          "setting.else",
+          "next.execute"
+        ],
+        [
+          "next.then",
+          "loop.execute"
+        ],
+        [
+          "loop.else",
+          "document.execute"
+        ],
+        [
+          "document.then",
+          "dirty.execute"
+        ],
+        [
+          "dirty.then",
+          "save.execute"
+        ],
+        [
+          "save.then",
+          "savedstatus.execute"
+        ],
+        [
+          "savedstatus.then",
+          "saved.execute"
+        ],
+        [
+          "saved.then",
+          "success.execute"
+        ],
+        [
+          "success.then",
+          "result.execute"
+        ],
+        [
+          "dirty.else",
+          "unchanged.execute"
+        ],
+        [
+          "unchanged.then",
+          "result.execute"
+        ],
+        [
+          "writable.else",
+          "result.execute"
+        ],
+        [
+          "outDocument.ResultDocument",
+          "result.Document"
+        ],
+        [
+          "outStatus.ResultStatus",
+          "result.Status"
+        ],
+        [
+          "outChanged.ResultChanged",
+          "result.Changed"
+        ]
+      ]
+    }
+  ]
+}

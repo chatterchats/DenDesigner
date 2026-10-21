@@ -1,0 +1,22 @@
+{
+  "kind": "struct",
+  "path": "/DenDesignerGF/Runtime/ST_DenPresetValue",
+  "guid": "24fef3be-3f6f-541d-9e9a-bde5b50d1970",
+  "fields": [
+    {
+      "name": "Name",
+      "type": "string",
+      "guid": "f2cb8d47-cba4-5e8c-88a6-da10c1463ad3"
+    },
+    {
+      "name": "GameVersion",
+      "type": "string",
+      "guid": "66df8cad-51f8-5a5d-aa2c-b9b3c30d4537"
+    },
+    {
+      "name": "Entries",
+      "type": "struct:/DenDesignerGF/Runtime/ST_DenEntry[]",
+      "guid": "117dc38e-17bc-5d5a-868b-6972fd62da7c"
+    }
+  ]
+}

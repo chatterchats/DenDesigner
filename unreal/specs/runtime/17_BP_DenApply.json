@@ -1,0 +1,7143 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenApply",
+  "parent": "/DenDesignerGF/Runtime/BP_DenWorld",
+  "variables": [
+    {
+      "name": "PreviewOnly",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "Busy",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "Phase",
+      "type": "int",
+      "default": "0"
+    },
+    {
+      "name": "Generation",
+      "type": "int",
+      "default": "0"
+    },
+    {
+      "name": "WorkItems",
+      "type": "struct:/DenDesignerGF/Runtime/ST_DenMutation[]"
+    },
+    {
+      "name": "RetryItems",
+      "type": "struct:/DenDesignerGF/Runtime/ST_DenMutation[]"
+    },
+    {
+      "name": "NextRetry",
+      "type": "struct:/DenDesignerGF/Runtime/ST_DenMutation[]"
+    },
+    {
+      "name": "Issues",
+      "type": "struct:/DenDesignerGF/Runtime/ST_DenApplyIssue[]"
+    },
+    {
+      "name": "CurrentEntry",
+      "type": "struct:/DenDesignerGF/Runtime/ST_DenEntry"
+    },
+    {
+      "name": "PendingJob",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenAssetJob"
+    },
+    {
+      "name": "ReadyMesh",
+      "type": "object:/Script/Engine.StaticMesh"
+    },
+    {
+      "name": "ReadyMaterials",
+      "type": "object:/Script/Engine.MaterialInterface[]"
+    },
+    {
+      "name": "MaxSteps",
+      "type": "int",
+      "default": "32"
+    },
+    {
+      "name": "BudgetSeconds",
+      "type": "double",
+      "default": "0.004"
+    },
+    {
+      "name": "MaxRetries",
+      "type": "int",
+      "default": "8"
+    },
+    {
+      "name": "RetryInterval",
+      "type": "double",
+      "default": "1.5"
+    },
+    {
+      "name": "AssetTimeout",
+      "type": "double",
+      "default": "30"
+    },
+    {
+      "name": "WorkCursor",
+      "type": "int",
+      "default": "0"
+    },
+    {
+      "name": "MaterialCursor",
+      "type": "int",
+      "default": "0"
+    },
+    {
+      "name": "RetryPass",
+      "type": "int",
+      "default": "0"
+    },
+    {
+      "name": "PlacedCount",
+      "type": "int",
+      "default": "0"
+    },
+    {
+      "name": "HiddenCount",
+      "type": "int",
+      "default": "0"
+    },
+    {
+      "name": "MovedCount",
+      "type": "int",
+      "default": "0"
+    },
+    {
+      "name": "DormantCount",
+      "type": "int",
+      "default": "0"
+    },
+    {
+      "name": "ErrorCount",
+      "type": "int",
+      "default": "0"
+    },
+    {
+      "name": "Frames",
+      "type": "int",
+      "default": "0"
+    },
+    {
+      "name": "StartedAt",
+      "type": "double",
+      "default": "0"
+    },
+    {
+      "name": "RequestAt",
+      "type": "double",
+      "default": "0"
+    },
+    {
+      "name": "RetryAt",
+      "type": "double",
+      "default": "0"
+    },
+    {
+      "name": "WorkSeconds",
+      "type": "double",
+      "default": "0"
+    },
+    {
+      "name": "SlowestStep",
+      "type": "double",
+      "default": "0"
+    },
+    {
+      "name": "TotalSeconds",
+      "type": "double",
+      "default": "0"
+    },
+    {
+      "name": "FPActorIndex",
+      "type": "int"
+    },
+    {
+      "name": "FPComponentIndex",
+      "type": "int",
+      "default": "-1"
+    },
+    {
+      "name": "FPWantActor",
+      "type": "bool"
+    },
+    {
+      "name": "FPAmbiguous",
+      "type": "bool"
+    },
+    {
+      "name": "FPFound",
+      "type": "object:/Script/CoreUObject.Object"
+    },
+    {
+      "name": "FPComponents",
+      "type": "object:/Script/Engine.ActorComponent[]"
+    },
+    {
+      "name": "RefoundCount",
+      "type": "int"
+    }
+  ],
+  "defaults": {
+    "PrimaryActorTick.bCanEverTick": "true",
+    "PrimaryActorTick.bStartWithTickEnabled": "true"
+  },
+  "graph": {
+    "nodes": [
+      {
+        "id": "tick",
+        "kind": "event",
+        "name": "ReceiveTick"
+      },
+      {
+        "id": "pump",
+        "kind": "call",
+        "function": "self:Pump",
+        "defaults": {}
+      },
+      {
+        "id": "end",
+        "kind": "event",
+        "name": "ReceiveEndPlay"
+      },
+      {
+        "id": "cancel",
+        "kind": "call",
+        "function": "self:CancelWork",
+        "defaults": {}
+      },
+      {
+        "id": "forget",
+        "kind": "call",
+        "function": "self:Forget",
+        "defaults": {}
+      }
+    ],
+    "links": [
+      [
+        "tick.then",
+        "pump.execute"
+      ],
+      [
+        "end.then",
+        "cancel.execute"
+      ],
+      [
+        "cancel.then",
+        "forget.execute"
+      ]
+    ]
+  },
+  "functions": [
+    {
+      "name": "CancelWork",
+      "nodes": [
+        {
+          "id": "getPendingJob",
+          "kind": "get",
+          "var": "PendingJob"
+        },
+        {
+          "id": "check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "destroy",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:K2_DestroyActor",
+          "defaults": {}
+        },
+        {
+          "id": "job",
+          "kind": "set",
+          "var": "PendingJob"
+        },
+        {
+          "id": "mesh",
+          "kind": "set",
+          "var": "ReadyMesh"
+        },
+        {
+          "id": "getReadyMaterials",
+          "kind": "get",
+          "var": "ReadyMaterials"
+        },
+        {
+          "id": "materials",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "fp",
+          "kind": "set",
+          "var": "FPFound"
+        },
+        {
+          "id": "getFPComponents",
+          "kind": "get",
+          "var": "FPComponents"
+        },
+        {
+          "id": "fpcomponents",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "getWorkItems",
+          "kind": "get",
+          "var": "WorkItems"
+        },
+        {
+          "id": "work",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "getRetryItems",
+          "kind": "get",
+          "var": "RetryItems"
+        },
+        {
+          "id": "pending",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "getNextRetry",
+          "kind": "get",
+          "var": "NextRetry"
+        },
+        {
+          "id": "nextretry",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "stop",
+          "kind": "set",
+          "var": "Busy",
+          "defaults": {
+            "Busy": "false"
+          }
+        },
+        {
+          "id": "phase",
+          "kind": "set",
+          "var": "Phase",
+          "defaults": {
+            "Phase": "0"
+          }
+        },
+        {
+          "id": "getGeneration",
+          "kind": "get",
+          "var": "Generation"
+        },
+        {
+          "id": "generationadd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "generation",
+          "kind": "set",
+          "var": "Generation"
+        }
+      ],
+      "links": [
+        [
+          "getPendingJob.PendingJob",
+          "check.Object"
+        ],
+        [
+          "check.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "getPendingJob.PendingJob",
+          "destroy.self"
+        ],
+        [
+          "getReadyMaterials.ReadyMaterials",
+          "materials.TargetArray"
+        ],
+        [
+          "getFPComponents.FPComponents",
+          "fpcomponents.TargetArray"
+        ],
+        [
+          "getWorkItems.WorkItems",
+          "work.TargetArray"
+        ],
+        [
+          "getRetryItems.RetryItems",
+          "pending.TargetArray"
+        ],
+        [
+          "getNextRetry.NextRetry",
+          "nextretry.TargetArray"
+        ],
+        [
+          "getGeneration.Generation",
+          "generationadd.A"
+        ],
+        [
+          "generationadd.ReturnValue",
+          "generation.Generation"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "destroy.execute"
+        ],
+        [
+          "destroy.then",
+          "job.execute"
+        ],
+        [
+          "job.then",
+          "mesh.execute"
+        ],
+        [
+          "mesh.then",
+          "materials.execute"
+        ],
+        [
+          "materials.then",
+          "fp.execute"
+        ],
+        [
+          "fp.then",
+          "fpcomponents.execute"
+        ],
+        [
+          "fpcomponents.then",
+          "work.execute"
+        ],
+        [
+          "work.then",
+          "pending.execute"
+        ],
+        [
+          "pending.then",
+          "nextretry.execute"
+        ],
+        [
+          "nextretry.then",
+          "stop.execute"
+        ],
+        [
+          "stop.then",
+          "phase.execute"
+        ],
+        [
+          "phase.then",
+          "generation.execute"
+        ],
+        [
+          "valid.else",
+          "job.execute"
+        ]
+      ]
+    },
+    {
+      "name": "BeginBatch",
+      "inputs": [
+        {
+          "name": "Mutations",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenMutation[]"
+        },
+        {
+          "name": "ReplaceAll",
+          "type": "bool"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getBusy",
+          "kind": "get",
+          "var": "Busy"
+        },
+        {
+          "id": "idle",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "allowedstart0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "allowed",
+          "kind": "branch"
+        },
+        {
+          "id": "cancel",
+          "kind": "call",
+          "function": "self:CancelWork",
+          "defaults": {}
+        },
+        {
+          "id": "copy",
+          "kind": "set",
+          "var": "WorkItems"
+        },
+        {
+          "id": "resetWorkCursor",
+          "kind": "set",
+          "var": "WorkCursor",
+          "defaults": {
+            "WorkCursor": "0"
+          }
+        },
+        {
+          "id": "resetMaterialCursor",
+          "kind": "set",
+          "var": "MaterialCursor",
+          "defaults": {
+            "MaterialCursor": "0"
+          }
+        },
+        {
+          "id": "resetRetryPass",
+          "kind": "set",
+          "var": "RetryPass",
+          "defaults": {
+            "RetryPass": "0"
+          }
+        },
+        {
+          "id": "resetPlacedCount",
+          "kind": "set",
+          "var": "PlacedCount",
+          "defaults": {
+            "PlacedCount": "0"
+          }
+        },
+        {
+          "id": "resetHiddenCount",
+          "kind": "set",
+          "var": "HiddenCount",
+          "defaults": {
+            "HiddenCount": "0"
+          }
+        },
+        {
+          "id": "resetMovedCount",
+          "kind": "set",
+          "var": "MovedCount",
+          "defaults": {
+            "MovedCount": "0"
+          }
+        },
+        {
+          "id": "resetRefoundCount",
+          "kind": "set",
+          "var": "RefoundCount",
+          "defaults": {
+            "RefoundCount": "0"
+          }
+        },
+        {
+          "id": "resetDormantCount",
+          "kind": "set",
+          "var": "DormantCount",
+          "defaults": {
+            "DormantCount": "0"
+          }
+        },
+        {
+          "id": "resetErrorCount",
+          "kind": "set",
+          "var": "ErrorCount",
+          "defaults": {
+            "ErrorCount": "0"
+          }
+        },
+        {
+          "id": "resetFrames",
+          "kind": "set",
+          "var": "Frames",
+          "defaults": {
+            "Frames": "0"
+          }
+        },
+        {
+          "id": "resetWorkSeconds",
+          "kind": "set",
+          "var": "WorkSeconds",
+          "defaults": {
+            "WorkSeconds": "0"
+          }
+        },
+        {
+          "id": "resetSlowestStep",
+          "kind": "set",
+          "var": "SlowestStep",
+          "defaults": {
+            "SlowestStep": "0"
+          }
+        },
+        {
+          "id": "resetTotalSeconds",
+          "kind": "set",
+          "var": "TotalSeconds",
+          "defaults": {
+            "TotalSeconds": "0"
+          }
+        },
+        {
+          "id": "getIssues",
+          "kind": "get",
+          "var": "Issues"
+        },
+        {
+          "id": "issues",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "nowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "started",
+          "kind": "set",
+          "var": "StartedAt"
+        },
+        {
+          "id": "busy",
+          "kind": "set",
+          "var": "Busy",
+          "defaults": {
+            "Busy": "true"
+          }
+        },
+        {
+          "id": "replace",
+          "kind": "branch"
+        },
+        {
+          "id": "cleanup",
+          "kind": "set",
+          "var": "Phase",
+          "defaults": {
+            "Phase": "1"
+          }
+        },
+        {
+          "id": "refresh",
+          "kind": "call",
+          "function": "self:RefreshActors",
+          "defaults": {}
+        },
+        {
+          "id": "vanilla",
+          "kind": "set",
+          "var": "Phase",
+          "defaults": {
+            "Phase": "2"
+          }
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        }
+      ],
+      "links": [
+        [
+          "getBusy.Busy",
+          "idle.A"
+        ],
+        [
+          "idle.ReturnValue",
+          "allowedstart0.A"
+        ],
+        [
+          "entry.ReplaceAll",
+          "allowedstart0.B"
+        ],
+        [
+          "allowedstart0.ReturnValue",
+          "allowed.Condition"
+        ],
+        [
+          "entry.Mutations",
+          "copy.WorkItems"
+        ],
+        [
+          "getIssues.Issues",
+          "issues.TargetArray"
+        ],
+        [
+          "now.Seconds",
+          "nowsum.A"
+        ],
+        [
+          "now.PartialSeconds",
+          "nowsum.B"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "started.StartedAt"
+        ],
+        [
+          "entry.ReplaceAll",
+          "replace.Condition"
+        ],
+        [
+          "out.OK",
+          "result.Accepted"
+        ],
+        [
+          "entry.then",
+          "allowed.execute"
+        ],
+        [
+          "allowed.then",
+          "cancel.execute"
+        ],
+        [
+          "cancel.then",
+          "copy.execute"
+        ],
+        [
+          "copy.then",
+          "resetWorkCursor.execute"
+        ],
+        [
+          "resetWorkCursor.then",
+          "resetMaterialCursor.execute"
+        ],
+        [
+          "resetMaterialCursor.then",
+          "resetRetryPass.execute"
+        ],
+        [
+          "resetRetryPass.then",
+          "resetPlacedCount.execute"
+        ],
+        [
+          "resetPlacedCount.then",
+          "resetHiddenCount.execute"
+        ],
+        [
+          "resetHiddenCount.then",
+          "resetMovedCount.execute"
+        ],
+        [
+          "resetMovedCount.then",
+          "resetRefoundCount.execute"
+        ],
+        [
+          "resetRefoundCount.then",
+          "resetDormantCount.execute"
+        ],
+        [
+          "resetDormantCount.then",
+          "resetErrorCount.execute"
+        ],
+        [
+          "resetErrorCount.then",
+          "resetFrames.execute"
+        ],
+        [
+          "resetFrames.then",
+          "resetWorkSeconds.execute"
+        ],
+        [
+          "resetWorkSeconds.then",
+          "resetSlowestStep.execute"
+        ],
+        [
+          "resetSlowestStep.then",
+          "resetTotalSeconds.execute"
+        ],
+        [
+          "resetTotalSeconds.then",
+          "issues.execute"
+        ],
+        [
+          "issues.then",
+          "started.execute"
+        ],
+        [
+          "started.then",
+          "busy.execute"
+        ],
+        [
+          "busy.then",
+          "replace.execute"
+        ],
+        [
+          "replace.then",
+          "cleanup.execute"
+        ],
+        [
+          "cleanup.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "replace.else",
+          "refresh.execute"
+        ],
+        [
+          "refresh.then",
+          "vanilla.execute"
+        ],
+        [
+          "vanilla.then",
+          "yes.execute"
+        ],
+        [
+          "allowed.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "BeginLayout",
+      "inputs": [
+        {
+          "name": "Document",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Index",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "Batch",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenMutation[]"
+        },
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "schema",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:SchemaVersion"
+        },
+        {
+          "id": "version",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "supported",
+          "kind": "branch"
+        },
+        {
+          "id": "enabled",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Enabled"
+        },
+        {
+          "id": "active",
+          "kind": "branch"
+        },
+        {
+          "id": "entries",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Entries"
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Index"
+        },
+        {
+          "id": "list",
+          "kind": "get",
+          "var": "local:Batch"
+        },
+        {
+          "id": "length",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "mutation",
+          "kind": "make_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenMutation",
+          "defaults": {
+            "Present": "true"
+          }
+        },
+        {
+          "id": "append",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:Index"
+        },
+        {
+          "id": "begin",
+          "kind": "call",
+          "function": "self:BeginBatch",
+          "defaults": {
+            "ReplaceAll": "true"
+          }
+        },
+        {
+          "id": "ok",
+          "kind": "set",
+          "var": "local:OK"
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        }
+      ],
+      "links": [
+        [
+          "entry.Document",
+          "check.Object"
+        ],
+        [
+          "check.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.Document",
+          "schema.self"
+        ],
+        [
+          "schema.SchemaVersion",
+          "version.A"
+        ],
+        [
+          "version.ReturnValue",
+          "supported.Condition"
+        ],
+        [
+          "entry.Document",
+          "enabled.self"
+        ],
+        [
+          "enabled.Enabled",
+          "active.Condition"
+        ],
+        [
+          "entry.Document",
+          "entries.self"
+        ],
+        [
+          "entries.Entries",
+          "length.TargetArray"
+        ],
+        [
+          "i.Index",
+          "within.A"
+        ],
+        [
+          "length.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "entries.Entries",
+          "item.TargetArray"
+        ],
+        [
+          "i.Index",
+          "item.Index"
+        ],
+        [
+          "item.Item",
+          "mutation.Value"
+        ],
+        [
+          "list.Batch",
+          "append.TargetArray"
+        ],
+        [
+          "mutation.ST_DenMutation",
+          "append.NewItem"
+        ],
+        [
+          "i.Index",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.Index"
+        ],
+        [
+          "list.Batch",
+          "begin.Mutations"
+        ],
+        [
+          "begin.Accepted",
+          "ok.OK"
+        ],
+        [
+          "out.OK",
+          "result.Accepted"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "supported.execute"
+        ],
+        [
+          "supported.then",
+          "active.execute"
+        ],
+        [
+          "active.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "append.execute"
+        ],
+        [
+          "append.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "loop.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ],
+        [
+          "supported.else",
+          "result.execute"
+        ],
+        [
+          "active.else",
+          "begin.execute"
+        ],
+        [
+          "loop.else",
+          "begin.execute"
+        ],
+        [
+          "begin.then",
+          "ok.execute"
+        ],
+        [
+          "ok.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ReportIssue",
+      "inputs": [
+        {
+          "name": "Value",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "name": "Code",
+          "type": "int"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "row",
+          "kind": "make_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenApplyIssue"
+        },
+        {
+          "id": "getIssues",
+          "kind": "get",
+          "var": "Issues"
+        },
+        {
+          "id": "append",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "missing",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "dormant",
+          "kind": "branch"
+        },
+        {
+          "id": "getDormantCount",
+          "kind": "get",
+          "var": "DormantCount"
+        },
+        {
+          "id": "missingcountadd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "missingcount",
+          "kind": "set",
+          "var": "DormantCount"
+        },
+        {
+          "id": "getErrorCount",
+          "kind": "get",
+          "var": "ErrorCount"
+        },
+        {
+          "id": "errorsadd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "errors",
+          "kind": "set",
+          "var": "ErrorCount"
+        }
+      ],
+      "links": [
+        [
+          "entry.Value",
+          "row.Value"
+        ],
+        [
+          "entry.Code",
+          "row.Code"
+        ],
+        [
+          "getIssues.Issues",
+          "append.TargetArray"
+        ],
+        [
+          "row.ST_DenApplyIssue",
+          "append.NewItem"
+        ],
+        [
+          "entry.Code",
+          "missing.A"
+        ],
+        [
+          "missing.ReturnValue",
+          "dormant.Condition"
+        ],
+        [
+          "getDormantCount.DormantCount",
+          "missingcountadd.A"
+        ],
+        [
+          "missingcountadd.ReturnValue",
+          "missingcount.DormantCount"
+        ],
+        [
+          "getErrorCount.ErrorCount",
+          "errorsadd.A"
+        ],
+        [
+          "errorsadd.ReturnValue",
+          "errors.ErrorCount"
+        ],
+        [
+          "entry.then",
+          "append.execute"
+        ],
+        [
+          "append.then",
+          "dormant.execute"
+        ],
+        [
+          "dormant.then",
+          "missingcount.execute"
+        ],
+        [
+          "dormant.else",
+          "errors.execute"
+        ]
+      ]
+    },
+    {
+      "name": "CountNative",
+      "inputs": [
+        {
+          "name": "Value",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "name": "Present",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "data",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "present",
+          "kind": "branch"
+        },
+        {
+          "id": "hidden",
+          "kind": "branch"
+        },
+        {
+          "id": "getHiddenCount",
+          "kind": "get",
+          "var": "HiddenCount"
+        },
+        {
+          "id": "hiddenplusadd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "hiddenplus",
+          "kind": "set",
+          "var": "HiddenCount"
+        },
+        {
+          "id": "hastransform0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "hastransform1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "moved",
+          "kind": "branch"
+        },
+        {
+          "id": "getMovedCount",
+          "kind": "get",
+          "var": "MovedCount"
+        },
+        {
+          "id": "moveplusadd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "moveplus",
+          "kind": "set",
+          "var": "MovedCount"
+        }
+      ],
+      "links": [
+        [
+          "entry.Value",
+          "data.ST_DenEntry"
+        ],
+        [
+          "entry.Present",
+          "present.Condition"
+        ],
+        [
+          "data.Hidden",
+          "hidden.Condition"
+        ],
+        [
+          "getHiddenCount.HiddenCount",
+          "hiddenplusadd.A"
+        ],
+        [
+          "hiddenplusadd.ReturnValue",
+          "hiddenplus.HiddenCount"
+        ],
+        [
+          "data.HasPosition",
+          "hastransform0.A"
+        ],
+        [
+          "data.HasRotation",
+          "hastransform0.B"
+        ],
+        [
+          "hastransform0.ReturnValue",
+          "hastransform1.A"
+        ],
+        [
+          "data.HasScale",
+          "hastransform1.B"
+        ],
+        [
+          "hastransform1.ReturnValue",
+          "moved.Condition"
+        ],
+        [
+          "getMovedCount.MovedCount",
+          "moveplusadd.A"
+        ],
+        [
+          "moveplusadd.ReturnValue",
+          "moveplus.MovedCount"
+        ],
+        [
+          "entry.then",
+          "present.execute"
+        ],
+        [
+          "present.then",
+          "hidden.execute"
+        ],
+        [
+          "hidden.then",
+          "hiddenplus.execute"
+        ],
+        [
+          "hiddenplus.then",
+          "moved.execute"
+        ],
+        [
+          "moved.then",
+          "moveplus.execute"
+        ],
+        [
+          "hidden.else",
+          "moved.execute"
+        ]
+      ]
+    },
+    {
+      "name": "FinishWork",
+      "nodes": [
+        {
+          "id": "stop",
+          "kind": "set",
+          "var": "Busy",
+          "defaults": {
+            "Busy": "false"
+          }
+        },
+        {
+          "id": "phase",
+          "kind": "set",
+          "var": "Phase",
+          "defaults": {
+            "Phase": "0"
+          }
+        },
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "nowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getStartedAt",
+          "kind": "get",
+          "var": "StartedAt"
+        },
+        {
+          "id": "elapsed",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "total",
+          "kind": "set",
+          "var": "TotalSeconds"
+        },
+        {
+          "id": "getWorkItems",
+          "kind": "get",
+          "var": "WorkItems"
+        },
+        {
+          "id": "work",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "getRetryItems",
+          "kind": "get",
+          "var": "RetryItems"
+        },
+        {
+          "id": "retry",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "getNextRetry",
+          "kind": "get",
+          "var": "NextRetry"
+        },
+        {
+          "id": "next",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "now.Seconds",
+          "nowsum.A"
+        ],
+        [
+          "now.PartialSeconds",
+          "nowsum.B"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "elapsed.A"
+        ],
+        [
+          "getStartedAt.StartedAt",
+          "elapsed.B"
+        ],
+        [
+          "elapsed.ReturnValue",
+          "total.TotalSeconds"
+        ],
+        [
+          "getWorkItems.WorkItems",
+          "work.TargetArray"
+        ],
+        [
+          "getRetryItems.RetryItems",
+          "retry.TargetArray"
+        ],
+        [
+          "getNextRetry.NextRetry",
+          "next.TargetArray"
+        ],
+        [
+          "entry.then",
+          "stop.execute"
+        ],
+        [
+          "stop.then",
+          "phase.execute"
+        ],
+        [
+          "phase.then",
+          "total.execute"
+        ],
+        [
+          "total.then",
+          "work.execute"
+        ],
+        [
+          "work.then",
+          "retry.execute"
+        ],
+        [
+          "retry.then",
+          "next.execute"
+        ]
+      ]
+    },
+    {
+      "name": "CleanupStep",
+      "outputs": [
+        {
+          "name": "Continue",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getPlaced",
+          "kind": "get",
+          "var": "Placed"
+        },
+        {
+          "id": "plen",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "pnonempty",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "hasprops",
+          "kind": "branch"
+        },
+        {
+          "id": "prop",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {
+            "Index": "0"
+          }
+        },
+        {
+          "id": "pvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "propvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "destroy",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:K2_DestroyActor",
+          "defaults": {}
+        },
+        {
+          "id": "removeprop",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Remove",
+          "defaults": {
+            "IndexToRemove": "0"
+          }
+        },
+        {
+          "id": "getRecords",
+          "kind": "get",
+          "var": "Records"
+        },
+        {
+          "id": "rlen",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "rnonempty",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "hasrecords",
+          "kind": "branch"
+        },
+        {
+          "id": "record",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {
+            "Index": "0"
+          }
+        },
+        {
+          "id": "rvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "recordvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "restore",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenVanillaRecord:Apply",
+          "defaults": {
+            "Present": "false"
+          }
+        },
+        {
+          "id": "removerecord",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Remove",
+          "defaults": {
+            "IndexToRemove": "0"
+          }
+        },
+        {
+          "id": "refresh",
+          "kind": "call",
+          "function": "self:RefreshActors",
+          "defaults": {}
+        },
+        {
+          "id": "next",
+          "kind": "set",
+          "var": "Phase",
+          "defaults": {
+            "Phase": "2"
+          }
+        },
+        {
+          "id": "resultvalue",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {
+            "A": "false"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getPlaced.Placed",
+          "plen.TargetArray"
+        ],
+        [
+          "plen.ReturnValue",
+          "pnonempty.A"
+        ],
+        [
+          "pnonempty.ReturnValue",
+          "hasprops.Condition"
+        ],
+        [
+          "getPlaced.Placed",
+          "prop.TargetArray"
+        ],
+        [
+          "prop.Item",
+          "pvalid.Object"
+        ],
+        [
+          "pvalid.ReturnValue",
+          "propvalid.Condition"
+        ],
+        [
+          "prop.Item",
+          "destroy.self"
+        ],
+        [
+          "getPlaced.Placed",
+          "removeprop.TargetArray"
+        ],
+        [
+          "getRecords.Records",
+          "rlen.TargetArray"
+        ],
+        [
+          "rlen.ReturnValue",
+          "rnonempty.A"
+        ],
+        [
+          "rnonempty.ReturnValue",
+          "hasrecords.Condition"
+        ],
+        [
+          "getRecords.Records",
+          "record.TargetArray"
+        ],
+        [
+          "record.Item",
+          "rvalid.Object"
+        ],
+        [
+          "rvalid.ReturnValue",
+          "recordvalid.Condition"
+        ],
+        [
+          "record.Item",
+          "restore.self"
+        ],
+        [
+          "getRecords.Records",
+          "removerecord.TargetArray"
+        ],
+        [
+          "resultvalue.ReturnValue",
+          "result.Continue"
+        ],
+        [
+          "entry.then",
+          "hasprops.execute"
+        ],
+        [
+          "hasprops.then",
+          "propvalid.execute"
+        ],
+        [
+          "propvalid.then",
+          "destroy.execute"
+        ],
+        [
+          "destroy.then",
+          "removeprop.execute"
+        ],
+        [
+          "removeprop.then",
+          "result.execute"
+        ],
+        [
+          "propvalid.else",
+          "removeprop.execute"
+        ],
+        [
+          "hasprops.else",
+          "hasrecords.execute"
+        ],
+        [
+          "hasrecords.then",
+          "recordvalid.execute"
+        ],
+        [
+          "recordvalid.then",
+          "restore.execute"
+        ],
+        [
+          "restore.then",
+          "removerecord.execute"
+        ],
+        [
+          "removerecord.then",
+          "result.execute"
+        ],
+        [
+          "recordvalid.else",
+          "removerecord.execute"
+        ],
+        [
+          "hasrecords.else",
+          "refresh.execute"
+        ],
+        [
+          "refresh.then",
+          "next.execute"
+        ],
+        [
+          "next.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "DropPendingNative",
+      "inputs": [
+        {
+          "name": "Key",
+          "type": "string"
+        }
+      ],
+      "locals": [
+        {
+          "name": "PendingIndex",
+          "type": "int",
+          "default": "0"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:PendingIndex"
+        },
+        {
+          "id": "getRetryItems",
+          "kind": "get",
+          "var": "RetryItems"
+        },
+        {
+          "id": "len",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "mutation",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenMutation"
+        },
+        {
+          "id": "data",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "equal",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "same",
+          "kind": "branch"
+        },
+        {
+          "id": "remove",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Remove",
+          "defaults": {}
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:PendingIndex"
+        }
+      ],
+      "links": [
+        [
+          "getRetryItems.RetryItems",
+          "len.TargetArray"
+        ],
+        [
+          "i.PendingIndex",
+          "within.A"
+        ],
+        [
+          "len.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "getRetryItems.RetryItems",
+          "item.TargetArray"
+        ],
+        [
+          "i.PendingIndex",
+          "item.Index"
+        ],
+        [
+          "item.Item",
+          "mutation.ST_DenMutation"
+        ],
+        [
+          "mutation.Value",
+          "data.ST_DenEntry"
+        ],
+        [
+          "data.Key",
+          "equal.A"
+        ],
+        [
+          "entry.Key",
+          "equal.B"
+        ],
+        [
+          "equal.ReturnValue",
+          "same.Condition"
+        ],
+        [
+          "getRetryItems.RetryItems",
+          "remove.TargetArray"
+        ],
+        [
+          "i.PendingIndex",
+          "remove.IndexToRemove"
+        ],
+        [
+          "i.PendingIndex",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.PendingIndex"
+        ],
+        [
+          "entry.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "same.execute"
+        ],
+        [
+          "same.then",
+          "remove.execute"
+        ],
+        [
+          "remove.then",
+          "loop.execute"
+        ],
+        [
+          "same.else",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "loop.execute"
+        ]
+      ]
+    },
+    {
+      "name": "NativeStep",
+      "outputs": [
+        {
+          "name": "Continue",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getWorkItems",
+          "kind": "get",
+          "var": "WorkItems"
+        },
+        {
+          "id": "getWorkCursor",
+          "kind": "get",
+          "var": "WorkCursor"
+        },
+        {
+          "id": "len",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "mutation",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenMutation"
+        },
+        {
+          "id": "value",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "kind",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "isnative",
+          "kind": "branch"
+        },
+        {
+          "id": "apply",
+          "kind": "call",
+          "function": "self:SetVanilla",
+          "defaults": {}
+        },
+        {
+          "id": "ok",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "success",
+          "kind": "branch"
+        },
+        {
+          "id": "count",
+          "kind": "call",
+          "function": "self:CountNative",
+          "defaults": {}
+        },
+        {
+          "id": "dormant",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "missing",
+          "kind": "branch"
+        },
+        {
+          "id": "getRetryItems",
+          "kind": "get",
+          "var": "RetryItems"
+        },
+        {
+          "id": "defer",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "issue",
+          "kind": "call",
+          "function": "self:ReportIssue",
+          "defaults": {}
+        },
+        {
+          "id": "advanceadd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "WorkCursor"
+        },
+        {
+          "id": "resultvalue",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {
+            "A": "false"
+          }
+        },
+        {
+          "id": "drop",
+          "kind": "call",
+          "function": "self:DropPendingNative",
+          "defaults": {}
+        },
+        {
+          "id": "reset",
+          "kind": "set",
+          "var": "WorkCursor",
+          "defaults": {
+            "WorkCursor": "0"
+          }
+        },
+        {
+          "id": "phase",
+          "kind": "set",
+          "var": "Phase",
+          "defaults": {
+            "Phase": "3"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getWorkItems.WorkItems",
+          "len.TargetArray"
+        ],
+        [
+          "getWorkCursor.WorkCursor",
+          "within.A"
+        ],
+        [
+          "len.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "getWorkItems.WorkItems",
+          "item.TargetArray"
+        ],
+        [
+          "getWorkCursor.WorkCursor",
+          "item.Index"
+        ],
+        [
+          "item.Item",
+          "mutation.ST_DenMutation"
+        ],
+        [
+          "mutation.Value",
+          "value.ST_DenEntry"
+        ],
+        [
+          "value.Kind",
+          "kind.A"
+        ],
+        [
+          "kind.ReturnValue",
+          "isnative.Condition"
+        ],
+        [
+          "value.Key",
+          "apply.Key"
+        ],
+        [
+          "mutation.Value",
+          "apply.Value"
+        ],
+        [
+          "mutation.Present",
+          "apply.Present"
+        ],
+        [
+          "apply.Status",
+          "ok.A"
+        ],
+        [
+          "ok.ReturnValue",
+          "success.Condition"
+        ],
+        [
+          "mutation.Value",
+          "count.Value"
+        ],
+        [
+          "mutation.Present",
+          "count.Present"
+        ],
+        [
+          "apply.Status",
+          "dormant.A"
+        ],
+        [
+          "dormant.ReturnValue",
+          "missing.Condition"
+        ],
+        [
+          "getRetryItems.RetryItems",
+          "defer.TargetArray"
+        ],
+        [
+          "item.Item",
+          "defer.NewItem"
+        ],
+        [
+          "mutation.Value",
+          "issue.Value"
+        ],
+        [
+          "apply.Status",
+          "issue.Code"
+        ],
+        [
+          "getWorkCursor.WorkCursor",
+          "advanceadd.A"
+        ],
+        [
+          "advanceadd.ReturnValue",
+          "advance.WorkCursor"
+        ],
+        [
+          "resultvalue.ReturnValue",
+          "result.Continue"
+        ],
+        [
+          "entry.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "isnative.execute"
+        ],
+        [
+          "value.Key",
+          "drop.Key"
+        ],
+        [
+          "isnative.then",
+          "drop.execute"
+        ],
+        [
+          "drop.then",
+          "apply.execute"
+        ],
+        [
+          "apply.then",
+          "success.execute"
+        ],
+        [
+          "success.then",
+          "count.execute"
+        ],
+        [
+          "count.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "result.execute"
+        ],
+        [
+          "isnative.else",
+          "advance.execute"
+        ],
+        [
+          "success.else",
+          "missing.execute"
+        ],
+        [
+          "missing.then",
+          "defer.execute"
+        ],
+        [
+          "defer.then",
+          "advance.execute"
+        ],
+        [
+          "missing.else",
+          "issue.execute"
+        ],
+        [
+          "issue.then",
+          "advance.execute"
+        ],
+        [
+          "loop.else",
+          "reset.execute"
+        ],
+        [
+          "reset.then",
+          "phase.execute"
+        ],
+        [
+          "phase.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ScheduleRetry",
+      "nodes": [
+        {
+          "id": "getRetryItems",
+          "kind": "get",
+          "var": "RetryItems"
+        },
+        {
+          "id": "len",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "nonempty",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "pending",
+          "kind": "branch"
+        },
+        {
+          "id": "getRetryPass",
+          "kind": "get",
+          "var": "RetryPass"
+        },
+        {
+          "id": "getMaxRetries",
+          "kind": "get",
+          "var": "MaxRetries"
+        },
+        {
+          "id": "attempts",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "allowed",
+          "kind": "branch"
+        },
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "nowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getRetryInterval",
+          "kind": "get",
+          "var": "RetryInterval"
+        },
+        {
+          "id": "deadline",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "settime",
+          "kind": "set",
+          "var": "RetryAt"
+        },
+        {
+          "id": "wait",
+          "kind": "set",
+          "var": "Phase",
+          "defaults": {
+            "Phase": "7"
+          }
+        },
+        {
+          "id": "dormant",
+          "kind": "set",
+          "var": "Phase",
+          "defaults": {
+            "Phase": "9"
+          }
+        },
+        {
+          "id": "reset",
+          "kind": "set",
+          "var": "WorkCursor",
+          "defaults": {
+            "WorkCursor": "0"
+          }
+        },
+        {
+          "id": "finish",
+          "kind": "call",
+          "function": "self:FinishWork",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getRetryItems.RetryItems",
+          "len.TargetArray"
+        ],
+        [
+          "len.ReturnValue",
+          "nonempty.A"
+        ],
+        [
+          "nonempty.ReturnValue",
+          "pending.Condition"
+        ],
+        [
+          "getRetryPass.RetryPass",
+          "attempts.A"
+        ],
+        [
+          "getMaxRetries.MaxRetries",
+          "attempts.B"
+        ],
+        [
+          "attempts.ReturnValue",
+          "allowed.Condition"
+        ],
+        [
+          "now.Seconds",
+          "nowsum.A"
+        ],
+        [
+          "now.PartialSeconds",
+          "nowsum.B"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "deadline.A"
+        ],
+        [
+          "getRetryInterval.RetryInterval",
+          "deadline.B"
+        ],
+        [
+          "deadline.ReturnValue",
+          "settime.RetryAt"
+        ],
+        [
+          "entry.then",
+          "reset.execute"
+        ],
+        [
+          "reset.then",
+          "pending.execute"
+        ],
+        [
+          "pending.then",
+          "allowed.execute"
+        ],
+        [
+          "allowed.then",
+          "settime.execute"
+        ],
+        [
+          "settime.then",
+          "wait.execute"
+        ],
+        [
+          "allowed.else",
+          "dormant.execute"
+        ],
+        [
+          "pending.else",
+          "finish.execute"
+        ]
+      ]
+    },
+    {
+      "name": "WaitRetry",
+      "outputs": [
+        {
+          "name": "Continue",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "nowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getRetryAt",
+          "kind": "get",
+          "var": "RetryAt"
+        },
+        {
+          "id": "due",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "ready",
+          "kind": "branch"
+        },
+        {
+          "id": "refresh",
+          "kind": "call",
+          "function": "self:RefreshActors",
+          "defaults": {}
+        },
+        {
+          "id": "getRetryPass",
+          "kind": "get",
+          "var": "RetryPass"
+        },
+        {
+          "id": "passadd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "pass",
+          "kind": "set",
+          "var": "RetryPass"
+        },
+        {
+          "id": "phase",
+          "kind": "set",
+          "var": "Phase",
+          "defaults": {
+            "Phase": "8"
+          }
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        }
+      ],
+      "links": [
+        [
+          "now.Seconds",
+          "nowsum.A"
+        ],
+        [
+          "now.PartialSeconds",
+          "nowsum.B"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "due.A"
+        ],
+        [
+          "getRetryAt.RetryAt",
+          "due.B"
+        ],
+        [
+          "due.ReturnValue",
+          "ready.Condition"
+        ],
+        [
+          "getRetryPass.RetryPass",
+          "passadd.A"
+        ],
+        [
+          "passadd.ReturnValue",
+          "pass.RetryPass"
+        ],
+        [
+          "out.OK",
+          "result.Continue"
+        ],
+        [
+          "entry.then",
+          "ready.execute"
+        ],
+        [
+          "ready.then",
+          "refresh.execute"
+        ],
+        [
+          "refresh.then",
+          "pass.execute"
+        ],
+        [
+          "pass.then",
+          "phase.execute"
+        ],
+        [
+          "phase.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "ready.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "RetryStep",
+      "outputs": [
+        {
+          "name": "Continue",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getRetryItems",
+          "kind": "get",
+          "var": "RetryItems"
+        },
+        {
+          "id": "getWorkCursor",
+          "kind": "get",
+          "var": "WorkCursor"
+        },
+        {
+          "id": "len",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "mutation",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenMutation"
+        },
+        {
+          "id": "value",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "kind",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "isnative",
+          "kind": "branch"
+        },
+        {
+          "id": "apply",
+          "kind": "call",
+          "function": "self:SetVanilla",
+          "defaults": {}
+        },
+        {
+          "id": "ok",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "success",
+          "kind": "branch"
+        },
+        {
+          "id": "count",
+          "kind": "call",
+          "function": "self:CountNative",
+          "defaults": {}
+        },
+        {
+          "id": "dormant",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "missing",
+          "kind": "branch"
+        },
+        {
+          "id": "getNextRetry",
+          "kind": "get",
+          "var": "NextRetry"
+        },
+        {
+          "id": "defer",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "issue",
+          "kind": "call",
+          "function": "self:ReportIssue",
+          "defaults": {}
+        },
+        {
+          "id": "advanceadd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "WorkCursor"
+        },
+        {
+          "id": "resultvalue",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {
+            "A": "false"
+          }
+        },
+        {
+          "id": "reset",
+          "kind": "set",
+          "var": "WorkCursor",
+          "defaults": {
+            "WorkCursor": "0"
+          }
+        },
+        {
+          "id": "copy",
+          "kind": "set",
+          "var": "RetryItems"
+        },
+        {
+          "id": "clear",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "schedule",
+          "kind": "call",
+          "function": "self:ScheduleRetry",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getRetryItems.RetryItems",
+          "len.TargetArray"
+        ],
+        [
+          "getWorkCursor.WorkCursor",
+          "within.A"
+        ],
+        [
+          "len.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "getRetryItems.RetryItems",
+          "item.TargetArray"
+        ],
+        [
+          "getWorkCursor.WorkCursor",
+          "item.Index"
+        ],
+        [
+          "item.Item",
+          "mutation.ST_DenMutation"
+        ],
+        [
+          "mutation.Value",
+          "value.ST_DenEntry"
+        ],
+        [
+          "value.Kind",
+          "kind.A"
+        ],
+        [
+          "kind.ReturnValue",
+          "isnative.Condition"
+        ],
+        [
+          "value.Key",
+          "apply.Key"
+        ],
+        [
+          "mutation.Value",
+          "apply.Value"
+        ],
+        [
+          "mutation.Present",
+          "apply.Present"
+        ],
+        [
+          "apply.Status",
+          "ok.A"
+        ],
+        [
+          "ok.ReturnValue",
+          "success.Condition"
+        ],
+        [
+          "mutation.Value",
+          "count.Value"
+        ],
+        [
+          "mutation.Present",
+          "count.Present"
+        ],
+        [
+          "apply.Status",
+          "dormant.A"
+        ],
+        [
+          "dormant.ReturnValue",
+          "missing.Condition"
+        ],
+        [
+          "getNextRetry.NextRetry",
+          "defer.TargetArray"
+        ],
+        [
+          "item.Item",
+          "defer.NewItem"
+        ],
+        [
+          "mutation.Value",
+          "issue.Value"
+        ],
+        [
+          "apply.Status",
+          "issue.Code"
+        ],
+        [
+          "getWorkCursor.WorkCursor",
+          "advanceadd.A"
+        ],
+        [
+          "advanceadd.ReturnValue",
+          "advance.WorkCursor"
+        ],
+        [
+          "resultvalue.ReturnValue",
+          "result.Continue"
+        ],
+        [
+          "entry.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "isnative.execute"
+        ],
+        [
+          "isnative.then",
+          "apply.execute"
+        ],
+        [
+          "apply.then",
+          "success.execute"
+        ],
+        [
+          "success.then",
+          "count.execute"
+        ],
+        [
+          "count.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "result.execute"
+        ],
+        [
+          "isnative.else",
+          "advance.execute"
+        ],
+        [
+          "success.else",
+          "missing.execute"
+        ],
+        [
+          "missing.then",
+          "defer.execute"
+        ],
+        [
+          "defer.then",
+          "advance.execute"
+        ],
+        [
+          "missing.else",
+          "issue.execute"
+        ],
+        [
+          "issue.then",
+          "advance.execute"
+        ],
+        [
+          "getNextRetry.NextRetry",
+          "copy.RetryItems"
+        ],
+        [
+          "getNextRetry.NextRetry",
+          "clear.TargetArray"
+        ],
+        [
+          "loop.else",
+          "reset.execute"
+        ],
+        [
+          "reset.then",
+          "copy.execute"
+        ],
+        [
+          "copy.then",
+          "clear.execute"
+        ],
+        [
+          "clear.then",
+          "schedule.execute"
+        ],
+        [
+          "schedule.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "DormantStep",
+      "outputs": [
+        {
+          "name": "Continue",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getRetryItems",
+          "kind": "get",
+          "var": "RetryItems"
+        },
+        {
+          "id": "len",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "getWorkCursor",
+          "kind": "get",
+          "var": "WorkCursor"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "mutation",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenMutation"
+        },
+        {
+          "id": "data",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "remember",
+          "kind": "set",
+          "var": "CurrentEntry"
+        },
+        {
+          "id": "fingerprint",
+          "kind": "branch"
+        },
+        {
+          "id": "split",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Split",
+          "defaults": {
+            "InStr": ":PersistentLevel.",
+            "SearchCase": "CaseSensitive",
+            "SearchDir": "FromStart"
+          }
+        },
+        {
+          "id": "identity",
+          "kind": "branch"
+        },
+        {
+          "id": "component",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": ".",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "actor",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "targetkind",
+          "kind": "set",
+          "var": "FPWantActor"
+        },
+        {
+          "id": "actorindex",
+          "kind": "set",
+          "var": "FPActorIndex",
+          "defaults": {
+            "FPActorIndex": "0"
+          }
+        },
+        {
+          "id": "componentindex",
+          "kind": "set",
+          "var": "FPComponentIndex",
+          "defaults": {
+            "FPComponentIndex": "-1"
+          }
+        },
+        {
+          "id": "found",
+          "kind": "set",
+          "var": "FPFound"
+        },
+        {
+          "id": "ambiguous",
+          "kind": "set",
+          "var": "FPAmbiguous",
+          "defaults": {
+            "FPAmbiguous": "false"
+          }
+        },
+        {
+          "id": "getFPComponents",
+          "kind": "get",
+          "var": "FPComponents"
+        },
+        {
+          "id": "components",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "phase",
+          "kind": "set",
+          "var": "Phase",
+          "defaults": {
+            "Phase": "10"
+          }
+        },
+        {
+          "id": "dormant",
+          "kind": "call",
+          "function": "self:ReportIssue",
+          "defaults": {
+            "Code": "2"
+          }
+        },
+        {
+          "id": "advanceadd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "WorkCursor"
+        },
+        {
+          "id": "finish",
+          "kind": "call",
+          "function": "self:FinishWork",
+          "defaults": {}
+        },
+        {
+          "id": "resultvalue",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {
+            "A": "false"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getRetryItems.RetryItems",
+          "len.TargetArray"
+        ],
+        [
+          "getWorkCursor.WorkCursor",
+          "within.A"
+        ],
+        [
+          "len.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "getRetryItems.RetryItems",
+          "item.TargetArray"
+        ],
+        [
+          "getWorkCursor.WorkCursor",
+          "item.Index"
+        ],
+        [
+          "item.Item",
+          "mutation.ST_DenMutation"
+        ],
+        [
+          "mutation.Value",
+          "data.ST_DenEntry"
+        ],
+        [
+          "mutation.Value",
+          "remember.CurrentEntry"
+        ],
+        [
+          "data.HasFingerprint",
+          "fingerprint.Condition"
+        ],
+        [
+          "data.Key",
+          "split.SourceString"
+        ],
+        [
+          "split.ReturnValue",
+          "identity.Condition"
+        ],
+        [
+          "split.RightS",
+          "component.SearchIn"
+        ],
+        [
+          "component.ReturnValue",
+          "actor.A"
+        ],
+        [
+          "actor.ReturnValue",
+          "targetkind.FPWantActor"
+        ],
+        [
+          "getFPComponents.FPComponents",
+          "components.TargetArray"
+        ],
+        [
+          "mutation.Value",
+          "dormant.Value"
+        ],
+        [
+          "getWorkCursor.WorkCursor",
+          "advanceadd.A"
+        ],
+        [
+          "advanceadd.ReturnValue",
+          "advance.WorkCursor"
+        ],
+        [
+          "resultvalue.ReturnValue",
+          "result.Continue"
+        ],
+        [
+          "entry.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "remember.execute"
+        ],
+        [
+          "remember.then",
+          "fingerprint.execute"
+        ],
+        [
+          "fingerprint.then",
+          "identity.execute"
+        ],
+        [
+          "identity.then",
+          "targetkind.execute"
+        ],
+        [
+          "targetkind.then",
+          "actorindex.execute"
+        ],
+        [
+          "actorindex.then",
+          "componentindex.execute"
+        ],
+        [
+          "componentindex.then",
+          "found.execute"
+        ],
+        [
+          "found.then",
+          "ambiguous.execute"
+        ],
+        [
+          "ambiguous.then",
+          "components.execute"
+        ],
+        [
+          "components.then",
+          "phase.execute"
+        ],
+        [
+          "phase.then",
+          "result.execute"
+        ],
+        [
+          "fingerprint.else",
+          "dormant.execute"
+        ],
+        [
+          "dormant.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "result.execute"
+        ],
+        [
+          "identity.else",
+          "dormant.execute"
+        ],
+        [
+          "loop.else",
+          "finish.execute"
+        ],
+        [
+          "finish.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ConsiderFingerprint",
+      "inputs": [
+        {
+          "name": "Component",
+          "type": "object:/Script/Engine.StaticMeshComponent"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Candidate",
+          "type": "object:/Script/CoreUObject.Object"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getCurrentEntry",
+          "kind": "get",
+          "var": "CurrentEntry"
+        },
+        {
+          "id": "data",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "instance",
+          "kind": "cast",
+          "class": "/Script/Engine.InstancedStaticMeshComponent"
+        },
+        {
+          "id": "mesh",
+          "kind": "get",
+          "var": "/Script/Engine.StaticMeshComponent:StaticMesh"
+        },
+        {
+          "id": "validmesh",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "meshvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "path",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:GetPathName",
+          "defaults": {}
+        },
+        {
+          "id": "same",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "location",
+          "kind": "call",
+          "function": "/Script/Engine.SceneComponent:K2_GetComponentLocation",
+          "defaults": {}
+        },
+        {
+          "id": "delta",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "distance",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Vector_GetAbsMax",
+          "defaults": {}
+        },
+        {
+          "id": "near",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "matches0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "match",
+          "kind": "branch"
+        },
+        {
+          "id": "getFPWantActor",
+          "kind": "get",
+          "var": "FPWantActor"
+        },
+        {
+          "id": "actor",
+          "kind": "branch"
+        },
+        {
+          "id": "owner",
+          "kind": "call",
+          "function": "/Script/Engine.ActorComponent:GetOwner",
+          "defaults": {}
+        },
+        {
+          "id": "saveactor",
+          "kind": "set",
+          "var": "local:Candidate"
+        },
+        {
+          "id": "savecomponent",
+          "kind": "set",
+          "var": "local:Candidate"
+        },
+        {
+          "id": "candidate",
+          "kind": "get",
+          "var": "local:Candidate"
+        },
+        {
+          "id": "getFPFound",
+          "kind": "get",
+          "var": "FPFound"
+        },
+        {
+          "id": "hasfound",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "previous",
+          "kind": "branch"
+        },
+        {
+          "id": "sameobject",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {}
+        },
+        {
+          "id": "duplicate",
+          "kind": "branch"
+        },
+        {
+          "id": "ambiguous",
+          "kind": "set",
+          "var": "FPAmbiguous",
+          "defaults": {
+            "FPAmbiguous": "true"
+          }
+        },
+        {
+          "id": "remember",
+          "kind": "set",
+          "var": "FPFound"
+        }
+      ],
+      "links": [
+        [
+          "getCurrentEntry.CurrentEntry",
+          "data.ST_DenEntry"
+        ],
+        [
+          "entry.Component",
+          "instance.Object"
+        ],
+        [
+          "entry.Component",
+          "mesh.self"
+        ],
+        [
+          "mesh.StaticMesh",
+          "validmesh.Object"
+        ],
+        [
+          "validmesh.ReturnValue",
+          "meshvalid.Condition"
+        ],
+        [
+          "mesh.StaticMesh",
+          "path.Object"
+        ],
+        [
+          "path.ReturnValue",
+          "same.A"
+        ],
+        [
+          "data.FingerprintMesh",
+          "same.B"
+        ],
+        [
+          "entry.Component",
+          "location.self"
+        ],
+        [
+          "location.ReturnValue",
+          "delta.A"
+        ],
+        [
+          "data.FingerprintPosition",
+          "delta.B"
+        ],
+        [
+          "delta.ReturnValue",
+          "distance.A"
+        ],
+        [
+          "distance.ReturnValue",
+          "near.A"
+        ],
+        [
+          "same.ReturnValue",
+          "matches0.A"
+        ],
+        [
+          "near.ReturnValue",
+          "matches0.B"
+        ],
+        [
+          "matches0.ReturnValue",
+          "match.Condition"
+        ],
+        [
+          "getFPWantActor.FPWantActor",
+          "actor.Condition"
+        ],
+        [
+          "entry.Component",
+          "owner.self"
+        ],
+        [
+          "owner.ReturnValue",
+          "saveactor.Candidate"
+        ],
+        [
+          "entry.Component",
+          "savecomponent.Candidate"
+        ],
+        [
+          "getFPFound.FPFound",
+          "hasfound.Object"
+        ],
+        [
+          "hasfound.ReturnValue",
+          "previous.Condition"
+        ],
+        [
+          "getFPFound.FPFound",
+          "sameobject.A"
+        ],
+        [
+          "candidate.Candidate",
+          "sameobject.B"
+        ],
+        [
+          "sameobject.ReturnValue",
+          "duplicate.Condition"
+        ],
+        [
+          "candidate.Candidate",
+          "remember.FPFound"
+        ],
+        [
+          "entry.then",
+          "instance.execute"
+        ],
+        [
+          "instance.CastFailed",
+          "meshvalid.execute"
+        ],
+        [
+          "meshvalid.then",
+          "match.execute"
+        ],
+        [
+          "match.then",
+          "actor.execute"
+        ],
+        [
+          "actor.then",
+          "saveactor.execute"
+        ],
+        [
+          "saveactor.then",
+          "previous.execute"
+        ],
+        [
+          "previous.then",
+          "duplicate.execute"
+        ],
+        [
+          "actor.else",
+          "savecomponent.execute"
+        ],
+        [
+          "savecomponent.then",
+          "previous.execute"
+        ],
+        [
+          "previous.else",
+          "remember.execute"
+        ],
+        [
+          "duplicate.else",
+          "ambiguous.execute"
+        ]
+      ]
+    },
+    {
+      "name": "FinishFingerprint",
+      "nodes": [
+        {
+          "id": "getCurrentEntry",
+          "kind": "get",
+          "var": "CurrentEntry"
+        },
+        {
+          "id": "data",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "getFPAmbiguous",
+          "kind": "get",
+          "var": "FPAmbiguous"
+        },
+        {
+          "id": "unique",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "getFPFound",
+          "kind": "get",
+          "var": "FPFound"
+        },
+        {
+          "id": "valid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "usable0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "found",
+          "kind": "branch"
+        },
+        {
+          "id": "bind",
+          "kind": "call",
+          "function": "self:BindVanilla",
+          "defaults": {}
+        },
+        {
+          "id": "bound",
+          "kind": "branch"
+        },
+        {
+          "id": "apply",
+          "kind": "call",
+          "function": "self:SetVanilla",
+          "defaults": {
+            "Present": "true"
+          }
+        },
+        {
+          "id": "ok",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "applied",
+          "kind": "branch"
+        },
+        {
+          "id": "count",
+          "kind": "call",
+          "function": "self:CountNative",
+          "defaults": {
+            "Present": "true"
+          }
+        },
+        {
+          "id": "getRefoundCount",
+          "kind": "get",
+          "var": "RefoundCount"
+        },
+        {
+          "id": "refoundadd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "refound",
+          "kind": "set",
+          "var": "RefoundCount"
+        },
+        {
+          "id": "dormant",
+          "kind": "call",
+          "function": "self:ReportIssue",
+          "defaults": {
+            "Code": "2"
+          }
+        },
+        {
+          "id": "invalid",
+          "kind": "call",
+          "function": "self:ReportIssue",
+          "defaults": {}
+        },
+        {
+          "id": "getWorkCursor",
+          "kind": "get",
+          "var": "WorkCursor"
+        },
+        {
+          "id": "advanceadd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "WorkCursor"
+        },
+        {
+          "id": "phase",
+          "kind": "set",
+          "var": "Phase",
+          "defaults": {
+            "Phase": "9"
+          }
+        },
+        {
+          "id": "release",
+          "kind": "set",
+          "var": "FPFound"
+        },
+        {
+          "id": "getFPComponents",
+          "kind": "get",
+          "var": "FPComponents"
+        },
+        {
+          "id": "clear",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getCurrentEntry.CurrentEntry",
+          "data.ST_DenEntry"
+        ],
+        [
+          "getFPAmbiguous.FPAmbiguous",
+          "unique.A"
+        ],
+        [
+          "getFPFound.FPFound",
+          "valid.Object"
+        ],
+        [
+          "unique.ReturnValue",
+          "usable0.A"
+        ],
+        [
+          "valid.ReturnValue",
+          "usable0.B"
+        ],
+        [
+          "usable0.ReturnValue",
+          "found.Condition"
+        ],
+        [
+          "data.Key",
+          "bind.Key"
+        ],
+        [
+          "getFPFound.FPFound",
+          "bind.Object"
+        ],
+        [
+          "bind.Accepted",
+          "bound.Condition"
+        ],
+        [
+          "data.Key",
+          "apply.Key"
+        ],
+        [
+          "getCurrentEntry.CurrentEntry",
+          "apply.Value"
+        ],
+        [
+          "apply.Status",
+          "ok.A"
+        ],
+        [
+          "ok.ReturnValue",
+          "applied.Condition"
+        ],
+        [
+          "getCurrentEntry.CurrentEntry",
+          "count.Value"
+        ],
+        [
+          "getRefoundCount.RefoundCount",
+          "refoundadd.A"
+        ],
+        [
+          "refoundadd.ReturnValue",
+          "refound.RefoundCount"
+        ],
+        [
+          "getCurrentEntry.CurrentEntry",
+          "dormant.Value"
+        ],
+        [
+          "getCurrentEntry.CurrentEntry",
+          "invalid.Value"
+        ],
+        [
+          "apply.Status",
+          "invalid.Code"
+        ],
+        [
+          "getWorkCursor.WorkCursor",
+          "advanceadd.A"
+        ],
+        [
+          "advanceadd.ReturnValue",
+          "advance.WorkCursor"
+        ],
+        [
+          "getFPComponents.FPComponents",
+          "clear.TargetArray"
+        ],
+        [
+          "entry.then",
+          "found.execute"
+        ],
+        [
+          "found.then",
+          "bind.execute"
+        ],
+        [
+          "bind.then",
+          "bound.execute"
+        ],
+        [
+          "bound.then",
+          "apply.execute"
+        ],
+        [
+          "apply.then",
+          "applied.execute"
+        ],
+        [
+          "applied.then",
+          "count.execute"
+        ],
+        [
+          "count.then",
+          "refound.execute"
+        ],
+        [
+          "refound.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "phase.execute"
+        ],
+        [
+          "phase.then",
+          "release.execute"
+        ],
+        [
+          "release.then",
+          "clear.execute"
+        ],
+        [
+          "found.else",
+          "dormant.execute"
+        ],
+        [
+          "dormant.then",
+          "advance.execute"
+        ],
+        [
+          "bound.else",
+          "dormant.execute"
+        ],
+        [
+          "applied.else",
+          "invalid.execute"
+        ],
+        [
+          "invalid.then",
+          "advance.execute"
+        ]
+      ]
+    },
+    {
+      "name": "FingerprintStep",
+      "outputs": [
+        {
+          "name": "Continue",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getWorldActors",
+          "kind": "get",
+          "var": "WorldActors"
+        },
+        {
+          "id": "len",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "getFPActorIndex",
+          "kind": "get",
+          "var": "FPActorIndex"
+        },
+        {
+          "id": "awithin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "actors",
+          "kind": "branch"
+        },
+        {
+          "id": "actor",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "avalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "owner",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:GetOwner",
+          "defaults": {}
+        },
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "managed",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {}
+        },
+        {
+          "id": "owned",
+          "kind": "branch"
+        },
+        {
+          "id": "getFPComponentIndex",
+          "kind": "get",
+          "var": "FPComponentIndex"
+        },
+        {
+          "id": "cindex",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "ready",
+          "kind": "branch"
+        },
+        {
+          "id": "list",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:K2_GetComponentsByClass",
+          "defaults": {
+            "ComponentClass": "/Script/Engine.StaticMeshComponent"
+          }
+        },
+        {
+          "id": "cache",
+          "kind": "set",
+          "var": "FPComponents"
+        },
+        {
+          "id": "reset",
+          "kind": "set",
+          "var": "FPComponentIndex",
+          "defaults": {
+            "FPComponentIndex": "0"
+          }
+        },
+        {
+          "id": "getFPComponents",
+          "kind": "get",
+          "var": "FPComponents"
+        },
+        {
+          "id": "clen",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "cwithin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "component",
+          "kind": "branch"
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "validcomponent",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "cvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/Script/Engine.StaticMeshComponent"
+        },
+        {
+          "id": "consider",
+          "kind": "call",
+          "function": "self:ConsiderFingerprint",
+          "defaults": {}
+        },
+        {
+          "id": "advancecomponentadd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advancecomponent",
+          "kind": "set",
+          "var": "FPComponentIndex"
+        },
+        {
+          "id": "advanceactoradd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advanceactor",
+          "kind": "set",
+          "var": "FPActorIndex"
+        },
+        {
+          "id": "unloaded",
+          "kind": "set",
+          "var": "FPComponentIndex",
+          "defaults": {
+            "FPComponentIndex": "-1"
+          }
+        },
+        {
+          "id": "release",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "finish",
+          "kind": "call",
+          "function": "self:FinishFingerprint",
+          "defaults": {}
+        },
+        {
+          "id": "resultvalue",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {
+            "A": "false"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getWorldActors.WorldActors",
+          "len.TargetArray"
+        ],
+        [
+          "getFPActorIndex.FPActorIndex",
+          "awithin.A"
+        ],
+        [
+          "len.ReturnValue",
+          "awithin.B"
+        ],
+        [
+          "awithin.ReturnValue",
+          "actors.Condition"
+        ],
+        [
+          "getWorldActors.WorldActors",
+          "actor.TargetArray"
+        ],
+        [
+          "getFPActorIndex.FPActorIndex",
+          "actor.Index"
+        ],
+        [
+          "actor.Item",
+          "avalid.Object"
+        ],
+        [
+          "avalid.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "actor.Item",
+          "owner.self"
+        ],
+        [
+          "owner.ReturnValue",
+          "managed.A"
+        ],
+        [
+          "self.self",
+          "managed.B"
+        ],
+        [
+          "managed.ReturnValue",
+          "owned.Condition"
+        ],
+        [
+          "getFPComponentIndex.FPComponentIndex",
+          "cindex.A"
+        ],
+        [
+          "cindex.ReturnValue",
+          "ready.Condition"
+        ],
+        [
+          "actor.Item",
+          "list.self"
+        ],
+        [
+          "list.ReturnValue",
+          "cache.FPComponents"
+        ],
+        [
+          "getFPComponents.FPComponents",
+          "clen.TargetArray"
+        ],
+        [
+          "getFPComponentIndex.FPComponentIndex",
+          "cwithin.A"
+        ],
+        [
+          "clen.ReturnValue",
+          "cwithin.B"
+        ],
+        [
+          "cwithin.ReturnValue",
+          "component.Condition"
+        ],
+        [
+          "getFPComponents.FPComponents",
+          "item.TargetArray"
+        ],
+        [
+          "getFPComponentIndex.FPComponentIndex",
+          "item.Index"
+        ],
+        [
+          "item.Item",
+          "validcomponent.Object"
+        ],
+        [
+          "validcomponent.ReturnValue",
+          "cvalid.Condition"
+        ],
+        [
+          "item.Item",
+          "cast.Object"
+        ],
+        [
+          "cast.AsStatic Mesh Component",
+          "consider.Component"
+        ],
+        [
+          "getFPComponentIndex.FPComponentIndex",
+          "advancecomponentadd.A"
+        ],
+        [
+          "advancecomponentadd.ReturnValue",
+          "advancecomponent.FPComponentIndex"
+        ],
+        [
+          "getFPActorIndex.FPActorIndex",
+          "advanceactoradd.A"
+        ],
+        [
+          "advanceactoradd.ReturnValue",
+          "advanceactor.FPActorIndex"
+        ],
+        [
+          "getFPComponents.FPComponents",
+          "release.TargetArray"
+        ],
+        [
+          "resultvalue.ReturnValue",
+          "result.Continue"
+        ],
+        [
+          "entry.then",
+          "actors.execute"
+        ],
+        [
+          "actors.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "owned.execute"
+        ],
+        [
+          "owned.then",
+          "advanceactor.execute"
+        ],
+        [
+          "advanceactor.then",
+          "unloaded.execute"
+        ],
+        [
+          "unloaded.then",
+          "release.execute"
+        ],
+        [
+          "release.then",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "advanceactor.execute"
+        ],
+        [
+          "owned.else",
+          "ready.execute"
+        ],
+        [
+          "ready.then",
+          "component.execute"
+        ],
+        [
+          "component.then",
+          "cvalid.execute"
+        ],
+        [
+          "cvalid.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "consider.execute"
+        ],
+        [
+          "consider.then",
+          "advancecomponent.execute"
+        ],
+        [
+          "advancecomponent.then",
+          "result.execute"
+        ],
+        [
+          "ready.else",
+          "cache.execute"
+        ],
+        [
+          "cache.then",
+          "reset.execute"
+        ],
+        [
+          "reset.then",
+          "result.execute"
+        ],
+        [
+          "component.else",
+          "advanceactor.execute"
+        ],
+        [
+          "cvalid.else",
+          "advancecomponent.execute"
+        ],
+        [
+          "cast.CastFailed",
+          "advancecomponent.execute"
+        ],
+        [
+          "actors.else",
+          "finish.execute"
+        ],
+        [
+          "finish.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "StartAsset",
+      "inputs": [
+        {
+          "name": "Path",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "identity",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeTransform",
+          "defaults": {
+            "Scale": "1,1,1"
+          }
+        },
+        {
+          "id": "spawn",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:BeginDeferredActorSpawnFromClass",
+          "defaults": {
+            "ActorClass": "/DenDesignerGF/Runtime/BP_DenAssetJob",
+            "CollisionHandlingOverride": "AlwaysSpawn"
+          }
+        },
+        {
+          "id": "finish",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:FinishSpawningActor",
+          "defaults": {}
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenAssetJob"
+        },
+        {
+          "id": "remember",
+          "kind": "set",
+          "var": "PendingJob"
+        },
+        {
+          "id": "getPendingJob",
+          "kind": "get",
+          "var": "PendingJob"
+        },
+        {
+          "id": "request",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenAssetJob:Request",
+          "defaults": {}
+        },
+        {
+          "id": "ok",
+          "kind": "set",
+          "var": "local:OK"
+        },
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "nowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "time",
+          "kind": "set",
+          "var": "RequestAt"
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        }
+      ],
+      "links": [
+        [
+          "self.self",
+          "spawn.WorldContextObject"
+        ],
+        [
+          "self.self",
+          "spawn.Owner"
+        ],
+        [
+          "identity.ReturnValue",
+          "spawn.SpawnTransform"
+        ],
+        [
+          "spawn.ReturnValue",
+          "finish.Actor"
+        ],
+        [
+          "identity.ReturnValue",
+          "finish.SpawnTransform"
+        ],
+        [
+          "finish.ReturnValue",
+          "cast.Object"
+        ],
+        [
+          "cast.AsBP Den Asset Job",
+          "remember.PendingJob"
+        ],
+        [
+          "getPendingJob.PendingJob",
+          "request.self"
+        ],
+        [
+          "entry.Path",
+          "request.Path"
+        ],
+        [
+          "request.Accepted",
+          "ok.OK"
+        ],
+        [
+          "now.Seconds",
+          "nowsum.A"
+        ],
+        [
+          "now.PartialSeconds",
+          "nowsum.B"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "time.RequestAt"
+        ],
+        [
+          "out.OK",
+          "result.Accepted"
+        ],
+        [
+          "entry.then",
+          "spawn.execute"
+        ],
+        [
+          "spawn.then",
+          "finish.execute"
+        ],
+        [
+          "finish.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "remember.execute"
+        ],
+        [
+          "remember.then",
+          "request.execute"
+        ],
+        [
+          "request.then",
+          "ok.execute"
+        ],
+        [
+          "ok.then",
+          "time.execute"
+        ],
+        [
+          "time.then",
+          "result.execute"
+        ],
+        [
+          "cast.CastFailed",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ReleaseAsset",
+      "nodes": [
+        {
+          "id": "getPendingJob",
+          "kind": "get",
+          "var": "PendingJob"
+        },
+        {
+          "id": "check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "destroy",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:K2_DestroyActor",
+          "defaults": {}
+        },
+        {
+          "id": "forget",
+          "kind": "set",
+          "var": "PendingJob"
+        }
+      ],
+      "links": [
+        [
+          "getPendingJob.PendingJob",
+          "check.Object"
+        ],
+        [
+          "check.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "getPendingJob.PendingJob",
+          "destroy.self"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "destroy.execute"
+        ],
+        [
+          "destroy.then",
+          "forget.execute"
+        ],
+        [
+          "valid.else",
+          "forget.execute"
+        ]
+      ]
+    },
+    {
+      "name": "AdvancePlaced",
+      "nodes": [
+        {
+          "id": "release",
+          "kind": "call",
+          "function": "self:ReleaseAsset",
+          "defaults": {}
+        },
+        {
+          "id": "mesh",
+          "kind": "set",
+          "var": "ReadyMesh"
+        },
+        {
+          "id": "getReadyMaterials",
+          "kind": "get",
+          "var": "ReadyMaterials"
+        },
+        {
+          "id": "materials",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "materialindex",
+          "kind": "set",
+          "var": "MaterialCursor",
+          "defaults": {
+            "MaterialCursor": "0"
+          }
+        },
+        {
+          "id": "getWorkCursor",
+          "kind": "get",
+          "var": "WorkCursor"
+        },
+        {
+          "id": "advanceadd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "WorkCursor"
+        },
+        {
+          "id": "phase",
+          "kind": "set",
+          "var": "Phase",
+          "defaults": {
+            "Phase": "3"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getReadyMaterials.ReadyMaterials",
+          "materials.TargetArray"
+        ],
+        [
+          "getWorkCursor.WorkCursor",
+          "advanceadd.A"
+        ],
+        [
+          "advanceadd.ReturnValue",
+          "advance.WorkCursor"
+        ],
+        [
+          "entry.then",
+          "release.execute"
+        ],
+        [
+          "release.then",
+          "mesh.execute"
+        ],
+        [
+          "mesh.then",
+          "materials.execute"
+        ],
+        [
+          "materials.then",
+          "materialindex.execute"
+        ],
+        [
+          "materialindex.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "phase.execute"
+        ]
+      ]
+    },
+    {
+      "name": "PlacedStep",
+      "outputs": [
+        {
+          "name": "Continue",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getWorkItems",
+          "kind": "get",
+          "var": "WorkItems"
+        },
+        {
+          "id": "len",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "getWorkCursor",
+          "kind": "get",
+          "var": "WorkCursor"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "mutation",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenMutation"
+        },
+        {
+          "id": "data",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "kind",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "placed",
+          "kind": "branch"
+        },
+        {
+          "id": "stored",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "native",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "skipkind0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "skip",
+          "kind": "branch"
+        },
+        {
+          "id": "badkind",
+          "kind": "call",
+          "function": "self:ReportIssue",
+          "defaults": {
+            "Code": "3"
+          }
+        },
+        {
+          "id": "present",
+          "kind": "branch"
+        },
+        {
+          "id": "remove",
+          "kind": "call",
+          "function": "self:RemovePlaced",
+          "defaults": {}
+        },
+        {
+          "id": "current",
+          "kind": "set",
+          "var": "CurrentEntry"
+        },
+        {
+          "id": "load",
+          "kind": "call",
+          "function": "self:StartAsset",
+          "defaults": {}
+        },
+        {
+          "id": "accepted",
+          "kind": "branch"
+        },
+        {
+          "id": "phase",
+          "kind": "set",
+          "var": "Phase",
+          "defaults": {
+            "Phase": "4"
+          }
+        },
+        {
+          "id": "badmesh",
+          "kind": "call",
+          "function": "self:ReportIssue",
+          "defaults": {
+            "Code": "4"
+          }
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "self:AdvancePlaced",
+          "defaults": {}
+        },
+        {
+          "id": "retry",
+          "kind": "call",
+          "function": "self:ScheduleRetry",
+          "defaults": {}
+        },
+        {
+          "id": "resultvalue",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {
+            "A": "false"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getWorkItems.WorkItems",
+          "len.TargetArray"
+        ],
+        [
+          "getWorkCursor.WorkCursor",
+          "within.A"
+        ],
+        [
+          "len.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "getWorkItems.WorkItems",
+          "item.TargetArray"
+        ],
+        [
+          "getWorkCursor.WorkCursor",
+          "item.Index"
+        ],
+        [
+          "item.Item",
+          "mutation.ST_DenMutation"
+        ],
+        [
+          "mutation.Value",
+          "data.ST_DenEntry"
+        ],
+        [
+          "data.Kind",
+          "kind.A"
+        ],
+        [
+          "kind.ReturnValue",
+          "placed.Condition"
+        ],
+        [
+          "data.Kind",
+          "stored.A"
+        ],
+        [
+          "data.Kind",
+          "native.A"
+        ],
+        [
+          "stored.ReturnValue",
+          "skipkind0.A"
+        ],
+        [
+          "native.ReturnValue",
+          "skipkind0.B"
+        ],
+        [
+          "skipkind0.ReturnValue",
+          "skip.Condition"
+        ],
+        [
+          "mutation.Value",
+          "badkind.Value"
+        ],
+        [
+          "mutation.Present",
+          "present.Condition"
+        ],
+        [
+          "data.Key",
+          "remove.Key"
+        ],
+        [
+          "mutation.Value",
+          "current.CurrentEntry"
+        ],
+        [
+          "data.Mesh",
+          "load.Path"
+        ],
+        [
+          "load.Accepted",
+          "accepted.Condition"
+        ],
+        [
+          "mutation.Value",
+          "badmesh.Value"
+        ],
+        [
+          "resultvalue.ReturnValue",
+          "result.Continue"
+        ],
+        [
+          "entry.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "placed.execute"
+        ],
+        [
+          "placed.then",
+          "present.execute"
+        ],
+        [
+          "present.then",
+          "current.execute"
+        ],
+        [
+          "current.then",
+          "load.execute"
+        ],
+        [
+          "load.then",
+          "accepted.execute"
+        ],
+        [
+          "accepted.then",
+          "phase.execute"
+        ],
+        [
+          "phase.then",
+          "result.execute"
+        ],
+        [
+          "accepted.else",
+          "badmesh.execute"
+        ],
+        [
+          "badmesh.then",
+          "next.execute"
+        ],
+        [
+          "next.then",
+          "result.execute"
+        ],
+        [
+          "present.else",
+          "remove.execute"
+        ],
+        [
+          "remove.then",
+          "next.execute"
+        ],
+        [
+          "placed.else",
+          "skip.execute"
+        ],
+        [
+          "skip.then",
+          "next.execute"
+        ],
+        [
+          "skip.else",
+          "badkind.execute"
+        ],
+        [
+          "badkind.then",
+          "next.execute"
+        ],
+        [
+          "loop.else",
+          "retry.execute"
+        ],
+        [
+          "retry.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "WaitMesh",
+      "outputs": [
+        {
+          "name": "Continue",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getPendingJob",
+          "kind": "get",
+          "var": "PendingJob"
+        },
+        {
+          "id": "check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "done",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenAssetJob:Done"
+        },
+        {
+          "id": "donecheck",
+          "kind": "branch"
+        },
+        {
+          "id": "loaded",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenAssetJob:Result"
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/Script/Engine.StaticMesh"
+        },
+        {
+          "id": "save",
+          "kind": "set",
+          "var": "ReadyMesh"
+        },
+        {
+          "id": "release",
+          "kind": "call",
+          "function": "self:ReleaseAsset",
+          "defaults": {}
+        },
+        {
+          "id": "phase",
+          "kind": "set",
+          "var": "Phase",
+          "defaults": {
+            "Phase": "5"
+          }
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        },
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "nowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getRequestAt",
+          "kind": "get",
+          "var": "RequestAt"
+        },
+        {
+          "id": "elapsed",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getAssetTimeout",
+          "kind": "get",
+          "var": "AssetTimeout"
+        },
+        {
+          "id": "timeout",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "expired",
+          "kind": "branch"
+        },
+        {
+          "id": "badasset",
+          "kind": "call",
+          "function": "self:ReportIssue",
+          "defaults": {
+            "Code": "4"
+          }
+        },
+        {
+          "id": "getCurrentEntry",
+          "kind": "get",
+          "var": "CurrentEntry"
+        },
+        {
+          "id": "timedout",
+          "kind": "call",
+          "function": "self:ReportIssue",
+          "defaults": {
+            "Code": "5"
+          }
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "self:AdvancePlaced",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getPendingJob.PendingJob",
+          "check.Object"
+        ],
+        [
+          "check.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "getPendingJob.PendingJob",
+          "done.self"
+        ],
+        [
+          "done.Done",
+          "donecheck.Condition"
+        ],
+        [
+          "getPendingJob.PendingJob",
+          "loaded.self"
+        ],
+        [
+          "loaded.Result",
+          "cast.Object"
+        ],
+        [
+          "cast.AsStatic Mesh",
+          "save.ReadyMesh"
+        ],
+        [
+          "out.OK",
+          "result.Continue"
+        ],
+        [
+          "now.Seconds",
+          "nowsum.A"
+        ],
+        [
+          "now.PartialSeconds",
+          "nowsum.B"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "elapsed.A"
+        ],
+        [
+          "getRequestAt.RequestAt",
+          "elapsed.B"
+        ],
+        [
+          "elapsed.ReturnValue",
+          "timeout.A"
+        ],
+        [
+          "getAssetTimeout.AssetTimeout",
+          "timeout.B"
+        ],
+        [
+          "timeout.ReturnValue",
+          "expired.Condition"
+        ],
+        [
+          "getCurrentEntry.CurrentEntry",
+          "badasset.Value"
+        ],
+        [
+          "getCurrentEntry.CurrentEntry",
+          "timedout.Value"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "donecheck.execute"
+        ],
+        [
+          "donecheck.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "save.execute"
+        ],
+        [
+          "save.then",
+          "release.execute"
+        ],
+        [
+          "release.then",
+          "phase.execute"
+        ],
+        [
+          "phase.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "badasset.execute"
+        ],
+        [
+          "badasset.then",
+          "next.execute"
+        ],
+        [
+          "next.then",
+          "yes.execute"
+        ],
+        [
+          "cast.CastFailed",
+          "badasset.execute"
+        ],
+        [
+          "donecheck.else",
+          "expired.execute"
+        ],
+        [
+          "expired.then",
+          "timedout.execute"
+        ],
+        [
+          "timedout.then",
+          "next.execute"
+        ],
+        [
+          "expired.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "MaterialStep",
+      "outputs": [
+        {
+          "name": "Continue",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getCurrentEntry",
+          "kind": "get",
+          "var": "CurrentEntry"
+        },
+        {
+          "id": "data",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "len",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "getMaterialCursor",
+          "kind": "get",
+          "var": "MaterialCursor"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "path",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "empty",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "default",
+          "kind": "branch"
+        },
+        {
+          "id": "getReadyMaterials",
+          "kind": "get",
+          "var": "ReadyMaterials"
+        },
+        {
+          "id": "append",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "advanceadd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "MaterialCursor"
+        },
+        {
+          "id": "load",
+          "kind": "call",
+          "function": "self:StartAsset",
+          "defaults": {}
+        },
+        {
+          "id": "accepted",
+          "kind": "branch"
+        },
+        {
+          "id": "phase",
+          "kind": "set",
+          "var": "Phase",
+          "defaults": {
+            "Phase": "6"
+          }
+        },
+        {
+          "id": "badmaterial",
+          "kind": "call",
+          "function": "self:ReportIssue",
+          "defaults": {
+            "Code": "4"
+          }
+        },
+        {
+          "id": "apply",
+          "kind": "call",
+          "function": "self:SetPlaced",
+          "defaults": {}
+        },
+        {
+          "id": "getPreviewOnly",
+          "kind": "get",
+          "var": "PreviewOnly"
+        },
+        {
+          "id": "getReadyMesh",
+          "kind": "get",
+          "var": "ReadyMesh"
+        },
+        {
+          "id": "ok",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "applied",
+          "kind": "branch"
+        },
+        {
+          "id": "getPlacedCount",
+          "kind": "get",
+          "var": "PlacedCount"
+        },
+        {
+          "id": "countadd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "count",
+          "kind": "set",
+          "var": "PlacedCount"
+        },
+        {
+          "id": "issue",
+          "kind": "call",
+          "function": "self:ReportIssue",
+          "defaults": {}
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "self:AdvancePlaced",
+          "defaults": {}
+        },
+        {
+          "id": "resultvalue",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {
+            "A": "false"
+          }
+        },
+        {
+          "id": "previewonly",
+          "kind": "branch"
+        },
+        {
+          "id": "hidepreview",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:SetActorHiddenInGame",
+          "defaults": {
+            "bNewHidden": "true"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getCurrentEntry.CurrentEntry",
+          "data.ST_DenEntry"
+        ],
+        [
+          "data.Materials",
+          "len.TargetArray"
+        ],
+        [
+          "getMaterialCursor.MaterialCursor",
+          "within.A"
+        ],
+        [
+          "len.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "data.Materials",
+          "path.TargetArray"
+        ],
+        [
+          "getMaterialCursor.MaterialCursor",
+          "path.Index"
+        ],
+        [
+          "path.Item",
+          "empty.A"
+        ],
+        [
+          "empty.ReturnValue",
+          "default.Condition"
+        ],
+        [
+          "getReadyMaterials.ReadyMaterials",
+          "append.TargetArray"
+        ],
+        [
+          "getMaterialCursor.MaterialCursor",
+          "advanceadd.A"
+        ],
+        [
+          "advanceadd.ReturnValue",
+          "advance.MaterialCursor"
+        ],
+        [
+          "path.Item",
+          "load.Path"
+        ],
+        [
+          "load.Accepted",
+          "accepted.Condition"
+        ],
+        [
+          "getCurrentEntry.CurrentEntry",
+          "badmaterial.Value"
+        ],
+        [
+          "getPreviewOnly.PreviewOnly",
+          "apply.Ghost"
+        ],
+        [
+          "getCurrentEntry.CurrentEntry",
+          "apply.Value"
+        ],
+        [
+          "getReadyMesh.ReadyMesh",
+          "apply.LoadedMesh"
+        ],
+        [
+          "getReadyMaterials.ReadyMaterials",
+          "apply.LoadedMaterials"
+        ],
+        [
+          "apply.Status",
+          "ok.A"
+        ],
+        [
+          "ok.ReturnValue",
+          "applied.Condition"
+        ],
+        [
+          "getPlacedCount.PlacedCount",
+          "countadd.A"
+        ],
+        [
+          "countadd.ReturnValue",
+          "count.PlacedCount"
+        ],
+        [
+          "getCurrentEntry.CurrentEntry",
+          "issue.Value"
+        ],
+        [
+          "apply.Status",
+          "issue.Code"
+        ],
+        [
+          "resultvalue.ReturnValue",
+          "result.Continue"
+        ],
+        [
+          "entry.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "default.execute"
+        ],
+        [
+          "default.then",
+          "append.execute"
+        ],
+        [
+          "append.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "result.execute"
+        ],
+        [
+          "default.else",
+          "load.execute"
+        ],
+        [
+          "load.then",
+          "accepted.execute"
+        ],
+        [
+          "accepted.then",
+          "phase.execute"
+        ],
+        [
+          "phase.then",
+          "result.execute"
+        ],
+        [
+          "accepted.else",
+          "badmaterial.execute"
+        ],
+        [
+          "badmaterial.then",
+          "next.execute"
+        ],
+        [
+          "next.then",
+          "result.execute"
+        ],
+        [
+          "getPreviewOnly.PreviewOnly",
+          "previewonly.Condition"
+        ],
+        [
+          "apply.Prop",
+          "hidepreview.self"
+        ],
+        [
+          "loop.else",
+          "apply.execute"
+        ],
+        [
+          "apply.then",
+          "applied.execute"
+        ],
+        [
+          "applied.then",
+          "count.execute"
+        ],
+        [
+          "count.then",
+          "previewonly.execute"
+        ],
+        [
+          "previewonly.then",
+          "hidepreview.execute"
+        ],
+        [
+          "hidepreview.then",
+          "next.execute"
+        ],
+        [
+          "previewonly.else",
+          "next.execute"
+        ],
+        [
+          "applied.else",
+          "issue.execute"
+        ],
+        [
+          "issue.then",
+          "next.execute"
+        ]
+      ]
+    },
+    {
+      "name": "WaitMaterial",
+      "outputs": [
+        {
+          "name": "Continue",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getPendingJob",
+          "kind": "get",
+          "var": "PendingJob"
+        },
+        {
+          "id": "check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "done",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenAssetJob:Done"
+        },
+        {
+          "id": "donecheck",
+          "kind": "branch"
+        },
+        {
+          "id": "loaded",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenAssetJob:Result"
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/Script/Engine.MaterialInterface"
+        },
+        {
+          "id": "getReadyMaterials",
+          "kind": "get",
+          "var": "ReadyMaterials"
+        },
+        {
+          "id": "save",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "getMaterialCursor",
+          "kind": "get",
+          "var": "MaterialCursor"
+        },
+        {
+          "id": "advanceadd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "MaterialCursor"
+        },
+        {
+          "id": "release",
+          "kind": "call",
+          "function": "self:ReleaseAsset",
+          "defaults": {}
+        },
+        {
+          "id": "phase",
+          "kind": "set",
+          "var": "Phase",
+          "defaults": {
+            "Phase": "5"
+          }
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        },
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "nowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getRequestAt",
+          "kind": "get",
+          "var": "RequestAt"
+        },
+        {
+          "id": "elapsed",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getAssetTimeout",
+          "kind": "get",
+          "var": "AssetTimeout"
+        },
+        {
+          "id": "timeout",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "expired",
+          "kind": "branch"
+        },
+        {
+          "id": "badasset",
+          "kind": "call",
+          "function": "self:ReportIssue",
+          "defaults": {
+            "Code": "4"
+          }
+        },
+        {
+          "id": "getCurrentEntry",
+          "kind": "get",
+          "var": "CurrentEntry"
+        },
+        {
+          "id": "timedout",
+          "kind": "call",
+          "function": "self:ReportIssue",
+          "defaults": {
+            "Code": "5"
+          }
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "self:AdvancePlaced",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getPendingJob.PendingJob",
+          "check.Object"
+        ],
+        [
+          "check.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "getPendingJob.PendingJob",
+          "done.self"
+        ],
+        [
+          "done.Done",
+          "donecheck.Condition"
+        ],
+        [
+          "getPendingJob.PendingJob",
+          "loaded.self"
+        ],
+        [
+          "loaded.Result",
+          "cast.Object"
+        ],
+        [
+          "getReadyMaterials.ReadyMaterials",
+          "save.TargetArray"
+        ],
+        [
+          "cast.AsMaterial Interface",
+          "save.NewItem"
+        ],
+        [
+          "getMaterialCursor.MaterialCursor",
+          "advanceadd.A"
+        ],
+        [
+          "advanceadd.ReturnValue",
+          "advance.MaterialCursor"
+        ],
+        [
+          "out.OK",
+          "result.Continue"
+        ],
+        [
+          "now.Seconds",
+          "nowsum.A"
+        ],
+        [
+          "now.PartialSeconds",
+          "nowsum.B"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "elapsed.A"
+        ],
+        [
+          "getRequestAt.RequestAt",
+          "elapsed.B"
+        ],
+        [
+          "elapsed.ReturnValue",
+          "timeout.A"
+        ],
+        [
+          "getAssetTimeout.AssetTimeout",
+          "timeout.B"
+        ],
+        [
+          "timeout.ReturnValue",
+          "expired.Condition"
+        ],
+        [
+          "getCurrentEntry.CurrentEntry",
+          "badasset.Value"
+        ],
+        [
+          "getCurrentEntry.CurrentEntry",
+          "timedout.Value"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "donecheck.execute"
+        ],
+        [
+          "donecheck.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "save.execute"
+        ],
+        [
+          "save.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "release.execute"
+        ],
+        [
+          "release.then",
+          "phase.execute"
+        ],
+        [
+          "phase.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "badasset.execute"
+        ],
+        [
+          "badasset.then",
+          "next.execute"
+        ],
+        [
+          "next.then",
+          "yes.execute"
+        ],
+        [
+          "cast.CastFailed",
+          "badasset.execute"
+        ],
+        [
+          "donecheck.else",
+          "expired.execute"
+        ],
+        [
+          "expired.then",
+          "timedout.execute"
+        ],
+        [
+          "timedout.then",
+          "next.execute"
+        ],
+        [
+          "expired.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "StepWork",
+      "outputs": [
+        {
+          "name": "Continue",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        },
+        {
+          "id": "getPhase",
+          "kind": "get",
+          "var": "Phase"
+        },
+        {
+          "id": "equal1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "phase1",
+          "kind": "branch"
+        },
+        {
+          "id": "call1",
+          "kind": "call",
+          "function": "self:CleanupStep",
+          "defaults": {}
+        },
+        {
+          "id": "set1",
+          "kind": "set",
+          "var": "local:OK"
+        },
+        {
+          "id": "equal2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "phase2",
+          "kind": "branch"
+        },
+        {
+          "id": "call2",
+          "kind": "call",
+          "function": "self:NativeStep",
+          "defaults": {}
+        },
+        {
+          "id": "set2",
+          "kind": "set",
+          "var": "local:OK"
+        },
+        {
+          "id": "equal3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "3"
+          }
+        },
+        {
+          "id": "phase3",
+          "kind": "branch"
+        },
+        {
+          "id": "call3",
+          "kind": "call",
+          "function": "self:PlacedStep",
+          "defaults": {}
+        },
+        {
+          "id": "set3",
+          "kind": "set",
+          "var": "local:OK"
+        },
+        {
+          "id": "equal4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "4"
+          }
+        },
+        {
+          "id": "phase4",
+          "kind": "branch"
+        },
+        {
+          "id": "call4",
+          "kind": "call",
+          "function": "self:WaitMesh",
+          "defaults": {}
+        },
+        {
+          "id": "set4",
+          "kind": "set",
+          "var": "local:OK"
+        },
+        {
+          "id": "equal5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "5"
+          }
+        },
+        {
+          "id": "phase5",
+          "kind": "branch"
+        },
+        {
+          "id": "call5",
+          "kind": "call",
+          "function": "self:MaterialStep",
+          "defaults": {}
+        },
+        {
+          "id": "set5",
+          "kind": "set",
+          "var": "local:OK"
+        },
+        {
+          "id": "equal6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "6"
+          }
+        },
+        {
+          "id": "phase6",
+          "kind": "branch"
+        },
+        {
+          "id": "call6",
+          "kind": "call",
+          "function": "self:WaitMaterial",
+          "defaults": {}
+        },
+        {
+          "id": "set6",
+          "kind": "set",
+          "var": "local:OK"
+        },
+        {
+          "id": "equal7",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "7"
+          }
+        },
+        {
+          "id": "phase7",
+          "kind": "branch"
+        },
+        {
+          "id": "call7",
+          "kind": "call",
+          "function": "self:WaitRetry",
+          "defaults": {}
+        },
+        {
+          "id": "set7",
+          "kind": "set",
+          "var": "local:OK"
+        },
+        {
+          "id": "equal8",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "8"
+          }
+        },
+        {
+          "id": "phase8",
+          "kind": "branch"
+        },
+        {
+          "id": "call8",
+          "kind": "call",
+          "function": "self:RetryStep",
+          "defaults": {}
+        },
+        {
+          "id": "set8",
+          "kind": "set",
+          "var": "local:OK"
+        },
+        {
+          "id": "equal9",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "9"
+          }
+        },
+        {
+          "id": "phase9",
+          "kind": "branch"
+        },
+        {
+          "id": "call9",
+          "kind": "call",
+          "function": "self:DormantStep",
+          "defaults": {}
+        },
+        {
+          "id": "set9",
+          "kind": "set",
+          "var": "local:OK"
+        },
+        {
+          "id": "equal10",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "10"
+          }
+        },
+        {
+          "id": "phase10",
+          "kind": "branch"
+        },
+        {
+          "id": "call10",
+          "kind": "call",
+          "function": "self:FingerprintStep",
+          "defaults": {}
+        },
+        {
+          "id": "set10",
+          "kind": "set",
+          "var": "local:OK"
+        },
+        {
+          "id": "finish",
+          "kind": "call",
+          "function": "self:FinishWork",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "out.OK",
+          "result.Continue"
+        ],
+        [
+          "getPhase.Phase",
+          "equal1.A"
+        ],
+        [
+          "equal1.ReturnValue",
+          "phase1.Condition"
+        ],
+        [
+          "call1.Continue",
+          "set1.OK"
+        ],
+        [
+          "phase1.then",
+          "call1.execute"
+        ],
+        [
+          "call1.then",
+          "set1.execute"
+        ],
+        [
+          "set1.then",
+          "result.execute"
+        ],
+        [
+          "getPhase.Phase",
+          "equal2.A"
+        ],
+        [
+          "equal2.ReturnValue",
+          "phase2.Condition"
+        ],
+        [
+          "call2.Continue",
+          "set2.OK"
+        ],
+        [
+          "phase2.then",
+          "call2.execute"
+        ],
+        [
+          "call2.then",
+          "set2.execute"
+        ],
+        [
+          "set2.then",
+          "result.execute"
+        ],
+        [
+          "phase1.else",
+          "phase2.execute"
+        ],
+        [
+          "getPhase.Phase",
+          "equal3.A"
+        ],
+        [
+          "equal3.ReturnValue",
+          "phase3.Condition"
+        ],
+        [
+          "call3.Continue",
+          "set3.OK"
+        ],
+        [
+          "phase3.then",
+          "call3.execute"
+        ],
+        [
+          "call3.then",
+          "set3.execute"
+        ],
+        [
+          "set3.then",
+          "result.execute"
+        ],
+        [
+          "phase2.else",
+          "phase3.execute"
+        ],
+        [
+          "getPhase.Phase",
+          "equal4.A"
+        ],
+        [
+          "equal4.ReturnValue",
+          "phase4.Condition"
+        ],
+        [
+          "call4.Continue",
+          "set4.OK"
+        ],
+        [
+          "phase4.then",
+          "call4.execute"
+        ],
+        [
+          "call4.then",
+          "set4.execute"
+        ],
+        [
+          "set4.then",
+          "result.execute"
+        ],
+        [
+          "phase3.else",
+          "phase4.execute"
+        ],
+        [
+          "getPhase.Phase",
+          "equal5.A"
+        ],
+        [
+          "equal5.ReturnValue",
+          "phase5.Condition"
+        ],
+        [
+          "call5.Continue",
+          "set5.OK"
+        ],
+        [
+          "phase5.then",
+          "call5.execute"
+        ],
+        [
+          "call5.then",
+          "set5.execute"
+        ],
+        [
+          "set5.then",
+          "result.execute"
+        ],
+        [
+          "phase4.else",
+          "phase5.execute"
+        ],
+        [
+          "getPhase.Phase",
+          "equal6.A"
+        ],
+        [
+          "equal6.ReturnValue",
+          "phase6.Condition"
+        ],
+        [
+          "call6.Continue",
+          "set6.OK"
+        ],
+        [
+          "phase6.then",
+          "call6.execute"
+        ],
+        [
+          "call6.then",
+          "set6.execute"
+        ],
+        [
+          "set6.then",
+          "result.execute"
+        ],
+        [
+          "phase5.else",
+          "phase6.execute"
+        ],
+        [
+          "getPhase.Phase",
+          "equal7.A"
+        ],
+        [
+          "equal7.ReturnValue",
+          "phase7.Condition"
+        ],
+        [
+          "call7.Continue",
+          "set7.OK"
+        ],
+        [
+          "phase7.then",
+          "call7.execute"
+        ],
+        [
+          "call7.then",
+          "set7.execute"
+        ],
+        [
+          "set7.then",
+          "result.execute"
+        ],
+        [
+          "phase6.else",
+          "phase7.execute"
+        ],
+        [
+          "getPhase.Phase",
+          "equal8.A"
+        ],
+        [
+          "equal8.ReturnValue",
+          "phase8.Condition"
+        ],
+        [
+          "call8.Continue",
+          "set8.OK"
+        ],
+        [
+          "phase8.then",
+          "call8.execute"
+        ],
+        [
+          "call8.then",
+          "set8.execute"
+        ],
+        [
+          "set8.then",
+          "result.execute"
+        ],
+        [
+          "phase7.else",
+          "phase8.execute"
+        ],
+        [
+          "getPhase.Phase",
+          "equal9.A"
+        ],
+        [
+          "equal9.ReturnValue",
+          "phase9.Condition"
+        ],
+        [
+          "call9.Continue",
+          "set9.OK"
+        ],
+        [
+          "phase9.then",
+          "call9.execute"
+        ],
+        [
+          "call9.then",
+          "set9.execute"
+        ],
+        [
+          "set9.then",
+          "result.execute"
+        ],
+        [
+          "phase8.else",
+          "phase9.execute"
+        ],
+        [
+          "getPhase.Phase",
+          "equal10.A"
+        ],
+        [
+          "equal10.ReturnValue",
+          "phase10.Condition"
+        ],
+        [
+          "call10.Continue",
+          "set10.OK"
+        ],
+        [
+          "phase10.then",
+          "call10.execute"
+        ],
+        [
+          "call10.then",
+          "set10.execute"
+        ],
+        [
+          "set10.then",
+          "result.execute"
+        ],
+        [
+          "phase9.else",
+          "phase10.execute"
+        ],
+        [
+          "entry.then",
+          "phase1.execute"
+        ],
+        [
+          "phase10.else",
+          "finish.execute"
+        ],
+        [
+          "finish.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Pump",
+      "locals": [
+        {
+          "name": "FrameStart",
+          "type": "double"
+        },
+        {
+          "name": "StepStart",
+          "type": "double"
+        },
+        {
+          "name": "Duration",
+          "type": "double"
+        },
+        {
+          "name": "Steps",
+          "type": "int",
+          "default": "0"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getBusy",
+          "kind": "get",
+          "var": "Busy"
+        },
+        {
+          "id": "busy",
+          "kind": "branch"
+        },
+        {
+          "id": "getFrames",
+          "kind": "get",
+          "var": "Frames"
+        },
+        {
+          "id": "frameadd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "frame",
+          "kind": "set",
+          "var": "Frames"
+        },
+        {
+          "id": "beginclock",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "beginclocksum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "start",
+          "kind": "set",
+          "var": "local:FrameStart"
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Steps"
+        },
+        {
+          "id": "starttime",
+          "kind": "get",
+          "var": "local:FrameStart"
+        },
+        {
+          "id": "steptime",
+          "kind": "get",
+          "var": "local:StepStart"
+        },
+        {
+          "id": "getMaxSteps",
+          "kind": "get",
+          "var": "MaxSteps"
+        },
+        {
+          "id": "bounded",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "clock",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "clocksum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "elapsed",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getBudgetSeconds",
+          "kind": "get",
+          "var": "BudgetSeconds"
+        },
+        {
+          "id": "budget",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "first",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "timeok0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "continue0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "continue1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "stepclock",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "stepclocksum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "stepstart",
+          "kind": "set",
+          "var": "local:StepStart"
+        },
+        {
+          "id": "step",
+          "kind": "call",
+          "function": "self:StepWork",
+          "defaults": {}
+        },
+        {
+          "id": "endclock",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "endclocksum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "duration",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "durationcopy",
+          "kind": "set",
+          "var": "local:Duration"
+        },
+        {
+          "id": "d",
+          "kind": "get",
+          "var": "local:Duration"
+        },
+        {
+          "id": "getWorkSeconds",
+          "kind": "get",
+          "var": "WorkSeconds"
+        },
+        {
+          "id": "total",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "work",
+          "kind": "set",
+          "var": "WorkSeconds"
+        },
+        {
+          "id": "getSlowestStep",
+          "kind": "get",
+          "var": "SlowestStep"
+        },
+        {
+          "id": "max",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {}
+        },
+        {
+          "id": "slowest",
+          "kind": "set",
+          "var": "SlowestStep"
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:Steps"
+        },
+        {
+          "id": "more",
+          "kind": "branch"
+        }
+      ],
+      "links": [
+        [
+          "getBusy.Busy",
+          "busy.Condition"
+        ],
+        [
+          "getFrames.Frames",
+          "frameadd.A"
+        ],
+        [
+          "frameadd.ReturnValue",
+          "frame.Frames"
+        ],
+        [
+          "beginclock.Seconds",
+          "beginclocksum.A"
+        ],
+        [
+          "beginclock.PartialSeconds",
+          "beginclocksum.B"
+        ],
+        [
+          "beginclocksum.ReturnValue",
+          "start.FrameStart"
+        ],
+        [
+          "i.Steps",
+          "bounded.A"
+        ],
+        [
+          "getMaxSteps.MaxSteps",
+          "bounded.B"
+        ],
+        [
+          "clock.Seconds",
+          "clocksum.A"
+        ],
+        [
+          "clock.PartialSeconds",
+          "clocksum.B"
+        ],
+        [
+          "clocksum.ReturnValue",
+          "elapsed.A"
+        ],
+        [
+          "starttime.FrameStart",
+          "elapsed.B"
+        ],
+        [
+          "elapsed.ReturnValue",
+          "budget.A"
+        ],
+        [
+          "getBudgetSeconds.BudgetSeconds",
+          "budget.B"
+        ],
+        [
+          "i.Steps",
+          "first.A"
+        ],
+        [
+          "first.ReturnValue",
+          "timeok0.A"
+        ],
+        [
+          "budget.ReturnValue",
+          "timeok0.B"
+        ],
+        [
+          "getBusy.Busy",
+          "continue0.A"
+        ],
+        [
+          "bounded.ReturnValue",
+          "continue0.B"
+        ],
+        [
+          "continue0.ReturnValue",
+          "continue1.A"
+        ],
+        [
+          "timeok0.ReturnValue",
+          "continue1.B"
+        ],
+        [
+          "continue1.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "stepclock.Seconds",
+          "stepclocksum.A"
+        ],
+        [
+          "stepclock.PartialSeconds",
+          "stepclocksum.B"
+        ],
+        [
+          "stepclocksum.ReturnValue",
+          "stepstart.StepStart"
+        ],
+        [
+          "endclock.Seconds",
+          "endclocksum.A"
+        ],
+        [
+          "endclock.PartialSeconds",
+          "endclocksum.B"
+        ],
+        [
+          "endclocksum.ReturnValue",
+          "duration.A"
+        ],
+        [
+          "steptime.StepStart",
+          "duration.B"
+        ],
+        [
+          "duration.ReturnValue",
+          "durationcopy.Duration"
+        ],
+        [
+          "getWorkSeconds.WorkSeconds",
+          "total.A"
+        ],
+        [
+          "d.Duration",
+          "total.B"
+        ],
+        [
+          "total.ReturnValue",
+          "work.WorkSeconds"
+        ],
+        [
+          "getSlowestStep.SlowestStep",
+          "max.A"
+        ],
+        [
+          "d.Duration",
+          "max.B"
+        ],
+        [
+          "max.ReturnValue",
+          "slowest.SlowestStep"
+        ],
+        [
+          "i.Steps",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.Steps"
+        ],
+        [
+          "step.Continue",
+          "more.Condition"
+        ],
+        [
+          "entry.then",
+          "busy.execute"
+        ],
+        [
+          "busy.then",
+          "frame.execute"
+        ],
+        [
+          "frame.then",
+          "start.execute"
+        ],
+        [
+          "start.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "stepstart.execute"
+        ],
+        [
+          "stepstart.then",
+          "step.execute"
+        ],
+        [
+          "step.then",
+          "durationcopy.execute"
+        ],
+        [
+          "durationcopy.then",
+          "work.execute"
+        ],
+        [
+          "work.then",
+          "slowest.execute"
+        ],
+        [
+          "slowest.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "more.execute"
+        ],
+        [
+          "more.then",
+          "loop.execute"
+        ]
+      ]
+    }
+  ]
+}

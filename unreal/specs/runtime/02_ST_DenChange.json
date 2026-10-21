@@ -1,0 +1,27 @@
+{
+  "kind": "struct",
+  "path": "/DenDesignerGF/Runtime/ST_DenChange",
+  "guid": "71fedff8-24a7-5dc1-9ed2-8047a71797d3",
+  "fields": [
+    {
+      "name": "BeforeExists",
+      "type": "bool",
+      "guid": "1d5264f6-1bea-5c1d-a16d-ab8425fdd70d"
+    },
+    {
+      "name": "Before",
+      "type": "struct:/DenDesignerGF/Runtime/ST_DenEntry",
+      "guid": "12af8a55-b4c8-5b45-b015-894664b88c24"
+    },
+    {
+      "name": "AfterExists",
+      "type": "bool",
+      "guid": "2d1f7a26-ed98-5668-9195-883b943361ce"
+    },
+    {
+      "name": "After",
+      "type": "struct:/DenDesignerGF/Runtime/ST_DenEntry",
+      "guid": "68dd7ac9-a864-5a67-b2fd-dcbc2be275d0"
+    }
+  ]
+}

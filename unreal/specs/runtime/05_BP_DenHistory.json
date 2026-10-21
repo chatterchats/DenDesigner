@@ -1,0 +1,2213 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenHistory",
+  "parent": "/Script/CoreUObject.Object",
+  "variables": [
+    {
+      "name": "Working",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+    },
+    {
+      "name": "UndoSteps",
+      "type": "struct:/DenDesignerGF/Runtime/ST_DenStep[]"
+    },
+    {
+      "name": "RedoSteps",
+      "type": "struct:/DenDesignerGF/Runtime/ST_DenStep[]"
+    },
+    {
+      "name": "Version",
+      "type": "int",
+      "default": "0"
+    },
+    {
+      "name": "SavedVersion",
+      "type": "int",
+      "default": "0"
+    },
+    {
+      "name": "NextVersion",
+      "type": "int",
+      "default": "0"
+    }
+  ],
+  "functions": [
+    {
+      "name": "Initialize",
+      "inputs": [
+        {
+          "name": "Document",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "working",
+          "kind": "set",
+          "var": "Working"
+        },
+        {
+          "id": "undos",
+          "kind": "get",
+          "var": "UndoSteps"
+        },
+        {
+          "id": "redos",
+          "kind": "get",
+          "var": "RedoSteps"
+        },
+        {
+          "id": "clearundo",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "clearredo",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "Version",
+          "kind": "set",
+          "var": "Version",
+          "defaults": {
+            "Version": "0"
+          }
+        },
+        {
+          "id": "SavedVersion",
+          "kind": "set",
+          "var": "SavedVersion",
+          "defaults": {
+            "SavedVersion": "0"
+          }
+        },
+        {
+          "id": "NextVersion",
+          "kind": "set",
+          "var": "NextVersion",
+          "defaults": {
+            "NextVersion": "0"
+          }
+        }
+      ],
+      "links": [
+        [
+          "undos.UndoSteps",
+          "clearundo.TargetArray"
+        ],
+        [
+          "redos.RedoSteps",
+          "clearredo.TargetArray"
+        ],
+        [
+          "entry.Document",
+          "working.Working"
+        ],
+        [
+          "entry.then",
+          "working.execute"
+        ],
+        [
+          "working.then",
+          "clearundo.execute"
+        ],
+        [
+          "clearundo.then",
+          "clearredo.execute"
+        ],
+        [
+          "clearredo.then",
+          "Version.execute"
+        ],
+        [
+          "Version.then",
+          "SavedVersion.execute"
+        ],
+        [
+          "SavedVersion.then",
+          "NextVersion.execute"
+        ]
+      ]
+    },
+    {
+      "name": "MergeCandidate",
+      "inputs": [
+        {
+          "name": "Candidate",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenStep"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Step",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenStep"
+        },
+        {
+          "name": "Merged",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OutputStep",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenStep"
+        },
+        {
+          "name": "DidMerge",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "MergedChanges",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenChange[]"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "default",
+          "kind": "set",
+          "var": "local:OutputStep"
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OutputStep"
+        },
+        {
+          "id": "merged",
+          "kind": "get",
+          "var": "local:DidMerge"
+        },
+        {
+          "id": "undos",
+          "kind": "get",
+          "var": "UndoSteps"
+        },
+        {
+          "id": "version",
+          "kind": "get",
+          "var": "Version"
+        },
+        {
+          "id": "saved",
+          "kind": "get",
+          "var": "SavedVersion"
+        },
+        {
+          "id": "length",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "nonempty",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "has",
+          "kind": "branch"
+        },
+        {
+          "id": "last",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "top",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "old",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenStep"
+        },
+        {
+          "id": "new",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenStep"
+        },
+        {
+          "id": "keynonempty",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:NotEqual_StrStr",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "samekey",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "sameversion",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "unsaved",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:NotEqual_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "elapsed",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "notredone",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "forwardtime",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "recent",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "oldcount",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "newcount",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "samecount",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "all0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "all1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "all2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "all3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "all4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "all5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "all6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "eligible",
+          "kind": "branch"
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "olditem",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "newitem",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "oldchange",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenChange"
+        },
+        {
+          "id": "newchange",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenChange"
+        },
+        {
+          "id": "oldentry",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "newentry",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "kindmatch",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "idmatch",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "same",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "match",
+          "kind": "branch"
+        },
+        {
+          "id": "combined",
+          "kind": "make_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenChange"
+        },
+        {
+          "id": "changes",
+          "kind": "get",
+          "var": "local:MergedChanges"
+        },
+        {
+          "id": "append",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "step",
+          "kind": "make_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenStep"
+        },
+        {
+          "id": "output",
+          "kind": "set",
+          "var": "local:OutputStep"
+        },
+        {
+          "id": "success",
+          "kind": "set",
+          "var": "local:DidMerge",
+          "defaults": {
+            "DidMerge": "true"
+          }
+        }
+      ],
+      "links": [
+        [
+          "undos.UndoSteps",
+          "length.TargetArray"
+        ],
+        [
+          "undos.UndoSteps",
+          "top.TargetArray"
+        ],
+        [
+          "top.Item",
+          "old.ST_DenStep"
+        ],
+        [
+          "entry.Candidate",
+          "new.ST_DenStep"
+        ],
+        [
+          "new.MergeKey",
+          "keynonempty.A"
+        ],
+        [
+          "old.MergeKey",
+          "samekey.A"
+        ],
+        [
+          "new.MergeKey",
+          "samekey.B"
+        ],
+        [
+          "old.AfterVersion",
+          "sameversion.A"
+        ],
+        [
+          "version.Version",
+          "sameversion.B"
+        ],
+        [
+          "saved.SavedVersion",
+          "unsaved.A"
+        ],
+        [
+          "version.Version",
+          "unsaved.B"
+        ],
+        [
+          "new.Time",
+          "elapsed.A"
+        ],
+        [
+          "old.Time",
+          "elapsed.B"
+        ],
+        [
+          "old.Time",
+          "notredone.A"
+        ],
+        [
+          "elapsed.ReturnValue",
+          "forwardtime.A"
+        ],
+        [
+          "elapsed.ReturnValue",
+          "recent.A"
+        ],
+        [
+          "old.Changes",
+          "oldcount.TargetArray"
+        ],
+        [
+          "new.Changes",
+          "newcount.TargetArray"
+        ],
+        [
+          "oldcount.ReturnValue",
+          "samecount.A"
+        ],
+        [
+          "newcount.ReturnValue",
+          "samecount.B"
+        ],
+        [
+          "keynonempty.ReturnValue",
+          "all0.A"
+        ],
+        [
+          "samekey.ReturnValue",
+          "all0.B"
+        ],
+        [
+          "all0.ReturnValue",
+          "all1.A"
+        ],
+        [
+          "sameversion.ReturnValue",
+          "all1.B"
+        ],
+        [
+          "all1.ReturnValue",
+          "all2.A"
+        ],
+        [
+          "unsaved.ReturnValue",
+          "all2.B"
+        ],
+        [
+          "all2.ReturnValue",
+          "all3.A"
+        ],
+        [
+          "notredone.ReturnValue",
+          "all3.B"
+        ],
+        [
+          "all3.ReturnValue",
+          "all4.A"
+        ],
+        [
+          "forwardtime.ReturnValue",
+          "all4.B"
+        ],
+        [
+          "all4.ReturnValue",
+          "all5.A"
+        ],
+        [
+          "recent.ReturnValue",
+          "all5.B"
+        ],
+        [
+          "all5.ReturnValue",
+          "all6.A"
+        ],
+        [
+          "samecount.ReturnValue",
+          "all6.B"
+        ],
+        [
+          "old.Changes",
+          "olditem.TargetArray"
+        ],
+        [
+          "new.Changes",
+          "newitem.TargetArray"
+        ],
+        [
+          "olditem.Item",
+          "oldchange.ST_DenChange"
+        ],
+        [
+          "newitem.Item",
+          "newchange.ST_DenChange"
+        ],
+        [
+          "oldchange.After",
+          "oldentry.ST_DenEntry"
+        ],
+        [
+          "newchange.After",
+          "newentry.ST_DenEntry"
+        ],
+        [
+          "changes.MergedChanges",
+          "append.TargetArray"
+        ],
+        [
+          "entry.Candidate",
+          "default.OutputStep"
+        ],
+        [
+          "out.OutputStep",
+          "result.Step"
+        ],
+        [
+          "merged.DidMerge",
+          "result.Merged"
+        ],
+        [
+          "length.ReturnValue",
+          "nonempty.A"
+        ],
+        [
+          "nonempty.ReturnValue",
+          "has.Condition"
+        ],
+        [
+          "length.ReturnValue",
+          "last.A"
+        ],
+        [
+          "last.ReturnValue",
+          "top.Index"
+        ],
+        [
+          "all6.ReturnValue",
+          "eligible.Condition"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "newcount.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "i.Cursor",
+          "olditem.Index"
+        ],
+        [
+          "i.Cursor",
+          "newitem.Index"
+        ],
+        [
+          "oldentry.Kind",
+          "kindmatch.A"
+        ],
+        [
+          "newentry.Kind",
+          "kindmatch.B"
+        ],
+        [
+          "oldentry.Key",
+          "idmatch.A"
+        ],
+        [
+          "newentry.Key",
+          "idmatch.B"
+        ],
+        [
+          "kindmatch.ReturnValue",
+          "same.A"
+        ],
+        [
+          "idmatch.ReturnValue",
+          "same.B"
+        ],
+        [
+          "same.ReturnValue",
+          "match.Condition"
+        ],
+        [
+          "oldchange.BeforeExists",
+          "combined.BeforeExists"
+        ],
+        [
+          "oldchange.Before",
+          "combined.Before"
+        ],
+        [
+          "newchange.AfterExists",
+          "combined.AfterExists"
+        ],
+        [
+          "newchange.After",
+          "combined.After"
+        ],
+        [
+          "combined.ST_DenChange",
+          "append.NewItem"
+        ],
+        [
+          "i.Cursor",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.Cursor"
+        ],
+        [
+          "new.Label",
+          "step.Label"
+        ],
+        [
+          "new.MergeKey",
+          "step.MergeKey"
+        ],
+        [
+          "new.Time",
+          "step.Time"
+        ],
+        [
+          "old.BeforeVersion",
+          "step.BeforeVersion"
+        ],
+        [
+          "new.AfterVersion",
+          "step.AfterVersion"
+        ],
+        [
+          "changes.MergedChanges",
+          "step.Changes"
+        ],
+        [
+          "step.ST_DenStep",
+          "output.OutputStep"
+        ],
+        [
+          "entry.then",
+          "default.execute"
+        ],
+        [
+          "default.then",
+          "has.execute"
+        ],
+        [
+          "has.then",
+          "eligible.execute"
+        ],
+        [
+          "eligible.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "match.execute"
+        ],
+        [
+          "match.then",
+          "append.execute"
+        ],
+        [
+          "append.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "loop.execute"
+        ],
+        [
+          "has.else",
+          "result.execute"
+        ],
+        [
+          "eligible.else",
+          "result.execute"
+        ],
+        [
+          "match.else",
+          "result.execute"
+        ],
+        [
+          "loop.else",
+          "output.execute"
+        ],
+        [
+          "output.then",
+          "success.execute"
+        ],
+        [
+          "success.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Commit",
+      "inputs": [
+        {
+          "name": "Mutations",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenMutation[]"
+        },
+        {
+          "name": "Label",
+          "type": "string"
+        },
+        {
+          "name": "MergeKey",
+          "type": "string"
+        },
+        {
+          "name": "Time",
+          "type": "double"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "NewStep",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenStep"
+        },
+        {
+          "name": "DidSucceed",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "doc",
+          "kind": "get",
+          "var": "Working"
+        },
+        {
+          "id": "valid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "guard",
+          "kind": "branch"
+        },
+        {
+          "id": "apply",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenLayoutSave:ApplyBatch",
+          "defaults": {}
+        },
+        {
+          "id": "accepted",
+          "kind": "branch"
+        },
+        {
+          "id": "version",
+          "kind": "get",
+          "var": "Version"
+        },
+        {
+          "id": "nextversion",
+          "kind": "get",
+          "var": "NextVersion"
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "step",
+          "kind": "make_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenStep"
+        },
+        {
+          "id": "cache",
+          "kind": "set",
+          "var": "local:NewStep"
+        },
+        {
+          "id": "cached",
+          "kind": "get",
+          "var": "local:NewStep"
+        },
+        {
+          "id": "stepdata",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenStep"
+        },
+        {
+          "id": "versionup",
+          "kind": "set",
+          "var": "Version"
+        },
+        {
+          "id": "nextup",
+          "kind": "set",
+          "var": "NextVersion"
+        },
+        {
+          "id": "undos",
+          "kind": "get",
+          "var": "UndoSteps"
+        },
+        {
+          "id": "redos",
+          "kind": "get",
+          "var": "RedoSteps"
+        },
+        {
+          "id": "push",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "clearredo",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "length",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "over",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "200"
+          }
+        },
+        {
+          "id": "trim",
+          "kind": "branch"
+        },
+        {
+          "id": "merge",
+          "kind": "call",
+          "function": "self:MergeCandidate",
+          "defaults": {}
+        },
+        {
+          "id": "choose",
+          "kind": "set",
+          "var": "local:NewStep"
+        },
+        {
+          "id": "merged",
+          "kind": "branch"
+        },
+        {
+          "id": "lastundo",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "popmerged",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Remove",
+          "defaults": {}
+        },
+        {
+          "id": "removeoldest",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Remove",
+          "defaults": {
+            "IndexToRemove": "0"
+          }
+        },
+        {
+          "id": "ok",
+          "kind": "set",
+          "var": "local:DidSucceed",
+          "defaults": {
+            "DidSucceed": "true"
+          }
+        },
+        {
+          "id": "okout",
+          "kind": "get",
+          "var": "local:DidSucceed"
+        }
+      ],
+      "links": [
+        [
+          "doc.Working",
+          "valid.Object"
+        ],
+        [
+          "valid.ReturnValue",
+          "guard.Condition"
+        ],
+        [
+          "entry.then",
+          "guard.execute"
+        ],
+        [
+          "guard.else",
+          "result.execute"
+        ],
+        [
+          "cached.NewStep",
+          "stepdata.ST_DenStep"
+        ],
+        [
+          "undos.UndoSteps",
+          "push.TargetArray"
+        ],
+        [
+          "redos.RedoSteps",
+          "clearredo.TargetArray"
+        ],
+        [
+          "undos.UndoSteps",
+          "length.TargetArray"
+        ],
+        [
+          "undos.UndoSteps",
+          "popmerged.TargetArray"
+        ],
+        [
+          "undos.UndoSteps",
+          "removeoldest.TargetArray"
+        ],
+        [
+          "doc.Working",
+          "apply.self"
+        ],
+        [
+          "entry.Mutations",
+          "apply.Mutations"
+        ],
+        [
+          "apply.Accepted",
+          "accepted.Condition"
+        ],
+        [
+          "entry.Label",
+          "step.Label"
+        ],
+        [
+          "entry.MergeKey",
+          "step.MergeKey"
+        ],
+        [
+          "entry.Time",
+          "step.Time"
+        ],
+        [
+          "apply.Changes",
+          "step.Changes"
+        ],
+        [
+          "version.Version",
+          "step.BeforeVersion"
+        ],
+        [
+          "nextversion.NextVersion",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "step.AfterVersion"
+        ],
+        [
+          "step.ST_DenStep",
+          "cache.NewStep"
+        ],
+        [
+          "stepdata.AfterVersion",
+          "versionup.Version"
+        ],
+        [
+          "stepdata.AfterVersion",
+          "nextup.NextVersion"
+        ],
+        [
+          "cached.NewStep",
+          "push.NewItem"
+        ],
+        [
+          "length.ReturnValue",
+          "over.A"
+        ],
+        [
+          "over.ReturnValue",
+          "trim.Condition"
+        ],
+        [
+          "okout.DidSucceed",
+          "result.Accepted"
+        ],
+        [
+          "cached.NewStep",
+          "merge.Candidate"
+        ],
+        [
+          "merge.Step",
+          "choose.NewStep"
+        ],
+        [
+          "merge.Merged",
+          "merged.Condition"
+        ],
+        [
+          "length.ReturnValue",
+          "lastundo.A"
+        ],
+        [
+          "lastundo.ReturnValue",
+          "popmerged.IndexToRemove"
+        ],
+        [
+          "guard.then",
+          "apply.execute"
+        ],
+        [
+          "apply.then",
+          "accepted.execute"
+        ],
+        [
+          "accepted.then",
+          "cache.execute"
+        ],
+        [
+          "cache.then",
+          "merge.execute"
+        ],
+        [
+          "merge.then",
+          "choose.execute"
+        ],
+        [
+          "choose.then",
+          "merged.execute"
+        ],
+        [
+          "merged.then",
+          "popmerged.execute"
+        ],
+        [
+          "popmerged.then",
+          "versionup.execute"
+        ],
+        [
+          "versionup.then",
+          "nextup.execute"
+        ],
+        [
+          "nextup.then",
+          "push.execute"
+        ],
+        [
+          "push.then",
+          "clearredo.execute"
+        ],
+        [
+          "clearredo.then",
+          "ok.execute"
+        ],
+        [
+          "ok.then",
+          "trim.execute"
+        ],
+        [
+          "trim.then",
+          "removeoldest.execute"
+        ],
+        [
+          "removeoldest.then",
+          "result.execute"
+        ],
+        [
+          "accepted.else",
+          "result.execute"
+        ],
+        [
+          "trim.else",
+          "result.execute"
+        ],
+        [
+          "merged.else",
+          "versionup.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Undo",
+      "outputs": [
+        {
+          "name": "Succeeded",
+          "type": "bool"
+        },
+        {
+          "name": "Step",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenStep"
+        }
+      ],
+      "locals": [
+        {
+          "name": "CachedStep",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenStep"
+        },
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "Edits",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenMutation[]"
+        },
+        {
+          "name": "DidSucceed",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "doc",
+          "kind": "get",
+          "var": "Working"
+        },
+        {
+          "id": "valid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "guard",
+          "kind": "branch"
+        },
+        {
+          "id": "source",
+          "kind": "get",
+          "var": "UndoSteps"
+        },
+        {
+          "id": "target",
+          "kind": "get",
+          "var": "RedoSteps"
+        },
+        {
+          "id": "length",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "last",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "nonempty",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "has",
+          "kind": "branch"
+        },
+        {
+          "id": "top",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "cache",
+          "kind": "set",
+          "var": "local:CachedStep"
+        },
+        {
+          "id": "cached",
+          "kind": "get",
+          "var": "local:CachedStep"
+        },
+        {
+          "id": "fields",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenStep"
+        },
+        {
+          "id": "count",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "lastchange",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "startindex",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "change",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenChange"
+        },
+        {
+          "id": "mutation",
+          "kind": "make_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenMutation"
+        },
+        {
+          "id": "mutations",
+          "kind": "get",
+          "var": "local:Edits"
+        },
+        {
+          "id": "append",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "apply",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenLayoutSave:ApplyBatch",
+          "defaults": {}
+        },
+        {
+          "id": "accepted",
+          "kind": "branch"
+        },
+        {
+          "id": "pop",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Remove",
+          "defaults": {}
+        },
+        {
+          "id": "push",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "version",
+          "kind": "set",
+          "var": "Version"
+        },
+        {
+          "id": "ok",
+          "kind": "set",
+          "var": "local:DidSucceed",
+          "defaults": {
+            "DidSucceed": "true"
+          }
+        },
+        {
+          "id": "okout",
+          "kind": "get",
+          "var": "local:DidSucceed"
+        }
+      ],
+      "links": [
+        [
+          "doc.Working",
+          "valid.Object"
+        ],
+        [
+          "valid.ReturnValue",
+          "guard.Condition"
+        ],
+        [
+          "entry.then",
+          "guard.execute"
+        ],
+        [
+          "guard.else",
+          "result.execute"
+        ],
+        [
+          "source.UndoSteps",
+          "length.TargetArray"
+        ],
+        [
+          "source.UndoSteps",
+          "top.TargetArray"
+        ],
+        [
+          "cached.CachedStep",
+          "fields.ST_DenStep"
+        ],
+        [
+          "fields.Changes",
+          "count.TargetArray"
+        ],
+        [
+          "fields.Changes",
+          "item.TargetArray"
+        ],
+        [
+          "item.Item",
+          "change.ST_DenChange"
+        ],
+        [
+          "mutations.Edits",
+          "append.TargetArray"
+        ],
+        [
+          "source.UndoSteps",
+          "pop.TargetArray"
+        ],
+        [
+          "target.RedoSteps",
+          "push.TargetArray"
+        ],
+        [
+          "length.ReturnValue",
+          "nonempty.A"
+        ],
+        [
+          "nonempty.ReturnValue",
+          "has.Condition"
+        ],
+        [
+          "length.ReturnValue",
+          "last.A"
+        ],
+        [
+          "last.ReturnValue",
+          "top.Index"
+        ],
+        [
+          "top.Item",
+          "cache.CachedStep"
+        ],
+        [
+          "count.ReturnValue",
+          "lastchange.A"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "i.Cursor",
+          "item.Index"
+        ],
+        [
+          "change.Before",
+          "mutation.Value"
+        ],
+        [
+          "change.BeforeExists",
+          "mutation.Present"
+        ],
+        [
+          "mutation.ST_DenMutation",
+          "append.NewItem"
+        ],
+        [
+          "i.Cursor",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.Cursor"
+        ],
+        [
+          "doc.Working",
+          "apply.self"
+        ],
+        [
+          "mutations.Edits",
+          "apply.Mutations"
+        ],
+        [
+          "apply.Accepted",
+          "accepted.Condition"
+        ],
+        [
+          "last.ReturnValue",
+          "pop.IndexToRemove"
+        ],
+        [
+          "cached.CachedStep",
+          "push.NewItem"
+        ],
+        [
+          "fields.BeforeVersion",
+          "version.Version"
+        ],
+        [
+          "okout.DidSucceed",
+          "result.Succeeded"
+        ],
+        [
+          "cached.CachedStep",
+          "result.Step"
+        ],
+        [
+          "lastchange.ReturnValue",
+          "startindex.Cursor"
+        ],
+        [
+          "guard.then",
+          "has.execute"
+        ],
+        [
+          "has.then",
+          "cache.execute"
+        ],
+        [
+          "cache.then",
+          "startindex.execute"
+        ],
+        [
+          "startindex.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "append.execute"
+        ],
+        [
+          "append.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "loop.execute"
+        ],
+        [
+          "has.else",
+          "result.execute"
+        ],
+        [
+          "loop.else",
+          "apply.execute"
+        ],
+        [
+          "apply.then",
+          "accepted.execute"
+        ],
+        [
+          "accepted.then",
+          "pop.execute"
+        ],
+        [
+          "pop.then",
+          "push.execute"
+        ],
+        [
+          "push.then",
+          "version.execute"
+        ],
+        [
+          "version.then",
+          "ok.execute"
+        ],
+        [
+          "ok.then",
+          "result.execute"
+        ],
+        [
+          "accepted.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Redo",
+      "outputs": [
+        {
+          "name": "Succeeded",
+          "type": "bool"
+        },
+        {
+          "name": "Step",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenStep"
+        }
+      ],
+      "locals": [
+        {
+          "name": "CachedStep",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenStep"
+        },
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "Edits",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenMutation[]"
+        },
+        {
+          "name": "DidSucceed",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "doc",
+          "kind": "get",
+          "var": "Working"
+        },
+        {
+          "id": "valid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "guard",
+          "kind": "branch"
+        },
+        {
+          "id": "source",
+          "kind": "get",
+          "var": "RedoSteps"
+        },
+        {
+          "id": "target",
+          "kind": "get",
+          "var": "UndoSteps"
+        },
+        {
+          "id": "length",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "last",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "nonempty",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "has",
+          "kind": "branch"
+        },
+        {
+          "id": "top",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "cache",
+          "kind": "set",
+          "var": "local:CachedStep"
+        },
+        {
+          "id": "cached",
+          "kind": "get",
+          "var": "local:CachedStep"
+        },
+        {
+          "id": "fields",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenStep"
+        },
+        {
+          "id": "count",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "lastchange",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "startindex",
+          "kind": "set",
+          "var": "local:Cursor",
+          "defaults": {
+            "Cursor": "0"
+          }
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "change",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenChange"
+        },
+        {
+          "id": "mutation",
+          "kind": "make_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenMutation"
+        },
+        {
+          "id": "mutations",
+          "kind": "get",
+          "var": "local:Edits"
+        },
+        {
+          "id": "append",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "apply",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenLayoutSave:ApplyBatch",
+          "defaults": {}
+        },
+        {
+          "id": "accepted",
+          "kind": "branch"
+        },
+        {
+          "id": "pop",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Remove",
+          "defaults": {}
+        },
+        {
+          "id": "push",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "version",
+          "kind": "set",
+          "var": "Version"
+        },
+        {
+          "id": "ok",
+          "kind": "set",
+          "var": "local:DidSucceed",
+          "defaults": {
+            "DidSucceed": "true"
+          }
+        },
+        {
+          "id": "okout",
+          "kind": "get",
+          "var": "local:DidSucceed"
+        },
+        {
+          "id": "redonestep",
+          "kind": "make_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenStep",
+          "defaults": {
+            "Time": "-1"
+          }
+        }
+      ],
+      "links": [
+        [
+          "doc.Working",
+          "valid.Object"
+        ],
+        [
+          "valid.ReturnValue",
+          "guard.Condition"
+        ],
+        [
+          "entry.then",
+          "guard.execute"
+        ],
+        [
+          "guard.else",
+          "result.execute"
+        ],
+        [
+          "source.RedoSteps",
+          "length.TargetArray"
+        ],
+        [
+          "source.RedoSteps",
+          "top.TargetArray"
+        ],
+        [
+          "cached.CachedStep",
+          "fields.ST_DenStep"
+        ],
+        [
+          "fields.Changes",
+          "count.TargetArray"
+        ],
+        [
+          "fields.Changes",
+          "item.TargetArray"
+        ],
+        [
+          "item.Item",
+          "change.ST_DenChange"
+        ],
+        [
+          "mutations.Edits",
+          "append.TargetArray"
+        ],
+        [
+          "source.RedoSteps",
+          "pop.TargetArray"
+        ],
+        [
+          "target.UndoSteps",
+          "push.TargetArray"
+        ],
+        [
+          "length.ReturnValue",
+          "nonempty.A"
+        ],
+        [
+          "nonempty.ReturnValue",
+          "has.Condition"
+        ],
+        [
+          "length.ReturnValue",
+          "last.A"
+        ],
+        [
+          "last.ReturnValue",
+          "top.Index"
+        ],
+        [
+          "top.Item",
+          "cache.CachedStep"
+        ],
+        [
+          "count.ReturnValue",
+          "lastchange.A"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "i.Cursor",
+          "item.Index"
+        ],
+        [
+          "change.After",
+          "mutation.Value"
+        ],
+        [
+          "change.AfterExists",
+          "mutation.Present"
+        ],
+        [
+          "mutation.ST_DenMutation",
+          "append.NewItem"
+        ],
+        [
+          "i.Cursor",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.Cursor"
+        ],
+        [
+          "doc.Working",
+          "apply.self"
+        ],
+        [
+          "mutations.Edits",
+          "apply.Mutations"
+        ],
+        [
+          "apply.Accepted",
+          "accepted.Condition"
+        ],
+        [
+          "last.ReturnValue",
+          "pop.IndexToRemove"
+        ],
+        [
+          "fields.AfterVersion",
+          "version.Version"
+        ],
+        [
+          "okout.DidSucceed",
+          "result.Succeeded"
+        ],
+        [
+          "cached.CachedStep",
+          "result.Step"
+        ],
+        [
+          "fields.Label",
+          "redonestep.Label"
+        ],
+        [
+          "fields.MergeKey",
+          "redonestep.MergeKey"
+        ],
+        [
+          "fields.BeforeVersion",
+          "redonestep.BeforeVersion"
+        ],
+        [
+          "fields.AfterVersion",
+          "redonestep.AfterVersion"
+        ],
+        [
+          "fields.Changes",
+          "redonestep.Changes"
+        ],
+        [
+          "redonestep.ST_DenStep",
+          "push.NewItem"
+        ],
+        [
+          "count.ReturnValue",
+          "within.B"
+        ],
+        [
+          "guard.then",
+          "has.execute"
+        ],
+        [
+          "has.then",
+          "cache.execute"
+        ],
+        [
+          "cache.then",
+          "startindex.execute"
+        ],
+        [
+          "startindex.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "append.execute"
+        ],
+        [
+          "append.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "loop.execute"
+        ],
+        [
+          "has.else",
+          "result.execute"
+        ],
+        [
+          "loop.else",
+          "apply.execute"
+        ],
+        [
+          "apply.then",
+          "accepted.execute"
+        ],
+        [
+          "accepted.then",
+          "pop.execute"
+        ],
+        [
+          "pop.then",
+          "push.execute"
+        ],
+        [
+          "push.then",
+          "version.execute"
+        ],
+        [
+          "version.then",
+          "ok.execute"
+        ],
+        [
+          "ok.then",
+          "result.execute"
+        ],
+        [
+          "accepted.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "IsDirty",
+      "outputs": [
+        {
+          "name": "Dirty",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "version",
+          "kind": "get",
+          "var": "Version"
+        },
+        {
+          "id": "saved",
+          "kind": "get",
+          "var": "SavedVersion"
+        },
+        {
+          "id": "different",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:NotEqual_IntInt",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "version.Version",
+          "different.A"
+        ],
+        [
+          "saved.SavedVersion",
+          "different.B"
+        ],
+        [
+          "different.ReturnValue",
+          "result.Dirty"
+        ],
+        [
+          "entry.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "MarkSaved",
+      "nodes": [
+        {
+          "id": "version",
+          "kind": "get",
+          "var": "Version"
+        },
+        {
+          "id": "saved",
+          "kind": "set",
+          "var": "SavedVersion"
+        }
+      ],
+      "links": [
+        [
+          "version.Version",
+          "saved.SavedVersion"
+        ],
+        [
+          "entry.then",
+          "saved.execute"
+        ]
+      ]
+    }
+  ]
+}

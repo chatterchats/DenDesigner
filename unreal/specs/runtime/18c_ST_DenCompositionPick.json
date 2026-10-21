@@ -1,0 +1,22 @@
+{
+  "kind": "struct",
+  "path": "/DenDesignerGF/Runtime/ST_DenCompositionPick",
+  "guid": "d02aaefe-cf56-5e1e-8c07-91d550484d4d",
+  "fields": [
+    {
+      "name": "Facts",
+      "type": "struct:/DenDesignerGF/Runtime/ST_DenPick",
+      "guid": "31273d5d-7562-579f-8ffd-c0fa06a9df78"
+    },
+    {
+      "name": "HadDepth",
+      "type": "bool",
+      "guid": "516a02db-378e-5282-b31a-2b3203015d5a"
+    },
+    {
+      "name": "Stencil",
+      "type": "int",
+      "guid": "dfca8f16-761b-57b6-b10f-bedc61085de3"
+    }
+  ]
+}

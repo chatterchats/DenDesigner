@@ -1,0 +1,7098 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenPicker",
+  "parent": "/Script/CoreUObject.Object",
+  "variables": [
+    {
+      "name": "Manager",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenWorld"
+    },
+    {
+      "name": "IndexActors",
+      "type": "object:/Script/Engine.Actor[]"
+    },
+    {
+      "name": "IndexComponents",
+      "type": "object:/Script/Engine.ActorComponent[]"
+    },
+    {
+      "name": "SurfaceCandidates",
+      "type": "object:/Script/Engine.StaticMeshComponent[]"
+    },
+    {
+      "name": "BoundsCandidates",
+      "type": "object:/Script/Engine.StaticMeshComponent[]"
+    },
+    {
+      "name": "IndexActor",
+      "type": "int"
+    },
+    {
+      "name": "IndexComponent",
+      "type": "int",
+      "default": "-1"
+    },
+    {
+      "name": "Indexing",
+      "type": "bool"
+    },
+    {
+      "name": "BudgetSeconds",
+      "type": "double",
+      "default": "0.003"
+    },
+    {
+      "name": "MaxSteps",
+      "type": "int",
+      "default": "4096"
+    },
+    {
+      "name": "RayOrigin",
+      "type": "vector"
+    },
+    {
+      "name": "RayDirection",
+      "type": "vector"
+    },
+    {
+      "name": "RayLimit",
+      "type": "double"
+    },
+    {
+      "name": "TraceDistance",
+      "type": "double"
+    },
+    {
+      "name": "BestDistance",
+      "type": "double"
+    },
+    {
+      "name": "SurfaceVolume",
+      "type": "double"
+    },
+    {
+      "name": "QueryComponent",
+      "type": "object:/Script/Engine.PrimitiveComponent"
+    },
+    {
+      "name": "QueryCursor",
+      "type": "int"
+    },
+    {
+      "name": "QueryPhase",
+      "type": "int"
+    },
+    {
+      "name": "QueryPending",
+      "type": "bool"
+    },
+    {
+      "name": "QueryReady",
+      "type": "bool"
+    },
+    {
+      "name": "QueryHadTrace",
+      "type": "bool"
+    },
+    {
+      "name": "QueryStructure",
+      "type": "bool"
+    },
+    {
+      "name": "QueryFloors",
+      "type": "bool"
+    },
+    {
+      "name": "QueryWalls",
+      "type": "bool"
+    },
+    {
+      "name": "QueryResult",
+      "type": "struct:/DenDesignerGF/Runtime/ST_DenPick"
+    }
+  ],
+  "functions": [
+    {
+      "name": "IsFloor",
+      "inputs": [
+        {
+          "name": "MeshPath",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IsFloor",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "folder0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/Floors/",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "folder1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/REP_Floors/",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "folder2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/UndergroundFloors/",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "folder3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/IndustrialFloors/",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "folder4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/SWAL_Fixtures/Floor",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "folderany0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "folderany1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "folderany2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "folderany3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "entry.MeshPath",
+          "folder0.SearchIn"
+        ],
+        [
+          "entry.MeshPath",
+          "folder1.SearchIn"
+        ],
+        [
+          "entry.MeshPath",
+          "folder2.SearchIn"
+        ],
+        [
+          "entry.MeshPath",
+          "folder3.SearchIn"
+        ],
+        [
+          "entry.MeshPath",
+          "folder4.SearchIn"
+        ],
+        [
+          "folder0.ReturnValue",
+          "folderany0.A"
+        ],
+        [
+          "folder1.ReturnValue",
+          "folderany0.B"
+        ],
+        [
+          "folderany0.ReturnValue",
+          "folderany1.A"
+        ],
+        [
+          "folder2.ReturnValue",
+          "folderany1.B"
+        ],
+        [
+          "folderany1.ReturnValue",
+          "folderany2.A"
+        ],
+        [
+          "folder3.ReturnValue",
+          "folderany2.B"
+        ],
+        [
+          "folderany2.ReturnValue",
+          "folderany3.A"
+        ],
+        [
+          "folder4.ReturnValue",
+          "folderany3.B"
+        ],
+        [
+          "folderany3.ReturnValue",
+          "result.IsFloor"
+        ],
+        [
+          "entry.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "IsWall",
+      "inputs": [
+        {
+          "name": "MeshPath",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IsWall",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "folder0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/Walls/",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "folder1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/REP_Walls/",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "folder2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/UndergroundWalls/",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "folder3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/IndustrialWalls/",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "folder4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/SWAL_Fixtures/Wall",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "folderany0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "folderany1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "folderany2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "folderany3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "entry.MeshPath",
+          "folder0.SearchIn"
+        ],
+        [
+          "entry.MeshPath",
+          "folder1.SearchIn"
+        ],
+        [
+          "entry.MeshPath",
+          "folder2.SearchIn"
+        ],
+        [
+          "entry.MeshPath",
+          "folder3.SearchIn"
+        ],
+        [
+          "entry.MeshPath",
+          "folder4.SearchIn"
+        ],
+        [
+          "folder0.ReturnValue",
+          "folderany0.A"
+        ],
+        [
+          "folder1.ReturnValue",
+          "folderany0.B"
+        ],
+        [
+          "folderany0.ReturnValue",
+          "folderany1.A"
+        ],
+        [
+          "folder2.ReturnValue",
+          "folderany1.B"
+        ],
+        [
+          "folderany1.ReturnValue",
+          "folderany2.A"
+        ],
+        [
+          "folder3.ReturnValue",
+          "folderany2.B"
+        ],
+        [
+          "folderany2.ReturnValue",
+          "folderany3.A"
+        ],
+        [
+          "folder4.ReturnValue",
+          "folderany3.B"
+        ],
+        [
+          "folderany3.ReturnValue",
+          "result.IsWall"
+        ],
+        [
+          "entry.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "CheckRules",
+      "inputs": [
+        {
+          "name": "MeshPath",
+          "type": "string"
+        },
+        {
+          "name": "LevelPath",
+          "type": "string"
+        },
+        {
+          "name": "Size",
+          "type": "double"
+        },
+        {
+          "name": "Managed",
+          "type": "bool"
+        },
+        {
+          "name": "Pawn",
+          "type": "bool"
+        },
+        {
+          "name": "Foreign",
+          "type": "bool"
+        },
+        {
+          "name": "Interactive",
+          "type": "bool"
+        },
+        {
+          "name": "Instanced",
+          "type": "bool"
+        },
+        {
+          "name": "EditStructure",
+          "type": "bool"
+        },
+        {
+          "name": "SelectFloors",
+          "type": "bool"
+        },
+        {
+          "name": "SelectWalls",
+          "type": "bool"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Allowed",
+          "type": "bool"
+        },
+        {
+          "name": "Reason",
+          "type": "string"
+        }
+      ],
+      "locals": [
+        {
+          "name": "AllowedResult",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "Failure",
+          "type": "string"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "reason",
+          "kind": "get",
+          "var": "local:Failure"
+        },
+        {
+          "id": "ok",
+          "kind": "get",
+          "var": "local:AllowedResult"
+        },
+        {
+          "id": "floor0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/Floors/",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "floor1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/REP_Floors/",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "floor2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/UndergroundFloors/",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "floor3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/IndustrialFloors/",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "floor4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/SWAL_Fixtures/Floor",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "floorany0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "floorany1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "floorany2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "floorany3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "disabled",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "flooroff0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "floorblocked",
+          "kind": "branch"
+        },
+        {
+          "id": "floorblockedtext",
+          "kind": "set",
+          "var": "local:Failure",
+          "defaults": {
+            "Failure": "Floor selection is off. Turn Floors on in the toolbar."
+          }
+        },
+        {
+          "id": "wall0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/Walls/",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "wall1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/REP_Walls/",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "wall2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/UndergroundWalls/",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "wall3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/IndustrialWalls/",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "wall4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/SWAL_Fixtures/Wall",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "wallany0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "wallany1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "wallany2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "wallany3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "wallsdisabled",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "walloff0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "wallblocked",
+          "kind": "branch"
+        },
+        {
+          "id": "wallblockedtext",
+          "kind": "set",
+          "var": "local:Failure",
+          "defaults": {
+            "Failure": "Wall selection is off. Turn Walls on in the toolbar."
+          }
+        },
+        {
+          "id": "placed",
+          "kind": "branch"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:AllowedResult",
+          "defaults": {
+            "AllowedResult": "true"
+          }
+        },
+        {
+          "id": "script0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "_Gameplay.",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "script1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "_Cinematics.",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "script2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/CIN_",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "script3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "Narrative",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "script4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/Audio/",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "script5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "_Audio.",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "script6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "Lighting",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "script7",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/LGT_",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "script8",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "SpaceTravel",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "script9",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "Hyperspace",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "scriptany0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "scriptany1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "scriptany2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "scriptany3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "scriptany4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "scriptany5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "scriptany6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "scriptany7",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "scriptany8",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "pawn",
+          "kind": "branch"
+        },
+        {
+          "id": "pawntext",
+          "kind": "set",
+          "var": "local:Failure",
+          "defaults": {
+            "Failure": "Characters cannot be edited."
+          }
+        },
+        {
+          "id": "foreign",
+          "kind": "branch"
+        },
+        {
+          "id": "foreigntext",
+          "kind": "set",
+          "var": "local:Failure",
+          "defaults": {
+            "Failure": "Another mod added this; edit it there."
+          }
+        },
+        {
+          "id": "scripted",
+          "kind": "branch"
+        },
+        {
+          "id": "scriptedtext",
+          "kind": "set",
+          "var": "local:Failure",
+          "defaults": {
+            "Failure": "The game uses this for its story or gameplay."
+          }
+        },
+        {
+          "id": "interactive",
+          "kind": "branch"
+        },
+        {
+          "id": "interactivetext",
+          "kind": "set",
+          "var": "local:Failure",
+          "defaults": {
+            "Failure": "Interactive objects cannot be edited."
+          }
+        },
+        {
+          "id": "instance",
+          "kind": "branch"
+        },
+        {
+          "id": "instancetext",
+          "kind": "set",
+          "var": "local:Failure",
+          "defaults": {
+            "Failure": "Instanced meshes cannot be edited yet."
+          }
+        },
+        {
+          "id": "large",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_DoubleDouble",
+          "defaults": {
+            "B": "800"
+          }
+        },
+        {
+          "id": "locked",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "structurepath0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/HQ/Structure/Girder/",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "structurepath1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/HQ/Structure/Ceilings/",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "structurepath2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/HQ/Structure/Pipes/",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "structurepath3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/HQ/Structure/Supports/",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "structurepath4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/HQ/Structure/_GENERATED/",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "structurepath5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/SWAL_Fixtures/Ceiling",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "structurepath6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/Vehicles/Dropship/",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "structurepath7",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/Structures/DocksUnderground/",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "structurepathany0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "structurepathany1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "structurepathany2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "structurepathany3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "structurepathany4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "structurepathany5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "structurepathany6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "structure0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "category0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "othercategory",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "protectedcheck0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "protectedcheck1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "protected",
+          "kind": "branch"
+        },
+        {
+          "id": "protectedtext",
+          "kind": "set",
+          "var": "local:Failure",
+          "defaults": {
+            "Failure": "Structure editing is off. Turn Structure on in the toolbar."
+          }
+        }
+      ],
+      "links": [
+        [
+          "reason.Failure",
+          "result.Reason"
+        ],
+        [
+          "ok.AllowedResult",
+          "result.Allowed"
+        ],
+        [
+          "entry.MeshPath",
+          "floor0.SearchIn"
+        ],
+        [
+          "entry.MeshPath",
+          "floor1.SearchIn"
+        ],
+        [
+          "entry.MeshPath",
+          "floor2.SearchIn"
+        ],
+        [
+          "entry.MeshPath",
+          "floor3.SearchIn"
+        ],
+        [
+          "entry.MeshPath",
+          "floor4.SearchIn"
+        ],
+        [
+          "floor0.ReturnValue",
+          "floorany0.A"
+        ],
+        [
+          "floor1.ReturnValue",
+          "floorany0.B"
+        ],
+        [
+          "floorany0.ReturnValue",
+          "floorany1.A"
+        ],
+        [
+          "floor2.ReturnValue",
+          "floorany1.B"
+        ],
+        [
+          "floorany1.ReturnValue",
+          "floorany2.A"
+        ],
+        [
+          "floor3.ReturnValue",
+          "floorany2.B"
+        ],
+        [
+          "floorany2.ReturnValue",
+          "floorany3.A"
+        ],
+        [
+          "floor4.ReturnValue",
+          "floorany3.B"
+        ],
+        [
+          "entry.SelectFloors",
+          "disabled.A"
+        ],
+        [
+          "floorany3.ReturnValue",
+          "flooroff0.A"
+        ],
+        [
+          "disabled.ReturnValue",
+          "flooroff0.B"
+        ],
+        [
+          "flooroff0.ReturnValue",
+          "floorblocked.Condition"
+        ],
+        [
+          "entry.then",
+          "floorblocked.execute"
+        ],
+        [
+          "floorblocked.then",
+          "floorblockedtext.execute"
+        ],
+        [
+          "floorblockedtext.then",
+          "result.execute"
+        ],
+        [
+          "entry.MeshPath",
+          "wall0.SearchIn"
+        ],
+        [
+          "entry.MeshPath",
+          "wall1.SearchIn"
+        ],
+        [
+          "entry.MeshPath",
+          "wall2.SearchIn"
+        ],
+        [
+          "entry.MeshPath",
+          "wall3.SearchIn"
+        ],
+        [
+          "entry.MeshPath",
+          "wall4.SearchIn"
+        ],
+        [
+          "wall0.ReturnValue",
+          "wallany0.A"
+        ],
+        [
+          "wall1.ReturnValue",
+          "wallany0.B"
+        ],
+        [
+          "wallany0.ReturnValue",
+          "wallany1.A"
+        ],
+        [
+          "wall2.ReturnValue",
+          "wallany1.B"
+        ],
+        [
+          "wallany1.ReturnValue",
+          "wallany2.A"
+        ],
+        [
+          "wall3.ReturnValue",
+          "wallany2.B"
+        ],
+        [
+          "wallany2.ReturnValue",
+          "wallany3.A"
+        ],
+        [
+          "wall4.ReturnValue",
+          "wallany3.B"
+        ],
+        [
+          "entry.SelectWalls",
+          "wallsdisabled.A"
+        ],
+        [
+          "wallany3.ReturnValue",
+          "walloff0.A"
+        ],
+        [
+          "wallsdisabled.ReturnValue",
+          "walloff0.B"
+        ],
+        [
+          "walloff0.ReturnValue",
+          "wallblocked.Condition"
+        ],
+        [
+          "floorblocked.else",
+          "wallblocked.execute"
+        ],
+        [
+          "wallblocked.then",
+          "wallblockedtext.execute"
+        ],
+        [
+          "wallblockedtext.then",
+          "result.execute"
+        ],
+        [
+          "entry.Managed",
+          "placed.Condition"
+        ],
+        [
+          "wallblocked.else",
+          "placed.execute"
+        ],
+        [
+          "placed.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "entry.LevelPath",
+          "script0.SearchIn"
+        ],
+        [
+          "entry.LevelPath",
+          "script1.SearchIn"
+        ],
+        [
+          "entry.LevelPath",
+          "script2.SearchIn"
+        ],
+        [
+          "entry.LevelPath",
+          "script3.SearchIn"
+        ],
+        [
+          "entry.LevelPath",
+          "script4.SearchIn"
+        ],
+        [
+          "entry.LevelPath",
+          "script5.SearchIn"
+        ],
+        [
+          "entry.LevelPath",
+          "script6.SearchIn"
+        ],
+        [
+          "entry.LevelPath",
+          "script7.SearchIn"
+        ],
+        [
+          "entry.LevelPath",
+          "script8.SearchIn"
+        ],
+        [
+          "entry.LevelPath",
+          "script9.SearchIn"
+        ],
+        [
+          "script0.ReturnValue",
+          "scriptany0.A"
+        ],
+        [
+          "script1.ReturnValue",
+          "scriptany0.B"
+        ],
+        [
+          "scriptany0.ReturnValue",
+          "scriptany1.A"
+        ],
+        [
+          "script2.ReturnValue",
+          "scriptany1.B"
+        ],
+        [
+          "scriptany1.ReturnValue",
+          "scriptany2.A"
+        ],
+        [
+          "script3.ReturnValue",
+          "scriptany2.B"
+        ],
+        [
+          "scriptany2.ReturnValue",
+          "scriptany3.A"
+        ],
+        [
+          "script4.ReturnValue",
+          "scriptany3.B"
+        ],
+        [
+          "scriptany3.ReturnValue",
+          "scriptany4.A"
+        ],
+        [
+          "script5.ReturnValue",
+          "scriptany4.B"
+        ],
+        [
+          "scriptany4.ReturnValue",
+          "scriptany5.A"
+        ],
+        [
+          "script6.ReturnValue",
+          "scriptany5.B"
+        ],
+        [
+          "scriptany5.ReturnValue",
+          "scriptany6.A"
+        ],
+        [
+          "script7.ReturnValue",
+          "scriptany6.B"
+        ],
+        [
+          "scriptany6.ReturnValue",
+          "scriptany7.A"
+        ],
+        [
+          "script8.ReturnValue",
+          "scriptany7.B"
+        ],
+        [
+          "scriptany7.ReturnValue",
+          "scriptany8.A"
+        ],
+        [
+          "script9.ReturnValue",
+          "scriptany8.B"
+        ],
+        [
+          "entry.Pawn",
+          "pawn.Condition"
+        ],
+        [
+          "placed.else",
+          "pawn.execute"
+        ],
+        [
+          "pawn.then",
+          "pawntext.execute"
+        ],
+        [
+          "pawntext.then",
+          "result.execute"
+        ],
+        [
+          "entry.Foreign",
+          "foreign.Condition"
+        ],
+        [
+          "pawn.else",
+          "foreign.execute"
+        ],
+        [
+          "foreign.then",
+          "foreigntext.execute"
+        ],
+        [
+          "foreigntext.then",
+          "result.execute"
+        ],
+        [
+          "scriptany8.ReturnValue",
+          "scripted.Condition"
+        ],
+        [
+          "foreign.else",
+          "scripted.execute"
+        ],
+        [
+          "scripted.then",
+          "scriptedtext.execute"
+        ],
+        [
+          "scriptedtext.then",
+          "result.execute"
+        ],
+        [
+          "entry.Interactive",
+          "interactive.Condition"
+        ],
+        [
+          "scripted.else",
+          "interactive.execute"
+        ],
+        [
+          "interactive.then",
+          "interactivetext.execute"
+        ],
+        [
+          "interactivetext.then",
+          "result.execute"
+        ],
+        [
+          "entry.Instanced",
+          "instance.Condition"
+        ],
+        [
+          "interactive.else",
+          "instance.execute"
+        ],
+        [
+          "instance.then",
+          "instancetext.execute"
+        ],
+        [
+          "instancetext.then",
+          "result.execute"
+        ],
+        [
+          "entry.Size",
+          "large.A"
+        ],
+        [
+          "entry.EditStructure",
+          "locked.A"
+        ],
+        [
+          "entry.MeshPath",
+          "structurepath0.SearchIn"
+        ],
+        [
+          "entry.MeshPath",
+          "structurepath1.SearchIn"
+        ],
+        [
+          "entry.MeshPath",
+          "structurepath2.SearchIn"
+        ],
+        [
+          "entry.MeshPath",
+          "structurepath3.SearchIn"
+        ],
+        [
+          "entry.MeshPath",
+          "structurepath4.SearchIn"
+        ],
+        [
+          "entry.MeshPath",
+          "structurepath5.SearchIn"
+        ],
+        [
+          "entry.MeshPath",
+          "structurepath6.SearchIn"
+        ],
+        [
+          "entry.MeshPath",
+          "structurepath7.SearchIn"
+        ],
+        [
+          "structurepath0.ReturnValue",
+          "structurepathany0.A"
+        ],
+        [
+          "structurepath1.ReturnValue",
+          "structurepathany0.B"
+        ],
+        [
+          "structurepathany0.ReturnValue",
+          "structurepathany1.A"
+        ],
+        [
+          "structurepath2.ReturnValue",
+          "structurepathany1.B"
+        ],
+        [
+          "structurepathany1.ReturnValue",
+          "structurepathany2.A"
+        ],
+        [
+          "structurepath3.ReturnValue",
+          "structurepathany2.B"
+        ],
+        [
+          "structurepathany2.ReturnValue",
+          "structurepathany3.A"
+        ],
+        [
+          "structurepath4.ReturnValue",
+          "structurepathany3.B"
+        ],
+        [
+          "structurepathany3.ReturnValue",
+          "structurepathany4.A"
+        ],
+        [
+          "structurepath5.ReturnValue",
+          "structurepathany4.B"
+        ],
+        [
+          "structurepathany4.ReturnValue",
+          "structurepathany5.A"
+        ],
+        [
+          "structurepath6.ReturnValue",
+          "structurepathany5.B"
+        ],
+        [
+          "structurepathany5.ReturnValue",
+          "structurepathany6.A"
+        ],
+        [
+          "structurepath7.ReturnValue",
+          "structurepathany6.B"
+        ],
+        [
+          "structurepathany6.ReturnValue",
+          "structure0.A"
+        ],
+        [
+          "large.ReturnValue",
+          "structure0.B"
+        ],
+        [
+          "floorany3.ReturnValue",
+          "category0.A"
+        ],
+        [
+          "wallany3.ReturnValue",
+          "category0.B"
+        ],
+        [
+          "category0.ReturnValue",
+          "othercategory.A"
+        ],
+        [
+          "locked.ReturnValue",
+          "protectedcheck0.A"
+        ],
+        [
+          "structure0.ReturnValue",
+          "protectedcheck0.B"
+        ],
+        [
+          "protectedcheck0.ReturnValue",
+          "protectedcheck1.A"
+        ],
+        [
+          "othercategory.ReturnValue",
+          "protectedcheck1.B"
+        ],
+        [
+          "protectedcheck1.ReturnValue",
+          "protected.Condition"
+        ],
+        [
+          "instance.else",
+          "protected.execute"
+        ],
+        [
+          "protected.then",
+          "protectedtext.execute"
+        ],
+        [
+          "protectedtext.then",
+          "result.execute"
+        ],
+        [
+          "protected.else",
+          "yes.execute"
+        ]
+      ]
+    },
+    {
+      "name": "SelectionKey",
+      "inputs": [
+        {
+          "name": "Manager",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenWorld"
+        },
+        {
+          "name": "Target",
+          "type": "object:/Script/CoreUObject.Object"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Key",
+          "type": "string"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Identity",
+          "type": "string"
+        },
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "path",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:GetPathName",
+          "defaults": {}
+        },
+        {
+          "id": "initial",
+          "kind": "set",
+          "var": "local:Identity"
+        },
+        {
+          "id": "records",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenWorld:Records"
+        },
+        {
+          "id": "len",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "record",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "target",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenVanillaRecord:Target"
+        },
+        {
+          "id": "equal",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {}
+        },
+        {
+          "id": "same",
+          "kind": "branch"
+        },
+        {
+          "id": "key",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenVanillaRecord:LayoutKey"
+        },
+        {
+          "id": "alias",
+          "kind": "set",
+          "var": "local:Identity"
+        },
+        {
+          "id": "increment",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "next",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "value",
+          "kind": "get",
+          "var": "local:Identity"
+        }
+      ],
+      "links": [
+        [
+          "entry.Target",
+          "path.Object"
+        ],
+        [
+          "path.ReturnValue",
+          "initial.Identity"
+        ],
+        [
+          "entry.Manager",
+          "records.self"
+        ],
+        [
+          "records.Records",
+          "len.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "len.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "records.Records",
+          "record.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "record.Index"
+        ],
+        [
+          "record.Item",
+          "check.Object"
+        ],
+        [
+          "check.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "record.Item",
+          "target.self"
+        ],
+        [
+          "target.Target",
+          "equal.A"
+        ],
+        [
+          "entry.Target",
+          "equal.B"
+        ],
+        [
+          "equal.ReturnValue",
+          "same.Condition"
+        ],
+        [
+          "record.Item",
+          "key.self"
+        ],
+        [
+          "key.LayoutKey",
+          "alias.Identity"
+        ],
+        [
+          "i.Cursor",
+          "increment.A"
+        ],
+        [
+          "increment.ReturnValue",
+          "next.Cursor"
+        ],
+        [
+          "value.Identity",
+          "result.Key"
+        ],
+        [
+          "entry.then",
+          "initial.execute"
+        ],
+        [
+          "initial.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "same.execute"
+        ],
+        [
+          "same.then",
+          "alias.execute"
+        ],
+        [
+          "alias.then",
+          "result.execute"
+        ],
+        [
+          "loop.else",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "next.execute"
+        ],
+        [
+          "next.then",
+          "loop.execute"
+        ],
+        [
+          "same.else",
+          "next.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Classify",
+      "inputs": [
+        {
+          "name": "Manager",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenWorld"
+        },
+        {
+          "name": "Component",
+          "type": "object:/Script/Engine.PrimitiveComponent"
+        },
+        {
+          "name": "EditStructure",
+          "type": "bool"
+        },
+        {
+          "name": "SelectFloors",
+          "type": "bool"
+        },
+        {
+          "name": "SelectWalls",
+          "type": "bool"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Facts",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenPick"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Accepted",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "Failure",
+          "type": "string",
+          "default": "Only visible static-mesh props in this Den can be edited."
+        },
+        {
+          "name": "PickedComponent",
+          "type": "object:/Script/Engine.StaticMeshComponent"
+        },
+        {
+          "name": "PickedTarget",
+          "type": "object:/Script/CoreUObject.Object"
+        },
+        {
+          "name": "PickedKind",
+          "type": "int",
+          "default": "2"
+        },
+        {
+          "name": "PickedKey",
+          "type": "string"
+        },
+        {
+          "name": "PickedMesh",
+          "type": "string"
+        },
+        {
+          "name": "PickedLabel",
+          "type": "string"
+        },
+        {
+          "name": "IsManaged",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "IsPawn",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "IsInstanced",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "componentvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "managervalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "validrefs0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "owner",
+          "kind": "call",
+          "function": "/Script/Engine.ActorComponent:GetOwner",
+          "defaults": {}
+        },
+        {
+          "id": "ownercheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "ownerok",
+          "kind": "branch"
+        },
+        {
+          "id": "hidden",
+          "kind": "get",
+          "var": "/Script/Engine.Actor:bHidden"
+        },
+        {
+          "id": "visible",
+          "kind": "call",
+          "function": "/Script/Engine.SceneComponent:IsVisible",
+          "defaults": {}
+        },
+        {
+          "id": "nothidden",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "visibleboth0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "visiblecheck",
+          "kind": "branch"
+        },
+        {
+          "id": "pawn",
+          "kind": "cast",
+          "class": "/Script/Engine.Pawn"
+        },
+        {
+          "id": "pawnreason",
+          "kind": "set",
+          "var": "local:Failure",
+          "defaults": {
+            "Failure": "Characters cannot be edited."
+          }
+        },
+        {
+          "id": "mesh",
+          "kind": "cast",
+          "class": "/Script/Engine.StaticMeshComponent"
+        },
+        {
+          "id": "component",
+          "kind": "set",
+          "var": "local:PickedComponent"
+        },
+        {
+          "id": "asset",
+          "kind": "get",
+          "var": "/Script/Engine.StaticMeshComponent:StaticMesh"
+        },
+        {
+          "id": "assetcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "assetvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "assetpath",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:GetPathName",
+          "defaults": {}
+        },
+        {
+          "id": "meshpath",
+          "kind": "set",
+          "var": "local:PickedMesh"
+        },
+        {
+          "id": "label",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:GetObjectName",
+          "defaults": {}
+        },
+        {
+          "id": "labelsave",
+          "kind": "set",
+          "var": "local:PickedLabel"
+        },
+        {
+          "id": "placed",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenPlacedProp"
+        },
+        {
+          "id": "managed",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenWorld:Placed"
+        },
+        {
+          "id": "containsplaced",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Contains",
+          "defaults": {}
+        },
+        {
+          "id": "ours",
+          "kind": "branch"
+        },
+        {
+          "id": "managedflag",
+          "kind": "set",
+          "var": "local:IsManaged",
+          "defaults": {
+            "IsManaged": "true"
+          }
+        },
+        {
+          "id": "placedkind",
+          "kind": "set",
+          "var": "local:PickedKind",
+          "defaults": {
+            "PickedKind": "0"
+          }
+        },
+        {
+          "id": "current",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPlacedProp:Current"
+        },
+        {
+          "id": "currentvalue",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "placedkey",
+          "kind": "set",
+          "var": "local:PickedKey"
+        },
+        {
+          "id": "placedtarget",
+          "kind": "set",
+          "var": "local:PickedTarget"
+        },
+        {
+          "id": "actors",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenWorld:WorldActors"
+        },
+        {
+          "id": "inworld",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Contains",
+          "defaults": {}
+        },
+        {
+          "id": "worldcheck",
+          "kind": "branch"
+        },
+        {
+          "id": "instance",
+          "kind": "cast",
+          "class": "/Script/Engine.InstancedStaticMeshComponent"
+        },
+        {
+          "id": "instancedflag",
+          "kind": "set",
+          "var": "local:IsInstanced",
+          "defaults": {
+            "IsInstanced": "true"
+          }
+        },
+        {
+          "id": "unit",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "staticactor",
+          "kind": "cast",
+          "class": "/Script/Engine.StaticMeshActor"
+        },
+        {
+          "id": "root",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:K2_GetRootComponent",
+          "defaults": {}
+        },
+        {
+          "id": "rootmatch",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {}
+        },
+        {
+          "id": "isroot",
+          "kind": "branch"
+        },
+        {
+          "id": "actortarget",
+          "kind": "set",
+          "var": "local:PickedTarget"
+        },
+        {
+          "id": "comptarget",
+          "kind": "set",
+          "var": "local:PickedTarget"
+        },
+        {
+          "id": "target",
+          "kind": "get",
+          "var": "local:PickedTarget"
+        },
+        {
+          "id": "identity",
+          "kind": "call",
+          "function": "self:SelectionKey",
+          "defaults": {}
+        },
+        {
+          "id": "savekey",
+          "kind": "set",
+          "var": "local:PickedKey"
+        },
+        {
+          "id": "componentpath",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:GetPathName",
+          "defaults": {}
+        },
+        {
+          "id": "level",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Split",
+          "defaults": {
+            "InStr": ":PersistentLevel",
+            "SearchCase": "CaseSensitive",
+            "SearchDir": "FromStart"
+          }
+        },
+        {
+          "id": "ownerpath",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:GetPathName",
+          "defaults": {}
+        },
+        {
+          "id": "class",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetObjectClass",
+          "defaults": {}
+        },
+        {
+          "id": "plain",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ClassClass",
+          "defaults": {
+            "B": "/Script/Engine.Actor"
+          }
+        },
+        {
+          "id": "persistent",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "/HUB_Root.HUB_Root:PersistentLevel.",
+            "bUseCase": "true"
+          }
+        },
+        {
+          "id": "interactive",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:GetComponentByClass",
+          "defaults": {
+            "ComponentClass": "/Script/BitReactorGame.InteractableComponent"
+          }
+        },
+        {
+          "id": "bounds",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:GetComponentBounds",
+          "defaults": {}
+        },
+        {
+          "id": "extent",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Vector_GetAbsMax",
+          "defaults": {}
+        },
+        {
+          "id": "size",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "managedflagget",
+          "kind": "get",
+          "var": "local:IsManaged"
+        },
+        {
+          "id": "instancedget",
+          "kind": "get",
+          "var": "local:IsInstanced"
+        },
+        {
+          "id": "rules",
+          "kind": "call",
+          "function": "self:CheckRules",
+          "defaults": {}
+        },
+        {
+          "id": "foreign0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "interactivevalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "allowed",
+          "kind": "set",
+          "var": "local:Accepted"
+        },
+        {
+          "id": "reason",
+          "kind": "set",
+          "var": "local:Failure"
+        },
+        {
+          "id": "fact",
+          "kind": "make_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenPick"
+        },
+        {
+          "id": "outAllowed",
+          "kind": "get",
+          "var": "local:Accepted"
+        },
+        {
+          "id": "outReason",
+          "kind": "get",
+          "var": "local:Failure"
+        },
+        {
+          "id": "outComponent",
+          "kind": "get",
+          "var": "local:PickedComponent"
+        },
+        {
+          "id": "outTarget",
+          "kind": "get",
+          "var": "local:PickedTarget"
+        },
+        {
+          "id": "outKind",
+          "kind": "get",
+          "var": "local:PickedKind"
+        },
+        {
+          "id": "outKey",
+          "kind": "get",
+          "var": "local:PickedKey"
+        },
+        {
+          "id": "outMesh",
+          "kind": "get",
+          "var": "local:PickedMesh"
+        },
+        {
+          "id": "outLabel",
+          "kind": "get",
+          "var": "local:PickedLabel"
+        }
+      ],
+      "links": [
+        [
+          "entry.Component",
+          "componentvalid.Object"
+        ],
+        [
+          "entry.Manager",
+          "managervalid.Object"
+        ],
+        [
+          "componentvalid.ReturnValue",
+          "validrefs0.A"
+        ],
+        [
+          "managervalid.ReturnValue",
+          "validrefs0.B"
+        ],
+        [
+          "validrefs0.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.Component",
+          "owner.self"
+        ],
+        [
+          "owner.ReturnValue",
+          "ownercheck.Object"
+        ],
+        [
+          "ownercheck.ReturnValue",
+          "ownerok.Condition"
+        ],
+        [
+          "owner.ReturnValue",
+          "hidden.self"
+        ],
+        [
+          "entry.Component",
+          "visible.self"
+        ],
+        [
+          "hidden.bHidden",
+          "nothidden.A"
+        ],
+        [
+          "visible.ReturnValue",
+          "visibleboth0.A"
+        ],
+        [
+          "nothidden.ReturnValue",
+          "visibleboth0.B"
+        ],
+        [
+          "visibleboth0.ReturnValue",
+          "visiblecheck.Condition"
+        ],
+        [
+          "owner.ReturnValue",
+          "pawn.Object"
+        ],
+        [
+          "entry.Component",
+          "mesh.Object"
+        ],
+        [
+          "mesh.AsStatic Mesh Component",
+          "component.PickedComponent"
+        ],
+        [
+          "mesh.AsStatic Mesh Component",
+          "asset.self"
+        ],
+        [
+          "asset.StaticMesh",
+          "assetcheck.Object"
+        ],
+        [
+          "assetcheck.ReturnValue",
+          "assetvalid.Condition"
+        ],
+        [
+          "asset.StaticMesh",
+          "assetpath.Object"
+        ],
+        [
+          "assetpath.ReturnValue",
+          "meshpath.PickedMesh"
+        ],
+        [
+          "asset.StaticMesh",
+          "label.Object"
+        ],
+        [
+          "label.ReturnValue",
+          "labelsave.PickedLabel"
+        ],
+        [
+          "owner.ReturnValue",
+          "placed.Object"
+        ],
+        [
+          "entry.Manager",
+          "managed.self"
+        ],
+        [
+          "managed.Placed",
+          "containsplaced.TargetArray"
+        ],
+        [
+          "placed.AsBP Den Placed Prop",
+          "containsplaced.ItemToFind"
+        ],
+        [
+          "containsplaced.ReturnValue",
+          "ours.Condition"
+        ],
+        [
+          "placed.AsBP Den Placed Prop",
+          "current.self"
+        ],
+        [
+          "current.Current",
+          "currentvalue.ST_DenEntry"
+        ],
+        [
+          "currentvalue.Key",
+          "placedkey.PickedKey"
+        ],
+        [
+          "owner.ReturnValue",
+          "placedtarget.PickedTarget"
+        ],
+        [
+          "entry.Manager",
+          "actors.self"
+        ],
+        [
+          "actors.WorldActors",
+          "inworld.TargetArray"
+        ],
+        [
+          "owner.ReturnValue",
+          "inworld.ItemToFind"
+        ],
+        [
+          "inworld.ReturnValue",
+          "worldcheck.Condition"
+        ],
+        [
+          "entry.Component",
+          "instance.Object"
+        ],
+        [
+          "owner.ReturnValue",
+          "staticactor.Object"
+        ],
+        [
+          "owner.ReturnValue",
+          "root.self"
+        ],
+        [
+          "root.ReturnValue",
+          "rootmatch.A"
+        ],
+        [
+          "entry.Component",
+          "rootmatch.B"
+        ],
+        [
+          "rootmatch.ReturnValue",
+          "isroot.Condition"
+        ],
+        [
+          "owner.ReturnValue",
+          "actortarget.PickedTarget"
+        ],
+        [
+          "entry.Component",
+          "comptarget.PickedTarget"
+        ],
+        [
+          "entry.Manager",
+          "identity.Manager"
+        ],
+        [
+          "target.PickedTarget",
+          "identity.Target"
+        ],
+        [
+          "identity.Key",
+          "savekey.PickedKey"
+        ],
+        [
+          "entry.Component",
+          "componentpath.Object"
+        ],
+        [
+          "componentpath.ReturnValue",
+          "level.SourceString"
+        ],
+        [
+          "owner.ReturnValue",
+          "ownerpath.Object"
+        ],
+        [
+          "owner.ReturnValue",
+          "class.Object"
+        ],
+        [
+          "class.ReturnValue",
+          "plain.A"
+        ],
+        [
+          "ownerpath.ReturnValue",
+          "persistent.SearchIn"
+        ],
+        [
+          "owner.ReturnValue",
+          "interactive.self"
+        ],
+        [
+          "entry.Component",
+          "bounds.Component"
+        ],
+        [
+          "bounds.BoxExtent",
+          "extent.A"
+        ],
+        [
+          "extent.ReturnValue",
+          "size.A"
+        ],
+        [
+          "plain.ReturnValue",
+          "foreign0.A"
+        ],
+        [
+          "persistent.ReturnValue",
+          "foreign0.B"
+        ],
+        [
+          "interactive.ReturnValue",
+          "interactivevalid.Object"
+        ],
+        [
+          "assetpath.ReturnValue",
+          "rules.MeshPath"
+        ],
+        [
+          "level.LeftS",
+          "rules.LevelPath"
+        ],
+        [
+          "size.ReturnValue",
+          "rules.Size"
+        ],
+        [
+          "managedflagget.IsManaged",
+          "rules.Managed"
+        ],
+        [
+          "instancedget.IsInstanced",
+          "rules.Instanced"
+        ],
+        [
+          "foreign0.ReturnValue",
+          "rules.Foreign"
+        ],
+        [
+          "interactivevalid.ReturnValue",
+          "rules.Interactive"
+        ],
+        [
+          "entry.EditStructure",
+          "rules.EditStructure"
+        ],
+        [
+          "entry.SelectFloors",
+          "rules.SelectFloors"
+        ],
+        [
+          "entry.SelectWalls",
+          "rules.SelectWalls"
+        ],
+        [
+          "rules.Allowed",
+          "allowed.Accepted"
+        ],
+        [
+          "rules.Reason",
+          "reason.Failure"
+        ],
+        [
+          "outAllowed.Accepted",
+          "fact.Allowed"
+        ],
+        [
+          "outReason.Failure",
+          "fact.Reason"
+        ],
+        [
+          "outComponent.PickedComponent",
+          "fact.Component"
+        ],
+        [
+          "outTarget.PickedTarget",
+          "fact.Target"
+        ],
+        [
+          "outKind.PickedKind",
+          "fact.Kind"
+        ],
+        [
+          "outKey.PickedKey",
+          "fact.Key"
+        ],
+        [
+          "outMesh.PickedMesh",
+          "fact.Mesh"
+        ],
+        [
+          "outLabel.PickedLabel",
+          "fact.Label"
+        ],
+        [
+          "fact.ST_DenPick",
+          "result.Facts"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "ownerok.execute"
+        ],
+        [
+          "ownerok.then",
+          "visiblecheck.execute"
+        ],
+        [
+          "visiblecheck.then",
+          "pawn.execute"
+        ],
+        [
+          "pawn.then",
+          "pawnreason.execute"
+        ],
+        [
+          "pawnreason.then",
+          "result.execute"
+        ],
+        [
+          "pawn.CastFailed",
+          "mesh.execute"
+        ],
+        [
+          "mesh.then",
+          "component.execute"
+        ],
+        [
+          "component.then",
+          "assetvalid.execute"
+        ],
+        [
+          "assetvalid.then",
+          "meshpath.execute"
+        ],
+        [
+          "meshpath.then",
+          "labelsave.execute"
+        ],
+        [
+          "labelsave.then",
+          "placed.execute"
+        ],
+        [
+          "placed.then",
+          "ours.execute"
+        ],
+        [
+          "ours.then",
+          "managedflag.execute"
+        ],
+        [
+          "managedflag.then",
+          "placedkind.execute"
+        ],
+        [
+          "placedkind.then",
+          "placedkey.execute"
+        ],
+        [
+          "placedkey.then",
+          "placedtarget.execute"
+        ],
+        [
+          "placedtarget.then",
+          "rules.execute"
+        ],
+        [
+          "rules.then",
+          "allowed.execute"
+        ],
+        [
+          "allowed.then",
+          "reason.execute"
+        ],
+        [
+          "reason.then",
+          "result.execute"
+        ],
+        [
+          "placed.CastFailed",
+          "worldcheck.execute"
+        ],
+        [
+          "worldcheck.then",
+          "instance.execute"
+        ],
+        [
+          "instance.then",
+          "instancedflag.execute"
+        ],
+        [
+          "instancedflag.then",
+          "unit.execute"
+        ],
+        [
+          "ours.else",
+          "worldcheck.execute"
+        ],
+        [
+          "instance.CastFailed",
+          "unit.execute"
+        ],
+        [
+          "unit.then_0",
+          "staticactor.execute"
+        ],
+        [
+          "staticactor.then",
+          "isroot.execute"
+        ],
+        [
+          "isroot.then",
+          "actortarget.execute"
+        ],
+        [
+          "actortarget.then",
+          "identity.execute"
+        ],
+        [
+          "identity.then",
+          "savekey.execute"
+        ],
+        [
+          "savekey.then",
+          "rules.execute"
+        ],
+        [
+          "staticactor.CastFailed",
+          "comptarget.execute"
+        ],
+        [
+          "comptarget.then",
+          "identity.execute"
+        ],
+        [
+          "isroot.else",
+          "comptarget.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ],
+        [
+          "ownerok.else",
+          "result.execute"
+        ],
+        [
+          "visiblecheck.else",
+          "result.execute"
+        ],
+        [
+          "mesh.CastFailed",
+          "result.execute"
+        ],
+        [
+          "assetvalid.else",
+          "result.execute"
+        ],
+        [
+          "worldcheck.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "NeedsBounds",
+      "inputs": [
+        {
+          "name": "Component",
+          "type": "object:/Script/Engine.StaticMeshComponent"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Needed",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "UseBounds",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "componentcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "componentvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "mesh",
+          "kind": "get",
+          "var": "/Script/Engine.StaticMeshComponent:StaticMesh"
+        },
+        {
+          "id": "meshcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "meshvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "body",
+          "kind": "get",
+          "var": "/Script/Engine.StaticMesh:BodySetup"
+        },
+        {
+          "id": "bodyvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "hasbody",
+          "kind": "branch"
+        },
+        {
+          "id": "traceflag",
+          "kind": "get",
+          "var": "/Script/PhysicsCore.BodySetupCore:CollisionTraceFlag"
+        },
+        {
+          "id": "simpleonly",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ByteByte",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "simple",
+          "kind": "branch"
+        },
+        {
+          "id": "position",
+          "kind": "call",
+          "function": "/Script/Engine.SceneComponent:K2_GetComponentLocation",
+          "defaults": {}
+        },
+        {
+          "id": "closest",
+          "kind": "call",
+          "function": "/Script/Engine.PrimitiveComponent:GetClosestPointOnCollision",
+          "defaults": {
+            "BoneName": "None"
+          }
+        },
+        {
+          "id": "negative",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "missing",
+          "kind": "branch"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:UseBounds",
+          "defaults": {
+            "UseBounds": "true"
+          }
+        },
+        {
+          "id": "value",
+          "kind": "get",
+          "var": "local:UseBounds"
+        }
+      ],
+      "links": [
+        [
+          "entry.Component",
+          "componentcheck.Object"
+        ],
+        [
+          "componentcheck.ReturnValue",
+          "componentvalid.Condition"
+        ],
+        [
+          "entry.Component",
+          "mesh.self"
+        ],
+        [
+          "mesh.StaticMesh",
+          "meshcheck.Object"
+        ],
+        [
+          "meshcheck.ReturnValue",
+          "meshvalid.Condition"
+        ],
+        [
+          "mesh.StaticMesh",
+          "body.self"
+        ],
+        [
+          "body.BodySetup",
+          "bodyvalid.Object"
+        ],
+        [
+          "bodyvalid.ReturnValue",
+          "hasbody.Condition"
+        ],
+        [
+          "body.BodySetup",
+          "traceflag.self"
+        ],
+        [
+          "traceflag.CollisionTraceFlag",
+          "simpleonly.A"
+        ],
+        [
+          "simpleonly.ReturnValue",
+          "simple.Condition"
+        ],
+        [
+          "entry.Component",
+          "position.self"
+        ],
+        [
+          "entry.Component",
+          "closest.self"
+        ],
+        [
+          "position.ReturnValue",
+          "closest.Point"
+        ],
+        [
+          "closest.ReturnValue",
+          "negative.A"
+        ],
+        [
+          "negative.ReturnValue",
+          "missing.Condition"
+        ],
+        [
+          "value.UseBounds",
+          "result.Needed"
+        ],
+        [
+          "entry.then",
+          "componentvalid.execute"
+        ],
+        [
+          "componentvalid.then",
+          "meshvalid.execute"
+        ],
+        [
+          "meshvalid.then",
+          "hasbody.execute"
+        ],
+        [
+          "hasbody.then",
+          "simple.execute"
+        ],
+        [
+          "simple.then",
+          "missing.execute"
+        ],
+        [
+          "missing.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "hasbody.else",
+          "yes.execute"
+        ],
+        [
+          "componentvalid.else",
+          "result.execute"
+        ],
+        [
+          "meshvalid.else",
+          "result.execute"
+        ],
+        [
+          "simple.else",
+          "result.execute"
+        ],
+        [
+          "missing.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "RayBox",
+      "inputs": [
+        {
+          "name": "Origin",
+          "type": "vector"
+        },
+        {
+          "name": "Direction",
+          "type": "vector"
+        },
+        {
+          "name": "Center",
+          "type": "vector"
+        },
+        {
+          "name": "Extent",
+          "type": "vector"
+        },
+        {
+          "name": "Limit",
+          "type": "double"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Hit",
+          "type": "bool"
+        },
+        {
+          "name": "Distance",
+          "type": "double"
+        }
+      ],
+      "locals": [
+        {
+          "name": "NearT",
+          "type": "double",
+          "default": "-1e20"
+        },
+        {
+          "name": "FarT",
+          "type": "double"
+        },
+        {
+          "name": "Found",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "offset",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "p",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakVector",
+          "defaults": {}
+        },
+        {
+          "id": "d",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakVector",
+          "defaults": {}
+        },
+        {
+          "id": "e",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakVector",
+          "defaults": {}
+        },
+        {
+          "id": "limit",
+          "kind": "set",
+          "var": "local:FarT"
+        },
+        {
+          "id": "xabsq",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "xparallelcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {
+            "B": "1e-08"
+          }
+        },
+        {
+          "id": "xparallel",
+          "kind": "branch"
+        },
+        {
+          "id": "xabsp",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "xinsidecheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "xinside",
+          "kind": "branch"
+        },
+        {
+          "id": "xnegative",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "xlow",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "xhigh",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "xa",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Divide_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "xb",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Divide_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "xmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMin",
+          "defaults": {}
+        },
+        {
+          "id": "xmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {}
+        },
+        {
+          "id": "xnear",
+          "kind": "get",
+          "var": "local:NearT"
+        },
+        {
+          "id": "xfar",
+          "kind": "get",
+          "var": "local:FarT"
+        },
+        {
+          "id": "xnewnear",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {}
+        },
+        {
+          "id": "xnewfar",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMin",
+          "defaults": {}
+        },
+        {
+          "id": "xsetnear",
+          "kind": "set",
+          "var": "local:NearT"
+        },
+        {
+          "id": "xsetfar",
+          "kind": "set",
+          "var": "local:FarT"
+        },
+        {
+          "id": "xoverlapcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "xoverlap",
+          "kind": "branch"
+        },
+        {
+          "id": "xnext",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "yabsq",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "yparallelcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {
+            "B": "1e-08"
+          }
+        },
+        {
+          "id": "yparallel",
+          "kind": "branch"
+        },
+        {
+          "id": "yabsp",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "yinsidecheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "yinside",
+          "kind": "branch"
+        },
+        {
+          "id": "ynegative",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "ylow",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "yhigh",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "ya",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Divide_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "yb",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Divide_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "ymin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMin",
+          "defaults": {}
+        },
+        {
+          "id": "ymax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {}
+        },
+        {
+          "id": "ynear",
+          "kind": "get",
+          "var": "local:NearT"
+        },
+        {
+          "id": "yfar",
+          "kind": "get",
+          "var": "local:FarT"
+        },
+        {
+          "id": "ynewnear",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {}
+        },
+        {
+          "id": "ynewfar",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMin",
+          "defaults": {}
+        },
+        {
+          "id": "ysetnear",
+          "kind": "set",
+          "var": "local:NearT"
+        },
+        {
+          "id": "ysetfar",
+          "kind": "set",
+          "var": "local:FarT"
+        },
+        {
+          "id": "yoverlapcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "yoverlap",
+          "kind": "branch"
+        },
+        {
+          "id": "ynext",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "zabsq",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "zparallelcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {
+            "B": "1e-08"
+          }
+        },
+        {
+          "id": "zparallel",
+          "kind": "branch"
+        },
+        {
+          "id": "zabsp",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "zinsidecheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "zinside",
+          "kind": "branch"
+        },
+        {
+          "id": "znegative",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "zlow",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "zhigh",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "za",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Divide_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "zb",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Divide_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "zmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMin",
+          "defaults": {}
+        },
+        {
+          "id": "zmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {}
+        },
+        {
+          "id": "znear",
+          "kind": "get",
+          "var": "local:NearT"
+        },
+        {
+          "id": "zfar",
+          "kind": "get",
+          "var": "local:FarT"
+        },
+        {
+          "id": "znewnear",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {}
+        },
+        {
+          "id": "znewfar",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMin",
+          "defaults": {}
+        },
+        {
+          "id": "zsetnear",
+          "kind": "set",
+          "var": "local:NearT"
+        },
+        {
+          "id": "zsetfar",
+          "kind": "set",
+          "var": "local:FarT"
+        },
+        {
+          "id": "zoverlapcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "zoverlap",
+          "kind": "branch"
+        },
+        {
+          "id": "znext",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "near",
+          "kind": "get",
+          "var": "local:NearT"
+        },
+        {
+          "id": "front",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_DoubleDouble",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "inrange",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "hitcheck0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "hit",
+          "kind": "branch"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:Found",
+          "defaults": {
+            "Found": "true"
+          }
+        },
+        {
+          "id": "found",
+          "kind": "get",
+          "var": "local:Found"
+        }
+      ],
+      "links": [
+        [
+          "entry.Origin",
+          "offset.A"
+        ],
+        [
+          "entry.Center",
+          "offset.B"
+        ],
+        [
+          "offset.ReturnValue",
+          "p.InVec"
+        ],
+        [
+          "entry.Direction",
+          "d.InVec"
+        ],
+        [
+          "entry.Extent",
+          "e.InVec"
+        ],
+        [
+          "entry.Limit",
+          "limit.FarT"
+        ],
+        [
+          "d.X",
+          "xabsq.A"
+        ],
+        [
+          "xabsq.ReturnValue",
+          "xparallelcheck.A"
+        ],
+        [
+          "xparallelcheck.ReturnValue",
+          "xparallel.Condition"
+        ],
+        [
+          "p.X",
+          "xabsp.A"
+        ],
+        [
+          "xabsp.ReturnValue",
+          "xinsidecheck.A"
+        ],
+        [
+          "e.X",
+          "xinsidecheck.B"
+        ],
+        [
+          "xinsidecheck.ReturnValue",
+          "xinside.Condition"
+        ],
+        [
+          "e.X",
+          "xnegative.A"
+        ],
+        [
+          "xnegative.ReturnValue",
+          "xlow.A"
+        ],
+        [
+          "p.X",
+          "xlow.B"
+        ],
+        [
+          "e.X",
+          "xhigh.A"
+        ],
+        [
+          "p.X",
+          "xhigh.B"
+        ],
+        [
+          "xlow.ReturnValue",
+          "xa.A"
+        ],
+        [
+          "d.X",
+          "xa.B"
+        ],
+        [
+          "xhigh.ReturnValue",
+          "xb.A"
+        ],
+        [
+          "d.X",
+          "xb.B"
+        ],
+        [
+          "xa.ReturnValue",
+          "xmin.A"
+        ],
+        [
+          "xb.ReturnValue",
+          "xmin.B"
+        ],
+        [
+          "xa.ReturnValue",
+          "xmax.A"
+        ],
+        [
+          "xb.ReturnValue",
+          "xmax.B"
+        ],
+        [
+          "xnear.NearT",
+          "xnewnear.A"
+        ],
+        [
+          "xmin.ReturnValue",
+          "xnewnear.B"
+        ],
+        [
+          "xfar.FarT",
+          "xnewfar.A"
+        ],
+        [
+          "xmax.ReturnValue",
+          "xnewfar.B"
+        ],
+        [
+          "xnewnear.ReturnValue",
+          "xsetnear.NearT"
+        ],
+        [
+          "xnewfar.ReturnValue",
+          "xsetfar.FarT"
+        ],
+        [
+          "xnear.NearT",
+          "xoverlapcheck.A"
+        ],
+        [
+          "xfar.FarT",
+          "xoverlapcheck.B"
+        ],
+        [
+          "xoverlapcheck.ReturnValue",
+          "xoverlap.Condition"
+        ],
+        [
+          "limit.then",
+          "xparallel.execute"
+        ],
+        [
+          "xparallel.then",
+          "xinside.execute"
+        ],
+        [
+          "xinside.then",
+          "xnext.execute"
+        ],
+        [
+          "xinside.else",
+          "result.execute"
+        ],
+        [
+          "xparallel.else",
+          "xsetnear.execute"
+        ],
+        [
+          "xsetnear.then",
+          "xsetfar.execute"
+        ],
+        [
+          "xsetfar.then",
+          "xoverlap.execute"
+        ],
+        [
+          "xoverlap.then",
+          "xnext.execute"
+        ],
+        [
+          "xoverlap.else",
+          "result.execute"
+        ],
+        [
+          "d.Y",
+          "yabsq.A"
+        ],
+        [
+          "yabsq.ReturnValue",
+          "yparallelcheck.A"
+        ],
+        [
+          "yparallelcheck.ReturnValue",
+          "yparallel.Condition"
+        ],
+        [
+          "p.Y",
+          "yabsp.A"
+        ],
+        [
+          "yabsp.ReturnValue",
+          "yinsidecheck.A"
+        ],
+        [
+          "e.Y",
+          "yinsidecheck.B"
+        ],
+        [
+          "yinsidecheck.ReturnValue",
+          "yinside.Condition"
+        ],
+        [
+          "e.Y",
+          "ynegative.A"
+        ],
+        [
+          "ynegative.ReturnValue",
+          "ylow.A"
+        ],
+        [
+          "p.Y",
+          "ylow.B"
+        ],
+        [
+          "e.Y",
+          "yhigh.A"
+        ],
+        [
+          "p.Y",
+          "yhigh.B"
+        ],
+        [
+          "ylow.ReturnValue",
+          "ya.A"
+        ],
+        [
+          "d.Y",
+          "ya.B"
+        ],
+        [
+          "yhigh.ReturnValue",
+          "yb.A"
+        ],
+        [
+          "d.Y",
+          "yb.B"
+        ],
+        [
+          "ya.ReturnValue",
+          "ymin.A"
+        ],
+        [
+          "yb.ReturnValue",
+          "ymin.B"
+        ],
+        [
+          "ya.ReturnValue",
+          "ymax.A"
+        ],
+        [
+          "yb.ReturnValue",
+          "ymax.B"
+        ],
+        [
+          "ynear.NearT",
+          "ynewnear.A"
+        ],
+        [
+          "ymin.ReturnValue",
+          "ynewnear.B"
+        ],
+        [
+          "yfar.FarT",
+          "ynewfar.A"
+        ],
+        [
+          "ymax.ReturnValue",
+          "ynewfar.B"
+        ],
+        [
+          "ynewnear.ReturnValue",
+          "ysetnear.NearT"
+        ],
+        [
+          "ynewfar.ReturnValue",
+          "ysetfar.FarT"
+        ],
+        [
+          "ynear.NearT",
+          "yoverlapcheck.A"
+        ],
+        [
+          "yfar.FarT",
+          "yoverlapcheck.B"
+        ],
+        [
+          "yoverlapcheck.ReturnValue",
+          "yoverlap.Condition"
+        ],
+        [
+          "xnext.then_0",
+          "yparallel.execute"
+        ],
+        [
+          "yparallel.then",
+          "yinside.execute"
+        ],
+        [
+          "yinside.then",
+          "ynext.execute"
+        ],
+        [
+          "yinside.else",
+          "result.execute"
+        ],
+        [
+          "yparallel.else",
+          "ysetnear.execute"
+        ],
+        [
+          "ysetnear.then",
+          "ysetfar.execute"
+        ],
+        [
+          "ysetfar.then",
+          "yoverlap.execute"
+        ],
+        [
+          "yoverlap.then",
+          "ynext.execute"
+        ],
+        [
+          "yoverlap.else",
+          "result.execute"
+        ],
+        [
+          "d.Z",
+          "zabsq.A"
+        ],
+        [
+          "zabsq.ReturnValue",
+          "zparallelcheck.A"
+        ],
+        [
+          "zparallelcheck.ReturnValue",
+          "zparallel.Condition"
+        ],
+        [
+          "p.Z",
+          "zabsp.A"
+        ],
+        [
+          "zabsp.ReturnValue",
+          "zinsidecheck.A"
+        ],
+        [
+          "e.Z",
+          "zinsidecheck.B"
+        ],
+        [
+          "zinsidecheck.ReturnValue",
+          "zinside.Condition"
+        ],
+        [
+          "e.Z",
+          "znegative.A"
+        ],
+        [
+          "znegative.ReturnValue",
+          "zlow.A"
+        ],
+        [
+          "p.Z",
+          "zlow.B"
+        ],
+        [
+          "e.Z",
+          "zhigh.A"
+        ],
+        [
+          "p.Z",
+          "zhigh.B"
+        ],
+        [
+          "zlow.ReturnValue",
+          "za.A"
+        ],
+        [
+          "d.Z",
+          "za.B"
+        ],
+        [
+          "zhigh.ReturnValue",
+          "zb.A"
+        ],
+        [
+          "d.Z",
+          "zb.B"
+        ],
+        [
+          "za.ReturnValue",
+          "zmin.A"
+        ],
+        [
+          "zb.ReturnValue",
+          "zmin.B"
+        ],
+        [
+          "za.ReturnValue",
+          "zmax.A"
+        ],
+        [
+          "zb.ReturnValue",
+          "zmax.B"
+        ],
+        [
+          "znear.NearT",
+          "znewnear.A"
+        ],
+        [
+          "zmin.ReturnValue",
+          "znewnear.B"
+        ],
+        [
+          "zfar.FarT",
+          "znewfar.A"
+        ],
+        [
+          "zmax.ReturnValue",
+          "znewfar.B"
+        ],
+        [
+          "znewnear.ReturnValue",
+          "zsetnear.NearT"
+        ],
+        [
+          "znewfar.ReturnValue",
+          "zsetfar.FarT"
+        ],
+        [
+          "znear.NearT",
+          "zoverlapcheck.A"
+        ],
+        [
+          "zfar.FarT",
+          "zoverlapcheck.B"
+        ],
+        [
+          "zoverlapcheck.ReturnValue",
+          "zoverlap.Condition"
+        ],
+        [
+          "ynext.then_0",
+          "zparallel.execute"
+        ],
+        [
+          "zparallel.then",
+          "zinside.execute"
+        ],
+        [
+          "zinside.then",
+          "znext.execute"
+        ],
+        [
+          "zinside.else",
+          "result.execute"
+        ],
+        [
+          "zparallel.else",
+          "zsetnear.execute"
+        ],
+        [
+          "zsetnear.then",
+          "zsetfar.execute"
+        ],
+        [
+          "zsetfar.then",
+          "zoverlap.execute"
+        ],
+        [
+          "zoverlap.then",
+          "znext.execute"
+        ],
+        [
+          "zoverlap.else",
+          "result.execute"
+        ],
+        [
+          "near.NearT",
+          "front.A"
+        ],
+        [
+          "near.NearT",
+          "inrange.A"
+        ],
+        [
+          "entry.Limit",
+          "inrange.B"
+        ],
+        [
+          "front.ReturnValue",
+          "hitcheck0.A"
+        ],
+        [
+          "inrange.ReturnValue",
+          "hitcheck0.B"
+        ],
+        [
+          "hitcheck0.ReturnValue",
+          "hit.Condition"
+        ],
+        [
+          "found.Found",
+          "result.Hit"
+        ],
+        [
+          "near.NearT",
+          "result.Distance"
+        ],
+        [
+          "entry.then",
+          "limit.execute"
+        ],
+        [
+          "znext.then_0",
+          "hit.execute"
+        ],
+        [
+          "hit.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "hit.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ComponentBox",
+      "inputs": [
+        {
+          "name": "Component",
+          "type": "object:/Script/Engine.StaticMeshComponent"
+        },
+        {
+          "name": "Origin",
+          "type": "vector"
+        },
+        {
+          "name": "Direction",
+          "type": "vector"
+        },
+        {
+          "name": "Limit",
+          "type": "double"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Hit",
+          "type": "bool"
+        },
+        {
+          "name": "Distance",
+          "type": "double"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Found",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "HitDistance",
+          "type": "double"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "validcomponent",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "mesh",
+          "kind": "get",
+          "var": "/Script/Engine.StaticMeshComponent:StaticMesh"
+        },
+        {
+          "id": "meshcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "meshvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "transform",
+          "kind": "call",
+          "function": "/Script/Engine.SceneComponent:K2_GetComponentToWorld",
+          "defaults": {}
+        },
+        {
+          "id": "origin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:InverseTransformLocation",
+          "defaults": {}
+        },
+        {
+          "id": "endpoint",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "localend",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:InverseTransformLocation",
+          "defaults": {}
+        },
+        {
+          "id": "direction",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "bounds",
+          "kind": "call",
+          "function": "/Script/Engine.StaticMesh:GetBounds",
+          "defaults": {}
+        },
+        {
+          "id": "box",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakBoxSphereBounds",
+          "defaults": {}
+        },
+        {
+          "id": "ray",
+          "kind": "call",
+          "function": "self:RayBox",
+          "defaults": {}
+        },
+        {
+          "id": "hit",
+          "kind": "set",
+          "var": "local:Found"
+        },
+        {
+          "id": "distance",
+          "kind": "set",
+          "var": "local:HitDistance"
+        },
+        {
+          "id": "found",
+          "kind": "get",
+          "var": "local:Found"
+        },
+        {
+          "id": "dist",
+          "kind": "get",
+          "var": "local:HitDistance"
+        }
+      ],
+      "links": [
+        [
+          "entry.Component",
+          "validcomponent.Object"
+        ],
+        [
+          "validcomponent.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.Component",
+          "mesh.self"
+        ],
+        [
+          "mesh.StaticMesh",
+          "meshcheck.Object"
+        ],
+        [
+          "meshcheck.ReturnValue",
+          "meshvalid.Condition"
+        ],
+        [
+          "entry.Component",
+          "transform.self"
+        ],
+        [
+          "transform.ReturnValue",
+          "origin.T"
+        ],
+        [
+          "entry.Origin",
+          "origin.Location"
+        ],
+        [
+          "entry.Origin",
+          "endpoint.A"
+        ],
+        [
+          "entry.Direction",
+          "endpoint.B"
+        ],
+        [
+          "transform.ReturnValue",
+          "localend.T"
+        ],
+        [
+          "endpoint.ReturnValue",
+          "localend.Location"
+        ],
+        [
+          "localend.ReturnValue",
+          "direction.A"
+        ],
+        [
+          "origin.ReturnValue",
+          "direction.B"
+        ],
+        [
+          "mesh.StaticMesh",
+          "bounds.self"
+        ],
+        [
+          "bounds.ReturnValue",
+          "box.InBoxSphereBounds"
+        ],
+        [
+          "origin.ReturnValue",
+          "ray.Origin"
+        ],
+        [
+          "direction.ReturnValue",
+          "ray.Direction"
+        ],
+        [
+          "box.Origin",
+          "ray.Center"
+        ],
+        [
+          "box.BoxExtent",
+          "ray.Extent"
+        ],
+        [
+          "entry.Limit",
+          "ray.Limit"
+        ],
+        [
+          "ray.Hit",
+          "hit.Found"
+        ],
+        [
+          "ray.Distance",
+          "distance.HitDistance"
+        ],
+        [
+          "found.Found",
+          "result.Hit"
+        ],
+        [
+          "dist.HitDistance",
+          "result.Distance"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "meshvalid.execute"
+        ],
+        [
+          "meshvalid.then",
+          "ray.execute"
+        ],
+        [
+          "ray.then",
+          "hit.execute"
+        ],
+        [
+          "hit.then",
+          "distance.execute"
+        ],
+        [
+          "distance.then",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ],
+        [
+          "meshvalid.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "BeginIndex",
+      "inputs": [
+        {
+          "name": "WorldManager",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenWorld"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "cancel",
+          "kind": "call",
+          "function": "self:CancelQuery",
+          "defaults": {}
+        },
+        {
+          "id": "manager",
+          "kind": "set",
+          "var": "Manager"
+        },
+        {
+          "id": "check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "refresh",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenWorld:RefreshActors",
+          "defaults": {}
+        },
+        {
+          "id": "actors",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenWorld:WorldActors"
+        },
+        {
+          "id": "copy",
+          "kind": "set",
+          "var": "IndexActors"
+        },
+        {
+          "id": "getSurfaceCandidates",
+          "kind": "get",
+          "var": "SurfaceCandidates"
+        },
+        {
+          "id": "surface",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "getBoundsCandidates",
+          "kind": "get",
+          "var": "BoundsCandidates"
+        },
+        {
+          "id": "bounds",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "getIndexComponents",
+          "kind": "get",
+          "var": "IndexComponents"
+        },
+        {
+          "id": "components",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "actor",
+          "kind": "set",
+          "var": "IndexActor",
+          "defaults": {
+            "IndexActor": "0"
+          }
+        },
+        {
+          "id": "component",
+          "kind": "set",
+          "var": "IndexComponent",
+          "defaults": {
+            "IndexComponent": "-1"
+          }
+        },
+        {
+          "id": "start",
+          "kind": "set",
+          "var": "Indexing",
+          "defaults": {
+            "Indexing": "true"
+          }
+        },
+        {
+          "id": "stop",
+          "kind": "set",
+          "var": "Indexing",
+          "defaults": {
+            "Indexing": "false"
+          }
+        },
+        {
+          "id": "getIndexActors",
+          "kind": "get",
+          "var": "IndexActors"
+        },
+        {
+          "id": "oldactors",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "entry.WorldManager",
+          "manager.Manager"
+        ],
+        [
+          "entry.WorldManager",
+          "check.Object"
+        ],
+        [
+          "check.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.WorldManager",
+          "refresh.self"
+        ],
+        [
+          "entry.WorldManager",
+          "actors.self"
+        ],
+        [
+          "actors.WorldActors",
+          "copy.IndexActors"
+        ],
+        [
+          "getSurfaceCandidates.SurfaceCandidates",
+          "surface.TargetArray"
+        ],
+        [
+          "getBoundsCandidates.BoundsCandidates",
+          "bounds.TargetArray"
+        ],
+        [
+          "getIndexComponents.IndexComponents",
+          "components.TargetArray"
+        ],
+        [
+          "getIndexActors.IndexActors",
+          "oldactors.TargetArray"
+        ],
+        [
+          "entry.then",
+          "cancel.execute"
+        ],
+        [
+          "cancel.then",
+          "stop.execute"
+        ],
+        [
+          "stop.then",
+          "oldactors.execute"
+        ],
+        [
+          "oldactors.then",
+          "surface.execute"
+        ],
+        [
+          "surface.then",
+          "bounds.execute"
+        ],
+        [
+          "bounds.then",
+          "components.execute"
+        ],
+        [
+          "components.then",
+          "manager.execute"
+        ],
+        [
+          "manager.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "refresh.execute"
+        ],
+        [
+          "refresh.then",
+          "copy.execute"
+        ],
+        [
+          "copy.then",
+          "actor.execute"
+        ],
+        [
+          "actor.then",
+          "component.execute"
+        ],
+        [
+          "component.then",
+          "start.execute"
+        ]
+      ]
+    },
+    {
+      "name": "IndexCandidate",
+      "inputs": [
+        {
+          "name": "Component",
+          "type": "object:/Script/Engine.StaticMeshComponent"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "classify",
+          "kind": "call",
+          "function": "self:Classify",
+          "defaults": {
+            "EditStructure": "true",
+            "SelectFloors": "true",
+            "SelectWalls": "true"
+          }
+        },
+        {
+          "id": "getManager",
+          "kind": "get",
+          "var": "Manager"
+        },
+        {
+          "id": "facts",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenPick"
+        },
+        {
+          "id": "allowed",
+          "kind": "branch"
+        },
+        {
+          "id": "bounds",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:GetComponentBounds",
+          "defaults": {}
+        },
+        {
+          "id": "size",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Vector_GetAbsMax",
+          "defaults": {}
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "1000"
+          }
+        },
+        {
+          "id": "sizeok",
+          "kind": "branch"
+        },
+        {
+          "id": "needed",
+          "kind": "call",
+          "function": "self:NeedsBounds",
+          "defaults": {}
+        },
+        {
+          "id": "collision",
+          "kind": "call",
+          "function": "/Script/Engine.PrimitiveComponent:GetCollisionEnabled",
+          "defaults": {}
+        },
+        {
+          "id": "nocollision",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ByteByte",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "surface",
+          "kind": "branch"
+        },
+        {
+          "id": "own",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "ownedbounds0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "owned",
+          "kind": "branch"
+        },
+        {
+          "id": "getSurfaceCandidates",
+          "kind": "get",
+          "var": "SurfaceCandidates"
+        },
+        {
+          "id": "addsurface",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_AddUnique",
+          "defaults": {}
+        },
+        {
+          "id": "missing",
+          "kind": "branch"
+        },
+        {
+          "id": "getBoundsCandidates",
+          "kind": "get",
+          "var": "BoundsCandidates"
+        },
+        {
+          "id": "addbounds",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_AddUnique",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getManager.Manager",
+          "classify.Manager"
+        ],
+        [
+          "entry.Component",
+          "classify.Component"
+        ],
+        [
+          "classify.Facts",
+          "facts.ST_DenPick"
+        ],
+        [
+          "facts.Allowed",
+          "allowed.Condition"
+        ],
+        [
+          "entry.Component",
+          "bounds.Component"
+        ],
+        [
+          "bounds.BoxExtent",
+          "size.A"
+        ],
+        [
+          "size.ReturnValue",
+          "within.A"
+        ],
+        [
+          "within.ReturnValue",
+          "sizeok.Condition"
+        ],
+        [
+          "entry.Component",
+          "needed.Component"
+        ],
+        [
+          "entry.Component",
+          "collision.self"
+        ],
+        [
+          "collision.ReturnValue",
+          "nocollision.A"
+        ],
+        [
+          "nocollision.ReturnValue",
+          "surface.Condition"
+        ],
+        [
+          "facts.Kind",
+          "own.A"
+        ],
+        [
+          "own.ReturnValue",
+          "ownedbounds0.A"
+        ],
+        [
+          "needed.Needed",
+          "ownedbounds0.B"
+        ],
+        [
+          "ownedbounds0.ReturnValue",
+          "owned.Condition"
+        ],
+        [
+          "getSurfaceCandidates.SurfaceCandidates",
+          "addsurface.TargetArray"
+        ],
+        [
+          "entry.Component",
+          "addsurface.NewItem"
+        ],
+        [
+          "needed.Needed",
+          "missing.Condition"
+        ],
+        [
+          "getBoundsCandidates.BoundsCandidates",
+          "addbounds.TargetArray"
+        ],
+        [
+          "entry.Component",
+          "addbounds.NewItem"
+        ],
+        [
+          "entry.then",
+          "classify.execute"
+        ],
+        [
+          "classify.then",
+          "allowed.execute"
+        ],
+        [
+          "allowed.then",
+          "sizeok.execute"
+        ],
+        [
+          "sizeok.then",
+          "needed.execute"
+        ],
+        [
+          "needed.then",
+          "surface.execute"
+        ],
+        [
+          "surface.then",
+          "owned.execute"
+        ],
+        [
+          "owned.then",
+          "addbounds.execute"
+        ],
+        [
+          "owned.else",
+          "addsurface.execute"
+        ],
+        [
+          "surface.else",
+          "missing.execute"
+        ],
+        [
+          "missing.then",
+          "addbounds.execute"
+        ]
+      ]
+    },
+    {
+      "name": "IndexStep",
+      "nodes": [
+        {
+          "id": "getIndexActors",
+          "kind": "get",
+          "var": "IndexActors"
+        },
+        {
+          "id": "len",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "getIndexActor",
+          "kind": "get",
+          "var": "IndexActor"
+        },
+        {
+          "id": "actorwithin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "within",
+          "kind": "branch"
+        },
+        {
+          "id": "actor",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "actorvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "getIndexComponent",
+          "kind": "get",
+          "var": "IndexComponent"
+        },
+        {
+          "id": "cachedcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "cached",
+          "kind": "branch"
+        },
+        {
+          "id": "components",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:K2_GetComponentsByClass",
+          "defaults": {
+            "ComponentClass": "/Script/Engine.StaticMeshComponent"
+          }
+        },
+        {
+          "id": "cache",
+          "kind": "set",
+          "var": "IndexComponents"
+        },
+        {
+          "id": "start",
+          "kind": "set",
+          "var": "IndexComponent",
+          "defaults": {
+            "IndexComponent": "0"
+          }
+        },
+        {
+          "id": "getIndexComponents",
+          "kind": "get",
+          "var": "IndexComponents"
+        },
+        {
+          "id": "clen",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "componentwithin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "component",
+          "kind": "branch"
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "cvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "componentvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/Script/Engine.StaticMeshComponent"
+        },
+        {
+          "id": "consider",
+          "kind": "call",
+          "function": "self:IndexCandidate",
+          "defaults": {}
+        },
+        {
+          "id": "nextcomponentadd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "nextcomponent",
+          "kind": "set",
+          "var": "IndexComponent"
+        },
+        {
+          "id": "nextactoradd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "nextactor",
+          "kind": "set",
+          "var": "IndexActor"
+        },
+        {
+          "id": "uncache",
+          "kind": "set",
+          "var": "IndexComponent",
+          "defaults": {
+            "IndexComponent": "-1"
+          }
+        },
+        {
+          "id": "releasecomponents",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "done",
+          "kind": "set",
+          "var": "Indexing",
+          "defaults": {
+            "Indexing": "false"
+          }
+        },
+        {
+          "id": "releaseactors",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getIndexActors.IndexActors",
+          "len.TargetArray"
+        ],
+        [
+          "getIndexActor.IndexActor",
+          "actorwithin.A"
+        ],
+        [
+          "len.ReturnValue",
+          "actorwithin.B"
+        ],
+        [
+          "actorwithin.ReturnValue",
+          "within.Condition"
+        ],
+        [
+          "getIndexActors.IndexActors",
+          "actor.TargetArray"
+        ],
+        [
+          "getIndexActor.IndexActor",
+          "actor.Index"
+        ],
+        [
+          "actor.Item",
+          "actorvalid.Object"
+        ],
+        [
+          "actorvalid.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "getIndexComponent.IndexComponent",
+          "cachedcheck.A"
+        ],
+        [
+          "cachedcheck.ReturnValue",
+          "cached.Condition"
+        ],
+        [
+          "actor.Item",
+          "components.self"
+        ],
+        [
+          "components.ReturnValue",
+          "cache.IndexComponents"
+        ],
+        [
+          "getIndexComponents.IndexComponents",
+          "clen.TargetArray"
+        ],
+        [
+          "getIndexComponent.IndexComponent",
+          "componentwithin.A"
+        ],
+        [
+          "clen.ReturnValue",
+          "componentwithin.B"
+        ],
+        [
+          "componentwithin.ReturnValue",
+          "component.Condition"
+        ],
+        [
+          "getIndexComponents.IndexComponents",
+          "item.TargetArray"
+        ],
+        [
+          "getIndexComponent.IndexComponent",
+          "item.Index"
+        ],
+        [
+          "item.Item",
+          "cvalid.Object"
+        ],
+        [
+          "cvalid.ReturnValue",
+          "componentvalid.Condition"
+        ],
+        [
+          "item.Item",
+          "cast.Object"
+        ],
+        [
+          "cast.AsStatic Mesh Component",
+          "consider.Component"
+        ],
+        [
+          "getIndexComponent.IndexComponent",
+          "nextcomponentadd.A"
+        ],
+        [
+          "nextcomponentadd.ReturnValue",
+          "nextcomponent.IndexComponent"
+        ],
+        [
+          "getIndexActor.IndexActor",
+          "nextactoradd.A"
+        ],
+        [
+          "nextactoradd.ReturnValue",
+          "nextactor.IndexActor"
+        ],
+        [
+          "getIndexComponents.IndexComponents",
+          "releasecomponents.TargetArray"
+        ],
+        [
+          "getIndexActors.IndexActors",
+          "releaseactors.TargetArray"
+        ],
+        [
+          "entry.then",
+          "within.execute"
+        ],
+        [
+          "within.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "cached.execute"
+        ],
+        [
+          "cached.then",
+          "component.execute"
+        ],
+        [
+          "component.then",
+          "componentvalid.execute"
+        ],
+        [
+          "componentvalid.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "consider.execute"
+        ],
+        [
+          "consider.then",
+          "nextcomponent.execute"
+        ],
+        [
+          "cached.else",
+          "cache.execute"
+        ],
+        [
+          "cache.then",
+          "start.execute"
+        ],
+        [
+          "valid.else",
+          "nextactor.execute"
+        ],
+        [
+          "nextactor.then",
+          "uncache.execute"
+        ],
+        [
+          "uncache.then",
+          "releasecomponents.execute"
+        ],
+        [
+          "component.else",
+          "nextactor.execute"
+        ],
+        [
+          "componentvalid.else",
+          "nextcomponent.execute"
+        ],
+        [
+          "cast.CastFailed",
+          "nextcomponent.execute"
+        ],
+        [
+          "within.else",
+          "done.execute"
+        ],
+        [
+          "done.then",
+          "releaseactors.execute"
+        ],
+        [
+          "releaseactors.then",
+          "releasecomponents.execute"
+        ]
+      ]
+    },
+    {
+      "name": "PumpIndex",
+      "locals": [
+        {
+          "name": "StartedAt",
+          "type": "double"
+        },
+        {
+          "name": "Steps",
+          "type": "int",
+          "default": "0"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "start",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "startsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "started",
+          "kind": "set",
+          "var": "local:StartedAt"
+        },
+        {
+          "id": "getIndexing",
+          "kind": "get",
+          "var": "Indexing"
+        },
+        {
+          "id": "steps",
+          "kind": "get",
+          "var": "local:Steps"
+        },
+        {
+          "id": "startedget",
+          "kind": "get",
+          "var": "local:StartedAt"
+        },
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "nowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "elapsed",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getBudgetSeconds",
+          "kind": "get",
+          "var": "BudgetSeconds"
+        },
+        {
+          "id": "budget",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getMaxSteps",
+          "kind": "get",
+          "var": "MaxSteps"
+        },
+        {
+          "id": "stepsbudget",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "within0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "within1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "step",
+          "kind": "call",
+          "function": "self:IndexStep",
+          "defaults": {}
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:Steps"
+        }
+      ],
+      "links": [
+        [
+          "start.Seconds",
+          "startsum.A"
+        ],
+        [
+          "start.PartialSeconds",
+          "startsum.B"
+        ],
+        [
+          "startsum.ReturnValue",
+          "started.StartedAt"
+        ],
+        [
+          "now.Seconds",
+          "nowsum.A"
+        ],
+        [
+          "now.PartialSeconds",
+          "nowsum.B"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "elapsed.A"
+        ],
+        [
+          "startedget.StartedAt",
+          "elapsed.B"
+        ],
+        [
+          "elapsed.ReturnValue",
+          "budget.A"
+        ],
+        [
+          "getBudgetSeconds.BudgetSeconds",
+          "budget.B"
+        ],
+        [
+          "steps.Steps",
+          "stepsbudget.A"
+        ],
+        [
+          "getMaxSteps.MaxSteps",
+          "stepsbudget.B"
+        ],
+        [
+          "getIndexing.Indexing",
+          "within0.A"
+        ],
+        [
+          "budget.ReturnValue",
+          "within0.B"
+        ],
+        [
+          "within0.ReturnValue",
+          "within1.A"
+        ],
+        [
+          "stepsbudget.ReturnValue",
+          "within1.B"
+        ],
+        [
+          "within1.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "steps.Steps",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.Steps"
+        ],
+        [
+          "entry.then",
+          "started.execute"
+        ],
+        [
+          "started.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "step.execute"
+        ],
+        [
+          "step.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "loop.execute"
+        ]
+      ]
+    },
+    {
+      "name": "PumpQuery",
+      "locals": [
+        {
+          "name": "StartedAt",
+          "type": "double"
+        },
+        {
+          "name": "Steps",
+          "type": "int",
+          "default": "0"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "start",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "startsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "started",
+          "kind": "set",
+          "var": "local:StartedAt"
+        },
+        {
+          "id": "getQueryPending",
+          "kind": "get",
+          "var": "QueryPending"
+        },
+        {
+          "id": "steps",
+          "kind": "get",
+          "var": "local:Steps"
+        },
+        {
+          "id": "startedget",
+          "kind": "get",
+          "var": "local:StartedAt"
+        },
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "nowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "elapsed",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getBudgetSeconds",
+          "kind": "get",
+          "var": "BudgetSeconds"
+        },
+        {
+          "id": "budget",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getMaxSteps",
+          "kind": "get",
+          "var": "MaxSteps"
+        },
+        {
+          "id": "stepsbudget",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "getIndexing",
+          "kind": "get",
+          "var": "Indexing"
+        },
+        {
+          "id": "indexed",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "within0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "within1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "within2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "step",
+          "kind": "call",
+          "function": "self:QueryStep",
+          "defaults": {}
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:Steps"
+        }
+      ],
+      "links": [
+        [
+          "start.Seconds",
+          "startsum.A"
+        ],
+        [
+          "start.PartialSeconds",
+          "startsum.B"
+        ],
+        [
+          "startsum.ReturnValue",
+          "started.StartedAt"
+        ],
+        [
+          "now.Seconds",
+          "nowsum.A"
+        ],
+        [
+          "now.PartialSeconds",
+          "nowsum.B"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "elapsed.A"
+        ],
+        [
+          "startedget.StartedAt",
+          "elapsed.B"
+        ],
+        [
+          "elapsed.ReturnValue",
+          "budget.A"
+        ],
+        [
+          "getBudgetSeconds.BudgetSeconds",
+          "budget.B"
+        ],
+        [
+          "steps.Steps",
+          "stepsbudget.A"
+        ],
+        [
+          "getMaxSteps.MaxSteps",
+          "stepsbudget.B"
+        ],
+        [
+          "getIndexing.Indexing",
+          "indexed.A"
+        ],
+        [
+          "getQueryPending.QueryPending",
+          "within0.A"
+        ],
+        [
+          "budget.ReturnValue",
+          "within0.B"
+        ],
+        [
+          "within0.ReturnValue",
+          "within1.A"
+        ],
+        [
+          "stepsbudget.ReturnValue",
+          "within1.B"
+        ],
+        [
+          "within1.ReturnValue",
+          "within2.A"
+        ],
+        [
+          "indexed.ReturnValue",
+          "within2.B"
+        ],
+        [
+          "within2.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "steps.Steps",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.Steps"
+        ],
+        [
+          "entry.then",
+          "started.execute"
+        ],
+        [
+          "started.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "step.execute"
+        ],
+        [
+          "step.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "loop.execute"
+        ]
+      ]
+    },
+    {
+      "name": "CancelQuery",
+      "nodes": [
+        {
+          "id": "pending",
+          "kind": "set",
+          "var": "QueryPending",
+          "defaults": {
+            "QueryPending": "false"
+          }
+        },
+        {
+          "id": "ready",
+          "kind": "set",
+          "var": "QueryReady",
+          "defaults": {
+            "QueryReady": "false"
+          }
+        },
+        {
+          "id": "hit",
+          "kind": "set",
+          "var": "QueryComponent"
+        }
+      ],
+      "links": [
+        [
+          "entry.then",
+          "pending.execute"
+        ],
+        [
+          "pending.then",
+          "ready.execute"
+        ],
+        [
+          "ready.then",
+          "hit.execute"
+        ]
+      ]
+    },
+    {
+      "name": "RequestPick",
+      "inputs": [
+        {
+          "name": "Origin",
+          "type": "vector"
+        },
+        {
+          "name": "Direction",
+          "type": "vector"
+        },
+        {
+          "name": "Limit",
+          "type": "double"
+        },
+        {
+          "name": "EditStructure",
+          "type": "bool"
+        },
+        {
+          "name": "SelectFloors",
+          "type": "bool"
+        },
+        {
+          "name": "SelectWalls",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "cancel",
+          "kind": "call",
+          "function": "self:CancelQuery",
+          "defaults": {}
+        },
+        {
+          "id": "origin",
+          "kind": "set",
+          "var": "RayOrigin"
+        },
+        {
+          "id": "structure",
+          "kind": "set",
+          "var": "QueryStructure"
+        },
+        {
+          "id": "floors",
+          "kind": "set",
+          "var": "QueryFloors"
+        },
+        {
+          "id": "walls",
+          "kind": "set",
+          "var": "QueryWalls"
+        },
+        {
+          "id": "reach",
+          "kind": "set",
+          "var": "RayLimit"
+        },
+        {
+          "id": "normal",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Normal",
+          "defaults": {
+            "Tolerance": "1e-08"
+          }
+        },
+        {
+          "id": "direction",
+          "kind": "set",
+          "var": "RayDirection"
+        },
+        {
+          "id": "offset",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {}
+        },
+        {
+          "id": "end",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "getManager",
+          "kind": "get",
+          "var": "Manager"
+        },
+        {
+          "id": "trace",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:LineTraceSingle",
+          "defaults": {
+            "TraceChannel": "TraceTypeQuery1",
+            "bTraceComplex": "true",
+            "DrawDebugType": "None",
+            "bIgnoreSelf": "true"
+          }
+        },
+        {
+          "id": "hit",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:BreakHitResult",
+          "defaults": {}
+        },
+        {
+          "id": "hitflag",
+          "kind": "set",
+          "var": "QueryHadTrace"
+        },
+        {
+          "id": "blocked",
+          "kind": "branch"
+        },
+        {
+          "id": "hitcomponent",
+          "kind": "set",
+          "var": "QueryComponent"
+        },
+        {
+          "id": "hitt",
+          "kind": "set",
+          "var": "TraceDistance"
+        },
+        {
+          "id": "missdistance",
+          "kind": "set",
+          "var": "TraceDistance"
+        },
+        {
+          "id": "getTraceDistance",
+          "kind": "get",
+          "var": "TraceDistance"
+        },
+        {
+          "id": "nearest",
+          "kind": "set",
+          "var": "BestDistance"
+        },
+        {
+          "id": "volume",
+          "kind": "set",
+          "var": "SurfaceVolume",
+          "defaults": {
+            "SurfaceVolume": "1e30"
+          }
+        },
+        {
+          "id": "cursor",
+          "kind": "set",
+          "var": "QueryCursor",
+          "defaults": {
+            "QueryCursor": "0"
+          }
+        },
+        {
+          "id": "phase",
+          "kind": "set",
+          "var": "QueryPhase",
+          "defaults": {
+            "QueryPhase": "0"
+          }
+        },
+        {
+          "id": "pending",
+          "kind": "set",
+          "var": "QueryPending",
+          "defaults": {
+            "QueryPending": "true"
+          }
+        }
+      ],
+      "links": [
+        [
+          "entry.Origin",
+          "origin.RayOrigin"
+        ],
+        [
+          "entry.EditStructure",
+          "structure.QueryStructure"
+        ],
+        [
+          "entry.SelectFloors",
+          "floors.QueryFloors"
+        ],
+        [
+          "entry.SelectWalls",
+          "walls.QueryWalls"
+        ],
+        [
+          "entry.Limit",
+          "reach.RayLimit"
+        ],
+        [
+          "entry.Direction",
+          "normal.A"
+        ],
+        [
+          "normal.ReturnValue",
+          "direction.RayDirection"
+        ],
+        [
+          "normal.ReturnValue",
+          "offset.A"
+        ],
+        [
+          "entry.Limit",
+          "offset.B"
+        ],
+        [
+          "entry.Origin",
+          "end.A"
+        ],
+        [
+          "offset.ReturnValue",
+          "end.B"
+        ],
+        [
+          "getManager.Manager",
+          "trace.WorldContextObject"
+        ],
+        [
+          "entry.Origin",
+          "trace.Start"
+        ],
+        [
+          "end.ReturnValue",
+          "trace.End"
+        ],
+        [
+          "trace.OutHit",
+          "hit.Hit"
+        ],
+        [
+          "trace.ReturnValue",
+          "hitflag.QueryHadTrace"
+        ],
+        [
+          "trace.ReturnValue",
+          "blocked.Condition"
+        ],
+        [
+          "hit.HitComponent",
+          "hitcomponent.QueryComponent"
+        ],
+        [
+          "hit.Distance",
+          "hitt.TraceDistance"
+        ],
+        [
+          "entry.Limit",
+          "missdistance.TraceDistance"
+        ],
+        [
+          "getTraceDistance.TraceDistance",
+          "nearest.BestDistance"
+        ],
+        [
+          "entry.then",
+          "cancel.execute"
+        ],
+        [
+          "cancel.then",
+          "origin.execute"
+        ],
+        [
+          "origin.then",
+          "structure.execute"
+        ],
+        [
+          "structure.then",
+          "floors.execute"
+        ],
+        [
+          "floors.then",
+          "walls.execute"
+        ],
+        [
+          "walls.then",
+          "reach.execute"
+        ],
+        [
+          "reach.then",
+          "direction.execute"
+        ],
+        [
+          "direction.then",
+          "trace.execute"
+        ],
+        [
+          "trace.then",
+          "hitflag.execute"
+        ],
+        [
+          "hitflag.then",
+          "blocked.execute"
+        ],
+        [
+          "blocked.then",
+          "hitcomponent.execute"
+        ],
+        [
+          "hitcomponent.then",
+          "hitt.execute"
+        ],
+        [
+          "hitt.then",
+          "nearest.execute"
+        ],
+        [
+          "nearest.then",
+          "volume.execute"
+        ],
+        [
+          "volume.then",
+          "cursor.execute"
+        ],
+        [
+          "cursor.then",
+          "phase.execute"
+        ],
+        [
+          "phase.then",
+          "pending.execute"
+        ],
+        [
+          "blocked.else",
+          "missdistance.execute"
+        ],
+        [
+          "missdistance.then",
+          "nearest.execute"
+        ]
+      ]
+    },
+    {
+      "name": "QueryCandidate",
+      "inputs": [
+        {
+          "name": "Component",
+          "type": "object:/Script/Engine.StaticMeshComponent"
+        },
+        {
+          "name": "SurfaceOnly",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "MaximumT",
+          "type": "double"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "visible",
+          "kind": "call",
+          "function": "/Script/Engine.SceneComponent:IsVisible",
+          "defaults": {}
+        },
+        {
+          "id": "owner",
+          "kind": "call",
+          "function": "/Script/Engine.ActorComponent:GetOwner",
+          "defaults": {}
+        },
+        {
+          "id": "ownervalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "ownerok",
+          "kind": "branch"
+        },
+        {
+          "id": "hidden",
+          "kind": "get",
+          "var": "/Script/Engine.Actor:bHidden"
+        },
+        {
+          "id": "nothidden",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "showncheck0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "shown",
+          "kind": "branch"
+        },
+        {
+          "id": "mesh",
+          "kind": "get",
+          "var": "/Script/Engine.StaticMeshComponent:StaticMesh"
+        },
+        {
+          "id": "path",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:GetPathName",
+          "defaults": {}
+        },
+        {
+          "id": "floor",
+          "kind": "call",
+          "function": "self:IsFloor",
+          "defaults": {}
+        },
+        {
+          "id": "getQueryFloors",
+          "kind": "get",
+          "var": "QueryFloors"
+        },
+        {
+          "id": "notfloor",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "floorok0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "floors",
+          "kind": "branch"
+        },
+        {
+          "id": "wall",
+          "kind": "call",
+          "function": "self:IsWall",
+          "defaults": {}
+        },
+        {
+          "id": "getQueryWalls",
+          "kind": "get",
+          "var": "QueryWalls"
+        },
+        {
+          "id": "notwall",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "wallok0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "walls",
+          "kind": "branch"
+        },
+        {
+          "id": "surface",
+          "kind": "branch"
+        },
+        {
+          "id": "getQueryHadTrace",
+          "kind": "get",
+          "var": "QueryHadTrace"
+        },
+        {
+          "id": "hastrace",
+          "kind": "branch"
+        },
+        {
+          "id": "getTraceDistance",
+          "kind": "get",
+          "var": "TraceDistance"
+        },
+        {
+          "id": "slack",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {
+            "B": "3"
+          }
+        },
+        {
+          "id": "surfacelimit",
+          "kind": "set",
+          "var": "local:MaximumT"
+        },
+        {
+          "id": "getBestDistance",
+          "kind": "get",
+          "var": "BestDistance"
+        },
+        {
+          "id": "boundslimit",
+          "kind": "set",
+          "var": "local:MaximumT"
+        },
+        {
+          "id": "limit",
+          "kind": "get",
+          "var": "local:MaximumT"
+        },
+        {
+          "id": "box",
+          "kind": "call",
+          "function": "self:ComponentBox",
+          "defaults": {}
+        },
+        {
+          "id": "getRayOrigin",
+          "kind": "get",
+          "var": "RayOrigin"
+        },
+        {
+          "id": "getRayDirection",
+          "kind": "get",
+          "var": "RayDirection"
+        },
+        {
+          "id": "hit",
+          "kind": "branch"
+        },
+        {
+          "id": "surfacetest",
+          "kind": "branch"
+        },
+        {
+          "id": "depth",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {
+            "B": "20"
+          }
+        },
+        {
+          "id": "closecheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "close",
+          "kind": "branch"
+        },
+        {
+          "id": "bounds",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:GetComponentBounds",
+          "defaults": {}
+        },
+        {
+          "id": "extents",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakVector",
+          "defaults": {}
+        },
+        {
+          "id": "extentX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "extentY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "extentZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "xy",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "volume",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getSurfaceVolume",
+          "kind": "get",
+          "var": "SurfaceVolume"
+        },
+        {
+          "id": "smallcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "smaller",
+          "kind": "branch"
+        },
+        {
+          "id": "savevolume",
+          "kind": "set",
+          "var": "SurfaceVolume"
+        },
+        {
+          "id": "minimum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMin",
+          "defaults": {}
+        },
+        {
+          "id": "surfacet",
+          "kind": "set",
+          "var": "BestDistance"
+        },
+        {
+          "id": "closebounds",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "closer",
+          "kind": "branch"
+        },
+        {
+          "id": "boundst",
+          "kind": "set",
+          "var": "BestDistance"
+        },
+        {
+          "id": "remember",
+          "kind": "set",
+          "var": "QueryComponent"
+        }
+      ],
+      "links": [
+        [
+          "entry.Component",
+          "check.Object"
+        ],
+        [
+          "check.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.Component",
+          "visible.self"
+        ],
+        [
+          "entry.Component",
+          "owner.self"
+        ],
+        [
+          "owner.ReturnValue",
+          "ownervalid.Object"
+        ],
+        [
+          "ownervalid.ReturnValue",
+          "ownerok.Condition"
+        ],
+        [
+          "owner.ReturnValue",
+          "hidden.self"
+        ],
+        [
+          "hidden.bHidden",
+          "nothidden.A"
+        ],
+        [
+          "visible.ReturnValue",
+          "showncheck0.A"
+        ],
+        [
+          "nothidden.ReturnValue",
+          "showncheck0.B"
+        ],
+        [
+          "showncheck0.ReturnValue",
+          "shown.Condition"
+        ],
+        [
+          "entry.Component",
+          "mesh.self"
+        ],
+        [
+          "mesh.StaticMesh",
+          "path.Object"
+        ],
+        [
+          "path.ReturnValue",
+          "floor.MeshPath"
+        ],
+        [
+          "floor.IsFloor",
+          "notfloor.A"
+        ],
+        [
+          "getQueryFloors.QueryFloors",
+          "floorok0.A"
+        ],
+        [
+          "notfloor.ReturnValue",
+          "floorok0.B"
+        ],
+        [
+          "floorok0.ReturnValue",
+          "floors.Condition"
+        ],
+        [
+          "path.ReturnValue",
+          "wall.MeshPath"
+        ],
+        [
+          "wall.IsWall",
+          "notwall.A"
+        ],
+        [
+          "getQueryWalls.QueryWalls",
+          "wallok0.A"
+        ],
+        [
+          "notwall.ReturnValue",
+          "wallok0.B"
+        ],
+        [
+          "wallok0.ReturnValue",
+          "walls.Condition"
+        ],
+        [
+          "entry.SurfaceOnly",
+          "surface.Condition"
+        ],
+        [
+          "getQueryHadTrace.QueryHadTrace",
+          "hastrace.Condition"
+        ],
+        [
+          "getTraceDistance.TraceDistance",
+          "slack.A"
+        ],
+        [
+          "slack.ReturnValue",
+          "surfacelimit.MaximumT"
+        ],
+        [
+          "getBestDistance.BestDistance",
+          "boundslimit.MaximumT"
+        ],
+        [
+          "entry.Component",
+          "box.Component"
+        ],
+        [
+          "getRayOrigin.RayOrigin",
+          "box.Origin"
+        ],
+        [
+          "getRayDirection.RayDirection",
+          "box.Direction"
+        ],
+        [
+          "limit.MaximumT",
+          "box.Limit"
+        ],
+        [
+          "box.Hit",
+          "hit.Condition"
+        ],
+        [
+          "entry.SurfaceOnly",
+          "surfacetest.Condition"
+        ],
+        [
+          "getTraceDistance.TraceDistance",
+          "depth.A"
+        ],
+        [
+          "box.Distance",
+          "closecheck.A"
+        ],
+        [
+          "depth.ReturnValue",
+          "closecheck.B"
+        ],
+        [
+          "closecheck.ReturnValue",
+          "close.Condition"
+        ],
+        [
+          "entry.Component",
+          "bounds.Component"
+        ],
+        [
+          "bounds.BoxExtent",
+          "extents.InVec"
+        ],
+        [
+          "extents.X",
+          "extentX.A"
+        ],
+        [
+          "extents.Y",
+          "extentY.A"
+        ],
+        [
+          "extents.Z",
+          "extentZ.A"
+        ],
+        [
+          "extentX.ReturnValue",
+          "xy.A"
+        ],
+        [
+          "extentY.ReturnValue",
+          "xy.B"
+        ],
+        [
+          "xy.ReturnValue",
+          "volume.A"
+        ],
+        [
+          "extentZ.ReturnValue",
+          "volume.B"
+        ],
+        [
+          "volume.ReturnValue",
+          "smallcheck.A"
+        ],
+        [
+          "getSurfaceVolume.SurfaceVolume",
+          "smallcheck.B"
+        ],
+        [
+          "smallcheck.ReturnValue",
+          "smaller.Condition"
+        ],
+        [
+          "volume.ReturnValue",
+          "savevolume.SurfaceVolume"
+        ],
+        [
+          "getTraceDistance.TraceDistance",
+          "minimum.A"
+        ],
+        [
+          "box.Distance",
+          "minimum.B"
+        ],
+        [
+          "minimum.ReturnValue",
+          "surfacet.BestDistance"
+        ],
+        [
+          "box.Distance",
+          "closebounds.A"
+        ],
+        [
+          "getBestDistance.BestDistance",
+          "closebounds.B"
+        ],
+        [
+          "closebounds.ReturnValue",
+          "closer.Condition"
+        ],
+        [
+          "box.Distance",
+          "boundst.BestDistance"
+        ],
+        [
+          "entry.Component",
+          "remember.QueryComponent"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "ownerok.execute"
+        ],
+        [
+          "ownerok.then",
+          "shown.execute"
+        ],
+        [
+          "shown.then",
+          "floor.execute"
+        ],
+        [
+          "floor.then",
+          "floors.execute"
+        ],
+        [
+          "floors.then",
+          "wall.execute"
+        ],
+        [
+          "wall.then",
+          "walls.execute"
+        ],
+        [
+          "walls.then",
+          "surface.execute"
+        ],
+        [
+          "surface.then",
+          "hastrace.execute"
+        ],
+        [
+          "hastrace.then",
+          "surfacelimit.execute"
+        ],
+        [
+          "surfacelimit.then",
+          "box.execute"
+        ],
+        [
+          "box.then",
+          "hit.execute"
+        ],
+        [
+          "hit.then",
+          "surfacetest.execute"
+        ],
+        [
+          "surfacetest.then",
+          "close.execute"
+        ],
+        [
+          "close.then",
+          "smaller.execute"
+        ],
+        [
+          "smaller.then",
+          "savevolume.execute"
+        ],
+        [
+          "savevolume.then",
+          "surfacet.execute"
+        ],
+        [
+          "surfacet.then",
+          "remember.execute"
+        ],
+        [
+          "surface.else",
+          "boundslimit.execute"
+        ],
+        [
+          "boundslimit.then",
+          "box.execute"
+        ],
+        [
+          "surfacetest.else",
+          "closer.execute"
+        ],
+        [
+          "closer.then",
+          "boundst.execute"
+        ],
+        [
+          "boundst.then",
+          "remember.execute"
+        ]
+      ]
+    },
+    {
+      "name": "QueryStep",
+      "nodes": [
+        {
+          "id": "getQueryPhase",
+          "kind": "get",
+          "var": "QueryPhase"
+        },
+        {
+          "id": "surface",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "phase",
+          "kind": "branch"
+        },
+        {
+          "id": "getSurfaceCandidates",
+          "kind": "get",
+          "var": "SurfaceCandidates"
+        },
+        {
+          "id": "surfaceslen",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "getQueryCursor",
+          "kind": "get",
+          "var": "QueryCursor"
+        },
+        {
+          "id": "surfacescheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "surfaceswithin",
+          "kind": "branch"
+        },
+        {
+          "id": "surfacesitem",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "surfacestest",
+          "kind": "call",
+          "function": "self:QueryCandidate",
+          "defaults": {
+            "SurfaceOnly": "true"
+          }
+        },
+        {
+          "id": "getBoundsCandidates",
+          "kind": "get",
+          "var": "BoundsCandidates"
+        },
+        {
+          "id": "boundslen",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "boundscheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "boundswithin",
+          "kind": "branch"
+        },
+        {
+          "id": "boundsitem",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "boundstest",
+          "kind": "call",
+          "function": "self:QueryCandidate",
+          "defaults": {
+            "SurfaceOnly": "false"
+          }
+        },
+        {
+          "id": "nextadd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "next",
+          "kind": "set",
+          "var": "QueryCursor"
+        },
+        {
+          "id": "phase2",
+          "kind": "set",
+          "var": "QueryPhase",
+          "defaults": {
+            "QueryPhase": "1"
+          }
+        },
+        {
+          "id": "restart",
+          "kind": "set",
+          "var": "QueryCursor",
+          "defaults": {
+            "QueryCursor": "0"
+          }
+        },
+        {
+          "id": "classify",
+          "kind": "call",
+          "function": "self:Classify",
+          "defaults": {}
+        },
+        {
+          "id": "getManager",
+          "kind": "get",
+          "var": "Manager"
+        },
+        {
+          "id": "getQueryComponent",
+          "kind": "get",
+          "var": "QueryComponent"
+        },
+        {
+          "id": "getQueryStructure",
+          "kind": "get",
+          "var": "QueryStructure"
+        },
+        {
+          "id": "getQueryFloors",
+          "kind": "get",
+          "var": "QueryFloors"
+        },
+        {
+          "id": "getQueryWalls",
+          "kind": "get",
+          "var": "QueryWalls"
+        },
+        {
+          "id": "result",
+          "kind": "set",
+          "var": "QueryResult"
+        },
+        {
+          "id": "done",
+          "kind": "set",
+          "var": "QueryPending",
+          "defaults": {
+            "QueryPending": "false"
+          }
+        },
+        {
+          "id": "ready",
+          "kind": "set",
+          "var": "QueryReady",
+          "defaults": {
+            "QueryReady": "true"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getQueryPhase.QueryPhase",
+          "surface.A"
+        ],
+        [
+          "surface.ReturnValue",
+          "phase.Condition"
+        ],
+        [
+          "getSurfaceCandidates.SurfaceCandidates",
+          "surfaceslen.TargetArray"
+        ],
+        [
+          "getQueryCursor.QueryCursor",
+          "surfacescheck.A"
+        ],
+        [
+          "surfaceslen.ReturnValue",
+          "surfacescheck.B"
+        ],
+        [
+          "surfacescheck.ReturnValue",
+          "surfaceswithin.Condition"
+        ],
+        [
+          "getSurfaceCandidates.SurfaceCandidates",
+          "surfacesitem.TargetArray"
+        ],
+        [
+          "getQueryCursor.QueryCursor",
+          "surfacesitem.Index"
+        ],
+        [
+          "surfacesitem.Item",
+          "surfacestest.Component"
+        ],
+        [
+          "surfaceswithin.then",
+          "surfacestest.execute"
+        ],
+        [
+          "surfacestest.then",
+          "next.execute"
+        ],
+        [
+          "getBoundsCandidates.BoundsCandidates",
+          "boundslen.TargetArray"
+        ],
+        [
+          "getQueryCursor.QueryCursor",
+          "boundscheck.A"
+        ],
+        [
+          "boundslen.ReturnValue",
+          "boundscheck.B"
+        ],
+        [
+          "boundscheck.ReturnValue",
+          "boundswithin.Condition"
+        ],
+        [
+          "getBoundsCandidates.BoundsCandidates",
+          "boundsitem.TargetArray"
+        ],
+        [
+          "getQueryCursor.QueryCursor",
+          "boundsitem.Index"
+        ],
+        [
+          "boundsitem.Item",
+          "boundstest.Component"
+        ],
+        [
+          "boundswithin.then",
+          "boundstest.execute"
+        ],
+        [
+          "boundstest.then",
+          "next.execute"
+        ],
+        [
+          "getQueryCursor.QueryCursor",
+          "nextadd.A"
+        ],
+        [
+          "nextadd.ReturnValue",
+          "next.QueryCursor"
+        ],
+        [
+          "getManager.Manager",
+          "classify.Manager"
+        ],
+        [
+          "getQueryComponent.QueryComponent",
+          "classify.Component"
+        ],
+        [
+          "getQueryStructure.QueryStructure",
+          "classify.EditStructure"
+        ],
+        [
+          "getQueryFloors.QueryFloors",
+          "classify.SelectFloors"
+        ],
+        [
+          "getQueryWalls.QueryWalls",
+          "classify.SelectWalls"
+        ],
+        [
+          "classify.Facts",
+          "result.QueryResult"
+        ],
+        [
+          "entry.then",
+          "phase.execute"
+        ],
+        [
+          "phase.then",
+          "surfaceswithin.execute"
+        ],
+        [
+          "phase.else",
+          "boundswithin.execute"
+        ],
+        [
+          "surfaceswithin.else",
+          "phase2.execute"
+        ],
+        [
+          "phase2.then",
+          "restart.execute"
+        ],
+        [
+          "boundswithin.else",
+          "classify.execute"
+        ],
+        [
+          "classify.then",
+          "result.execute"
+        ],
+        [
+          "result.then",
+          "done.execute"
+        ],
+        [
+          "done.then",
+          "ready.execute"
+        ]
+      ]
+    }
+  ]
+}

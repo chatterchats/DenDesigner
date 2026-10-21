@@ -1,8 +1,25 @@
 dist/
 *.log
 __pycache__/
-unreal/ZComDen/Content/
-unreal/ZComDen/Saved/
-unreal/ZComDen/Intermediate/
-unreal/ZComDen/Metadata/
-/src/*/MXM/values.lua
+
+# Authored/cooked Unreal assets are reproducible build products.
+unreal/*/Content/
+unreal/*/Saved/
+unreal/*/Intermediate/
+unreal/*/Metadata/
+
+# Local editor/build output (also applies to copied authoring plugins and QA plugins).
+**/Binaries/
+**/Intermediate/
+**/Saved/
+**/DerivedDataCache/
+**/Metadata/
+**/Packaged/
+*.py[cod]
+.DS_Store
+.env
+.env.*
+!.env.example
+
+# Local development art: cabinet provenance is not yet complete for redistribution.
+authoring/prop-packs/example/assets/

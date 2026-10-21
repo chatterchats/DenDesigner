@@ -1,0 +1,3264 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenThumbnails",
+  "parent": "/Script/Engine.Actor",
+  "defaults": {
+    "PrimaryActorTick.bCanEverTick": "true",
+    "PrimaryActorTick.bStartWithTickEnabled": "true"
+  },
+  "variables": [
+    {
+      "name": "CacheDocuments",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave[]"
+    },
+    {
+      "name": "CompositionRenderer",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenApply"
+    },
+    {
+      "name": "CachePaths",
+      "type": "string[]"
+    },
+    {
+      "name": "CacheTextures",
+      "type": "object:/Script/Engine.Texture2D[]"
+    },
+    {
+      "name": "CacheStates",
+      "type": "int[]"
+    },
+    {
+      "name": "PendingPaths",
+      "type": "string[]"
+    },
+    {
+      "name": "CurrentPath",
+      "type": "string"
+    },
+    {
+      "name": "Phase",
+      "type": "int"
+    },
+    {
+      "name": "Job",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenAssetJob"
+    },
+    {
+      "name": "Studio",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenThumbnailStudio"
+    },
+    {
+      "name": "RequestAt",
+      "type": "double"
+    },
+    {
+      "name": "IdleAt",
+      "type": "double"
+    },
+    {
+      "name": "NextAt",
+      "type": "double"
+    },
+    {
+      "name": "Enabled",
+      "type": "bool",
+      "default": "true"
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "tick",
+        "kind": "event",
+        "name": "ReceiveTick"
+      },
+      {
+        "id": "pump",
+        "kind": "call",
+        "function": "self:PumpThumbnails",
+        "defaults": {}
+      },
+      {
+        "id": "end",
+        "kind": "event",
+        "name": "ReceiveEndPlay"
+      },
+      {
+        "id": "cancel",
+        "kind": "call",
+        "function": "self:CancelPending",
+        "defaults": {}
+      },
+      {
+        "id": "release",
+        "kind": "call",
+        "function": "self:ReleaseCaptureStudio",
+        "defaults": {}
+      }
+    ],
+    "links": [
+      [
+        "tick.then",
+        "pump.execute"
+      ],
+      [
+        "end.then",
+        "cancel.execute"
+      ],
+      [
+        "cancel.then",
+        "release.execute"
+      ]
+    ]
+  },
+  "functions": [
+    {
+      "name": "RequestComposition",
+      "inputs": [
+        {
+          "name": "Path",
+          "type": "string"
+        },
+        {
+          "name": "Document",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Texture",
+          "type": "object:/Script/Engine.Texture2D"
+        },
+        {
+          "name": "Status",
+          "type": "int"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "valid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "document",
+          "kind": "branch"
+        },
+        {
+          "id": "request",
+          "kind": "call",
+          "function": "self:Request",
+          "defaults": {}
+        },
+        {
+          "id": "getCachePaths",
+          "kind": "get",
+          "var": "CachePaths"
+        },
+        {
+          "id": "index",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Find",
+          "defaults": {}
+        },
+        {
+          "id": "found",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "pendingstatus",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "pending0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "queued",
+          "kind": "branch"
+        },
+        {
+          "id": "getCacheDocuments",
+          "kind": "get",
+          "var": "CacheDocuments"
+        },
+        {
+          "id": "keep",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Set",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "entry.Document",
+          "valid.Object"
+        ],
+        [
+          "valid.ReturnValue",
+          "document.Condition"
+        ],
+        [
+          "entry.Path",
+          "request.Path"
+        ],
+        [
+          "request.Texture",
+          "result.Texture"
+        ],
+        [
+          "request.Status",
+          "result.Status"
+        ],
+        [
+          "getCachePaths.CachePaths",
+          "index.TargetArray"
+        ],
+        [
+          "entry.Path",
+          "index.ItemToFind"
+        ],
+        [
+          "index.ReturnValue",
+          "found.A"
+        ],
+        [
+          "request.Status",
+          "pendingstatus.A"
+        ],
+        [
+          "found.ReturnValue",
+          "pending0.A"
+        ],
+        [
+          "pendingstatus.ReturnValue",
+          "pending0.B"
+        ],
+        [
+          "pending0.ReturnValue",
+          "queued.Condition"
+        ],
+        [
+          "getCacheDocuments.CacheDocuments",
+          "keep.TargetArray"
+        ],
+        [
+          "index.ReturnValue",
+          "keep.Index"
+        ],
+        [
+          "entry.Document",
+          "keep.Item"
+        ],
+        [
+          "entry.then",
+          "document.execute"
+        ],
+        [
+          "document.then",
+          "request.execute"
+        ],
+        [
+          "request.then",
+          "queued.execute"
+        ],
+        [
+          "queued.then",
+          "keep.execute"
+        ],
+        [
+          "keep.then",
+          "result.execute"
+        ],
+        [
+          "queued.else",
+          "result.execute"
+        ],
+        [
+          "document.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ReleaseCompositionRenderer",
+      "nodes": [
+        {
+          "id": "getCompositionRenderer",
+          "kind": "get",
+          "var": "CompositionRenderer"
+        },
+        {
+          "id": "alive",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "cancel",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenApply:CancelWork",
+          "defaults": {}
+        },
+        {
+          "id": "clear",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenWorld:Clear",
+          "defaults": {}
+        },
+        {
+          "id": "destroy",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:K2_DestroyActor",
+          "defaults": {}
+        },
+        {
+          "id": "release",
+          "kind": "set",
+          "var": "CompositionRenderer"
+        }
+      ],
+      "links": [
+        [
+          "getCompositionRenderer.CompositionRenderer",
+          "alive.Object"
+        ],
+        [
+          "alive.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "getCompositionRenderer.CompositionRenderer",
+          "cancel.self"
+        ],
+        [
+          "getCompositionRenderer.CompositionRenderer",
+          "clear.self"
+        ],
+        [
+          "getCompositionRenderer.CompositionRenderer",
+          "destroy.self"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "cancel.execute"
+        ],
+        [
+          "cancel.then",
+          "clear.execute"
+        ],
+        [
+          "clear.then",
+          "destroy.execute"
+        ],
+        [
+          "destroy.then",
+          "release.execute"
+        ],
+        [
+          "valid.else",
+          "release.execute"
+        ]
+      ]
+    },
+    {
+      "name": "BeginCompositionThumbnail",
+      "inputs": [
+        {
+          "name": "Document",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "rendererxf",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeTransform",
+          "defaults": {
+            "Location": "0,0,0",
+            "Scale": "1,1,1"
+          }
+        },
+        {
+          "id": "rendererspawn",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:BeginDeferredActorSpawnFromClass",
+          "defaults": {
+            "ActorClass": "/DenDesignerGF/Runtime/BP_DenApply",
+            "CollisionHandlingOverride": "AlwaysSpawn"
+          }
+        },
+        {
+          "id": "rendererfinish",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:FinishSpawningActor",
+          "defaults": {}
+        },
+        {
+          "id": "renderercast",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenApply"
+        },
+        {
+          "id": "renderersave",
+          "kind": "set",
+          "var": "CompositionRenderer"
+        },
+        {
+          "id": "ghost",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenApply:PreviewOnly",
+          "defaults": {
+            "PreviewOnly": "true"
+          }
+        },
+        {
+          "id": "getCompositionRenderer",
+          "kind": "get",
+          "var": "CompositionRenderer"
+        },
+        {
+          "id": "begin",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenApply:BeginLayout",
+          "defaults": {}
+        },
+        {
+          "id": "accepted",
+          "kind": "branch"
+        },
+        {
+          "id": "phase",
+          "kind": "set",
+          "var": "Phase",
+          "defaults": {
+            "Phase": "4"
+          }
+        },
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "nowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "started",
+          "kind": "set",
+          "var": "RequestAt"
+        },
+        {
+          "id": "fail",
+          "kind": "call",
+          "function": "self:FinishThumbnail",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "self.self",
+          "rendererspawn.WorldContextObject"
+        ],
+        [
+          "self.self",
+          "rendererspawn.Owner"
+        ],
+        [
+          "rendererxf.ReturnValue",
+          "rendererspawn.SpawnTransform"
+        ],
+        [
+          "rendererspawn.ReturnValue",
+          "rendererfinish.Actor"
+        ],
+        [
+          "rendererxf.ReturnValue",
+          "rendererfinish.SpawnTransform"
+        ],
+        [
+          "rendererfinish.ReturnValue",
+          "renderercast.Object"
+        ],
+        [
+          "renderercast.AsBP Den Apply",
+          "renderersave.CompositionRenderer"
+        ],
+        [
+          "rendererspawn.then",
+          "rendererfinish.execute"
+        ],
+        [
+          "rendererfinish.then",
+          "renderercast.execute"
+        ],
+        [
+          "renderercast.then",
+          "renderersave.execute"
+        ],
+        [
+          "getCompositionRenderer.CompositionRenderer",
+          "ghost.self"
+        ],
+        [
+          "getCompositionRenderer.CompositionRenderer",
+          "begin.self"
+        ],
+        [
+          "entry.Document",
+          "begin.Document"
+        ],
+        [
+          "begin.Accepted",
+          "accepted.Condition"
+        ],
+        [
+          "now.Seconds",
+          "nowsum.A"
+        ],
+        [
+          "now.PartialSeconds",
+          "nowsum.B"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "started.RequestAt"
+        ],
+        [
+          "entry.then",
+          "rendererspawn.execute"
+        ],
+        [
+          "renderersave.then",
+          "ghost.execute"
+        ],
+        [
+          "ghost.then",
+          "begin.execute"
+        ],
+        [
+          "begin.then",
+          "accepted.execute"
+        ],
+        [
+          "accepted.then",
+          "phase.execute"
+        ],
+        [
+          "phase.then",
+          "started.execute"
+        ],
+        [
+          "renderercast.CastFailed",
+          "fail.execute"
+        ],
+        [
+          "accepted.else",
+          "fail.execute"
+        ]
+      ]
+    },
+    {
+      "name": "PollCompositionThumbnail",
+      "nodes": [
+        {
+          "id": "getCompositionRenderer",
+          "kind": "get",
+          "var": "CompositionRenderer"
+        },
+        {
+          "id": "renderer",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "busyvalue",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenApply:Busy"
+        },
+        {
+          "id": "busy",
+          "kind": "branch"
+        },
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "nowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getRequestAt",
+          "kind": "get",
+          "var": "RequestAt"
+        },
+        {
+          "id": "elapsed",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "late",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_DoubleDouble",
+          "defaults": {
+            "B": "90"
+          }
+        },
+        {
+          "id": "timeout",
+          "kind": "branch"
+        },
+        {
+          "id": "errors",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenApply:ErrorCount"
+        },
+        {
+          "id": "noerrors",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "complete",
+          "kind": "branch"
+        },
+        {
+          "id": "getStudio",
+          "kind": "get",
+          "var": "Studio"
+        },
+        {
+          "id": "actors",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenWorld:Placed"
+        },
+        {
+          "id": "getCurrentPath",
+          "kind": "get",
+          "var": "CurrentPath"
+        },
+        {
+          "id": "prepare",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenThumbnailStudio:PrepareComposition",
+          "defaults": {}
+        },
+        {
+          "id": "ready",
+          "kind": "branch"
+        },
+        {
+          "id": "phase",
+          "kind": "set",
+          "var": "Phase",
+          "defaults": {
+            "Phase": "2"
+          }
+        },
+        {
+          "id": "fail",
+          "kind": "call",
+          "function": "self:FinishThumbnail",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getCompositionRenderer.CompositionRenderer",
+          "renderer.Object"
+        ],
+        [
+          "renderer.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "getCompositionRenderer.CompositionRenderer",
+          "busyvalue.self"
+        ],
+        [
+          "busyvalue.Busy",
+          "busy.Condition"
+        ],
+        [
+          "now.Seconds",
+          "nowsum.A"
+        ],
+        [
+          "now.PartialSeconds",
+          "nowsum.B"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "elapsed.A"
+        ],
+        [
+          "getRequestAt.RequestAt",
+          "elapsed.B"
+        ],
+        [
+          "elapsed.ReturnValue",
+          "late.A"
+        ],
+        [
+          "late.ReturnValue",
+          "timeout.Condition"
+        ],
+        [
+          "getCompositionRenderer.CompositionRenderer",
+          "errors.self"
+        ],
+        [
+          "errors.ErrorCount",
+          "noerrors.A"
+        ],
+        [
+          "noerrors.ReturnValue",
+          "complete.Condition"
+        ],
+        [
+          "getCompositionRenderer.CompositionRenderer",
+          "actors.self"
+        ],
+        [
+          "getStudio.Studio",
+          "prepare.self"
+        ],
+        [
+          "actors.Placed",
+          "prepare.Actors"
+        ],
+        [
+          "getCurrentPath.CurrentPath",
+          "prepare.Path"
+        ],
+        [
+          "prepare.Ready",
+          "ready.Condition"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "busy.execute"
+        ],
+        [
+          "busy.then",
+          "timeout.execute"
+        ],
+        [
+          "timeout.then",
+          "fail.execute"
+        ],
+        [
+          "busy.else",
+          "complete.execute"
+        ],
+        [
+          "complete.then",
+          "prepare.execute"
+        ],
+        [
+          "prepare.then",
+          "ready.execute"
+        ],
+        [
+          "ready.then",
+          "phase.execute"
+        ],
+        [
+          "valid.else",
+          "fail.execute"
+        ],
+        [
+          "complete.else",
+          "fail.execute"
+        ],
+        [
+          "ready.else",
+          "fail.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ValidAssetPath",
+      "inputs": [
+        {
+          "name": "Path",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Valid",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "length",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Len",
+          "defaults": {}
+        },
+        {
+          "id": "minimum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "3"
+          }
+        },
+        {
+          "id": "maximum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "1023"
+          }
+        },
+        {
+          "id": "starts",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:StartsWith",
+          "defaults": {
+            "InPrefix": "/"
+          }
+        },
+        {
+          "id": "subobject",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": ":",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "assetonly",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "dot",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": ".",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "validpath0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "validpath1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "validpath2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "validpath3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "entry.Path",
+          "length.S"
+        ],
+        [
+          "length.ReturnValue",
+          "minimum.A"
+        ],
+        [
+          "length.ReturnValue",
+          "maximum.A"
+        ],
+        [
+          "entry.Path",
+          "starts.SourceString"
+        ],
+        [
+          "entry.Path",
+          "subobject.SearchIn"
+        ],
+        [
+          "subobject.ReturnValue",
+          "assetonly.A"
+        ],
+        [
+          "entry.Path",
+          "dot.SearchIn"
+        ],
+        [
+          "minimum.ReturnValue",
+          "validpath0.A"
+        ],
+        [
+          "maximum.ReturnValue",
+          "validpath0.B"
+        ],
+        [
+          "validpath0.ReturnValue",
+          "validpath1.A"
+        ],
+        [
+          "starts.ReturnValue",
+          "validpath1.B"
+        ],
+        [
+          "validpath1.ReturnValue",
+          "validpath2.A"
+        ],
+        [
+          "assetonly.ReturnValue",
+          "validpath2.B"
+        ],
+        [
+          "validpath2.ReturnValue",
+          "validpath3.A"
+        ],
+        [
+          "dot.ReturnValue",
+          "validpath3.B"
+        ],
+        [
+          "validpath3.ReturnValue",
+          "result.Valid"
+        ],
+        [
+          "entry.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Request",
+      "inputs": [
+        {
+          "name": "Path",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Texture",
+          "type": "object:/Script/Engine.Texture2D"
+        },
+        {
+          "name": "Status",
+          "type": "int"
+        }
+      ],
+      "locals": [
+        {
+          "name": "ResultTexture",
+          "type": "object:/Script/Engine.Texture2D"
+        },
+        {
+          "name": "ResultState",
+          "type": "int",
+          "default": "2"
+        },
+        {
+          "name": "EvictIndex",
+          "type": "int",
+          "default": "0"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "valid",
+          "kind": "call",
+          "function": "self:ValidAssetPath",
+          "defaults": {}
+        },
+        {
+          "id": "validpath",
+          "kind": "branch"
+        },
+        {
+          "id": "getCachePaths",
+          "kind": "get",
+          "var": "CachePaths"
+        },
+        {
+          "id": "index",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Find",
+          "defaults": {}
+        },
+        {
+          "id": "found",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "cached",
+          "kind": "branch"
+        },
+        {
+          "id": "getCacheTextures",
+          "kind": "get",
+          "var": "CacheTextures"
+        },
+        {
+          "id": "texture",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "getCacheStates",
+          "kind": "get",
+          "var": "CacheStates"
+        },
+        {
+          "id": "state",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "textureout",
+          "kind": "set",
+          "var": "local:ResultTexture"
+        },
+        {
+          "id": "stateout",
+          "kind": "set",
+          "var": "local:ResultState"
+        },
+        {
+          "id": "count",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "limit",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "96"
+          }
+        },
+        {
+          "id": "full",
+          "kind": "branch"
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:EvictIndex"
+        },
+        {
+          "id": "remaining",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "more",
+          "kind": "branch"
+        },
+        {
+          "id": "candidate",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "complete",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "done",
+          "kind": "branch"
+        },
+        {
+          "id": "remove0",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Remove",
+          "defaults": {}
+        },
+        {
+          "id": "remove1",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Remove",
+          "defaults": {}
+        },
+        {
+          "id": "remove2",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Remove",
+          "defaults": {}
+        },
+        {
+          "id": "getCacheDocuments",
+          "kind": "get",
+          "var": "CacheDocuments"
+        },
+        {
+          "id": "remove3",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Remove",
+          "defaults": {}
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:EvictIndex"
+        },
+        {
+          "id": "pathadd",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "nulladd",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "zeroadd",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "documentadd",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "getPendingPaths",
+          "kind": "get",
+          "var": "PendingPaths"
+        },
+        {
+          "id": "queueadd",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "pending",
+          "kind": "set",
+          "var": "local:ResultState",
+          "defaults": {
+            "ResultState": "0"
+          }
+        },
+        {
+          "id": "outtexture",
+          "kind": "get",
+          "var": "local:ResultTexture"
+        },
+        {
+          "id": "outstate",
+          "kind": "get",
+          "var": "local:ResultState"
+        }
+      ],
+      "links": [
+        [
+          "entry.Path",
+          "valid.Path"
+        ],
+        [
+          "valid.Valid",
+          "validpath.Condition"
+        ],
+        [
+          "getCachePaths.CachePaths",
+          "index.TargetArray"
+        ],
+        [
+          "entry.Path",
+          "index.ItemToFind"
+        ],
+        [
+          "index.ReturnValue",
+          "found.A"
+        ],
+        [
+          "found.ReturnValue",
+          "cached.Condition"
+        ],
+        [
+          "getCacheTextures.CacheTextures",
+          "texture.TargetArray"
+        ],
+        [
+          "index.ReturnValue",
+          "texture.Index"
+        ],
+        [
+          "getCacheStates.CacheStates",
+          "state.TargetArray"
+        ],
+        [
+          "index.ReturnValue",
+          "state.Index"
+        ],
+        [
+          "texture.Item",
+          "textureout.ResultTexture"
+        ],
+        [
+          "state.Item",
+          "stateout.ResultState"
+        ],
+        [
+          "getCachePaths.CachePaths",
+          "count.TargetArray"
+        ],
+        [
+          "count.ReturnValue",
+          "limit.A"
+        ],
+        [
+          "limit.ReturnValue",
+          "full.Condition"
+        ],
+        [
+          "i.EvictIndex",
+          "remaining.A"
+        ],
+        [
+          "count.ReturnValue",
+          "remaining.B"
+        ],
+        [
+          "remaining.ReturnValue",
+          "more.Condition"
+        ],
+        [
+          "getCacheStates.CacheStates",
+          "candidate.TargetArray"
+        ],
+        [
+          "i.EvictIndex",
+          "candidate.Index"
+        ],
+        [
+          "candidate.Item",
+          "complete.A"
+        ],
+        [
+          "complete.ReturnValue",
+          "done.Condition"
+        ],
+        [
+          "getCachePaths.CachePaths",
+          "remove0.TargetArray"
+        ],
+        [
+          "i.EvictIndex",
+          "remove0.IndexToRemove"
+        ],
+        [
+          "getCacheTextures.CacheTextures",
+          "remove1.TargetArray"
+        ],
+        [
+          "i.EvictIndex",
+          "remove1.IndexToRemove"
+        ],
+        [
+          "remove0.then",
+          "remove1.execute"
+        ],
+        [
+          "getCacheStates.CacheStates",
+          "remove2.TargetArray"
+        ],
+        [
+          "i.EvictIndex",
+          "remove2.IndexToRemove"
+        ],
+        [
+          "remove1.then",
+          "remove2.execute"
+        ],
+        [
+          "getCacheDocuments.CacheDocuments",
+          "remove3.TargetArray"
+        ],
+        [
+          "i.EvictIndex",
+          "remove3.IndexToRemove"
+        ],
+        [
+          "remove2.then",
+          "remove3.execute"
+        ],
+        [
+          "i.EvictIndex",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.EvictIndex"
+        ],
+        [
+          "getCachePaths.CachePaths",
+          "pathadd.TargetArray"
+        ],
+        [
+          "entry.Path",
+          "pathadd.NewItem"
+        ],
+        [
+          "remove3.then",
+          "pathadd.execute"
+        ],
+        [
+          "getCacheTextures.CacheTextures",
+          "nulladd.TargetArray"
+        ],
+        [
+          "pathadd.then",
+          "nulladd.execute"
+        ],
+        [
+          "getCacheStates.CacheStates",
+          "zeroadd.TargetArray"
+        ],
+        [
+          "nulladd.then",
+          "zeroadd.execute"
+        ],
+        [
+          "getCacheDocuments.CacheDocuments",
+          "documentadd.TargetArray"
+        ],
+        [
+          "zeroadd.then",
+          "documentadd.execute"
+        ],
+        [
+          "getPendingPaths.PendingPaths",
+          "queueadd.TargetArray"
+        ],
+        [
+          "entry.Path",
+          "queueadd.NewItem"
+        ],
+        [
+          "documentadd.then",
+          "queueadd.execute"
+        ],
+        [
+          "outtexture.ResultTexture",
+          "result.Texture"
+        ],
+        [
+          "outstate.ResultState",
+          "result.Status"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "validpath.execute"
+        ],
+        [
+          "validpath.then",
+          "cached.execute"
+        ],
+        [
+          "cached.then",
+          "textureout.execute"
+        ],
+        [
+          "textureout.then",
+          "stateout.execute"
+        ],
+        [
+          "stateout.then",
+          "result.execute"
+        ],
+        [
+          "cached.else",
+          "full.execute"
+        ],
+        [
+          "full.then",
+          "more.execute"
+        ],
+        [
+          "more.then",
+          "done.execute"
+        ],
+        [
+          "done.then",
+          "remove0.execute"
+        ],
+        [
+          "done.else",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "more.execute"
+        ],
+        [
+          "full.else",
+          "pathadd.execute"
+        ],
+        [
+          "queueadd.then",
+          "pending.execute"
+        ],
+        [
+          "pending.then",
+          "result.execute"
+        ],
+        [
+          "more.else",
+          "pending.execute"
+        ],
+        [
+          "validpath.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ReleaseJob",
+      "nodes": [
+        {
+          "id": "getJob",
+          "kind": "get",
+          "var": "Job"
+        },
+        {
+          "id": "alive",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "destroy",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:K2_DestroyActor",
+          "defaults": {}
+        },
+        {
+          "id": "clear",
+          "kind": "set",
+          "var": "Job"
+        }
+      ],
+      "links": [
+        [
+          "getJob.Job",
+          "alive.Object"
+        ],
+        [
+          "alive.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "getJob.Job",
+          "destroy.self"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "destroy.execute"
+        ],
+        [
+          "destroy.then",
+          "clear.execute"
+        ],
+        [
+          "valid.else",
+          "clear.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ReleaseCaptureStudio",
+      "nodes": [
+        {
+          "id": "getStudio",
+          "kind": "get",
+          "var": "Studio"
+        },
+        {
+          "id": "alive",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "destroy",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:K2_DestroyActor",
+          "defaults": {}
+        },
+        {
+          "id": "clear",
+          "kind": "set",
+          "var": "Studio"
+        }
+      ],
+      "links": [
+        [
+          "getStudio.Studio",
+          "alive.Object"
+        ],
+        [
+          "alive.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "getStudio.Studio",
+          "destroy.self"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "destroy.execute"
+        ],
+        [
+          "destroy.then",
+          "clear.execute"
+        ],
+        [
+          "valid.else",
+          "clear.execute"
+        ]
+      ]
+    },
+    {
+      "name": "FinishThumbnail",
+      "inputs": [
+        {
+          "name": "Texture",
+          "type": "object:/Script/Engine.Texture2D"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getCachePaths",
+          "kind": "get",
+          "var": "CachePaths"
+        },
+        {
+          "id": "index",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Find",
+          "defaults": {}
+        },
+        {
+          "id": "getCurrentPath",
+          "kind": "get",
+          "var": "CurrentPath"
+        },
+        {
+          "id": "exists",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "found",
+          "kind": "branch"
+        },
+        {
+          "id": "getCacheTextures",
+          "kind": "get",
+          "var": "CacheTextures"
+        },
+        {
+          "id": "texture",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Set",
+          "defaults": {}
+        },
+        {
+          "id": "texturevalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "state",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectInt",
+          "defaults": {
+            "A": "1",
+            "B": "2"
+          }
+        },
+        {
+          "id": "getCacheStates",
+          "kind": "get",
+          "var": "CacheStates"
+        },
+        {
+          "id": "status",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Set",
+          "defaults": {}
+        },
+        {
+          "id": "release",
+          "kind": "call",
+          "function": "self:ReleaseJob",
+          "defaults": {}
+        },
+        {
+          "id": "composition",
+          "kind": "call",
+          "function": "self:ReleaseCompositionRenderer",
+          "defaults": {}
+        },
+        {
+          "id": "phase",
+          "kind": "set",
+          "var": "Phase",
+          "defaults": {
+            "Phase": "0"
+          }
+        },
+        {
+          "id": "path",
+          "kind": "set",
+          "var": "CurrentPath",
+          "defaults": {
+            "CurrentPath": ""
+          }
+        },
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "nowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "idle",
+          "kind": "set",
+          "var": "IdleAt"
+        },
+        {
+          "id": "getIdleAt",
+          "kind": "get",
+          "var": "IdleAt"
+        },
+        {
+          "id": "nexttime",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {
+            "B": "0.05"
+          }
+        },
+        {
+          "id": "throttle",
+          "kind": "set",
+          "var": "NextAt"
+        }
+      ],
+      "links": [
+        [
+          "getCachePaths.CachePaths",
+          "index.TargetArray"
+        ],
+        [
+          "getCurrentPath.CurrentPath",
+          "index.ItemToFind"
+        ],
+        [
+          "index.ReturnValue",
+          "exists.A"
+        ],
+        [
+          "exists.ReturnValue",
+          "found.Condition"
+        ],
+        [
+          "getCacheTextures.CacheTextures",
+          "texture.TargetArray"
+        ],
+        [
+          "index.ReturnValue",
+          "texture.Index"
+        ],
+        [
+          "entry.Texture",
+          "texture.Item"
+        ],
+        [
+          "entry.Texture",
+          "texturevalid.Object"
+        ],
+        [
+          "texturevalid.ReturnValue",
+          "state.bPickA"
+        ],
+        [
+          "getCacheStates.CacheStates",
+          "status.TargetArray"
+        ],
+        [
+          "index.ReturnValue",
+          "status.Index"
+        ],
+        [
+          "state.ReturnValue",
+          "status.Item"
+        ],
+        [
+          "now.Seconds",
+          "nowsum.A"
+        ],
+        [
+          "now.PartialSeconds",
+          "nowsum.B"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "idle.IdleAt"
+        ],
+        [
+          "getIdleAt.IdleAt",
+          "nexttime.A"
+        ],
+        [
+          "nexttime.ReturnValue",
+          "throttle.NextAt"
+        ],
+        [
+          "entry.then",
+          "found.execute"
+        ],
+        [
+          "found.then",
+          "texture.execute"
+        ],
+        [
+          "texture.then",
+          "status.execute"
+        ],
+        [
+          "status.then",
+          "release.execute"
+        ],
+        [
+          "release.then",
+          "composition.execute"
+        ],
+        [
+          "composition.then",
+          "phase.execute"
+        ],
+        [
+          "phase.then",
+          "path.execute"
+        ],
+        [
+          "path.then",
+          "idle.execute"
+        ],
+        [
+          "idle.then",
+          "throttle.execute"
+        ],
+        [
+          "found.else",
+          "release.execute"
+        ]
+      ]
+    },
+    {
+      "name": "CancelPending",
+      "locals": [
+        {
+          "name": "CancelIndex",
+          "type": "int",
+          "default": "0"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "job",
+          "kind": "call",
+          "function": "self:ReleaseJob",
+          "defaults": {}
+        },
+        {
+          "id": "composition",
+          "kind": "call",
+          "function": "self:ReleaseCompositionRenderer",
+          "defaults": {}
+        },
+        {
+          "id": "phase",
+          "kind": "set",
+          "var": "Phase",
+          "defaults": {
+            "Phase": "0"
+          }
+        },
+        {
+          "id": "path",
+          "kind": "set",
+          "var": "CurrentPath",
+          "defaults": {
+            "CurrentPath": ""
+          }
+        },
+        {
+          "id": "getPendingPaths",
+          "kind": "get",
+          "var": "PendingPaths"
+        },
+        {
+          "id": "queue",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "getCachePaths",
+          "kind": "get",
+          "var": "CachePaths"
+        },
+        {
+          "id": "count",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "last",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "start",
+          "kind": "set",
+          "var": "local:CancelIndex"
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:CancelIndex"
+        },
+        {
+          "id": "nonnegative",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "more",
+          "kind": "branch"
+        },
+        {
+          "id": "getCacheStates",
+          "kind": "get",
+          "var": "CacheStates"
+        },
+        {
+          "id": "state",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "zero",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "pending",
+          "kind": "branch"
+        },
+        {
+          "id": "remove0",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Remove",
+          "defaults": {}
+        },
+        {
+          "id": "getCacheTextures",
+          "kind": "get",
+          "var": "CacheTextures"
+        },
+        {
+          "id": "remove1",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Remove",
+          "defaults": {}
+        },
+        {
+          "id": "remove2",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Remove",
+          "defaults": {}
+        },
+        {
+          "id": "getCacheDocuments",
+          "kind": "get",
+          "var": "CacheDocuments"
+        },
+        {
+          "id": "remove3",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Remove",
+          "defaults": {}
+        },
+        {
+          "id": "decrement",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "next",
+          "kind": "set",
+          "var": "local:CancelIndex"
+        },
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "nowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "idle",
+          "kind": "set",
+          "var": "IdleAt"
+        }
+      ],
+      "links": [
+        [
+          "getPendingPaths.PendingPaths",
+          "queue.TargetArray"
+        ],
+        [
+          "getCachePaths.CachePaths",
+          "count.TargetArray"
+        ],
+        [
+          "count.ReturnValue",
+          "last.A"
+        ],
+        [
+          "last.ReturnValue",
+          "start.CancelIndex"
+        ],
+        [
+          "i.CancelIndex",
+          "nonnegative.A"
+        ],
+        [
+          "nonnegative.ReturnValue",
+          "more.Condition"
+        ],
+        [
+          "getCacheStates.CacheStates",
+          "state.TargetArray"
+        ],
+        [
+          "i.CancelIndex",
+          "state.Index"
+        ],
+        [
+          "state.Item",
+          "zero.A"
+        ],
+        [
+          "zero.ReturnValue",
+          "pending.Condition"
+        ],
+        [
+          "getCachePaths.CachePaths",
+          "remove0.TargetArray"
+        ],
+        [
+          "i.CancelIndex",
+          "remove0.IndexToRemove"
+        ],
+        [
+          "getCacheTextures.CacheTextures",
+          "remove1.TargetArray"
+        ],
+        [
+          "i.CancelIndex",
+          "remove1.IndexToRemove"
+        ],
+        [
+          "remove0.then",
+          "remove1.execute"
+        ],
+        [
+          "getCacheStates.CacheStates",
+          "remove2.TargetArray"
+        ],
+        [
+          "i.CancelIndex",
+          "remove2.IndexToRemove"
+        ],
+        [
+          "remove1.then",
+          "remove2.execute"
+        ],
+        [
+          "getCacheDocuments.CacheDocuments",
+          "remove3.TargetArray"
+        ],
+        [
+          "i.CancelIndex",
+          "remove3.IndexToRemove"
+        ],
+        [
+          "remove2.then",
+          "remove3.execute"
+        ],
+        [
+          "i.CancelIndex",
+          "decrement.A"
+        ],
+        [
+          "decrement.ReturnValue",
+          "next.CancelIndex"
+        ],
+        [
+          "now.Seconds",
+          "nowsum.A"
+        ],
+        [
+          "now.PartialSeconds",
+          "nowsum.B"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "idle.IdleAt"
+        ],
+        [
+          "entry.then",
+          "job.execute"
+        ],
+        [
+          "job.then",
+          "composition.execute"
+        ],
+        [
+          "composition.then",
+          "phase.execute"
+        ],
+        [
+          "phase.then",
+          "path.execute"
+        ],
+        [
+          "path.then",
+          "queue.execute"
+        ],
+        [
+          "queue.then",
+          "start.execute"
+        ],
+        [
+          "start.then",
+          "more.execute"
+        ],
+        [
+          "more.then",
+          "pending.execute"
+        ],
+        [
+          "pending.then",
+          "remove0.execute"
+        ],
+        [
+          "remove3.then",
+          "next.execute"
+        ],
+        [
+          "next.then",
+          "more.execute"
+        ],
+        [
+          "pending.else",
+          "next.execute"
+        ],
+        [
+          "more.else",
+          "idle.execute"
+        ]
+      ]
+    },
+    {
+      "name": "BeginNext",
+      "nodes": [
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "getPendingPaths",
+          "kind": "get",
+          "var": "PendingPaths"
+        },
+        {
+          "id": "count",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "any",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "pending",
+          "kind": "branch"
+        },
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "nowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getNextAt",
+          "kind": "get",
+          "var": "NextAt"
+        },
+        {
+          "id": "time",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "throttle",
+          "kind": "branch"
+        },
+        {
+          "id": "first",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {
+            "Index": "0"
+          }
+        },
+        {
+          "id": "path",
+          "kind": "set",
+          "var": "CurrentPath"
+        },
+        {
+          "id": "pop",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Remove",
+          "defaults": {
+            "IndexToRemove": "0"
+          }
+        },
+        {
+          "id": "getStudio",
+          "kind": "get",
+          "var": "Studio"
+        },
+        {
+          "id": "validstudio",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "studio",
+          "kind": "branch"
+        },
+        {
+          "id": "studioxf",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeTransform",
+          "defaults": {
+            "Location": "-522700,13000,28800",
+            "Scale": "1,1,1"
+          }
+        },
+        {
+          "id": "studiospawn",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:BeginDeferredActorSpawnFromClass",
+          "defaults": {
+            "ActorClass": "/DenDesignerGF/Runtime/BP_DenThumbnailStudio",
+            "CollisionHandlingOverride": "AlwaysSpawn"
+          }
+        },
+        {
+          "id": "studiofinish",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:FinishSpawningActor",
+          "defaults": {}
+        },
+        {
+          "id": "studiocast",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenThumbnailStudio"
+        },
+        {
+          "id": "studiosave",
+          "kind": "set",
+          "var": "Studio"
+        },
+        {
+          "id": "getCurrentPath",
+          "kind": "get",
+          "var": "CurrentPath"
+        },
+        {
+          "id": "cache",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenThumbnailStudio:ReadCached",
+          "defaults": {}
+        },
+        {
+          "id": "cachevalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "hit",
+          "kind": "branch"
+        },
+        {
+          "id": "finishcache",
+          "kind": "call",
+          "function": "self:FinishThumbnail",
+          "defaults": {}
+        },
+        {
+          "id": "getCachePaths",
+          "kind": "get",
+          "var": "CachePaths"
+        },
+        {
+          "id": "cacheindex",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Find",
+          "defaults": {}
+        },
+        {
+          "id": "getCacheDocuments",
+          "kind": "get",
+          "var": "CacheDocuments"
+        },
+        {
+          "id": "document",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "documentvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "composition",
+          "kind": "branch"
+        },
+        {
+          "id": "begincomposition",
+          "kind": "call",
+          "function": "self:BeginCompositionThumbnail",
+          "defaults": {}
+        },
+        {
+          "id": "getEnabled",
+          "kind": "get",
+          "var": "Enabled"
+        },
+        {
+          "id": "enabled",
+          "kind": "branch"
+        },
+        {
+          "id": "jobxf",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeTransform",
+          "defaults": {
+            "Location": "0,0,0",
+            "Scale": "1,1,1"
+          }
+        },
+        {
+          "id": "jobspawn",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:BeginDeferredActorSpawnFromClass",
+          "defaults": {
+            "ActorClass": "/DenDesignerGF/Runtime/BP_DenAssetJob",
+            "CollisionHandlingOverride": "AlwaysSpawn"
+          }
+        },
+        {
+          "id": "jobfinish",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:FinishSpawningActor",
+          "defaults": {}
+        },
+        {
+          "id": "jobcast",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenAssetJob"
+        },
+        {
+          "id": "jobsave",
+          "kind": "set",
+          "var": "Job"
+        },
+        {
+          "id": "getJob",
+          "kind": "get",
+          "var": "Job"
+        },
+        {
+          "id": "request",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenAssetJob:Request",
+          "defaults": {}
+        },
+        {
+          "id": "accepted",
+          "kind": "branch"
+        },
+        {
+          "id": "phase",
+          "kind": "set",
+          "var": "Phase",
+          "defaults": {
+            "Phase": "1"
+          }
+        },
+        {
+          "id": "starttime",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "starttimesum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "started",
+          "kind": "set",
+          "var": "RequestAt"
+        },
+        {
+          "id": "fail",
+          "kind": "call",
+          "function": "self:FinishThumbnail",
+          "defaults": {}
+        },
+        {
+          "id": "idlenow",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "idlenowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getIdleAt",
+          "kind": "get",
+          "var": "IdleAt"
+        },
+        {
+          "id": "duration",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "elapsed",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_DoubleDouble",
+          "defaults": {
+            "B": "3"
+          }
+        },
+        {
+          "id": "idle",
+          "kind": "branch"
+        },
+        {
+          "id": "release",
+          "kind": "call",
+          "function": "self:ReleaseCaptureStudio",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getPendingPaths.PendingPaths",
+          "count.TargetArray"
+        ],
+        [
+          "count.ReturnValue",
+          "any.A"
+        ],
+        [
+          "any.ReturnValue",
+          "pending.Condition"
+        ],
+        [
+          "now.Seconds",
+          "nowsum.A"
+        ],
+        [
+          "now.PartialSeconds",
+          "nowsum.B"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "time.A"
+        ],
+        [
+          "getNextAt.NextAt",
+          "time.B"
+        ],
+        [
+          "time.ReturnValue",
+          "throttle.Condition"
+        ],
+        [
+          "getPendingPaths.PendingPaths",
+          "first.TargetArray"
+        ],
+        [
+          "first.Item",
+          "path.CurrentPath"
+        ],
+        [
+          "getPendingPaths.PendingPaths",
+          "pop.TargetArray"
+        ],
+        [
+          "getStudio.Studio",
+          "validstudio.Object"
+        ],
+        [
+          "validstudio.ReturnValue",
+          "studio.Condition"
+        ],
+        [
+          "self.self",
+          "studiospawn.WorldContextObject"
+        ],
+        [
+          "self.self",
+          "studiospawn.Owner"
+        ],
+        [
+          "studioxf.ReturnValue",
+          "studiospawn.SpawnTransform"
+        ],
+        [
+          "studiospawn.ReturnValue",
+          "studiofinish.Actor"
+        ],
+        [
+          "studioxf.ReturnValue",
+          "studiofinish.SpawnTransform"
+        ],
+        [
+          "studiofinish.ReturnValue",
+          "studiocast.Object"
+        ],
+        [
+          "studiocast.AsBP Den Thumbnail Studio",
+          "studiosave.Studio"
+        ],
+        [
+          "studiospawn.then",
+          "studiofinish.execute"
+        ],
+        [
+          "studiofinish.then",
+          "studiocast.execute"
+        ],
+        [
+          "studiocast.then",
+          "studiosave.execute"
+        ],
+        [
+          "getStudio.Studio",
+          "cache.self"
+        ],
+        [
+          "getCurrentPath.CurrentPath",
+          "cache.Path"
+        ],
+        [
+          "cache.Texture",
+          "cachevalid.Object"
+        ],
+        [
+          "cachevalid.ReturnValue",
+          "hit.Condition"
+        ],
+        [
+          "cache.Texture",
+          "finishcache.Texture"
+        ],
+        [
+          "getCachePaths.CachePaths",
+          "cacheindex.TargetArray"
+        ],
+        [
+          "getCurrentPath.CurrentPath",
+          "cacheindex.ItemToFind"
+        ],
+        [
+          "getCacheDocuments.CacheDocuments",
+          "document.TargetArray"
+        ],
+        [
+          "cacheindex.ReturnValue",
+          "document.Index"
+        ],
+        [
+          "document.Item",
+          "documentvalid.Object"
+        ],
+        [
+          "documentvalid.ReturnValue",
+          "composition.Condition"
+        ],
+        [
+          "document.Item",
+          "begincomposition.Document"
+        ],
+        [
+          "getEnabled.Enabled",
+          "enabled.Condition"
+        ],
+        [
+          "self.self",
+          "jobspawn.WorldContextObject"
+        ],
+        [
+          "self.self",
+          "jobspawn.Owner"
+        ],
+        [
+          "jobxf.ReturnValue",
+          "jobspawn.SpawnTransform"
+        ],
+        [
+          "jobspawn.ReturnValue",
+          "jobfinish.Actor"
+        ],
+        [
+          "jobxf.ReturnValue",
+          "jobfinish.SpawnTransform"
+        ],
+        [
+          "jobfinish.ReturnValue",
+          "jobcast.Object"
+        ],
+        [
+          "jobcast.AsBP Den Asset Job",
+          "jobsave.Job"
+        ],
+        [
+          "jobspawn.then",
+          "jobfinish.execute"
+        ],
+        [
+          "jobfinish.then",
+          "jobcast.execute"
+        ],
+        [
+          "jobcast.then",
+          "jobsave.execute"
+        ],
+        [
+          "getJob.Job",
+          "request.self"
+        ],
+        [
+          "getCurrentPath.CurrentPath",
+          "request.Path"
+        ],
+        [
+          "request.Accepted",
+          "accepted.Condition"
+        ],
+        [
+          "starttime.Seconds",
+          "starttimesum.A"
+        ],
+        [
+          "starttime.PartialSeconds",
+          "starttimesum.B"
+        ],
+        [
+          "starttimesum.ReturnValue",
+          "started.RequestAt"
+        ],
+        [
+          "entry.then",
+          "pending.execute"
+        ],
+        [
+          "pending.then",
+          "throttle.execute"
+        ],
+        [
+          "throttle.then",
+          "path.execute"
+        ],
+        [
+          "path.then",
+          "pop.execute"
+        ],
+        [
+          "pop.then",
+          "studio.execute"
+        ],
+        [
+          "studio.then",
+          "cache.execute"
+        ],
+        [
+          "cache.then",
+          "hit.execute"
+        ],
+        [
+          "hit.then",
+          "finishcache.execute"
+        ],
+        [
+          "studio.else",
+          "studiospawn.execute"
+        ],
+        [
+          "studiosave.then",
+          "cache.execute"
+        ],
+        [
+          "hit.else",
+          "enabled.execute"
+        ],
+        [
+          "enabled.then",
+          "composition.execute"
+        ],
+        [
+          "composition.then",
+          "begincomposition.execute"
+        ],
+        [
+          "composition.else",
+          "jobspawn.execute"
+        ],
+        [
+          "jobsave.then",
+          "request.execute"
+        ],
+        [
+          "request.then",
+          "accepted.execute"
+        ],
+        [
+          "accepted.then",
+          "phase.execute"
+        ],
+        [
+          "phase.then",
+          "started.execute"
+        ],
+        [
+          "enabled.else",
+          "fail.execute"
+        ],
+        [
+          "studiocast.CastFailed",
+          "fail.execute"
+        ],
+        [
+          "jobcast.CastFailed",
+          "fail.execute"
+        ],
+        [
+          "accepted.else",
+          "fail.execute"
+        ],
+        [
+          "idlenow.Seconds",
+          "idlenowsum.A"
+        ],
+        [
+          "idlenow.PartialSeconds",
+          "idlenowsum.B"
+        ],
+        [
+          "idlenowsum.ReturnValue",
+          "duration.A"
+        ],
+        [
+          "getIdleAt.IdleAt",
+          "duration.B"
+        ],
+        [
+          "duration.ReturnValue",
+          "elapsed.A"
+        ],
+        [
+          "elapsed.ReturnValue",
+          "idle.Condition"
+        ],
+        [
+          "pending.else",
+          "idle.execute"
+        ],
+        [
+          "idle.then",
+          "release.execute"
+        ]
+      ]
+    },
+    {
+      "name": "PumpThumbnails",
+      "nodes": [
+        {
+          "id": "getPhase",
+          "kind": "get",
+          "var": "Phase"
+        },
+        {
+          "id": "four",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "4"
+          }
+        },
+        {
+          "id": "composition",
+          "kind": "branch"
+        },
+        {
+          "id": "pollcomposition",
+          "kind": "call",
+          "function": "self:PollCompositionThumbnail",
+          "defaults": {}
+        },
+        {
+          "id": "zero",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "idle",
+          "kind": "branch"
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "self:BeginNext",
+          "defaults": {}
+        },
+        {
+          "id": "one",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "loading",
+          "kind": "branch"
+        },
+        {
+          "id": "getJob",
+          "kind": "get",
+          "var": "Job"
+        },
+        {
+          "id": "jobvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "job",
+          "kind": "branch"
+        },
+        {
+          "id": "donevalue",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenAssetJob:Done"
+        },
+        {
+          "id": "done",
+          "kind": "branch"
+        },
+        {
+          "id": "mesh",
+          "kind": "cast",
+          "class": "/Script/Engine.StaticMesh"
+        },
+        {
+          "id": "loaded",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenAssetJob:Result"
+        },
+        {
+          "id": "getStudio",
+          "kind": "get",
+          "var": "Studio"
+        },
+        {
+          "id": "prepare",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenThumbnailStudio:Prepare",
+          "defaults": {}
+        },
+        {
+          "id": "ready",
+          "kind": "branch"
+        },
+        {
+          "id": "release",
+          "kind": "call",
+          "function": "self:ReleaseJob",
+          "defaults": {}
+        },
+        {
+          "id": "capturephase",
+          "kind": "set",
+          "var": "Phase",
+          "defaults": {
+            "Phase": "2"
+          }
+        },
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "nowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getRequestAt",
+          "kind": "get",
+          "var": "RequestAt"
+        },
+        {
+          "id": "duration",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "late",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_DoubleDouble",
+          "defaults": {
+            "B": "30"
+          }
+        },
+        {
+          "id": "timeout",
+          "kind": "branch"
+        },
+        {
+          "id": "fail",
+          "kind": "call",
+          "function": "self:FinishThumbnail",
+          "defaults": {}
+        },
+        {
+          "id": "two",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "capture",
+          "kind": "branch"
+        },
+        {
+          "id": "render",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenThumbnailStudio:CaptureFrame",
+          "defaults": {}
+        },
+        {
+          "id": "exportphase",
+          "kind": "set",
+          "var": "Phase",
+          "defaults": {
+            "Phase": "3"
+          }
+        },
+        {
+          "id": "export",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenThumbnailStudio:WriteCache",
+          "defaults": {}
+        },
+        {
+          "id": "finish",
+          "kind": "call",
+          "function": "self:FinishThumbnail",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getPhase.Phase",
+          "four.A"
+        ],
+        [
+          "four.ReturnValue",
+          "composition.Condition"
+        ],
+        [
+          "getPhase.Phase",
+          "zero.A"
+        ],
+        [
+          "zero.ReturnValue",
+          "idle.Condition"
+        ],
+        [
+          "getPhase.Phase",
+          "one.A"
+        ],
+        [
+          "one.ReturnValue",
+          "loading.Condition"
+        ],
+        [
+          "getJob.Job",
+          "jobvalid.Object"
+        ],
+        [
+          "jobvalid.ReturnValue",
+          "job.Condition"
+        ],
+        [
+          "getJob.Job",
+          "donevalue.self"
+        ],
+        [
+          "donevalue.Done",
+          "done.Condition"
+        ],
+        [
+          "getJob.Job",
+          "loaded.self"
+        ],
+        [
+          "loaded.Result",
+          "mesh.Object"
+        ],
+        [
+          "getStudio.Studio",
+          "prepare.self"
+        ],
+        [
+          "mesh.AsStatic Mesh",
+          "prepare.Mesh"
+        ],
+        [
+          "prepare.Ready",
+          "ready.Condition"
+        ],
+        [
+          "now.Seconds",
+          "nowsum.A"
+        ],
+        [
+          "now.PartialSeconds",
+          "nowsum.B"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "duration.A"
+        ],
+        [
+          "getRequestAt.RequestAt",
+          "duration.B"
+        ],
+        [
+          "duration.ReturnValue",
+          "late.A"
+        ],
+        [
+          "late.ReturnValue",
+          "timeout.Condition"
+        ],
+        [
+          "getPhase.Phase",
+          "two.A"
+        ],
+        [
+          "two.ReturnValue",
+          "capture.Condition"
+        ],
+        [
+          "getStudio.Studio",
+          "render.self"
+        ],
+        [
+          "getStudio.Studio",
+          "export.self"
+        ],
+        [
+          "export.Texture",
+          "finish.Texture"
+        ],
+        [
+          "entry.then",
+          "composition.execute"
+        ],
+        [
+          "composition.then",
+          "pollcomposition.execute"
+        ],
+        [
+          "composition.else",
+          "idle.execute"
+        ],
+        [
+          "idle.then",
+          "next.execute"
+        ],
+        [
+          "idle.else",
+          "loading.execute"
+        ],
+        [
+          "loading.then",
+          "job.execute"
+        ],
+        [
+          "job.then",
+          "done.execute"
+        ],
+        [
+          "done.then",
+          "mesh.execute"
+        ],
+        [
+          "mesh.then",
+          "prepare.execute"
+        ],
+        [
+          "prepare.then",
+          "ready.execute"
+        ],
+        [
+          "ready.then",
+          "release.execute"
+        ],
+        [
+          "release.then",
+          "capturephase.execute"
+        ],
+        [
+          "done.else",
+          "timeout.execute"
+        ],
+        [
+          "timeout.then",
+          "fail.execute"
+        ],
+        [
+          "job.else",
+          "fail.execute"
+        ],
+        [
+          "mesh.CastFailed",
+          "fail.execute"
+        ],
+        [
+          "ready.else",
+          "fail.execute"
+        ],
+        [
+          "loading.else",
+          "capture.execute"
+        ],
+        [
+          "capture.then",
+          "render.execute"
+        ],
+        [
+          "render.then",
+          "exportphase.execute"
+        ],
+        [
+          "capture.else",
+          "export.execute"
+        ],
+        [
+          "export.then",
+          "finish.execute"
+        ]
+      ]
+    }
+  ]
+}

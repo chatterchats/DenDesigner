@@ -1,0 +1,2116 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenPlacedProp",
+  "parent": "/Script/Engine.Actor",
+  "variables": [
+    {
+      "name": "Current",
+      "type": "struct:/DenDesignerGF/Runtime/ST_DenEntry"
+    }
+  ],
+  "components": [
+    {
+      "name": "Mesh",
+      "class": "/Script/Engine.StaticMeshComponent",
+      "props": {
+        "Mobility": "Movable",
+        "BodyInstance.CollisionEnabled": "NoCollision"
+      }
+    }
+  ],
+  "functions": [
+    {
+      "name": "ValidAssetPath",
+      "inputs": [
+        {
+          "name": "Path",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Valid",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "length",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Len",
+          "defaults": {}
+        },
+        {
+          "id": "minimum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "3"
+          }
+        },
+        {
+          "id": "maximum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "1023"
+          }
+        },
+        {
+          "id": "starts",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:StartsWith",
+          "defaults": {
+            "InPrefix": "/"
+          }
+        },
+        {
+          "id": "subobject",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": ":",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "assetonly",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "dot",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": ".",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "validpath0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "validpath1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "validpath2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "validpath3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "entry.Path",
+          "length.S"
+        ],
+        [
+          "length.ReturnValue",
+          "minimum.A"
+        ],
+        [
+          "length.ReturnValue",
+          "maximum.A"
+        ],
+        [
+          "entry.Path",
+          "starts.SourceString"
+        ],
+        [
+          "entry.Path",
+          "subobject.SearchIn"
+        ],
+        [
+          "subobject.ReturnValue",
+          "assetonly.A"
+        ],
+        [
+          "entry.Path",
+          "dot.SearchIn"
+        ],
+        [
+          "minimum.ReturnValue",
+          "validpath0.A"
+        ],
+        [
+          "maximum.ReturnValue",
+          "validpath0.B"
+        ],
+        [
+          "validpath0.ReturnValue",
+          "validpath1.A"
+        ],
+        [
+          "starts.ReturnValue",
+          "validpath1.B"
+        ],
+        [
+          "validpath1.ReturnValue",
+          "validpath2.A"
+        ],
+        [
+          "assetonly.ReturnValue",
+          "validpath2.B"
+        ],
+        [
+          "validpath2.ReturnValue",
+          "validpath3.A"
+        ],
+        [
+          "dot.ReturnValue",
+          "validpath3.B"
+        ],
+        [
+          "validpath3.ReturnValue",
+          "result.Valid"
+        ],
+        [
+          "entry.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ValidTransform",
+      "inputs": [
+        {
+          "name": "Value",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenEntry"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Valid",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "data",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "posbreak",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakVector",
+          "defaults": {}
+        },
+        {
+          "id": "posXmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "-10000000.0"
+          }
+        },
+        {
+          "id": "posXmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "posYmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "-10000000.0"
+          }
+        },
+        {
+          "id": "posYmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "posZmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "-10000000.0"
+          }
+        },
+        {
+          "id": "posZmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "posvalid0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "posvalid1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "posvalid2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "posvalid3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "posvalid4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "scalebreak",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakVector",
+          "defaults": {}
+        },
+        {
+          "id": "scaleXmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_DoubleDouble",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "scaleXmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "scaleYmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_DoubleDouble",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "scaleYmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "scaleZmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_DoubleDouble",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "scaleZmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "scalevalid0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "scalevalid1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "scalevalid2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "scalevalid3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "scalevalid4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "rot",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakRotator",
+          "defaults": {}
+        },
+        {
+          "id": "Rollmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "-10000000.0"
+          }
+        },
+        {
+          "id": "Rollmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "Pitchmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "-10000000.0"
+          }
+        },
+        {
+          "id": "Pitchmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "Yawmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "-10000000.0"
+          }
+        },
+        {
+          "id": "Yawmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "valid0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "entry.Value",
+          "data.ST_DenEntry"
+        ],
+        [
+          "data.Position",
+          "posbreak.InVec"
+        ],
+        [
+          "posbreak.X",
+          "posXmin.A"
+        ],
+        [
+          "posbreak.X",
+          "posXmax.A"
+        ],
+        [
+          "posbreak.Y",
+          "posYmin.A"
+        ],
+        [
+          "posbreak.Y",
+          "posYmax.A"
+        ],
+        [
+          "posbreak.Z",
+          "posZmin.A"
+        ],
+        [
+          "posbreak.Z",
+          "posZmax.A"
+        ],
+        [
+          "posXmin.ReturnValue",
+          "posvalid0.A"
+        ],
+        [
+          "posXmax.ReturnValue",
+          "posvalid0.B"
+        ],
+        [
+          "posvalid0.ReturnValue",
+          "posvalid1.A"
+        ],
+        [
+          "posYmin.ReturnValue",
+          "posvalid1.B"
+        ],
+        [
+          "posvalid1.ReturnValue",
+          "posvalid2.A"
+        ],
+        [
+          "posYmax.ReturnValue",
+          "posvalid2.B"
+        ],
+        [
+          "posvalid2.ReturnValue",
+          "posvalid3.A"
+        ],
+        [
+          "posZmin.ReturnValue",
+          "posvalid3.B"
+        ],
+        [
+          "posvalid3.ReturnValue",
+          "posvalid4.A"
+        ],
+        [
+          "posZmax.ReturnValue",
+          "posvalid4.B"
+        ],
+        [
+          "data.Scale",
+          "scalebreak.InVec"
+        ],
+        [
+          "scalebreak.X",
+          "scaleXmin.A"
+        ],
+        [
+          "scalebreak.X",
+          "scaleXmax.A"
+        ],
+        [
+          "scalebreak.Y",
+          "scaleYmin.A"
+        ],
+        [
+          "scalebreak.Y",
+          "scaleYmax.A"
+        ],
+        [
+          "scalebreak.Z",
+          "scaleZmin.A"
+        ],
+        [
+          "scalebreak.Z",
+          "scaleZmax.A"
+        ],
+        [
+          "scaleXmin.ReturnValue",
+          "scalevalid0.A"
+        ],
+        [
+          "scaleXmax.ReturnValue",
+          "scalevalid0.B"
+        ],
+        [
+          "scalevalid0.ReturnValue",
+          "scalevalid1.A"
+        ],
+        [
+          "scaleYmin.ReturnValue",
+          "scalevalid1.B"
+        ],
+        [
+          "scalevalid1.ReturnValue",
+          "scalevalid2.A"
+        ],
+        [
+          "scaleYmax.ReturnValue",
+          "scalevalid2.B"
+        ],
+        [
+          "scalevalid2.ReturnValue",
+          "scalevalid3.A"
+        ],
+        [
+          "scaleZmin.ReturnValue",
+          "scalevalid3.B"
+        ],
+        [
+          "scalevalid3.ReturnValue",
+          "scalevalid4.A"
+        ],
+        [
+          "scaleZmax.ReturnValue",
+          "scalevalid4.B"
+        ],
+        [
+          "data.Rotation",
+          "rot.InRot"
+        ],
+        [
+          "rot.Roll",
+          "Rollmin.A"
+        ],
+        [
+          "rot.Roll",
+          "Rollmax.A"
+        ],
+        [
+          "rot.Pitch",
+          "Pitchmin.A"
+        ],
+        [
+          "rot.Pitch",
+          "Pitchmax.A"
+        ],
+        [
+          "rot.Yaw",
+          "Yawmin.A"
+        ],
+        [
+          "rot.Yaw",
+          "Yawmax.A"
+        ],
+        [
+          "posvalid4.ReturnValue",
+          "valid0.A"
+        ],
+        [
+          "scalevalid4.ReturnValue",
+          "valid0.B"
+        ],
+        [
+          "valid0.ReturnValue",
+          "valid1.A"
+        ],
+        [
+          "Rollmin.ReturnValue",
+          "valid1.B"
+        ],
+        [
+          "valid1.ReturnValue",
+          "valid2.A"
+        ],
+        [
+          "Rollmax.ReturnValue",
+          "valid2.B"
+        ],
+        [
+          "valid2.ReturnValue",
+          "valid3.A"
+        ],
+        [
+          "Pitchmin.ReturnValue",
+          "valid3.B"
+        ],
+        [
+          "valid3.ReturnValue",
+          "valid4.A"
+        ],
+        [
+          "Pitchmax.ReturnValue",
+          "valid4.B"
+        ],
+        [
+          "valid4.ReturnValue",
+          "valid5.A"
+        ],
+        [
+          "Yawmin.ReturnValue",
+          "valid5.B"
+        ],
+        [
+          "valid5.ReturnValue",
+          "valid6.A"
+        ],
+        [
+          "Yawmax.ReturnValue",
+          "valid6.B"
+        ],
+        [
+          "valid6.ReturnValue",
+          "result.Valid"
+        ],
+        [
+          "entry.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ValidMaterials",
+      "inputs": [
+        {
+          "name": "Value",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "name": "LoadedMaterials",
+          "type": "object:/Script/Engine.MaterialInterface[]"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Valid",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "data",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "expected",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "actual",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "same",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "size",
+          "kind": "branch"
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "path",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "material",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "empty",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "default",
+          "kind": "branch"
+        },
+        {
+          "id": "objectvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "invalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "isnull",
+          "kind": "branch"
+        },
+        {
+          "id": "pathvalid",
+          "kind": "call",
+          "function": "self:ValidAssetPath",
+          "defaults": {}
+        },
+        {
+          "id": "pathsafe",
+          "kind": "branch"
+        },
+        {
+          "id": "softpath",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:MakeSoftObjectPath",
+          "defaults": {}
+        },
+        {
+          "id": "softref",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:Conv_SoftObjPathToSoftObjRef",
+          "defaults": {}
+        },
+        {
+          "id": "resolved",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:Conv_SoftObjectReferenceToObject",
+          "defaults": {}
+        },
+        {
+          "id": "equal",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {}
+        },
+        {
+          "id": "matchesok0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "matches",
+          "kind": "branch"
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        }
+      ],
+      "links": [
+        [
+          "entry.Value",
+          "data.ST_DenEntry"
+        ],
+        [
+          "data.Materials",
+          "expected.TargetArray"
+        ],
+        [
+          "entry.LoadedMaterials",
+          "actual.TargetArray"
+        ],
+        [
+          "expected.ReturnValue",
+          "same.A"
+        ],
+        [
+          "actual.ReturnValue",
+          "same.B"
+        ],
+        [
+          "same.ReturnValue",
+          "size.Condition"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "expected.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "data.Materials",
+          "path.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "path.Index"
+        ],
+        [
+          "entry.LoadedMaterials",
+          "material.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "material.Index"
+        ],
+        [
+          "path.Item",
+          "empty.A"
+        ],
+        [
+          "empty.ReturnValue",
+          "default.Condition"
+        ],
+        [
+          "material.Item",
+          "objectvalid.Object"
+        ],
+        [
+          "objectvalid.ReturnValue",
+          "invalid.A"
+        ],
+        [
+          "invalid.ReturnValue",
+          "isnull.Condition"
+        ],
+        [
+          "path.Item",
+          "pathvalid.Path"
+        ],
+        [
+          "pathvalid.Valid",
+          "pathsafe.Condition"
+        ],
+        [
+          "path.Item",
+          "softpath.PathString"
+        ],
+        [
+          "softpath.ReturnValue",
+          "softref.SoftObjectPath"
+        ],
+        [
+          "softref.ReturnValue",
+          "resolved.SoftObject"
+        ],
+        [
+          "resolved.ReturnValue",
+          "equal.A"
+        ],
+        [
+          "material.Item",
+          "equal.B"
+        ],
+        [
+          "objectvalid.ReturnValue",
+          "matchesok0.A"
+        ],
+        [
+          "equal.ReturnValue",
+          "matchesok0.B"
+        ],
+        [
+          "matchesok0.ReturnValue",
+          "matches.Condition"
+        ],
+        [
+          "i.Cursor",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.Cursor"
+        ],
+        [
+          "out.OK",
+          "result.Valid"
+        ],
+        [
+          "entry.then",
+          "size.execute"
+        ],
+        [
+          "size.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "default.execute"
+        ],
+        [
+          "default.then",
+          "isnull.execute"
+        ],
+        [
+          "isnull.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "loop.execute"
+        ],
+        [
+          "size.else",
+          "result.execute"
+        ],
+        [
+          "loop.else",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "default.else",
+          "pathvalid.execute"
+        ],
+        [
+          "pathvalid.then",
+          "pathsafe.execute"
+        ],
+        [
+          "pathsafe.then",
+          "matches.execute"
+        ],
+        [
+          "matches.then",
+          "advance.execute"
+        ],
+        [
+          "pathsafe.else",
+          "result.execute"
+        ],
+        [
+          "matches.else",
+          "result.execute"
+        ],
+        [
+          "isnull.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "PreviewTransform",
+      "inputs": [
+        {
+          "name": "Value",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenEntry"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "data",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "validate",
+          "kind": "call",
+          "function": "self:ValidTransform",
+          "defaults": {}
+        },
+        {
+          "id": "current",
+          "kind": "get",
+          "var": "Current"
+        },
+        {
+          "id": "prior",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "samekey",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "unassigned",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "placedkind",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "identity0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "previewok0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "previewok1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "move",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:K2_SetActorLocationAndRotation",
+          "defaults": {
+            "bSweep": "false",
+            "bTeleport": "true"
+          }
+        },
+        {
+          "id": "scale",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:SetActorScale3D",
+          "defaults": {}
+        },
+        {
+          "id": "remember",
+          "kind": "set",
+          "var": "Current"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        }
+      ],
+      "links": [
+        [
+          "entry.Value",
+          "data.ST_DenEntry"
+        ],
+        [
+          "entry.Value",
+          "validate.Value"
+        ],
+        [
+          "current.Current",
+          "prior.ST_DenEntry"
+        ],
+        [
+          "prior.Key",
+          "samekey.A"
+        ],
+        [
+          "data.Key",
+          "samekey.B"
+        ],
+        [
+          "prior.Key",
+          "unassigned.A"
+        ],
+        [
+          "data.Kind",
+          "placedkind.A"
+        ],
+        [
+          "samekey.ReturnValue",
+          "identity0.A"
+        ],
+        [
+          "unassigned.ReturnValue",
+          "identity0.B"
+        ],
+        [
+          "validate.Valid",
+          "previewok0.A"
+        ],
+        [
+          "placedkind.ReturnValue",
+          "previewok0.B"
+        ],
+        [
+          "previewok0.ReturnValue",
+          "previewok1.A"
+        ],
+        [
+          "identity0.ReturnValue",
+          "previewok1.B"
+        ],
+        [
+          "previewok1.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "data.Position",
+          "move.NewLocation"
+        ],
+        [
+          "data.Rotation",
+          "move.NewRotation"
+        ],
+        [
+          "data.Scale",
+          "scale.NewScale3D"
+        ],
+        [
+          "entry.Value",
+          "remember.Current"
+        ],
+        [
+          "out.OK",
+          "result.Accepted"
+        ],
+        [
+          "entry.then",
+          "validate.execute"
+        ],
+        [
+          "validate.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "move.execute"
+        ],
+        [
+          "move.then",
+          "scale.execute"
+        ],
+        [
+          "scale.then",
+          "remember.execute"
+        ],
+        [
+          "remember.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Configure",
+      "inputs": [
+        {
+          "name": "Value",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "name": "LoadedMesh",
+          "type": "object:/Script/Engine.StaticMesh"
+        },
+        {
+          "name": "LoadedMaterials",
+          "type": "object:/Script/Engine.MaterialInterface[]"
+        },
+        {
+          "name": "Ghost",
+          "type": "bool"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "Override",
+          "type": "object:/Script/Engine.MaterialInterface"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "data",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "meshvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "kind",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "key",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:NotEqual_StriStri",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "validate",
+          "kind": "call",
+          "function": "self:ValidTransform",
+          "defaults": {}
+        },
+        {
+          "id": "pathvalid",
+          "kind": "call",
+          "function": "self:ValidAssetPath",
+          "defaults": {}
+        },
+        {
+          "id": "pathsafe",
+          "kind": "branch"
+        },
+        {
+          "id": "meshpath",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:MakeSoftObjectPath",
+          "defaults": {}
+        },
+        {
+          "id": "meshref",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:Conv_SoftObjPathToSoftObjRef",
+          "defaults": {}
+        },
+        {
+          "id": "resolvedmesh",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:Conv_SoftObjectReferenceToObject",
+          "defaults": {}
+        },
+        {
+          "id": "matching",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {}
+        },
+        {
+          "id": "minmode",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "maxmode",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "materialsvalid",
+          "kind": "call",
+          "function": "self:ValidMaterials",
+          "defaults": {}
+        },
+        {
+          "id": "valid0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "guard",
+          "kind": "branch"
+        },
+        {
+          "id": "mesh",
+          "kind": "get",
+          "var": "Mesh"
+        },
+        {
+          "id": "mobility",
+          "kind": "call",
+          "function": "/Script/Engine.SceneComponent:SetMobility",
+          "defaults": {
+            "NewMobility": "Movable"
+          }
+        },
+        {
+          "id": "setmesh",
+          "kind": "call",
+          "function": "/Script/Engine.StaticMeshComponent:SetStaticMesh",
+          "defaults": {}
+        },
+        {
+          "id": "transform",
+          "kind": "call",
+          "function": "self:PreviewTransform",
+          "defaults": {}
+        },
+        {
+          "id": "count",
+          "kind": "call",
+          "function": "/Script/Engine.PrimitiveComponent:GetNumMaterials",
+          "defaults": {}
+        },
+        {
+          "id": "length",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "slots",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Max",
+          "defaults": {}
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "available",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "hasmaterial",
+          "kind": "branch"
+        },
+        {
+          "id": "material",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "remembermat",
+          "kind": "set",
+          "var": "local:Override"
+        },
+        {
+          "id": "nomat",
+          "kind": "set",
+          "var": "local:Override"
+        },
+        {
+          "id": "override",
+          "kind": "get",
+          "var": "local:Override"
+        },
+        {
+          "id": "setmaterial",
+          "kind": "call",
+          "function": "/Script/Engine.PrimitiveComponent:SetMaterial",
+          "defaults": {}
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "bounds",
+          "kind": "call",
+          "function": "/Script/Engine.StaticMesh:GetBounds",
+          "defaults": {}
+        },
+        {
+          "id": "box",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakBoxSphereBounds",
+          "defaults": {}
+        },
+        {
+          "id": "extent",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Vector_GetAbsMax",
+          "defaults": {}
+        },
+        {
+          "id": "maxscale",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Vector_GetAbsMax",
+          "defaults": {}
+        },
+        {
+          "id": "scaled",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "auto",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_DoubleDouble",
+          "defaults": {
+            "B": "25"
+          }
+        },
+        {
+          "id": "explicit",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "automatic",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "autosolid0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "solid0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "profile",
+          "kind": "call",
+          "function": "/Script/Engine.PrimitiveComponent:SetCollisionProfileName",
+          "defaults": {
+            "InCollisionProfileName": "BlockAll",
+            "bUpdateOverlaps": "true"
+          }
+        },
+        {
+          "id": "solidbranch",
+          "kind": "branch"
+        },
+        {
+          "id": "pawnignore",
+          "kind": "call",
+          "function": "/Script/Engine.PrimitiveComponent:SetCollisionResponseToChannel",
+          "defaults": {
+            "Channel": "ECC_Pawn",
+            "NewResponse": "ECR_Ignore"
+          }
+        },
+        {
+          "id": "ghost",
+          "kind": "branch"
+        },
+        {
+          "id": "nocollision",
+          "kind": "call",
+          "function": "/Script/Engine.PrimitiveComponent:SetCollisionEnabled",
+          "defaults": {
+            "NewType": "NoCollision"
+          }
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        }
+      ],
+      "links": [
+        [
+          "entry.Value",
+          "data.ST_DenEntry"
+        ],
+        [
+          "entry.LoadedMesh",
+          "meshvalid.Object"
+        ],
+        [
+          "data.Kind",
+          "kind.A"
+        ],
+        [
+          "data.Key",
+          "key.A"
+        ],
+        [
+          "entry.Value",
+          "validate.Value"
+        ],
+        [
+          "data.Mesh",
+          "pathvalid.Path"
+        ],
+        [
+          "pathvalid.Valid",
+          "pathsafe.Condition"
+        ],
+        [
+          "data.Mesh",
+          "meshpath.PathString"
+        ],
+        [
+          "meshpath.ReturnValue",
+          "meshref.SoftObjectPath"
+        ],
+        [
+          "meshref.ReturnValue",
+          "resolvedmesh.SoftObject"
+        ],
+        [
+          "resolvedmesh.ReturnValue",
+          "matching.A"
+        ],
+        [
+          "entry.LoadedMesh",
+          "matching.B"
+        ],
+        [
+          "data.CollisionMode",
+          "minmode.A"
+        ],
+        [
+          "data.CollisionMode",
+          "maxmode.A"
+        ],
+        [
+          "entry.Value",
+          "materialsvalid.Value"
+        ],
+        [
+          "entry.LoadedMaterials",
+          "materialsvalid.LoadedMaterials"
+        ],
+        [
+          "meshvalid.ReturnValue",
+          "valid0.A"
+        ],
+        [
+          "kind.ReturnValue",
+          "valid0.B"
+        ],
+        [
+          "valid0.ReturnValue",
+          "valid1.A"
+        ],
+        [
+          "key.ReturnValue",
+          "valid1.B"
+        ],
+        [
+          "valid1.ReturnValue",
+          "valid2.A"
+        ],
+        [
+          "matching.ReturnValue",
+          "valid2.B"
+        ],
+        [
+          "valid2.ReturnValue",
+          "valid3.A"
+        ],
+        [
+          "minmode.ReturnValue",
+          "valid3.B"
+        ],
+        [
+          "valid3.ReturnValue",
+          "valid4.A"
+        ],
+        [
+          "maxmode.ReturnValue",
+          "valid4.B"
+        ],
+        [
+          "valid4.ReturnValue",
+          "valid5.A"
+        ],
+        [
+          "validate.Valid",
+          "valid5.B"
+        ],
+        [
+          "valid5.ReturnValue",
+          "valid6.A"
+        ],
+        [
+          "materialsvalid.Valid",
+          "valid6.B"
+        ],
+        [
+          "valid6.ReturnValue",
+          "guard.Condition"
+        ],
+        [
+          "mesh.Mesh",
+          "mobility.self"
+        ],
+        [
+          "mesh.Mesh",
+          "setmesh.self"
+        ],
+        [
+          "entry.LoadedMesh",
+          "setmesh.NewMesh"
+        ],
+        [
+          "entry.Value",
+          "transform.Value"
+        ],
+        [
+          "mesh.Mesh",
+          "count.self"
+        ],
+        [
+          "entry.LoadedMaterials",
+          "length.TargetArray"
+        ],
+        [
+          "count.ReturnValue",
+          "slots.A"
+        ],
+        [
+          "length.ReturnValue",
+          "slots.B"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "slots.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "i.Cursor",
+          "available.A"
+        ],
+        [
+          "length.ReturnValue",
+          "available.B"
+        ],
+        [
+          "available.ReturnValue",
+          "hasmaterial.Condition"
+        ],
+        [
+          "entry.LoadedMaterials",
+          "material.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "material.Index"
+        ],
+        [
+          "material.Item",
+          "remembermat.Override"
+        ],
+        [
+          "mesh.Mesh",
+          "setmaterial.self"
+        ],
+        [
+          "i.Cursor",
+          "setmaterial.ElementIndex"
+        ],
+        [
+          "override.Override",
+          "setmaterial.Material"
+        ],
+        [
+          "i.Cursor",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.Cursor"
+        ],
+        [
+          "entry.LoadedMesh",
+          "bounds.self"
+        ],
+        [
+          "bounds.ReturnValue",
+          "box.InBoxSphereBounds"
+        ],
+        [
+          "box.BoxExtent",
+          "extent.A"
+        ],
+        [
+          "data.Scale",
+          "maxscale.A"
+        ],
+        [
+          "extent.ReturnValue",
+          "scaled.A"
+        ],
+        [
+          "maxscale.ReturnValue",
+          "scaled.B"
+        ],
+        [
+          "scaled.ReturnValue",
+          "auto.A"
+        ],
+        [
+          "data.CollisionMode",
+          "explicit.A"
+        ],
+        [
+          "data.CollisionMode",
+          "automatic.A"
+        ],
+        [
+          "automatic.ReturnValue",
+          "autosolid0.A"
+        ],
+        [
+          "auto.ReturnValue",
+          "autosolid0.B"
+        ],
+        [
+          "explicit.ReturnValue",
+          "solid0.A"
+        ],
+        [
+          "autosolid0.ReturnValue",
+          "solid0.B"
+        ],
+        [
+          "mesh.Mesh",
+          "profile.self"
+        ],
+        [
+          "solid0.ReturnValue",
+          "solidbranch.Condition"
+        ],
+        [
+          "mesh.Mesh",
+          "pawnignore.self"
+        ],
+        [
+          "entry.Ghost",
+          "ghost.Condition"
+        ],
+        [
+          "mesh.Mesh",
+          "nocollision.self"
+        ],
+        [
+          "out.OK",
+          "result.Accepted"
+        ],
+        [
+          "entry.then",
+          "pathvalid.execute"
+        ],
+        [
+          "pathvalid.then",
+          "pathsafe.execute"
+        ],
+        [
+          "pathsafe.then",
+          "validate.execute"
+        ],
+        [
+          "validate.then",
+          "materialsvalid.execute"
+        ],
+        [
+          "materialsvalid.then",
+          "guard.execute"
+        ],
+        [
+          "guard.then",
+          "mobility.execute"
+        ],
+        [
+          "mobility.then",
+          "setmesh.execute"
+        ],
+        [
+          "setmesh.then",
+          "transform.execute"
+        ],
+        [
+          "transform.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "hasmaterial.execute"
+        ],
+        [
+          "hasmaterial.then",
+          "remembermat.execute"
+        ],
+        [
+          "remembermat.then",
+          "setmaterial.execute"
+        ],
+        [
+          "setmaterial.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "loop.execute"
+        ],
+        [
+          "pathsafe.else",
+          "result.execute"
+        ],
+        [
+          "guard.else",
+          "result.execute"
+        ],
+        [
+          "hasmaterial.else",
+          "nomat.execute"
+        ],
+        [
+          "nomat.then",
+          "setmaterial.execute"
+        ],
+        [
+          "loop.else",
+          "profile.execute"
+        ],
+        [
+          "profile.then",
+          "solidbranch.execute"
+        ],
+        [
+          "solidbranch.then",
+          "ghost.execute"
+        ],
+        [
+          "ghost.then",
+          "nocollision.execute"
+        ],
+        [
+          "nocollision.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "solidbranch.else",
+          "pawnignore.execute"
+        ],
+        [
+          "pawnignore.then",
+          "ghost.execute"
+        ],
+        [
+          "ghost.else",
+          "yes.execute"
+        ]
+      ]
+    }
+  ]
+}

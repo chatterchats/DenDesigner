@@ -1,0 +1,461 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenPropPack",
+  "parent": "/Script/Engine.ActorComponent",
+  "defaults": {
+    "PrimaryComponentTick.bCanEverTick": "false"
+  },
+  "variables": [
+    {
+      "name": "SchemaVersion",
+      "type": "int",
+      "default": "1"
+    },
+    {
+      "name": "PackID",
+      "type": "string"
+    },
+    {
+      "name": "Title",
+      "type": "string"
+    },
+    {
+      "name": "Author",
+      "type": "string"
+    },
+    {
+      "name": "Version",
+      "type": "string"
+    },
+    {
+      "name": "Paths",
+      "type": "string[]"
+    },
+    {
+      "name": "Labels",
+      "type": "string[]"
+    },
+    {
+      "name": "Details",
+      "type": "string[]"
+    },
+    {
+      "name": "Dimensions",
+      "type": "vector[]"
+    },
+    {
+      "name": "Solid",
+      "type": "bool[]"
+    },
+    {
+      "name": "SearchTexts",
+      "type": "string[]"
+    }
+  ],
+  "functions": [
+    {
+      "name": "ValidPackID",
+      "inputs": [
+        {
+          "name": "Key",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Valid",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "IsValidKey",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "size",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Len",
+          "defaults": {}
+        },
+        {
+          "id": "low",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "high",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "96"
+          }
+        },
+        {
+          "id": "lengthok0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "length",
+          "kind": "branch"
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "char",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:GetCharacterAsNumber",
+          "defaults": {}
+        },
+        {
+          "id": "upperlo",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "65"
+          }
+        },
+        {
+          "id": "upperhi",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "90"
+          }
+        },
+        {
+          "id": "upper0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "lowerlo",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "97"
+          }
+        },
+        {
+          "id": "lowerhi",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "122"
+          }
+        },
+        {
+          "id": "lower0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "digitlo",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "48"
+          }
+        },
+        {
+          "id": "digithi",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "57"
+          }
+        },
+        {
+          "id": "digit0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "dash",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "45"
+          }
+        },
+        {
+          "id": "underscore",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "95"
+          }
+        },
+        {
+          "id": "any0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "any1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "any2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "any3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "allowed",
+          "kind": "branch"
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "valid",
+          "kind": "set",
+          "var": "local:IsValidKey",
+          "defaults": {
+            "IsValidKey": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:IsValidKey"
+        }
+      ],
+      "links": [
+        [
+          "entry.Key",
+          "size.S"
+        ],
+        [
+          "size.ReturnValue",
+          "low.A"
+        ],
+        [
+          "size.ReturnValue",
+          "high.A"
+        ],
+        [
+          "low.ReturnValue",
+          "lengthok0.A"
+        ],
+        [
+          "high.ReturnValue",
+          "lengthok0.B"
+        ],
+        [
+          "lengthok0.ReturnValue",
+          "length.Condition"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "size.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "entry.Key",
+          "char.SourceString"
+        ],
+        [
+          "i.Cursor",
+          "char.Index"
+        ],
+        [
+          "char.ReturnValue",
+          "upperlo.A"
+        ],
+        [
+          "char.ReturnValue",
+          "upperhi.A"
+        ],
+        [
+          "upperlo.ReturnValue",
+          "upper0.A"
+        ],
+        [
+          "upperhi.ReturnValue",
+          "upper0.B"
+        ],
+        [
+          "char.ReturnValue",
+          "lowerlo.A"
+        ],
+        [
+          "char.ReturnValue",
+          "lowerhi.A"
+        ],
+        [
+          "lowerlo.ReturnValue",
+          "lower0.A"
+        ],
+        [
+          "lowerhi.ReturnValue",
+          "lower0.B"
+        ],
+        [
+          "char.ReturnValue",
+          "digitlo.A"
+        ],
+        [
+          "char.ReturnValue",
+          "digithi.A"
+        ],
+        [
+          "digitlo.ReturnValue",
+          "digit0.A"
+        ],
+        [
+          "digithi.ReturnValue",
+          "digit0.B"
+        ],
+        [
+          "char.ReturnValue",
+          "dash.A"
+        ],
+        [
+          "char.ReturnValue",
+          "underscore.A"
+        ],
+        [
+          "upper0.ReturnValue",
+          "any0.A"
+        ],
+        [
+          "lower0.ReturnValue",
+          "any0.B"
+        ],
+        [
+          "any0.ReturnValue",
+          "any1.A"
+        ],
+        [
+          "digit0.ReturnValue",
+          "any1.B"
+        ],
+        [
+          "any1.ReturnValue",
+          "any2.A"
+        ],
+        [
+          "dash.ReturnValue",
+          "any2.B"
+        ],
+        [
+          "any2.ReturnValue",
+          "any3.A"
+        ],
+        [
+          "underscore.ReturnValue",
+          "any3.B"
+        ],
+        [
+          "any3.ReturnValue",
+          "allowed.Condition"
+        ],
+        [
+          "i.Cursor",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.Cursor"
+        ],
+        [
+          "out.IsValidKey",
+          "result.Valid"
+        ],
+        [
+          "entry.then",
+          "length.execute"
+        ],
+        [
+          "length.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "allowed.execute"
+        ],
+        [
+          "allowed.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "loop.execute"
+        ],
+        [
+          "length.else",
+          "result.execute"
+        ],
+        [
+          "allowed.else",
+          "result.execute"
+        ],
+        [
+          "loop.else",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "result.execute"
+        ]
+      ]
+    }
+  ]
+}

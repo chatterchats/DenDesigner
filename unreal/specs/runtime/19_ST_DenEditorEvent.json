@@ -1,0 +1,32 @@
+{
+  "kind": "struct",
+  "path": "/DenDesignerGF/Runtime/ST_DenEditorEvent",
+  "guid": "659845bf-32a3-5b6a-bb45-3a6173aa16f4",
+  "fields": [
+    {
+      "name": "Kind",
+      "type": "int",
+      "guid": "c4836c90-b418-5a06-8b89-db82e9b34996"
+    },
+    {
+      "name": "EventName",
+      "type": "string",
+      "guid": "73eecf92-459b-51bc-879b-6665b0ba4db6"
+    },
+    {
+      "name": "Argument",
+      "type": "string",
+      "guid": "34f692c8-be94-508e-ad6f-4890a4e07e4b"
+    },
+    {
+      "name": "Scalar",
+      "type": "float",
+      "guid": "82e15be2-2a49-504a-9526-c0ba897f0810"
+    },
+    {
+      "name": "Direction",
+      "type": "vector",
+      "guid": "f0f6a1ff-1d0c-5034-b704-9ff239c897ae"
+    }
+  ]
+}

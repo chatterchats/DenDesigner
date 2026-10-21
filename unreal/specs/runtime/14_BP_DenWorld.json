@@ -1,0 +1,2696 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenWorld",
+  "parent": "/Script/Engine.Actor",
+  "variables": [
+    {
+      "name": "Placed",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenPlacedProp[]"
+    },
+    {
+      "name": "Records",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenVanillaRecord[]"
+    },
+    {
+      "name": "WorldActors",
+      "type": "object:/Script/Engine.Actor[]"
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "begin",
+        "kind": "event",
+        "name": "ReceiveBeginPlay"
+      },
+      {
+        "id": "refresh",
+        "kind": "call",
+        "function": "self:RefreshActors",
+        "defaults": {}
+      },
+      {
+        "id": "end",
+        "kind": "event",
+        "name": "ReceiveEndPlay"
+      },
+      {
+        "id": "forget",
+        "kind": "call",
+        "function": "self:Forget",
+        "defaults": {}
+      }
+    ],
+    "links": [
+      [
+        "begin.then",
+        "refresh.execute"
+      ],
+      [
+        "end.then",
+        "forget.execute"
+      ]
+    ]
+  },
+  "functions": [
+    {
+      "name": "RefreshActors",
+      "nodes": [
+        {
+          "id": "actors",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAllActorsOfClass",
+          "defaults": {
+            "ActorClass": "/Script/Engine.Actor"
+          }
+        },
+        {
+          "id": "remember",
+          "kind": "set",
+          "var": "WorldActors"
+        }
+      ],
+      "links": [
+        [
+          "actors.OutActors",
+          "remember.WorldActors"
+        ],
+        [
+          "entry.then",
+          "actors.execute"
+        ],
+        [
+          "actors.then",
+          "remember.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ResolveKey",
+      "inputs": [
+        {
+          "name": "Key",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Object",
+          "type": "object:/Script/CoreUObject.Object"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Candidate",
+          "type": "object:/Script/CoreUObject.Object"
+        },
+        {
+          "name": "CandidateOwner",
+          "type": "object:/Script/Engine.Actor"
+        },
+        {
+          "name": "Resolved",
+          "type": "object:/Script/CoreUObject.Object"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "length",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Len",
+          "defaults": {}
+        },
+        {
+          "id": "minimum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "3"
+          }
+        },
+        {
+          "id": "maximum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "1023"
+          }
+        },
+        {
+          "id": "starts",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:StartsWith",
+          "defaults": {
+            "InPrefix": "/"
+          }
+        },
+        {
+          "id": "safekey0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "safekey1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "pathsafe",
+          "kind": "branch"
+        },
+        {
+          "id": "path",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:MakeSoftObjectPath",
+          "defaults": {}
+        },
+        {
+          "id": "soft",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:Conv_SoftObjPathToSoftObjRef",
+          "defaults": {}
+        },
+        {
+          "id": "loaded",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:Conv_SoftObjectReferenceToObject",
+          "defaults": {}
+        },
+        {
+          "id": "candidate",
+          "kind": "set",
+          "var": "local:Candidate"
+        },
+        {
+          "id": "candidateget",
+          "kind": "get",
+          "var": "local:Candidate"
+        },
+        {
+          "id": "valid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "actual",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:GetPathName",
+          "defaults": {}
+        },
+        {
+          "id": "same",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "exact0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "guard",
+          "kind": "branch"
+        },
+        {
+          "id": "actor",
+          "kind": "cast",
+          "class": "/Script/Engine.Actor"
+        },
+        {
+          "id": "actorref",
+          "kind": "set",
+          "var": "local:CandidateOwner"
+        },
+        {
+          "id": "component",
+          "kind": "cast",
+          "class": "/Script/Engine.SceneComponent"
+        },
+        {
+          "id": "owner",
+          "kind": "call",
+          "function": "/Script/Engine.ActorComponent:GetOwner",
+          "defaults": {}
+        },
+        {
+          "id": "componentref",
+          "kind": "set",
+          "var": "local:CandidateOwner"
+        },
+        {
+          "id": "actors",
+          "kind": "get",
+          "var": "WorldActors"
+        },
+        {
+          "id": "ownerget",
+          "kind": "get",
+          "var": "local:CandidateOwner"
+        },
+        {
+          "id": "contains",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Contains",
+          "defaults": {}
+        },
+        {
+          "id": "inworld",
+          "kind": "branch"
+        },
+        {
+          "id": "found",
+          "kind": "set",
+          "var": "local:Resolved"
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:Resolved"
+        }
+      ],
+      "links": [
+        [
+          "entry.Key",
+          "length.S"
+        ],
+        [
+          "length.ReturnValue",
+          "minimum.A"
+        ],
+        [
+          "length.ReturnValue",
+          "maximum.A"
+        ],
+        [
+          "entry.Key",
+          "starts.SourceString"
+        ],
+        [
+          "minimum.ReturnValue",
+          "safekey0.A"
+        ],
+        [
+          "maximum.ReturnValue",
+          "safekey0.B"
+        ],
+        [
+          "safekey0.ReturnValue",
+          "safekey1.A"
+        ],
+        [
+          "starts.ReturnValue",
+          "safekey1.B"
+        ],
+        [
+          "safekey1.ReturnValue",
+          "pathsafe.Condition"
+        ],
+        [
+          "entry.Key",
+          "path.PathString"
+        ],
+        [
+          "path.ReturnValue",
+          "soft.SoftObjectPath"
+        ],
+        [
+          "soft.ReturnValue",
+          "loaded.SoftObject"
+        ],
+        [
+          "loaded.ReturnValue",
+          "candidate.Candidate"
+        ],
+        [
+          "candidateget.Candidate",
+          "valid.Object"
+        ],
+        [
+          "candidateget.Candidate",
+          "actual.Object"
+        ],
+        [
+          "actual.ReturnValue",
+          "same.A"
+        ],
+        [
+          "entry.Key",
+          "same.B"
+        ],
+        [
+          "valid.ReturnValue",
+          "exact0.A"
+        ],
+        [
+          "same.ReturnValue",
+          "exact0.B"
+        ],
+        [
+          "exact0.ReturnValue",
+          "guard.Condition"
+        ],
+        [
+          "candidateget.Candidate",
+          "actor.Object"
+        ],
+        [
+          "actor.AsActor",
+          "actorref.CandidateOwner"
+        ],
+        [
+          "candidateget.Candidate",
+          "component.Object"
+        ],
+        [
+          "component.AsScene Component",
+          "owner.self"
+        ],
+        [
+          "owner.ReturnValue",
+          "componentref.CandidateOwner"
+        ],
+        [
+          "actors.WorldActors",
+          "contains.TargetArray"
+        ],
+        [
+          "ownerget.CandidateOwner",
+          "contains.ItemToFind"
+        ],
+        [
+          "contains.ReturnValue",
+          "inworld.Condition"
+        ],
+        [
+          "candidateget.Candidate",
+          "found.Resolved"
+        ],
+        [
+          "out.Resolved",
+          "result.Object"
+        ],
+        [
+          "entry.then",
+          "pathsafe.execute"
+        ],
+        [
+          "pathsafe.then",
+          "candidate.execute"
+        ],
+        [
+          "candidate.then",
+          "guard.execute"
+        ],
+        [
+          "guard.then",
+          "actor.execute"
+        ],
+        [
+          "actor.then",
+          "actorref.execute"
+        ],
+        [
+          "actorref.then",
+          "inworld.execute"
+        ],
+        [
+          "inworld.then",
+          "found.execute"
+        ],
+        [
+          "found.then",
+          "result.execute"
+        ],
+        [
+          "pathsafe.else",
+          "result.execute"
+        ],
+        [
+          "guard.else",
+          "result.execute"
+        ],
+        [
+          "actor.CastFailed",
+          "component.execute"
+        ],
+        [
+          "component.then",
+          "componentref.execute"
+        ],
+        [
+          "componentref.then",
+          "inworld.execute"
+        ],
+        [
+          "component.CastFailed",
+          "result.execute"
+        ],
+        [
+          "inworld.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "FindRecord",
+      "inputs": [
+        {
+          "name": "Key",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Index",
+          "type": "int"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "FoundIndex",
+          "type": "int",
+          "default": "-1"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "objects",
+          "kind": "get",
+          "var": "Records"
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "length",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "validity",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "key",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenVanillaRecord:LayoutKey"
+        },
+        {
+          "id": "alive",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenVanillaRecord:IsAlive",
+          "defaults": {}
+        },
+        {
+          "id": "same",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "matchok0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "matches",
+          "kind": "branch"
+        },
+        {
+          "id": "remember",
+          "kind": "set",
+          "var": "local:FoundIndex"
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:FoundIndex"
+        }
+      ],
+      "links": [
+        [
+          "objects.Records",
+          "length.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "length.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "objects.Records",
+          "item.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "item.Index"
+        ],
+        [
+          "item.Item",
+          "validity.Object"
+        ],
+        [
+          "validity.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "item.Item",
+          "key.self"
+        ],
+        [
+          "item.Item",
+          "alive.self"
+        ],
+        [
+          "key.LayoutKey",
+          "same.A"
+        ],
+        [
+          "entry.Key",
+          "same.B"
+        ],
+        [
+          "same.ReturnValue",
+          "matchok0.A"
+        ],
+        [
+          "alive.Alive",
+          "matchok0.B"
+        ],
+        [
+          "matchok0.ReturnValue",
+          "matches.Condition"
+        ],
+        [
+          "valid.then",
+          "alive.execute"
+        ],
+        [
+          "alive.then",
+          "matches.execute"
+        ],
+        [
+          "i.Cursor",
+          "remember.FoundIndex"
+        ],
+        [
+          "i.Cursor",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.Cursor"
+        ],
+        [
+          "out.FoundIndex",
+          "result.Index"
+        ],
+        [
+          "entry.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "valid.execute"
+        ],
+        [
+          "matches.then",
+          "remember.execute"
+        ],
+        [
+          "remember.then",
+          "result.execute"
+        ],
+        [
+          "loop.else",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "loop.execute"
+        ],
+        [
+          "matches.else",
+          "advance.execute"
+        ]
+      ]
+    },
+    {
+      "name": "FindPlaced",
+      "inputs": [
+        {
+          "name": "Key",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Index",
+          "type": "int"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "FoundIndex",
+          "type": "int",
+          "default": "-1"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "objects",
+          "kind": "get",
+          "var": "Placed"
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "length",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "validity",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "current",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPlacedProp:Current"
+        },
+        {
+          "id": "data",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "same",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "matches",
+          "kind": "branch"
+        },
+        {
+          "id": "remember",
+          "kind": "set",
+          "var": "local:FoundIndex"
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:FoundIndex"
+        }
+      ],
+      "links": [
+        [
+          "objects.Placed",
+          "length.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "length.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "objects.Placed",
+          "item.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "item.Index"
+        ],
+        [
+          "item.Item",
+          "validity.Object"
+        ],
+        [
+          "validity.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "item.Item",
+          "current.self"
+        ],
+        [
+          "current.Current",
+          "data.ST_DenEntry"
+        ],
+        [
+          "data.Key",
+          "same.A"
+        ],
+        [
+          "entry.Key",
+          "same.B"
+        ],
+        [
+          "same.ReturnValue",
+          "matches.Condition"
+        ],
+        [
+          "valid.then",
+          "matches.execute"
+        ],
+        [
+          "i.Cursor",
+          "remember.FoundIndex"
+        ],
+        [
+          "i.Cursor",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.Cursor"
+        ],
+        [
+          "out.FoundIndex",
+          "result.Index"
+        ],
+        [
+          "entry.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "valid.execute"
+        ],
+        [
+          "matches.then",
+          "remember.execute"
+        ],
+        [
+          "remember.then",
+          "result.execute"
+        ],
+        [
+          "loop.else",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "loop.execute"
+        ],
+        [
+          "matches.else",
+          "advance.execute"
+        ]
+      ]
+    },
+    {
+      "name": "BindVanilla",
+      "inputs": [
+        {
+          "name": "Key",
+          "type": "string"
+        },
+        {
+          "name": "Object",
+          "type": "object:/Script/CoreUObject.Object"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "keyok",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:NotEqual_StriStri",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "objectvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "inputs0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "path",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:GetPathName",
+          "defaults": {}
+        },
+        {
+          "id": "resolve",
+          "kind": "call",
+          "function": "self:ResolveKey",
+          "defaults": {}
+        },
+        {
+          "id": "same",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {}
+        },
+        {
+          "id": "resolvedvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "owned0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "inworld",
+          "kind": "branch"
+        },
+        {
+          "id": "find",
+          "kind": "call",
+          "function": "self:FindRecord",
+          "defaults": {}
+        },
+        {
+          "id": "exists",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "existing",
+          "kind": "branch"
+        },
+        {
+          "id": "records",
+          "kind": "get",
+          "var": "Records"
+        },
+        {
+          "id": "old",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "target",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenVanillaRecord:Target"
+        },
+        {
+          "id": "equal",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {}
+        },
+        {
+          "id": "oldok",
+          "kind": "set",
+          "var": "local:OK"
+        },
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "create",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:SpawnObject",
+          "defaults": {
+            "ObjectClass": "/DenDesignerGF/Runtime/BP_DenVanillaRecord"
+          }
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenVanillaRecord"
+        },
+        {
+          "id": "capture",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenVanillaRecord:Capture",
+          "defaults": {}
+        },
+        {
+          "id": "captured",
+          "kind": "branch"
+        },
+        {
+          "id": "alias",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenVanillaRecord:LayoutKey"
+        },
+        {
+          "id": "append",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        }
+      ],
+      "links": [
+        [
+          "entry.Key",
+          "keyok.A"
+        ],
+        [
+          "entry.Object",
+          "objectvalid.Object"
+        ],
+        [
+          "keyok.ReturnValue",
+          "inputs0.A"
+        ],
+        [
+          "objectvalid.ReturnValue",
+          "inputs0.B"
+        ],
+        [
+          "inputs0.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.Object",
+          "path.Object"
+        ],
+        [
+          "path.ReturnValue",
+          "resolve.Key"
+        ],
+        [
+          "resolve.Object",
+          "same.A"
+        ],
+        [
+          "entry.Object",
+          "same.B"
+        ],
+        [
+          "resolve.Object",
+          "resolvedvalid.Object"
+        ],
+        [
+          "same.ReturnValue",
+          "owned0.A"
+        ],
+        [
+          "resolvedvalid.ReturnValue",
+          "owned0.B"
+        ],
+        [
+          "owned0.ReturnValue",
+          "inworld.Condition"
+        ],
+        [
+          "entry.Key",
+          "find.Key"
+        ],
+        [
+          "find.Index",
+          "exists.A"
+        ],
+        [
+          "exists.ReturnValue",
+          "existing.Condition"
+        ],
+        [
+          "records.Records",
+          "old.TargetArray"
+        ],
+        [
+          "find.Index",
+          "old.Index"
+        ],
+        [
+          "old.Item",
+          "target.self"
+        ],
+        [
+          "target.Target",
+          "equal.A"
+        ],
+        [
+          "entry.Object",
+          "equal.B"
+        ],
+        [
+          "equal.ReturnValue",
+          "oldok.OK"
+        ],
+        [
+          "self.self",
+          "create.Outer"
+        ],
+        [
+          "create.ReturnValue",
+          "cast.Object"
+        ],
+        [
+          "cast.AsBP Den Vanilla Record",
+          "capture.self"
+        ],
+        [
+          "entry.Object",
+          "capture.Object"
+        ],
+        [
+          "capture.Accepted",
+          "captured.Condition"
+        ],
+        [
+          "entry.Key",
+          "alias.LayoutKey"
+        ],
+        [
+          "cast.AsBP Den Vanilla Record",
+          "alias.self"
+        ],
+        [
+          "records.Records",
+          "append.TargetArray"
+        ],
+        [
+          "cast.AsBP Den Vanilla Record",
+          "append.NewItem"
+        ],
+        [
+          "out.OK",
+          "result.Accepted"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "resolve.execute"
+        ],
+        [
+          "resolve.then",
+          "inworld.execute"
+        ],
+        [
+          "inworld.then",
+          "find.execute"
+        ],
+        [
+          "find.then",
+          "existing.execute"
+        ],
+        [
+          "existing.then",
+          "oldok.execute"
+        ],
+        [
+          "oldok.then",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ],
+        [
+          "inworld.else",
+          "result.execute"
+        ],
+        [
+          "cast.CastFailed",
+          "result.execute"
+        ],
+        [
+          "captured.else",
+          "result.execute"
+        ],
+        [
+          "existing.else",
+          "create.execute"
+        ],
+        [
+          "create.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "capture.execute"
+        ],
+        [
+          "capture.then",
+          "captured.execute"
+        ],
+        [
+          "captured.then",
+          "alias.execute"
+        ],
+        [
+          "alias.then",
+          "append.execute"
+        ],
+        [
+          "append.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "SetVanilla",
+      "inputs": [
+        {
+          "name": "Key",
+          "type": "string"
+        },
+        {
+          "name": "Value",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "name": "Present",
+          "type": "bool"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Status",
+          "type": "int"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Binding",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenVanillaRecord"
+        },
+        {
+          "name": "ResultStatus",
+          "type": "int",
+          "default": "3"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "data",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "key",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:NotEqual_StriStri",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "kind",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "same",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "absent",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "identity0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "validvalue0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "validrequest0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "find",
+          "kind": "call",
+          "function": "self:FindRecord",
+          "defaults": {}
+        },
+        {
+          "id": "exists",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "found",
+          "kind": "branch"
+        },
+        {
+          "id": "records",
+          "kind": "get",
+          "var": "Records"
+        },
+        {
+          "id": "record",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "remember",
+          "kind": "set",
+          "var": "local:Binding"
+        },
+        {
+          "id": "present",
+          "kind": "branch"
+        },
+        {
+          "id": "resolve",
+          "kind": "call",
+          "function": "self:ResolveKey",
+          "defaults": {}
+        },
+        {
+          "id": "validobject",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "loaded",
+          "kind": "branch"
+        },
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "create",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:SpawnObject",
+          "defaults": {
+            "ObjectClass": "/DenDesignerGF/Runtime/BP_DenVanillaRecord"
+          }
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenVanillaRecord"
+        },
+        {
+          "id": "created",
+          "kind": "set",
+          "var": "local:Binding"
+        },
+        {
+          "id": "binding",
+          "kind": "get",
+          "var": "local:Binding"
+        },
+        {
+          "id": "capture",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenVanillaRecord:Capture",
+          "defaults": {}
+        },
+        {
+          "id": "captured",
+          "kind": "branch"
+        },
+        {
+          "id": "add",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "apply",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenVanillaRecord:Apply",
+          "defaults": {}
+        },
+        {
+          "id": "applied",
+          "kind": "branch"
+        },
+        {
+          "id": "success",
+          "kind": "set",
+          "var": "local:ResultStatus",
+          "defaults": {
+            "ResultStatus": "1"
+          }
+        },
+        {
+          "id": "dormant",
+          "kind": "set",
+          "var": "local:ResultStatus",
+          "defaults": {
+            "ResultStatus": "2"
+          }
+        },
+        {
+          "id": "status",
+          "kind": "get",
+          "var": "local:ResultStatus"
+        }
+      ],
+      "links": [
+        [
+          "entry.Value",
+          "data.ST_DenEntry"
+        ],
+        [
+          "entry.Key",
+          "key.A"
+        ],
+        [
+          "data.Kind",
+          "kind.A"
+        ],
+        [
+          "data.Key",
+          "same.A"
+        ],
+        [
+          "entry.Key",
+          "same.B"
+        ],
+        [
+          "entry.Present",
+          "absent.A"
+        ],
+        [
+          "kind.ReturnValue",
+          "identity0.A"
+        ],
+        [
+          "same.ReturnValue",
+          "identity0.B"
+        ],
+        [
+          "absent.ReturnValue",
+          "validvalue0.A"
+        ],
+        [
+          "identity0.ReturnValue",
+          "validvalue0.B"
+        ],
+        [
+          "key.ReturnValue",
+          "validrequest0.A"
+        ],
+        [
+          "validvalue0.ReturnValue",
+          "validrequest0.B"
+        ],
+        [
+          "validrequest0.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.Key",
+          "find.Key"
+        ],
+        [
+          "find.Index",
+          "exists.A"
+        ],
+        [
+          "exists.ReturnValue",
+          "found.Condition"
+        ],
+        [
+          "records.Records",
+          "record.TargetArray"
+        ],
+        [
+          "find.Index",
+          "record.Index"
+        ],
+        [
+          "record.Item",
+          "remember.Binding"
+        ],
+        [
+          "entry.Present",
+          "present.Condition"
+        ],
+        [
+          "entry.Key",
+          "resolve.Key"
+        ],
+        [
+          "resolve.Object",
+          "validobject.Object"
+        ],
+        [
+          "validobject.ReturnValue",
+          "loaded.Condition"
+        ],
+        [
+          "self.self",
+          "create.Outer"
+        ],
+        [
+          "create.ReturnValue",
+          "cast.Object"
+        ],
+        [
+          "cast.AsBP Den Vanilla Record",
+          "created.Binding"
+        ],
+        [
+          "binding.Binding",
+          "capture.self"
+        ],
+        [
+          "resolve.Object",
+          "capture.Object"
+        ],
+        [
+          "capture.Accepted",
+          "captured.Condition"
+        ],
+        [
+          "records.Records",
+          "add.TargetArray"
+        ],
+        [
+          "binding.Binding",
+          "add.NewItem"
+        ],
+        [
+          "binding.Binding",
+          "apply.self"
+        ],
+        [
+          "entry.Value",
+          "apply.Value"
+        ],
+        [
+          "entry.Present",
+          "apply.Present"
+        ],
+        [
+          "apply.Accepted",
+          "applied.Condition"
+        ],
+        [
+          "status.ResultStatus",
+          "result.Status"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "find.execute"
+        ],
+        [
+          "find.then",
+          "found.execute"
+        ],
+        [
+          "found.then",
+          "remember.execute"
+        ],
+        [
+          "remember.then",
+          "apply.execute"
+        ],
+        [
+          "apply.then",
+          "applied.execute"
+        ],
+        [
+          "applied.then",
+          "success.execute"
+        ],
+        [
+          "success.then",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ],
+        [
+          "found.else",
+          "present.execute"
+        ],
+        [
+          "present.then",
+          "resolve.execute"
+        ],
+        [
+          "resolve.then",
+          "loaded.execute"
+        ],
+        [
+          "loaded.then",
+          "create.execute"
+        ],
+        [
+          "create.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "created.execute"
+        ],
+        [
+          "created.then",
+          "capture.execute"
+        ],
+        [
+          "capture.then",
+          "captured.execute"
+        ],
+        [
+          "captured.then",
+          "add.execute"
+        ],
+        [
+          "add.then",
+          "apply.execute"
+        ],
+        [
+          "present.else",
+          "success.execute"
+        ],
+        [
+          "loaded.else",
+          "dormant.execute"
+        ],
+        [
+          "dormant.then",
+          "result.execute"
+        ],
+        [
+          "cast.CastFailed",
+          "result.execute"
+        ],
+        [
+          "captured.else",
+          "result.execute"
+        ],
+        [
+          "applied.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "SetPlaced",
+      "inputs": [
+        {
+          "name": "Value",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "name": "LoadedMesh",
+          "type": "object:/Script/Engine.StaticMesh"
+        },
+        {
+          "name": "LoadedMaterials",
+          "type": "object:/Script/Engine.MaterialInterface[]"
+        },
+        {
+          "name": "Ghost",
+          "type": "bool"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Prop",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenPlacedProp"
+        },
+        {
+          "name": "Status",
+          "type": "int"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Selected",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenPlacedProp"
+        },
+        {
+          "name": "NewProp",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "ResultStatus",
+          "type": "int",
+          "default": "3"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "data",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "kind",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "key",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:NotEqual_StriStri",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "identity0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "guard",
+          "kind": "branch"
+        },
+        {
+          "id": "meshcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "meshvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "find",
+          "kind": "call",
+          "function": "self:FindPlaced",
+          "defaults": {}
+        },
+        {
+          "id": "exists",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "existing",
+          "kind": "branch"
+        },
+        {
+          "id": "placed",
+          "kind": "get",
+          "var": "Placed"
+        },
+        {
+          "id": "prop",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "remember",
+          "kind": "set",
+          "var": "local:Selected"
+        },
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "spawntransform",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeTransform",
+          "defaults": {
+            "Location": "0,0,0",
+            "Rotation": "0,0,0",
+            "Scale": "1,1,1"
+          }
+        },
+        {
+          "id": "spawn",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:BeginDeferredActorSpawnFromClass",
+          "defaults": {
+            "ActorClass": "/DenDesignerGF/Runtime/BP_DenPlacedProp",
+            "CollisionHandlingOverride": "AlwaysSpawn"
+          }
+        },
+        {
+          "id": "finish",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:FinishSpawningActor",
+          "defaults": {}
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenPlacedProp"
+        },
+        {
+          "id": "newprop",
+          "kind": "set",
+          "var": "local:Selected"
+        },
+        {
+          "id": "newflag",
+          "kind": "set",
+          "var": "local:NewProp",
+          "defaults": {
+            "NewProp": "true"
+          }
+        },
+        {
+          "id": "selected",
+          "kind": "get",
+          "var": "local:Selected"
+        },
+        {
+          "id": "new",
+          "kind": "get",
+          "var": "local:NewProp"
+        },
+        {
+          "id": "configure",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPlacedProp:Configure",
+          "defaults": {}
+        },
+        {
+          "id": "configured",
+          "kind": "branch"
+        },
+        {
+          "id": "addnew",
+          "kind": "branch"
+        },
+        {
+          "id": "append",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:ResultStatus",
+          "defaults": {
+            "ResultStatus": "1"
+          }
+        },
+        {
+          "id": "badmesh",
+          "kind": "set",
+          "var": "local:ResultStatus",
+          "defaults": {
+            "ResultStatus": "4"
+          }
+        },
+        {
+          "id": "cleanup",
+          "kind": "branch"
+        },
+        {
+          "id": "destroy",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:K2_DestroyActor",
+          "defaults": {}
+        },
+        {
+          "id": "clearref",
+          "kind": "set",
+          "var": "local:Selected"
+        },
+        {
+          "id": "status",
+          "kind": "get",
+          "var": "local:ResultStatus"
+        }
+      ],
+      "links": [
+        [
+          "entry.Value",
+          "data.ST_DenEntry"
+        ],
+        [
+          "data.Kind",
+          "kind.A"
+        ],
+        [
+          "data.Key",
+          "key.A"
+        ],
+        [
+          "kind.ReturnValue",
+          "identity0.A"
+        ],
+        [
+          "key.ReturnValue",
+          "identity0.B"
+        ],
+        [
+          "identity0.ReturnValue",
+          "guard.Condition"
+        ],
+        [
+          "entry.LoadedMesh",
+          "meshcheck.Object"
+        ],
+        [
+          "meshcheck.ReturnValue",
+          "meshvalid.Condition"
+        ],
+        [
+          "data.Key",
+          "find.Key"
+        ],
+        [
+          "find.Index",
+          "exists.A"
+        ],
+        [
+          "exists.ReturnValue",
+          "existing.Condition"
+        ],
+        [
+          "placed.Placed",
+          "prop.TargetArray"
+        ],
+        [
+          "find.Index",
+          "prop.Index"
+        ],
+        [
+          "prop.Item",
+          "remember.Selected"
+        ],
+        [
+          "self.self",
+          "spawn.Owner"
+        ],
+        [
+          "spawntransform.ReturnValue",
+          "spawn.SpawnTransform"
+        ],
+        [
+          "spawn.ReturnValue",
+          "finish.Actor"
+        ],
+        [
+          "spawntransform.ReturnValue",
+          "finish.SpawnTransform"
+        ],
+        [
+          "finish.ReturnValue",
+          "cast.Object"
+        ],
+        [
+          "cast.AsBP Den Placed Prop",
+          "newprop.Selected"
+        ],
+        [
+          "selected.Selected",
+          "configure.self"
+        ],
+        [
+          "entry.Value",
+          "configure.Value"
+        ],
+        [
+          "entry.LoadedMesh",
+          "configure.LoadedMesh"
+        ],
+        [
+          "entry.LoadedMaterials",
+          "configure.LoadedMaterials"
+        ],
+        [
+          "entry.Ghost",
+          "configure.Ghost"
+        ],
+        [
+          "configure.Accepted",
+          "configured.Condition"
+        ],
+        [
+          "new.NewProp",
+          "addnew.Condition"
+        ],
+        [
+          "placed.Placed",
+          "append.TargetArray"
+        ],
+        [
+          "selected.Selected",
+          "append.NewItem"
+        ],
+        [
+          "new.NewProp",
+          "cleanup.Condition"
+        ],
+        [
+          "selected.Selected",
+          "destroy.self"
+        ],
+        [
+          "status.ResultStatus",
+          "result.Status"
+        ],
+        [
+          "selected.Selected",
+          "result.Prop"
+        ],
+        [
+          "entry.then",
+          "guard.execute"
+        ],
+        [
+          "guard.then",
+          "meshvalid.execute"
+        ],
+        [
+          "meshvalid.then",
+          "find.execute"
+        ],
+        [
+          "find.then",
+          "existing.execute"
+        ],
+        [
+          "existing.then",
+          "remember.execute"
+        ],
+        [
+          "remember.then",
+          "configure.execute"
+        ],
+        [
+          "configure.then",
+          "configured.execute"
+        ],
+        [
+          "configured.then",
+          "addnew.execute"
+        ],
+        [
+          "addnew.then",
+          "append.execute"
+        ],
+        [
+          "append.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "guard.else",
+          "result.execute"
+        ],
+        [
+          "meshvalid.else",
+          "badmesh.execute"
+        ],
+        [
+          "badmesh.then",
+          "result.execute"
+        ],
+        [
+          "existing.else",
+          "spawn.execute"
+        ],
+        [
+          "spawn.then",
+          "finish.execute"
+        ],
+        [
+          "finish.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "newprop.execute"
+        ],
+        [
+          "newprop.then",
+          "newflag.execute"
+        ],
+        [
+          "newflag.then",
+          "configure.execute"
+        ],
+        [
+          "cast.CastFailed",
+          "result.execute"
+        ],
+        [
+          "addnew.else",
+          "yes.execute"
+        ],
+        [
+          "configured.else",
+          "cleanup.execute"
+        ],
+        [
+          "cleanup.then",
+          "destroy.execute"
+        ],
+        [
+          "destroy.then",
+          "clearref.execute"
+        ],
+        [
+          "clearref.then",
+          "result.execute"
+        ],
+        [
+          "cleanup.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "RemovePlaced",
+      "inputs": [
+        {
+          "name": "Key",
+          "type": "string"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "find",
+          "kind": "call",
+          "function": "self:FindPlaced",
+          "defaults": {}
+        },
+        {
+          "id": "exists",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "found",
+          "kind": "branch"
+        },
+        {
+          "id": "placed",
+          "kind": "get",
+          "var": "Placed"
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "destroy",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:K2_DestroyActor",
+          "defaults": {}
+        },
+        {
+          "id": "remove",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Remove",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "entry.Key",
+          "find.Key"
+        ],
+        [
+          "find.Index",
+          "exists.A"
+        ],
+        [
+          "exists.ReturnValue",
+          "found.Condition"
+        ],
+        [
+          "placed.Placed",
+          "item.TargetArray"
+        ],
+        [
+          "find.Index",
+          "item.Index"
+        ],
+        [
+          "item.Item",
+          "destroy.self"
+        ],
+        [
+          "placed.Placed",
+          "remove.TargetArray"
+        ],
+        [
+          "find.Index",
+          "remove.IndexToRemove"
+        ],
+        [
+          "entry.then",
+          "find.execute"
+        ],
+        [
+          "find.then",
+          "found.execute"
+        ],
+        [
+          "found.then",
+          "destroy.execute"
+        ],
+        [
+          "destroy.then",
+          "remove.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Clear",
+      "locals": [
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "placed",
+          "kind": "get",
+          "var": "Placed"
+        },
+        {
+          "id": "records",
+          "kind": "get",
+          "var": "Records"
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "plen",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "pwithin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "ploop",
+          "kind": "branch"
+        },
+        {
+          "id": "p",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "pcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "pvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "destroy",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:K2_DestroyActor",
+          "defaults": {}
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "pnext",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "reset",
+          "kind": "set",
+          "var": "local:Cursor",
+          "defaults": {
+            "Cursor": "0"
+          }
+        },
+        {
+          "id": "rlen",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "rwithin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "rloop",
+          "kind": "branch"
+        },
+        {
+          "id": "r",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "rcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "rvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "restore",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenVanillaRecord:Apply",
+          "defaults": {
+            "Present": "false"
+          }
+        },
+        {
+          "id": "rnext",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "forget",
+          "kind": "call",
+          "function": "self:Forget",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "placed.Placed",
+          "plen.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "pwithin.A"
+        ],
+        [
+          "plen.ReturnValue",
+          "pwithin.B"
+        ],
+        [
+          "pwithin.ReturnValue",
+          "ploop.Condition"
+        ],
+        [
+          "placed.Placed",
+          "p.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "p.Index"
+        ],
+        [
+          "p.Item",
+          "pcheck.Object"
+        ],
+        [
+          "pcheck.ReturnValue",
+          "pvalid.Condition"
+        ],
+        [
+          "p.Item",
+          "destroy.self"
+        ],
+        [
+          "i.Cursor",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "pnext.Cursor"
+        ],
+        [
+          "records.Records",
+          "rlen.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "rwithin.A"
+        ],
+        [
+          "rlen.ReturnValue",
+          "rwithin.B"
+        ],
+        [
+          "rwithin.ReturnValue",
+          "rloop.Condition"
+        ],
+        [
+          "records.Records",
+          "r.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "r.Index"
+        ],
+        [
+          "r.Item",
+          "rcheck.Object"
+        ],
+        [
+          "rcheck.ReturnValue",
+          "rvalid.Condition"
+        ],
+        [
+          "r.Item",
+          "restore.self"
+        ],
+        [
+          "next.ReturnValue",
+          "rnext.Cursor"
+        ],
+        [
+          "entry.then",
+          "ploop.execute"
+        ],
+        [
+          "ploop.then",
+          "pvalid.execute"
+        ],
+        [
+          "pvalid.then",
+          "destroy.execute"
+        ],
+        [
+          "destroy.then",
+          "pnext.execute"
+        ],
+        [
+          "pnext.then",
+          "ploop.execute"
+        ],
+        [
+          "pvalid.else",
+          "pnext.execute"
+        ],
+        [
+          "ploop.else",
+          "reset.execute"
+        ],
+        [
+          "reset.then",
+          "rloop.execute"
+        ],
+        [
+          "rloop.then",
+          "rvalid.execute"
+        ],
+        [
+          "rvalid.then",
+          "restore.execute"
+        ],
+        [
+          "restore.then",
+          "rnext.execute"
+        ],
+        [
+          "rnext.then",
+          "rloop.execute"
+        ],
+        [
+          "rvalid.else",
+          "rnext.execute"
+        ],
+        [
+          "rloop.else",
+          "forget.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Forget",
+      "nodes": [
+        {
+          "id": "placed",
+          "kind": "get",
+          "var": "Placed"
+        },
+        {
+          "id": "clearPlaced",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "records",
+          "kind": "get",
+          "var": "Records"
+        },
+        {
+          "id": "clearRecords",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "worldactors",
+          "kind": "get",
+          "var": "WorldActors"
+        },
+        {
+          "id": "clearWorldActors",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "placed.Placed",
+          "clearPlaced.TargetArray"
+        ],
+        [
+          "records.Records",
+          "clearRecords.TargetArray"
+        ],
+        [
+          "worldactors.WorldActors",
+          "clearWorldActors.TargetArray"
+        ],
+        [
+          "entry.then",
+          "clearPlaced.execute"
+        ],
+        [
+          "clearPlaced.then",
+          "clearRecords.execute"
+        ],
+        [
+          "clearRecords.then",
+          "clearWorldActors.execute"
+        ]
+      ]
+    }
+  ]
+}

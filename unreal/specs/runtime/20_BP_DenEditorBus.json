@@ -1,0 +1,797 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenEditorBus",
+  "parent": "/Script/CoreUObject.Object",
+  "variables": [
+    {
+      "name": "Events",
+      "type": "struct:/DenDesignerGF/Runtime/ST_DenEditorEvent[]"
+    },
+    {
+      "name": "Accepting",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "Dropped",
+      "type": "int",
+      "default": "0"
+    },
+    {
+      "name": "TextInputs",
+      "type": "object:/Script/UMG.Widget[]"
+    },
+    {
+      "name": "TitleFont",
+      "type": "object:/Script/Engine.Font"
+    },
+    {
+      "name": "SecondaryFont",
+      "type": "object:/Script/Engine.Font"
+    },
+    {
+      "name": "PrimaryFont",
+      "type": "object:/Script/Engine.Font"
+    }
+  ],
+  "functions": [
+    {
+      "name": "Emit",
+      "inputs": [
+        {
+          "name": "Kind",
+          "type": "int"
+        },
+        {
+          "name": "EventName",
+          "type": "string"
+        },
+        {
+          "name": "Argument",
+          "type": "string"
+        },
+        {
+          "name": "Scalar",
+          "type": "float"
+        },
+        {
+          "name": "Direction",
+          "type": "vector"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getAccepting",
+          "kind": "get",
+          "var": "Accepting"
+        },
+        {
+          "id": "enabled",
+          "kind": "branch"
+        },
+        {
+          "id": "getEvents",
+          "kind": "get",
+          "var": "Events"
+        },
+        {
+          "id": "len",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "capacity",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "256"
+          }
+        },
+        {
+          "id": "full",
+          "kind": "branch"
+        },
+        {
+          "id": "drop",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Remove",
+          "defaults": {
+            "IndexToRemove": "0"
+          }
+        },
+        {
+          "id": "getDropped",
+          "kind": "get",
+          "var": "Dropped"
+        },
+        {
+          "id": "count",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "dropped",
+          "kind": "set",
+          "var": "Dropped"
+        },
+        {
+          "id": "event",
+          "kind": "make_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEditorEvent"
+        },
+        {
+          "id": "append",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        }
+      ],
+      "links": [
+        [
+          "getAccepting.Accepting",
+          "enabled.Condition"
+        ],
+        [
+          "getEvents.Events",
+          "len.TargetArray"
+        ],
+        [
+          "len.ReturnValue",
+          "capacity.A"
+        ],
+        [
+          "capacity.ReturnValue",
+          "full.Condition"
+        ],
+        [
+          "getEvents.Events",
+          "drop.TargetArray"
+        ],
+        [
+          "getDropped.Dropped",
+          "count.A"
+        ],
+        [
+          "count.ReturnValue",
+          "dropped.Dropped"
+        ],
+        [
+          "entry.Kind",
+          "event.Kind"
+        ],
+        [
+          "entry.EventName",
+          "event.EventName"
+        ],
+        [
+          "entry.Argument",
+          "event.Argument"
+        ],
+        [
+          "entry.Scalar",
+          "event.Scalar"
+        ],
+        [
+          "entry.Direction",
+          "event.Direction"
+        ],
+        [
+          "getEvents.Events",
+          "append.TargetArray"
+        ],
+        [
+          "event.ST_DenEditorEvent",
+          "append.NewItem"
+        ],
+        [
+          "out.OK",
+          "result.Accepted"
+        ],
+        [
+          "entry.then",
+          "enabled.execute"
+        ],
+        [
+          "enabled.then",
+          "full.execute"
+        ],
+        [
+          "full.then",
+          "drop.execute"
+        ],
+        [
+          "drop.then",
+          "dropped.execute"
+        ],
+        [
+          "dropped.then",
+          "append.execute"
+        ],
+        [
+          "append.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "full.else",
+          "append.execute"
+        ],
+        [
+          "enabled.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Take",
+      "outputs": [
+        {
+          "name": "Found",
+          "type": "bool"
+        },
+        {
+          "name": "Event",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenEditorEvent"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "OutputEvent",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenEditorEvent"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getEvents",
+          "kind": "get",
+          "var": "Events"
+        },
+        {
+          "id": "len",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "has",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "any",
+          "kind": "branch"
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {
+            "Index": "0"
+          }
+        },
+        {
+          "id": "cache",
+          "kind": "set",
+          "var": "local:OutputEvent"
+        },
+        {
+          "id": "remove",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Remove",
+          "defaults": {
+            "IndexToRemove": "0"
+          }
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        },
+        {
+          "id": "eventout",
+          "kind": "get",
+          "var": "local:OutputEvent"
+        }
+      ],
+      "links": [
+        [
+          "getEvents.Events",
+          "len.TargetArray"
+        ],
+        [
+          "len.ReturnValue",
+          "has.A"
+        ],
+        [
+          "has.ReturnValue",
+          "any.Condition"
+        ],
+        [
+          "getEvents.Events",
+          "item.TargetArray"
+        ],
+        [
+          "item.Item",
+          "cache.OutputEvent"
+        ],
+        [
+          "getEvents.Events",
+          "remove.TargetArray"
+        ],
+        [
+          "out.OK",
+          "result.Found"
+        ],
+        [
+          "eventout.OutputEvent",
+          "result.Event"
+        ],
+        [
+          "entry.then",
+          "any.execute"
+        ],
+        [
+          "any.then",
+          "cache.execute"
+        ],
+        [
+          "cache.then",
+          "remove.execute"
+        ],
+        [
+          "remove.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "any.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Start",
+      "nodes": [
+        {
+          "id": "getEvents",
+          "kind": "get",
+          "var": "Events"
+        },
+        {
+          "id": "clear",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "flag",
+          "kind": "set",
+          "var": "Accepting",
+          "defaults": {
+            "Accepting": "true"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getEvents.Events",
+          "clear.TargetArray"
+        ],
+        [
+          "entry.then",
+          "clear.execute"
+        ],
+        [
+          "clear.then",
+          "flag.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Stop",
+      "nodes": [
+        {
+          "id": "getEvents",
+          "kind": "get",
+          "var": "Events"
+        },
+        {
+          "id": "clear",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "flag",
+          "kind": "set",
+          "var": "Accepting",
+          "defaults": {
+            "Accepting": "false"
+          }
+        },
+        {
+          "id": "getTextInputs",
+          "kind": "get",
+          "var": "TextInputs"
+        },
+        {
+          "id": "release",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getEvents.Events",
+          "clear.TargetArray"
+        ],
+        [
+          "entry.then",
+          "clear.execute"
+        ],
+        [
+          "clear.then",
+          "flag.execute"
+        ],
+        [
+          "getTextInputs.TextInputs",
+          "release.TargetArray"
+        ],
+        [
+          "flag.then",
+          "release.execute"
+        ]
+      ]
+    },
+    {
+      "name": "RegisterTextInput",
+      "inputs": [
+        {
+          "name": "Widget",
+          "type": "object:/Script/UMG.Widget"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "getTextInputs",
+          "kind": "get",
+          "var": "TextInputs"
+        },
+        {
+          "id": "add",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_AddUnique",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "entry.Widget",
+          "check.Object"
+        ],
+        [
+          "check.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "getTextInputs.TextInputs",
+          "add.TargetArray"
+        ],
+        [
+          "entry.Widget",
+          "add.NewItem"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "add.execute"
+        ]
+      ]
+    },
+    {
+      "name": "IsTyping",
+      "outputs": [
+        {
+          "name": "Typing",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getTextInputs",
+          "kind": "get",
+          "var": "TextInputs"
+        },
+        {
+          "id": "index",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "len",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "focus0",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:HasKeyboardFocus",
+          "defaults": {}
+        },
+        {
+          "id": "focus1",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:HasAnyUserFocus",
+          "defaults": {}
+        },
+        {
+          "id": "focus2",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:HasFocusedDescendants",
+          "defaults": {}
+        },
+        {
+          "id": "anyfocus0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "anyfocus1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "focused",
+          "kind": "branch"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "increment",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "next",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        }
+      ],
+      "links": [
+        [
+          "getTextInputs.TextInputs",
+          "len.TargetArray"
+        ],
+        [
+          "index.Cursor",
+          "within.A"
+        ],
+        [
+          "len.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "getTextInputs.TextInputs",
+          "item.TargetArray"
+        ],
+        [
+          "index.Cursor",
+          "item.Index"
+        ],
+        [
+          "item.Item",
+          "check.Object"
+        ],
+        [
+          "check.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "item.Item",
+          "focus0.self"
+        ],
+        [
+          "item.Item",
+          "focus1.self"
+        ],
+        [
+          "item.Item",
+          "focus2.self"
+        ],
+        [
+          "focus0.ReturnValue",
+          "anyfocus0.A"
+        ],
+        [
+          "focus1.ReturnValue",
+          "anyfocus0.B"
+        ],
+        [
+          "anyfocus0.ReturnValue",
+          "anyfocus1.A"
+        ],
+        [
+          "focus2.ReturnValue",
+          "anyfocus1.B"
+        ],
+        [
+          "anyfocus1.ReturnValue",
+          "focused.Condition"
+        ],
+        [
+          "index.Cursor",
+          "increment.A"
+        ],
+        [
+          "increment.ReturnValue",
+          "next.Cursor"
+        ],
+        [
+          "out.OK",
+          "result.Typing"
+        ],
+        [
+          "entry.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "focused.execute"
+        ],
+        [
+          "focused.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "loop.else",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "next.execute"
+        ],
+        [
+          "next.then",
+          "loop.execute"
+        ],
+        [
+          "focused.else",
+          "next.execute"
+        ]
+      ]
+    }
+  ]
+}

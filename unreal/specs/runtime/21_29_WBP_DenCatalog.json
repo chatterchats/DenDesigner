@@ -1,0 +1,575 @@
+{
+  "kind": "widget",
+  "path": "/DenDesignerGF/Editor/WBP_DenCatalog",
+  "tree": {
+    "class": "/Script/UMG.CanvasPanel",
+    "name": "Root",
+    "children": [
+      {
+        "class": "/Script/UMG.Border",
+        "name": "Panel",
+        "props": {
+          "BrushColor": "(R=0.012,G=0.016,B=0.024,A=1)",
+          "Padding": "(Left=14,Top=12,Right=14,Bottom=12)"
+        },
+        "slot": {
+          "LayoutData": "(Anchors=(Minimum=(X=1,Y=0),Maximum=(X=1,Y=1)),Offsets=(Left=-756,Top=88,Right=736,Bottom=88))"
+        },
+        "children": [
+          {
+            "class": "/Script/UMG.VerticalBox",
+            "name": "Column",
+            "children": [
+              {
+                "class": "/Script/UMG.TextBlock",
+                "name": "Title",
+                "props": {
+                  "Text": "Catalog",
+                  "Font.Size": 20,
+                  "ColorAndOpacity": "(SpecifiedColor=(R=1,G=0.78,B=0.35,A=1),ColorUseRule=UseColor_Specified)"
+                },
+                "variable": true
+              },
+              {
+                "class": "/Script/UMG.EditableTextBox",
+                "name": "Search",
+                "variable": true,
+                "props": {
+                  "WidgetStyle.ForegroundColor": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                  "WidgetStyle.FocusedForegroundColor": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                  "WidgetStyle.TextStyle.ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                  "WidgetStyle.TextStyle.Font.Size": 14,
+                  "WidgetStyle.Padding": "(Left=12,Top=8,Right=12,Bottom=8)",
+                  "WidgetStyle.BackgroundImageNormal.DrawAs": "RoundedBox",
+                  "WidgetStyle.BackgroundImageNormal.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                  "WidgetStyle.BackgroundImageNormal.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                  "WidgetStyle.BackgroundImageHovered.DrawAs": "RoundedBox",
+                  "WidgetStyle.BackgroundImageHovered.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                  "WidgetStyle.BackgroundImageHovered.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                  "WidgetStyle.BackgroundImageFocused.DrawAs": "RoundedBox",
+                  "WidgetStyle.BackgroundImageFocused.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                  "WidgetStyle.BackgroundImageFocused.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.65,G=0.48,B=0.18,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                  "WidgetStyle.BackgroundImageReadOnly.DrawAs": "RoundedBox",
+                  "WidgetStyle.BackgroundImageReadOnly.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                  "WidgetStyle.BackgroundImageReadOnly.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                  "HintText": "Search props\u2026"
+                },
+                "slot": {
+                  "Padding": "(Left=0,Top=14,Right=0,Bottom=14)"
+                }
+              },
+              {
+                "class": "/Script/UMG.TextBlock",
+                "name": "Empty",
+                "props": {
+                  "Text": "",
+                  "Font.Size": 14,
+                  "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)",
+                  "AutoWrapText": "true"
+                },
+                "variable": true
+              },
+              {
+                "class": "/Script/UMG.HorizontalBox",
+                "name": "Lists",
+                "slot": {
+                  "Size": "(SizeRule=Fill,Value=1.0)"
+                },
+                "children": [
+                  {
+                    "class": "/Script/UMG.SizeBox",
+                    "name": "ShelfBox",
+                    "props": {
+                      "WidthOverride": 200,
+                      "bOverride_WidthOverride": "true"
+                    },
+                    "slot": {
+                      "Padding": "(Left=0,Top=0,Right=8,Bottom=0)"
+                    },
+                    "children": [
+                      {
+                        "class": "/Script/UMG.ListView",
+                        "name": "Shelves",
+                        "variable": true,
+                        "props": {
+                          "bIsFocusable": "false",
+                          "SelectionMode": "Single",
+                          "EntryWidgetClass": "/DenDesignerGF/Editor/WBP_DenCatalogShelf"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "class": "/Script/UMG.TileView",
+                    "name": "Items",
+                    "variable": true,
+                    "props": {
+                      "bIsFocusable": "false",
+                      "SelectionMode": "Single",
+                      "EntryWidgetClass": "/DenDesignerGF/Editor/WBP_DenCatalogEntry",
+                      "EntryWidth": 160,
+                      "EntryHeight": 226
+                    },
+                    "slot": {
+                      "Size": "(SizeRule=Fill,Value=1.0)"
+                    }
+                  }
+                ]
+              },
+              {
+                "class": "/Script/UMG.TextBlock",
+                "name": "Footer",
+                "props": {
+                  "Text": "",
+                  "Font.Size": 11,
+                  "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)",
+                  "AutoWrapText": "true"
+                },
+                "variable": true,
+                "slot": {
+                  "Padding": "(Left=0,Top=8,Right=0,Bottom=0)"
+                }
+              }
+            ]
+          }
+        ],
+        "variable": true
+      }
+    ]
+  },
+  "functions": [
+    {
+      "name": "Native_Event",
+      "inputs": [
+        {
+          "name": "Name",
+          "type": "string"
+        },
+        {
+          "name": "Arg",
+          "type": "string"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "bus",
+          "kind": "get",
+          "var": "EditorBus"
+        },
+        {
+          "id": "check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "emit",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenEditorBus:Emit",
+          "defaults": {
+            "Kind": "2"
+          }
+        }
+      ],
+      "links": [
+        [
+          "bus.EditorBus",
+          "check.Object"
+        ],
+        [
+          "check.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "bus.EditorBus",
+          "emit.self"
+        ],
+        [
+          "entry.Name",
+          "emit.EventName"
+        ],
+        [
+          "entry.Arg",
+          "emit.Argument"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "emit.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ApplyNativeStyle",
+      "nodes": [
+        {
+          "id": "bus",
+          "kind": "get",
+          "var": "EditorBus"
+        },
+        {
+          "id": "check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font0",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:TitleFont"
+        },
+        {
+          "id": "font0check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font0valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font0info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "DmBd",
+            "Size": "20"
+          }
+        },
+        {
+          "id": "font0widget",
+          "kind": "get",
+          "var": "Title"
+        },
+        {
+          "id": "font0set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font1",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+        },
+        {
+          "id": "font1check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font1valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font1info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Regular",
+            "Size": "14"
+          }
+        },
+        {
+          "id": "font1widget",
+          "kind": "get",
+          "var": "Empty"
+        },
+        {
+          "id": "font1set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font2",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+        },
+        {
+          "id": "font2check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font2valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font2info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Regular",
+            "Size": "11"
+          }
+        },
+        {
+          "id": "font2widget",
+          "kind": "get",
+          "var": "Footer"
+        },
+        {
+          "id": "font2set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "bus.EditorBus",
+          "check.Object"
+        ],
+        [
+          "check.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font0.self"
+        ],
+        [
+          "font0.TitleFont",
+          "font0check.Object"
+        ],
+        [
+          "font0check.ReturnValue",
+          "font0valid.Condition"
+        ],
+        [
+          "font0.TitleFont",
+          "font0info.FontObject"
+        ],
+        [
+          "font0widget.Title",
+          "font0set.self"
+        ],
+        [
+          "font0info.SlateFontInfo",
+          "font0set.InFontInfo"
+        ],
+        [
+          "valid.then",
+          "font0valid.execute"
+        ],
+        [
+          "font0valid.then",
+          "font0set.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font1.self"
+        ],
+        [
+          "font1.PrimaryFont",
+          "font1check.Object"
+        ],
+        [
+          "font1check.ReturnValue",
+          "font1valid.Condition"
+        ],
+        [
+          "font1.PrimaryFont",
+          "font1info.FontObject"
+        ],
+        [
+          "font1widget.Empty",
+          "font1set.self"
+        ],
+        [
+          "font1info.SlateFontInfo",
+          "font1set.InFontInfo"
+        ],
+        [
+          "font0set.then",
+          "font1valid.execute"
+        ],
+        [
+          "font1valid.then",
+          "font1set.execute"
+        ],
+        [
+          "font0valid.else",
+          "font1valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font2.self"
+        ],
+        [
+          "font2.PrimaryFont",
+          "font2check.Object"
+        ],
+        [
+          "font2check.ReturnValue",
+          "font2valid.Condition"
+        ],
+        [
+          "font2.PrimaryFont",
+          "font2info.FontObject"
+        ],
+        [
+          "font2widget.Footer",
+          "font2set.self"
+        ],
+        [
+          "font2info.SlateFontInfo",
+          "font2set.InFontInfo"
+        ],
+        [
+          "font1set.then",
+          "font2valid.execute"
+        ],
+        [
+          "font2valid.then",
+          "font2set.execute"
+        ],
+        [
+          "font1valid.else",
+          "font2valid.execute"
+        ]
+      ]
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "search",
+        "kind": "bound_event",
+        "widget": "Search",
+        "delegate": "OnTextChanged"
+      },
+      {
+        "id": "search_event",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "search"
+        }
+      },
+      {
+        "id": "shelves",
+        "kind": "bound_event",
+        "widget": "Shelves",
+        "delegate": "BP_OnItemClicked"
+      },
+      {
+        "id": "shelves_cast",
+        "kind": "cast",
+        "class": "/DenDesignerGF/Editor/BP_DenCatalogItem"
+      },
+      {
+        "id": "shelves_key",
+        "kind": "get",
+        "var": "/DenDesignerGF/Editor/BP_DenCatalogItem:Key"
+      },
+      {
+        "id": "shelves_event",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "shelf"
+        }
+      },
+      {
+        "id": "items",
+        "kind": "bound_event",
+        "widget": "Items",
+        "delegate": "BP_OnItemClicked"
+      },
+      {
+        "id": "items_cast",
+        "kind": "cast",
+        "class": "/DenDesignerGF/Editor/BP_DenCatalogItem"
+      },
+      {
+        "id": "items_key",
+        "kind": "get",
+        "var": "/DenDesignerGF/Editor/BP_DenCatalogItem:Key"
+      },
+      {
+        "id": "items_event",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "item"
+        }
+      }
+    ],
+    "links": [
+      [
+        "search.then",
+        "search_event.execute"
+      ],
+      [
+        "search.Text",
+        "search_event.Arg"
+      ],
+      [
+        "shelves.then",
+        "shelves_cast.execute"
+      ],
+      [
+        "shelves.Item",
+        "shelves_cast.Object"
+      ],
+      [
+        "shelves_cast.then",
+        "shelves_event.execute"
+      ],
+      [
+        "shelves_cast.AsBP Den Catalog Item",
+        "shelves_key.self"
+      ],
+      [
+        "shelves_key.Key",
+        "shelves_event.Arg"
+      ],
+      [
+        "items.then",
+        "items_cast.execute"
+      ],
+      [
+        "items.Item",
+        "items_cast.Object"
+      ],
+      [
+        "items_cast.then",
+        "items_event.execute"
+      ],
+      [
+        "items_cast.AsBP Den Catalog Item",
+        "items_key.self"
+      ],
+      [
+        "items_key.Key",
+        "items_event.Arg"
+      ]
+    ]
+  },
+  "variables": [
+    {
+      "name": "EditorBus",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenEditorBus"
+    }
+  ]
+}

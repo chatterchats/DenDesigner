@@ -1,0 +1,2890 @@
+{
+  "kind": "widget",
+  "path": "/DenDesignerGF/Editor/WBP_DenTransform",
+  "tree": {
+    "class": "/Script/UMG.CanvasPanel",
+    "name": "Root",
+    "children": [
+      {
+        "class": "/Script/UMG.SizeBox",
+        "name": "Panel",
+        "variable": true,
+        "props": {
+          "WidthOverride": 360,
+          "bOverride_WidthOverride": "true",
+          "Visibility": "Collapsed"
+        },
+        "slot": {
+          "LayoutData": "(Offsets=(Left=20,Top=88,Right=360,Bottom=0))",
+          "bAutoSize": "true"
+        },
+        "children": [
+          {
+            "class": "/Script/UMG.Border",
+            "name": "Frame",
+            "props": {
+              "BrushColor": "(R=0.012,G=0.016,B=0.024,A=1)",
+              "Padding": "(Left=20,Top=18,Right=20,Bottom=18)"
+            },
+            "children": [
+              {
+                "class": "/Script/UMG.VerticalBox",
+                "name": "Column",
+                "children": [
+                  {
+                    "class": "/Script/UMG.TextBlock",
+                    "name": "Title",
+                    "props": {
+                      "Text": "Selected prop",
+                      "Font.Size": 20,
+                      "ColorAndOpacity": "(SpecifiedColor=(R=1,G=0.78,B=0.35,A=1),ColorUseRule=UseColor_Specified)"
+                    },
+                    "variable": true
+                  },
+                  {
+                    "class": "/Script/UMG.TextBlock",
+                    "name": "Selection",
+                    "props": {
+                      "Text": "",
+                      "Font.Size": 15,
+                      "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                      "AutoWrapText": "true",
+                      "WrapTextAt": 320
+                    },
+                    "variable": true,
+                    "slot": {
+                      "Padding": "(Left=0,Top=10,Right=0,Bottom=14)"
+                    }
+                  },
+                  {
+                    "class": "/Script/UMG.HorizontalBox",
+                    "name": "Modes",
+                    "slot": {
+                      "Padding": "(Left=0,Top=6,Right=0,Bottom=6)"
+                    },
+                    "children": [
+                      {
+                        "class": "/Script/UMG.Button",
+                        "name": "Move",
+                        "variable": true,
+                        "props": {
+                          "BackgroundColor": "(R=1,G=1,B=1,A=1)",
+                          "IsFocusable": "false",
+                          "WidgetStyle.Normal.DrawAs": "RoundedBox",
+                          "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=0.055,G=0.07,B=0.095,A=1))",
+                          "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.22,G=0.27,B=0.34,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                          "WidgetStyle.Hovered.DrawAs": "RoundedBox",
+                          "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=0.11,G=0.14,B=0.19,A=1))",
+                          "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.75,G=0.6,B=0.3,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                          "WidgetStyle.Pressed.DrawAs": "RoundedBox",
+                          "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=0.03,G=0.04,B=0.055,A=1))",
+                          "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.75,G=0.6,B=0.3,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                          "WidgetStyle.NormalPadding": "(Left=12,Top=7,Right=12,Bottom=7)",
+                          "WidgetStyle.PressedPadding": "(Left=12,Top=8,Right=12,Bottom=6)"
+                        },
+                        "slot": {
+                          "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+                        },
+                        "children": [
+                          {
+                            "class": "/Script/UMG.TextBlock",
+                            "name": "MoveLabel",
+                            "props": {
+                              "Text": "Move",
+                              "Font.Size": 14,
+                              "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                              "Justification": "Center"
+                            },
+                            "variable": true,
+                            "slot": {
+                              "HorizontalAlignment": "HAlign_Center",
+                              "VerticalAlignment": "VAlign_Center"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "class": "/Script/UMG.Button",
+                        "name": "Rotate",
+                        "variable": true,
+                        "props": {
+                          "BackgroundColor": "(R=1,G=1,B=1,A=1)",
+                          "IsFocusable": "false",
+                          "WidgetStyle.Normal.DrawAs": "RoundedBox",
+                          "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=0.055,G=0.07,B=0.095,A=1))",
+                          "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.22,G=0.27,B=0.34,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                          "WidgetStyle.Hovered.DrawAs": "RoundedBox",
+                          "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=0.11,G=0.14,B=0.19,A=1))",
+                          "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.75,G=0.6,B=0.3,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                          "WidgetStyle.Pressed.DrawAs": "RoundedBox",
+                          "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=0.03,G=0.04,B=0.055,A=1))",
+                          "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.75,G=0.6,B=0.3,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                          "WidgetStyle.NormalPadding": "(Left=12,Top=7,Right=12,Bottom=7)",
+                          "WidgetStyle.PressedPadding": "(Left=12,Top=8,Right=12,Bottom=6)"
+                        },
+                        "slot": {
+                          "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+                        },
+                        "children": [
+                          {
+                            "class": "/Script/UMG.TextBlock",
+                            "name": "RotateLabel",
+                            "props": {
+                              "Text": "Rotate",
+                              "Font.Size": 14,
+                              "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                              "Justification": "Center"
+                            },
+                            "variable": true,
+                            "slot": {
+                              "HorizontalAlignment": "HAlign_Center",
+                              "VerticalAlignment": "VAlign_Center"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "class": "/Script/UMG.Button",
+                        "name": "ScaleMode",
+                        "variable": true,
+                        "props": {
+                          "BackgroundColor": "(R=1,G=1,B=1,A=1)",
+                          "IsFocusable": "false",
+                          "WidgetStyle.Normal.DrawAs": "RoundedBox",
+                          "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=0.055,G=0.07,B=0.095,A=1))",
+                          "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.22,G=0.27,B=0.34,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                          "WidgetStyle.Hovered.DrawAs": "RoundedBox",
+                          "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=0.11,G=0.14,B=0.19,A=1))",
+                          "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.75,G=0.6,B=0.3,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                          "WidgetStyle.Pressed.DrawAs": "RoundedBox",
+                          "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=0.03,G=0.04,B=0.055,A=1))",
+                          "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.75,G=0.6,B=0.3,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                          "WidgetStyle.NormalPadding": "(Left=12,Top=7,Right=12,Bottom=7)",
+                          "WidgetStyle.PressedPadding": "(Left=12,Top=8,Right=12,Bottom=6)"
+                        },
+                        "slot": {
+                          "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+                        },
+                        "children": [
+                          {
+                            "class": "/Script/UMG.TextBlock",
+                            "name": "ScaleModeLabel",
+                            "props": {
+                              "Text": "Scale",
+                              "Font.Size": 14,
+                              "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                              "Justification": "Center"
+                            },
+                            "variable": true,
+                            "slot": {
+                              "HorizontalAlignment": "HAlign_Center",
+                              "VerticalAlignment": "VAlign_Center"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "class": "/Script/UMG.TextBlock",
+                    "name": "GroupX",
+                    "props": {
+                      "Text": "Position \u00b7 cm",
+                      "Font.Size": 14,
+                      "ColorAndOpacity": "(SpecifiedColor=(R=1,G=0.78,B=0.35,A=1),ColorUseRule=UseColor_Specified)"
+                    },
+                    "variable": true,
+                    "slot": {
+                      "Padding": "(Left=0,Top=16,Right=0,Bottom=6)"
+                    }
+                  },
+                  {
+                    "class": "/Script/UMG.HorizontalBox",
+                    "name": "FieldsX",
+                    "slot": {
+                      "Padding": "(Left=0,Top=6,Right=0,Bottom=6)"
+                    },
+                    "children": [
+                      {
+                        "class": "/Script/UMG.VerticalBox",
+                        "name": "XCell",
+                        "slot": {
+                          "Padding": "(Left=0,Top=0,Right=6,Bottom=0)"
+                        },
+                        "children": [
+                          {
+                            "class": "/Script/UMG.TextBlock",
+                            "name": "XLabel",
+                            "props": {
+                              "Text": "X",
+                              "Font.Size": 12,
+                              "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)"
+                            },
+                            "variable": true
+                          },
+                          {
+                            "class": "/Script/UMG.SizeBox",
+                            "name": "FieldXBox",
+                            "props": {
+                              "WidthOverride": 98,
+                              "bOverride_WidthOverride": "true"
+                            },
+                            "children": [
+                              {
+                                "class": "/Script/UMG.EditableTextBox",
+                                "name": "FieldX",
+                                "variable": true,
+                                "props": {
+                                  "WidgetStyle.ForegroundColor": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                                  "WidgetStyle.FocusedForegroundColor": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                                  "WidgetStyle.TextStyle.ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                                  "WidgetStyle.TextStyle.Font.Size": 14,
+                                  "WidgetStyle.Padding": "(Left=12,Top=8,Right=12,Bottom=8)",
+                                  "WidgetStyle.BackgroundImageNormal.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageNormal.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageNormal.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "WidgetStyle.BackgroundImageHovered.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageHovered.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageHovered.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "WidgetStyle.BackgroundImageFocused.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageFocused.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageFocused.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.65,G=0.48,B=0.18,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "WidgetStyle.BackgroundImageReadOnly.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageReadOnly.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageReadOnly.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "HintText": "X",
+                                  "SelectAllTextWhenFocused": "true"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "class": "/Script/UMG.VerticalBox",
+                        "name": "YCell",
+                        "slot": {
+                          "Padding": "(Left=0,Top=0,Right=6,Bottom=0)"
+                        },
+                        "children": [
+                          {
+                            "class": "/Script/UMG.TextBlock",
+                            "name": "YLabel",
+                            "props": {
+                              "Text": "Y",
+                              "Font.Size": 12,
+                              "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)"
+                            },
+                            "variable": true
+                          },
+                          {
+                            "class": "/Script/UMG.SizeBox",
+                            "name": "FieldYBox",
+                            "props": {
+                              "WidthOverride": 98,
+                              "bOverride_WidthOverride": "true"
+                            },
+                            "children": [
+                              {
+                                "class": "/Script/UMG.EditableTextBox",
+                                "name": "FieldY",
+                                "variable": true,
+                                "props": {
+                                  "WidgetStyle.ForegroundColor": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                                  "WidgetStyle.FocusedForegroundColor": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                                  "WidgetStyle.TextStyle.ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                                  "WidgetStyle.TextStyle.Font.Size": 14,
+                                  "WidgetStyle.Padding": "(Left=12,Top=8,Right=12,Bottom=8)",
+                                  "WidgetStyle.BackgroundImageNormal.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageNormal.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageNormal.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "WidgetStyle.BackgroundImageHovered.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageHovered.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageHovered.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "WidgetStyle.BackgroundImageFocused.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageFocused.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageFocused.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.65,G=0.48,B=0.18,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "WidgetStyle.BackgroundImageReadOnly.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageReadOnly.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageReadOnly.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "HintText": "Y",
+                                  "SelectAllTextWhenFocused": "true"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "class": "/Script/UMG.VerticalBox",
+                        "name": "ZCell",
+                        "slot": {
+                          "Padding": "(Left=0,Top=0,Right=6,Bottom=0)"
+                        },
+                        "children": [
+                          {
+                            "class": "/Script/UMG.TextBlock",
+                            "name": "ZLabel",
+                            "props": {
+                              "Text": "Z",
+                              "Font.Size": 12,
+                              "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)"
+                            },
+                            "variable": true
+                          },
+                          {
+                            "class": "/Script/UMG.SizeBox",
+                            "name": "FieldZBox",
+                            "props": {
+                              "WidthOverride": 98,
+                              "bOverride_WidthOverride": "true"
+                            },
+                            "children": [
+                              {
+                                "class": "/Script/UMG.EditableTextBox",
+                                "name": "FieldZ",
+                                "variable": true,
+                                "props": {
+                                  "WidgetStyle.ForegroundColor": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                                  "WidgetStyle.FocusedForegroundColor": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                                  "WidgetStyle.TextStyle.ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                                  "WidgetStyle.TextStyle.Font.Size": 14,
+                                  "WidgetStyle.Padding": "(Left=12,Top=8,Right=12,Bottom=8)",
+                                  "WidgetStyle.BackgroundImageNormal.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageNormal.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageNormal.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "WidgetStyle.BackgroundImageHovered.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageHovered.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageHovered.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "WidgetStyle.BackgroundImageFocused.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageFocused.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageFocused.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.65,G=0.48,B=0.18,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "WidgetStyle.BackgroundImageReadOnly.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageReadOnly.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageReadOnly.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "HintText": "Z",
+                                  "SelectAllTextWhenFocused": "true"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "class": "/Script/UMG.TextBlock",
+                    "name": "GroupPitch",
+                    "props": {
+                      "Text": "Rotation \u00b7 degrees",
+                      "Font.Size": 14,
+                      "ColorAndOpacity": "(SpecifiedColor=(R=1,G=0.78,B=0.35,A=1),ColorUseRule=UseColor_Specified)"
+                    },
+                    "variable": true,
+                    "slot": {
+                      "Padding": "(Left=0,Top=16,Right=0,Bottom=6)"
+                    }
+                  },
+                  {
+                    "class": "/Script/UMG.HorizontalBox",
+                    "name": "FieldsPitch",
+                    "slot": {
+                      "Padding": "(Left=0,Top=6,Right=0,Bottom=6)"
+                    },
+                    "children": [
+                      {
+                        "class": "/Script/UMG.VerticalBox",
+                        "name": "PitchCell",
+                        "slot": {
+                          "Padding": "(Left=0,Top=0,Right=6,Bottom=0)"
+                        },
+                        "children": [
+                          {
+                            "class": "/Script/UMG.TextBlock",
+                            "name": "PitchLabel",
+                            "props": {
+                              "Text": "Pitch",
+                              "Font.Size": 12,
+                              "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)"
+                            },
+                            "variable": true
+                          },
+                          {
+                            "class": "/Script/UMG.SizeBox",
+                            "name": "FieldPitchBox",
+                            "props": {
+                              "WidthOverride": 98,
+                              "bOverride_WidthOverride": "true"
+                            },
+                            "children": [
+                              {
+                                "class": "/Script/UMG.EditableTextBox",
+                                "name": "FieldPitch",
+                                "variable": true,
+                                "props": {
+                                  "WidgetStyle.ForegroundColor": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                                  "WidgetStyle.FocusedForegroundColor": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                                  "WidgetStyle.TextStyle.ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                                  "WidgetStyle.TextStyle.Font.Size": 14,
+                                  "WidgetStyle.Padding": "(Left=12,Top=8,Right=12,Bottom=8)",
+                                  "WidgetStyle.BackgroundImageNormal.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageNormal.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageNormal.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "WidgetStyle.BackgroundImageHovered.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageHovered.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageHovered.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "WidgetStyle.BackgroundImageFocused.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageFocused.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageFocused.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.65,G=0.48,B=0.18,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "WidgetStyle.BackgroundImageReadOnly.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageReadOnly.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageReadOnly.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "HintText": "Pitch",
+                                  "SelectAllTextWhenFocused": "true"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "class": "/Script/UMG.VerticalBox",
+                        "name": "YawCell",
+                        "slot": {
+                          "Padding": "(Left=0,Top=0,Right=6,Bottom=0)"
+                        },
+                        "children": [
+                          {
+                            "class": "/Script/UMG.TextBlock",
+                            "name": "YawLabel",
+                            "props": {
+                              "Text": "Yaw",
+                              "Font.Size": 12,
+                              "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)"
+                            },
+                            "variable": true
+                          },
+                          {
+                            "class": "/Script/UMG.SizeBox",
+                            "name": "FieldYawBox",
+                            "props": {
+                              "WidthOverride": 98,
+                              "bOverride_WidthOverride": "true"
+                            },
+                            "children": [
+                              {
+                                "class": "/Script/UMG.EditableTextBox",
+                                "name": "FieldYaw",
+                                "variable": true,
+                                "props": {
+                                  "WidgetStyle.ForegroundColor": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                                  "WidgetStyle.FocusedForegroundColor": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                                  "WidgetStyle.TextStyle.ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                                  "WidgetStyle.TextStyle.Font.Size": 14,
+                                  "WidgetStyle.Padding": "(Left=12,Top=8,Right=12,Bottom=8)",
+                                  "WidgetStyle.BackgroundImageNormal.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageNormal.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageNormal.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "WidgetStyle.BackgroundImageHovered.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageHovered.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageHovered.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "WidgetStyle.BackgroundImageFocused.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageFocused.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageFocused.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.65,G=0.48,B=0.18,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "WidgetStyle.BackgroundImageReadOnly.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageReadOnly.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageReadOnly.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "HintText": "Yaw",
+                                  "SelectAllTextWhenFocused": "true"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "class": "/Script/UMG.VerticalBox",
+                        "name": "RollCell",
+                        "slot": {
+                          "Padding": "(Left=0,Top=0,Right=6,Bottom=0)"
+                        },
+                        "children": [
+                          {
+                            "class": "/Script/UMG.TextBlock",
+                            "name": "RollLabel",
+                            "props": {
+                              "Text": "Roll",
+                              "Font.Size": 12,
+                              "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)"
+                            },
+                            "variable": true
+                          },
+                          {
+                            "class": "/Script/UMG.SizeBox",
+                            "name": "FieldRollBox",
+                            "props": {
+                              "WidthOverride": 98,
+                              "bOverride_WidthOverride": "true"
+                            },
+                            "children": [
+                              {
+                                "class": "/Script/UMG.EditableTextBox",
+                                "name": "FieldRoll",
+                                "variable": true,
+                                "props": {
+                                  "WidgetStyle.ForegroundColor": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                                  "WidgetStyle.FocusedForegroundColor": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                                  "WidgetStyle.TextStyle.ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                                  "WidgetStyle.TextStyle.Font.Size": 14,
+                                  "WidgetStyle.Padding": "(Left=12,Top=8,Right=12,Bottom=8)",
+                                  "WidgetStyle.BackgroundImageNormal.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageNormal.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageNormal.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "WidgetStyle.BackgroundImageHovered.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageHovered.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageHovered.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "WidgetStyle.BackgroundImageFocused.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageFocused.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageFocused.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.65,G=0.48,B=0.18,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "WidgetStyle.BackgroundImageReadOnly.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageReadOnly.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageReadOnly.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "HintText": "Roll",
+                                  "SelectAllTextWhenFocused": "true"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "class": "/Script/UMG.TextBlock",
+                    "name": "GroupScale",
+                    "props": {
+                      "Text": "Scale",
+                      "Font.Size": 14,
+                      "ColorAndOpacity": "(SpecifiedColor=(R=1,G=0.78,B=0.35,A=1),ColorUseRule=UseColor_Specified)"
+                    },
+                    "variable": true,
+                    "slot": {
+                      "Padding": "(Left=0,Top=16,Right=0,Bottom=6)"
+                    }
+                  },
+                  {
+                    "class": "/Script/UMG.HorizontalBox",
+                    "name": "FieldsScale",
+                    "slot": {
+                      "Padding": "(Left=0,Top=6,Right=0,Bottom=6)"
+                    },
+                    "children": [
+                      {
+                        "class": "/Script/UMG.VerticalBox",
+                        "name": "ScaleCell",
+                        "slot": {
+                          "Padding": "(Left=0,Top=0,Right=6,Bottom=0)"
+                        },
+                        "children": [
+                          {
+                            "class": "/Script/UMG.TextBlock",
+                            "name": "ScaleLabel",
+                            "props": {
+                              "Text": "Scale",
+                              "Font.Size": 12,
+                              "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)"
+                            },
+                            "variable": true
+                          },
+                          {
+                            "class": "/Script/UMG.SizeBox",
+                            "name": "FieldScaleBox",
+                            "props": {
+                              "WidthOverride": 98,
+                              "bOverride_WidthOverride": "true"
+                            },
+                            "children": [
+                              {
+                                "class": "/Script/UMG.EditableTextBox",
+                                "name": "FieldScale",
+                                "variable": true,
+                                "props": {
+                                  "WidgetStyle.ForegroundColor": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                                  "WidgetStyle.FocusedForegroundColor": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                                  "WidgetStyle.TextStyle.ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                                  "WidgetStyle.TextStyle.Font.Size": 14,
+                                  "WidgetStyle.Padding": "(Left=12,Top=8,Right=12,Bottom=8)",
+                                  "WidgetStyle.BackgroundImageNormal.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageNormal.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageNormal.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "WidgetStyle.BackgroundImageHovered.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageHovered.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageHovered.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "WidgetStyle.BackgroundImageFocused.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageFocused.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageFocused.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.65,G=0.48,B=0.18,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "WidgetStyle.BackgroundImageReadOnly.DrawAs": "RoundedBox",
+                                  "WidgetStyle.BackgroundImageReadOnly.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
+                                  "WidgetStyle.BackgroundImageReadOnly.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                                  "HintText": "Scale",
+                                  "SelectAllTextWhenFocused": "true"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "class": "/Script/UMG.TextBlock",
+                    "name": "ApplyHint",
+                    "props": {
+                      "Text": "Press Enter to apply a value.",
+                      "Font.Size": 12,
+                      "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)"
+                    },
+                    "variable": true
+                  },
+                  {
+                    "class": "/Script/UMG.HorizontalBox",
+                    "name": "Actions",
+                    "slot": {
+                      "Padding": "(Left=0,Top=18,Right=0,Bottom=0)"
+                    },
+                    "children": [
+                      {
+                        "class": "/Script/UMG.Button",
+                        "name": "Copy",
+                        "variable": true,
+                        "props": {
+                          "BackgroundColor": "(R=1,G=1,B=1,A=1)",
+                          "IsFocusable": "false",
+                          "WidgetStyle.Normal.DrawAs": "RoundedBox",
+                          "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=0.055,G=0.07,B=0.095,A=1))",
+                          "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.22,G=0.27,B=0.34,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                          "WidgetStyle.Hovered.DrawAs": "RoundedBox",
+                          "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=0.11,G=0.14,B=0.19,A=1))",
+                          "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.75,G=0.6,B=0.3,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                          "WidgetStyle.Pressed.DrawAs": "RoundedBox",
+                          "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=0.03,G=0.04,B=0.055,A=1))",
+                          "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.75,G=0.6,B=0.3,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                          "WidgetStyle.NormalPadding": "(Left=12,Top=7,Right=12,Bottom=7)",
+                          "WidgetStyle.PressedPadding": "(Left=12,Top=8,Right=12,Bottom=6)"
+                        },
+                        "slot": {
+                          "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+                        },
+                        "children": [
+                          {
+                            "class": "/Script/UMG.TextBlock",
+                            "name": "CopyLabel",
+                            "props": {
+                              "Text": "Duplicate",
+                              "Font.Size": 13,
+                              "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                              "Justification": "Center"
+                            },
+                            "variable": true,
+                            "slot": {
+                              "HorizontalAlignment": "HAlign_Center",
+                              "VerticalAlignment": "VAlign_Center"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "class": "/Script/UMG.Button",
+                        "name": "Store",
+                        "variable": true,
+                        "props": {
+                          "BackgroundColor": "(R=1,G=1,B=1,A=1)",
+                          "IsFocusable": "false",
+                          "WidgetStyle.Normal.DrawAs": "RoundedBox",
+                          "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=0.055,G=0.07,B=0.095,A=1))",
+                          "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.22,G=0.27,B=0.34,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                          "WidgetStyle.Hovered.DrawAs": "RoundedBox",
+                          "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=0.11,G=0.14,B=0.19,A=1))",
+                          "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.75,G=0.6,B=0.3,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                          "WidgetStyle.Pressed.DrawAs": "RoundedBox",
+                          "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=0.03,G=0.04,B=0.055,A=1))",
+                          "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.75,G=0.6,B=0.3,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                          "WidgetStyle.NormalPadding": "(Left=12,Top=7,Right=12,Bottom=7)",
+                          "WidgetStyle.PressedPadding": "(Left=12,Top=8,Right=12,Bottom=6)"
+                        },
+                        "slot": {
+                          "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+                        },
+                        "children": [
+                          {
+                            "class": "/Script/UMG.TextBlock",
+                            "name": "StoreLabel",
+                            "props": {
+                              "Text": "Store",
+                              "Font.Size": 13,
+                              "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                              "Justification": "Center"
+                            },
+                            "variable": true,
+                            "slot": {
+                              "HorizontalAlignment": "HAlign_Center",
+                              "VerticalAlignment": "VAlign_Center"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "class": "/Script/UMG.Button",
+                        "name": "Reset",
+                        "variable": true,
+                        "props": {
+                          "BackgroundColor": "(R=1,G=1,B=1,A=1)",
+                          "IsFocusable": "false",
+                          "WidgetStyle.Normal.DrawAs": "RoundedBox",
+                          "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=0.055,G=0.07,B=0.095,A=1))",
+                          "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.22,G=0.27,B=0.34,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                          "WidgetStyle.Hovered.DrawAs": "RoundedBox",
+                          "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=0.11,G=0.14,B=0.19,A=1))",
+                          "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.75,G=0.6,B=0.3,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                          "WidgetStyle.Pressed.DrawAs": "RoundedBox",
+                          "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=0.03,G=0.04,B=0.055,A=1))",
+                          "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.75,G=0.6,B=0.3,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                          "WidgetStyle.NormalPadding": "(Left=12,Top=7,Right=12,Bottom=7)",
+                          "WidgetStyle.PressedPadding": "(Left=12,Top=8,Right=12,Bottom=6)"
+                        },
+                        "slot": {
+                          "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+                        },
+                        "children": [
+                          {
+                            "class": "/Script/UMG.TextBlock",
+                            "name": "ResetLabel",
+                            "props": {
+                              "Text": "Reset",
+                              "Font.Size": 13,
+                              "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                              "Justification": "Center"
+                            },
+                            "variable": true,
+                            "slot": {
+                              "HorizontalAlignment": "HAlign_Center",
+                              "VerticalAlignment": "VAlign_Center"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "class": "/Script/UMG.Button",
+                    "name": "Focus",
+                    "variable": true,
+                    "props": {
+                      "BackgroundColor": "(R=1,G=1,B=1,A=1)",
+                      "IsFocusable": "false",
+                      "WidgetStyle.Normal.DrawAs": "RoundedBox",
+                      "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=0.055,G=0.07,B=0.095,A=1))",
+                      "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.22,G=0.27,B=0.34,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.Hovered.DrawAs": "RoundedBox",
+                      "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=0.11,G=0.14,B=0.19,A=1))",
+                      "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.75,G=0.6,B=0.3,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.Pressed.DrawAs": "RoundedBox",
+                      "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=0.03,G=0.04,B=0.055,A=1))",
+                      "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.75,G=0.6,B=0.3,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.NormalPadding": "(Left=12,Top=7,Right=12,Bottom=7)",
+                      "WidgetStyle.PressedPadding": "(Left=12,Top=8,Right=12,Bottom=6)"
+                    },
+                    "slot": {
+                      "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+                    },
+                    "children": [
+                      {
+                        "class": "/Script/UMG.TextBlock",
+                        "name": "FocusLabel",
+                        "props": {
+                          "Text": "Focus camera",
+                          "Font.Size": 13,
+                          "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                          "Justification": "Center"
+                        },
+                        "variable": true,
+                        "slot": {
+                          "HorizontalAlignment": "HAlign_Center",
+                          "VerticalAlignment": "VAlign_Center"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "functions": [
+    {
+      "name": "Native_Event",
+      "inputs": [
+        {
+          "name": "Name",
+          "type": "string"
+        },
+        {
+          "name": "Arg",
+          "type": "string"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "bus",
+          "kind": "get",
+          "var": "EditorBus"
+        },
+        {
+          "id": "check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "emit",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenEditorBus:Emit",
+          "defaults": {
+            "Kind": "2"
+          }
+        }
+      ],
+      "links": [
+        [
+          "bus.EditorBus",
+          "check.Object"
+        ],
+        [
+          "check.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "bus.EditorBus",
+          "emit.self"
+        ],
+        [
+          "entry.Name",
+          "emit.EventName"
+        ],
+        [
+          "entry.Arg",
+          "emit.Argument"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "emit.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ApplyNativeStyle",
+      "nodes": [
+        {
+          "id": "bus",
+          "kind": "get",
+          "var": "EditorBus"
+        },
+        {
+          "id": "check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font0",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:TitleFont"
+        },
+        {
+          "id": "font0check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font0valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font0info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "DmBd",
+            "Size": "20"
+          }
+        },
+        {
+          "id": "font0widget",
+          "kind": "get",
+          "var": "Title"
+        },
+        {
+          "id": "font0set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font1",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+        },
+        {
+          "id": "font1check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font1valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font1info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Medium",
+            "Size": "15"
+          }
+        },
+        {
+          "id": "font1widget",
+          "kind": "get",
+          "var": "Selection"
+        },
+        {
+          "id": "font1set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font2",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+        },
+        {
+          "id": "font2check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font2valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font2info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Medium",
+            "Size": "14"
+          }
+        },
+        {
+          "id": "font2widget",
+          "kind": "get",
+          "var": "MoveLabel"
+        },
+        {
+          "id": "font2set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font3",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+        },
+        {
+          "id": "font3check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font3valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font3info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Medium",
+            "Size": "14"
+          }
+        },
+        {
+          "id": "font3widget",
+          "kind": "get",
+          "var": "RotateLabel"
+        },
+        {
+          "id": "font3set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font4",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+        },
+        {
+          "id": "font4check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font4valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font4info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Medium",
+            "Size": "14"
+          }
+        },
+        {
+          "id": "font4widget",
+          "kind": "get",
+          "var": "ScaleModeLabel"
+        },
+        {
+          "id": "font4set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font5",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+        },
+        {
+          "id": "font5check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font5valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font5info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Bold",
+            "Size": "14"
+          }
+        },
+        {
+          "id": "font5widget",
+          "kind": "get",
+          "var": "GroupX"
+        },
+        {
+          "id": "font5set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font6",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+        },
+        {
+          "id": "font6check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font6valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font6info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Regular",
+            "Size": "12"
+          }
+        },
+        {
+          "id": "font6widget",
+          "kind": "get",
+          "var": "XLabel"
+        },
+        {
+          "id": "font6set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font7",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+        },
+        {
+          "id": "font7check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font7valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font7info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Regular",
+            "Size": "12"
+          }
+        },
+        {
+          "id": "font7widget",
+          "kind": "get",
+          "var": "YLabel"
+        },
+        {
+          "id": "font7set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font8",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+        },
+        {
+          "id": "font8check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font8valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font8info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Regular",
+            "Size": "12"
+          }
+        },
+        {
+          "id": "font8widget",
+          "kind": "get",
+          "var": "ZLabel"
+        },
+        {
+          "id": "font8set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font9",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+        },
+        {
+          "id": "font9check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font9valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font9info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Bold",
+            "Size": "14"
+          }
+        },
+        {
+          "id": "font9widget",
+          "kind": "get",
+          "var": "GroupPitch"
+        },
+        {
+          "id": "font9set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font10",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+        },
+        {
+          "id": "font10check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font10valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font10info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Regular",
+            "Size": "12"
+          }
+        },
+        {
+          "id": "font10widget",
+          "kind": "get",
+          "var": "PitchLabel"
+        },
+        {
+          "id": "font10set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font11",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+        },
+        {
+          "id": "font11check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font11valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font11info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Regular",
+            "Size": "12"
+          }
+        },
+        {
+          "id": "font11widget",
+          "kind": "get",
+          "var": "YawLabel"
+        },
+        {
+          "id": "font11set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font12",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+        },
+        {
+          "id": "font12check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font12valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font12info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Regular",
+            "Size": "12"
+          }
+        },
+        {
+          "id": "font12widget",
+          "kind": "get",
+          "var": "RollLabel"
+        },
+        {
+          "id": "font12set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font13",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+        },
+        {
+          "id": "font13check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font13valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font13info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Bold",
+            "Size": "14"
+          }
+        },
+        {
+          "id": "font13widget",
+          "kind": "get",
+          "var": "GroupScale"
+        },
+        {
+          "id": "font13set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font14",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+        },
+        {
+          "id": "font14check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font14valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font14info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Regular",
+            "Size": "12"
+          }
+        },
+        {
+          "id": "font14widget",
+          "kind": "get",
+          "var": "ScaleLabel"
+        },
+        {
+          "id": "font14set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font15",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+        },
+        {
+          "id": "font15check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font15valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font15info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Regular",
+            "Size": "12"
+          }
+        },
+        {
+          "id": "font15widget",
+          "kind": "get",
+          "var": "ApplyHint"
+        },
+        {
+          "id": "font15set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font16",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+        },
+        {
+          "id": "font16check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font16valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font16info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Medium",
+            "Size": "13"
+          }
+        },
+        {
+          "id": "font16widget",
+          "kind": "get",
+          "var": "CopyLabel"
+        },
+        {
+          "id": "font16set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font17",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+        },
+        {
+          "id": "font17check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font17valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font17info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Medium",
+            "Size": "13"
+          }
+        },
+        {
+          "id": "font17widget",
+          "kind": "get",
+          "var": "StoreLabel"
+        },
+        {
+          "id": "font17set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font18",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+        },
+        {
+          "id": "font18check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font18valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font18info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Medium",
+            "Size": "13"
+          }
+        },
+        {
+          "id": "font18widget",
+          "kind": "get",
+          "var": "ResetLabel"
+        },
+        {
+          "id": "font18set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font19",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+        },
+        {
+          "id": "font19check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font19valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font19info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Medium",
+            "Size": "13"
+          }
+        },
+        {
+          "id": "font19widget",
+          "kind": "get",
+          "var": "FocusLabel"
+        },
+        {
+          "id": "font19set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "bus.EditorBus",
+          "check.Object"
+        ],
+        [
+          "check.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font0.self"
+        ],
+        [
+          "font0.TitleFont",
+          "font0check.Object"
+        ],
+        [
+          "font0check.ReturnValue",
+          "font0valid.Condition"
+        ],
+        [
+          "font0.TitleFont",
+          "font0info.FontObject"
+        ],
+        [
+          "font0widget.Title",
+          "font0set.self"
+        ],
+        [
+          "font0info.SlateFontInfo",
+          "font0set.InFontInfo"
+        ],
+        [
+          "valid.then",
+          "font0valid.execute"
+        ],
+        [
+          "font0valid.then",
+          "font0set.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font1.self"
+        ],
+        [
+          "font1.PrimaryFont",
+          "font1check.Object"
+        ],
+        [
+          "font1check.ReturnValue",
+          "font1valid.Condition"
+        ],
+        [
+          "font1.PrimaryFont",
+          "font1info.FontObject"
+        ],
+        [
+          "font1widget.Selection",
+          "font1set.self"
+        ],
+        [
+          "font1info.SlateFontInfo",
+          "font1set.InFontInfo"
+        ],
+        [
+          "font0set.then",
+          "font1valid.execute"
+        ],
+        [
+          "font1valid.then",
+          "font1set.execute"
+        ],
+        [
+          "font0valid.else",
+          "font1valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font2.self"
+        ],
+        [
+          "font2.SecondaryFont",
+          "font2check.Object"
+        ],
+        [
+          "font2check.ReturnValue",
+          "font2valid.Condition"
+        ],
+        [
+          "font2.SecondaryFont",
+          "font2info.FontObject"
+        ],
+        [
+          "font2widget.MoveLabel",
+          "font2set.self"
+        ],
+        [
+          "font2info.SlateFontInfo",
+          "font2set.InFontInfo"
+        ],
+        [
+          "font1set.then",
+          "font2valid.execute"
+        ],
+        [
+          "font2valid.then",
+          "font2set.execute"
+        ],
+        [
+          "font1valid.else",
+          "font2valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font3.self"
+        ],
+        [
+          "font3.SecondaryFont",
+          "font3check.Object"
+        ],
+        [
+          "font3check.ReturnValue",
+          "font3valid.Condition"
+        ],
+        [
+          "font3.SecondaryFont",
+          "font3info.FontObject"
+        ],
+        [
+          "font3widget.RotateLabel",
+          "font3set.self"
+        ],
+        [
+          "font3info.SlateFontInfo",
+          "font3set.InFontInfo"
+        ],
+        [
+          "font2set.then",
+          "font3valid.execute"
+        ],
+        [
+          "font3valid.then",
+          "font3set.execute"
+        ],
+        [
+          "font2valid.else",
+          "font3valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font4.self"
+        ],
+        [
+          "font4.SecondaryFont",
+          "font4check.Object"
+        ],
+        [
+          "font4check.ReturnValue",
+          "font4valid.Condition"
+        ],
+        [
+          "font4.SecondaryFont",
+          "font4info.FontObject"
+        ],
+        [
+          "font4widget.ScaleModeLabel",
+          "font4set.self"
+        ],
+        [
+          "font4info.SlateFontInfo",
+          "font4set.InFontInfo"
+        ],
+        [
+          "font3set.then",
+          "font4valid.execute"
+        ],
+        [
+          "font4valid.then",
+          "font4set.execute"
+        ],
+        [
+          "font3valid.else",
+          "font4valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font5.self"
+        ],
+        [
+          "font5.SecondaryFont",
+          "font5check.Object"
+        ],
+        [
+          "font5check.ReturnValue",
+          "font5valid.Condition"
+        ],
+        [
+          "font5.SecondaryFont",
+          "font5info.FontObject"
+        ],
+        [
+          "font5widget.GroupX",
+          "font5set.self"
+        ],
+        [
+          "font5info.SlateFontInfo",
+          "font5set.InFontInfo"
+        ],
+        [
+          "font4set.then",
+          "font5valid.execute"
+        ],
+        [
+          "font5valid.then",
+          "font5set.execute"
+        ],
+        [
+          "font4valid.else",
+          "font5valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font6.self"
+        ],
+        [
+          "font6.PrimaryFont",
+          "font6check.Object"
+        ],
+        [
+          "font6check.ReturnValue",
+          "font6valid.Condition"
+        ],
+        [
+          "font6.PrimaryFont",
+          "font6info.FontObject"
+        ],
+        [
+          "font6widget.XLabel",
+          "font6set.self"
+        ],
+        [
+          "font6info.SlateFontInfo",
+          "font6set.InFontInfo"
+        ],
+        [
+          "font5set.then",
+          "font6valid.execute"
+        ],
+        [
+          "font6valid.then",
+          "font6set.execute"
+        ],
+        [
+          "font5valid.else",
+          "font6valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font7.self"
+        ],
+        [
+          "font7.PrimaryFont",
+          "font7check.Object"
+        ],
+        [
+          "font7check.ReturnValue",
+          "font7valid.Condition"
+        ],
+        [
+          "font7.PrimaryFont",
+          "font7info.FontObject"
+        ],
+        [
+          "font7widget.YLabel",
+          "font7set.self"
+        ],
+        [
+          "font7info.SlateFontInfo",
+          "font7set.InFontInfo"
+        ],
+        [
+          "font6set.then",
+          "font7valid.execute"
+        ],
+        [
+          "font7valid.then",
+          "font7set.execute"
+        ],
+        [
+          "font6valid.else",
+          "font7valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font8.self"
+        ],
+        [
+          "font8.PrimaryFont",
+          "font8check.Object"
+        ],
+        [
+          "font8check.ReturnValue",
+          "font8valid.Condition"
+        ],
+        [
+          "font8.PrimaryFont",
+          "font8info.FontObject"
+        ],
+        [
+          "font8widget.ZLabel",
+          "font8set.self"
+        ],
+        [
+          "font8info.SlateFontInfo",
+          "font8set.InFontInfo"
+        ],
+        [
+          "font7set.then",
+          "font8valid.execute"
+        ],
+        [
+          "font8valid.then",
+          "font8set.execute"
+        ],
+        [
+          "font7valid.else",
+          "font8valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font9.self"
+        ],
+        [
+          "font9.SecondaryFont",
+          "font9check.Object"
+        ],
+        [
+          "font9check.ReturnValue",
+          "font9valid.Condition"
+        ],
+        [
+          "font9.SecondaryFont",
+          "font9info.FontObject"
+        ],
+        [
+          "font9widget.GroupPitch",
+          "font9set.self"
+        ],
+        [
+          "font9info.SlateFontInfo",
+          "font9set.InFontInfo"
+        ],
+        [
+          "font8set.then",
+          "font9valid.execute"
+        ],
+        [
+          "font9valid.then",
+          "font9set.execute"
+        ],
+        [
+          "font8valid.else",
+          "font9valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font10.self"
+        ],
+        [
+          "font10.PrimaryFont",
+          "font10check.Object"
+        ],
+        [
+          "font10check.ReturnValue",
+          "font10valid.Condition"
+        ],
+        [
+          "font10.PrimaryFont",
+          "font10info.FontObject"
+        ],
+        [
+          "font10widget.PitchLabel",
+          "font10set.self"
+        ],
+        [
+          "font10info.SlateFontInfo",
+          "font10set.InFontInfo"
+        ],
+        [
+          "font9set.then",
+          "font10valid.execute"
+        ],
+        [
+          "font10valid.then",
+          "font10set.execute"
+        ],
+        [
+          "font9valid.else",
+          "font10valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font11.self"
+        ],
+        [
+          "font11.PrimaryFont",
+          "font11check.Object"
+        ],
+        [
+          "font11check.ReturnValue",
+          "font11valid.Condition"
+        ],
+        [
+          "font11.PrimaryFont",
+          "font11info.FontObject"
+        ],
+        [
+          "font11widget.YawLabel",
+          "font11set.self"
+        ],
+        [
+          "font11info.SlateFontInfo",
+          "font11set.InFontInfo"
+        ],
+        [
+          "font10set.then",
+          "font11valid.execute"
+        ],
+        [
+          "font11valid.then",
+          "font11set.execute"
+        ],
+        [
+          "font10valid.else",
+          "font11valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font12.self"
+        ],
+        [
+          "font12.PrimaryFont",
+          "font12check.Object"
+        ],
+        [
+          "font12check.ReturnValue",
+          "font12valid.Condition"
+        ],
+        [
+          "font12.PrimaryFont",
+          "font12info.FontObject"
+        ],
+        [
+          "font12widget.RollLabel",
+          "font12set.self"
+        ],
+        [
+          "font12info.SlateFontInfo",
+          "font12set.InFontInfo"
+        ],
+        [
+          "font11set.then",
+          "font12valid.execute"
+        ],
+        [
+          "font12valid.then",
+          "font12set.execute"
+        ],
+        [
+          "font11valid.else",
+          "font12valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font13.self"
+        ],
+        [
+          "font13.SecondaryFont",
+          "font13check.Object"
+        ],
+        [
+          "font13check.ReturnValue",
+          "font13valid.Condition"
+        ],
+        [
+          "font13.SecondaryFont",
+          "font13info.FontObject"
+        ],
+        [
+          "font13widget.GroupScale",
+          "font13set.self"
+        ],
+        [
+          "font13info.SlateFontInfo",
+          "font13set.InFontInfo"
+        ],
+        [
+          "font12set.then",
+          "font13valid.execute"
+        ],
+        [
+          "font13valid.then",
+          "font13set.execute"
+        ],
+        [
+          "font12valid.else",
+          "font13valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font14.self"
+        ],
+        [
+          "font14.PrimaryFont",
+          "font14check.Object"
+        ],
+        [
+          "font14check.ReturnValue",
+          "font14valid.Condition"
+        ],
+        [
+          "font14.PrimaryFont",
+          "font14info.FontObject"
+        ],
+        [
+          "font14widget.ScaleLabel",
+          "font14set.self"
+        ],
+        [
+          "font14info.SlateFontInfo",
+          "font14set.InFontInfo"
+        ],
+        [
+          "font13set.then",
+          "font14valid.execute"
+        ],
+        [
+          "font14valid.then",
+          "font14set.execute"
+        ],
+        [
+          "font13valid.else",
+          "font14valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font15.self"
+        ],
+        [
+          "font15.PrimaryFont",
+          "font15check.Object"
+        ],
+        [
+          "font15check.ReturnValue",
+          "font15valid.Condition"
+        ],
+        [
+          "font15.PrimaryFont",
+          "font15info.FontObject"
+        ],
+        [
+          "font15widget.ApplyHint",
+          "font15set.self"
+        ],
+        [
+          "font15info.SlateFontInfo",
+          "font15set.InFontInfo"
+        ],
+        [
+          "font14set.then",
+          "font15valid.execute"
+        ],
+        [
+          "font15valid.then",
+          "font15set.execute"
+        ],
+        [
+          "font14valid.else",
+          "font15valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font16.self"
+        ],
+        [
+          "font16.SecondaryFont",
+          "font16check.Object"
+        ],
+        [
+          "font16check.ReturnValue",
+          "font16valid.Condition"
+        ],
+        [
+          "font16.SecondaryFont",
+          "font16info.FontObject"
+        ],
+        [
+          "font16widget.CopyLabel",
+          "font16set.self"
+        ],
+        [
+          "font16info.SlateFontInfo",
+          "font16set.InFontInfo"
+        ],
+        [
+          "font15set.then",
+          "font16valid.execute"
+        ],
+        [
+          "font16valid.then",
+          "font16set.execute"
+        ],
+        [
+          "font15valid.else",
+          "font16valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font17.self"
+        ],
+        [
+          "font17.SecondaryFont",
+          "font17check.Object"
+        ],
+        [
+          "font17check.ReturnValue",
+          "font17valid.Condition"
+        ],
+        [
+          "font17.SecondaryFont",
+          "font17info.FontObject"
+        ],
+        [
+          "font17widget.StoreLabel",
+          "font17set.self"
+        ],
+        [
+          "font17info.SlateFontInfo",
+          "font17set.InFontInfo"
+        ],
+        [
+          "font16set.then",
+          "font17valid.execute"
+        ],
+        [
+          "font17valid.then",
+          "font17set.execute"
+        ],
+        [
+          "font16valid.else",
+          "font17valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font18.self"
+        ],
+        [
+          "font18.SecondaryFont",
+          "font18check.Object"
+        ],
+        [
+          "font18check.ReturnValue",
+          "font18valid.Condition"
+        ],
+        [
+          "font18.SecondaryFont",
+          "font18info.FontObject"
+        ],
+        [
+          "font18widget.ResetLabel",
+          "font18set.self"
+        ],
+        [
+          "font18info.SlateFontInfo",
+          "font18set.InFontInfo"
+        ],
+        [
+          "font17set.then",
+          "font18valid.execute"
+        ],
+        [
+          "font18valid.then",
+          "font18set.execute"
+        ],
+        [
+          "font17valid.else",
+          "font18valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font19.self"
+        ],
+        [
+          "font19.SecondaryFont",
+          "font19check.Object"
+        ],
+        [
+          "font19check.ReturnValue",
+          "font19valid.Condition"
+        ],
+        [
+          "font19.SecondaryFont",
+          "font19info.FontObject"
+        ],
+        [
+          "font19widget.FocusLabel",
+          "font19set.self"
+        ],
+        [
+          "font19info.SlateFontInfo",
+          "font19set.InFontInfo"
+        ],
+        [
+          "font18set.then",
+          "font19valid.execute"
+        ],
+        [
+          "font19valid.then",
+          "font19set.execute"
+        ],
+        [
+          "font18valid.else",
+          "font19valid.execute"
+        ]
+      ]
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "FieldX",
+        "kind": "bound_event",
+        "widget": "FieldX",
+        "delegate": "OnTextCommitted"
+      },
+      {
+        "id": "FieldX_event",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "set_x"
+        }
+      },
+      {
+        "id": "FieldY",
+        "kind": "bound_event",
+        "widget": "FieldY",
+        "delegate": "OnTextCommitted"
+      },
+      {
+        "id": "FieldY_event",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "set_y"
+        }
+      },
+      {
+        "id": "FieldZ",
+        "kind": "bound_event",
+        "widget": "FieldZ",
+        "delegate": "OnTextCommitted"
+      },
+      {
+        "id": "FieldZ_event",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "set_z"
+        }
+      },
+      {
+        "id": "FieldPitch",
+        "kind": "bound_event",
+        "widget": "FieldPitch",
+        "delegate": "OnTextCommitted"
+      },
+      {
+        "id": "FieldPitch_event",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "set_pitch"
+        }
+      },
+      {
+        "id": "FieldYaw",
+        "kind": "bound_event",
+        "widget": "FieldYaw",
+        "delegate": "OnTextCommitted"
+      },
+      {
+        "id": "FieldYaw_event",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "set_yaw"
+        }
+      },
+      {
+        "id": "FieldRoll",
+        "kind": "bound_event",
+        "widget": "FieldRoll",
+        "delegate": "OnTextCommitted"
+      },
+      {
+        "id": "FieldRoll_event",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "set_roll"
+        }
+      },
+      {
+        "id": "FieldScale",
+        "kind": "bound_event",
+        "widget": "FieldScale",
+        "delegate": "OnTextCommitted"
+      },
+      {
+        "id": "FieldScale_event",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "set_scale"
+        }
+      },
+      {
+        "id": "Move",
+        "kind": "bound_event",
+        "widget": "Move",
+        "delegate": "OnClicked"
+      },
+      {
+        "id": "Move_event",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "mode_move"
+        }
+      },
+      {
+        "id": "Rotate",
+        "kind": "bound_event",
+        "widget": "Rotate",
+        "delegate": "OnClicked"
+      },
+      {
+        "id": "Rotate_event",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "mode_rotate"
+        }
+      },
+      {
+        "id": "ScaleMode",
+        "kind": "bound_event",
+        "widget": "ScaleMode",
+        "delegate": "OnClicked"
+      },
+      {
+        "id": "ScaleMode_event",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "mode_scale"
+        }
+      },
+      {
+        "id": "Copy",
+        "kind": "bound_event",
+        "widget": "Copy",
+        "delegate": "OnClicked"
+      },
+      {
+        "id": "Copy_event",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "duplicate"
+        }
+      },
+      {
+        "id": "Store",
+        "kind": "bound_event",
+        "widget": "Store",
+        "delegate": "OnClicked"
+      },
+      {
+        "id": "Store_event",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "store"
+        }
+      },
+      {
+        "id": "Reset",
+        "kind": "bound_event",
+        "widget": "Reset",
+        "delegate": "OnClicked"
+      },
+      {
+        "id": "Reset_event",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "reset"
+        }
+      },
+      {
+        "id": "Focus",
+        "kind": "bound_event",
+        "widget": "Focus",
+        "delegate": "OnClicked"
+      },
+      {
+        "id": "Focus_event",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "focus"
+        }
+      },
+      {
+        "id": "FieldXenter",
+        "kind": "call",
+        "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ByteByte",
+        "defaults": {
+          "B": "1"
+        }
+      },
+      {
+        "id": "FieldXentered",
+        "kind": "branch"
+      },
+      {
+        "id": "FieldXviewport",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "numeric_done"
+        }
+      },
+      {
+        "id": "FieldYenter",
+        "kind": "call",
+        "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ByteByte",
+        "defaults": {
+          "B": "1"
+        }
+      },
+      {
+        "id": "FieldYentered",
+        "kind": "branch"
+      },
+      {
+        "id": "FieldYviewport",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "numeric_done"
+        }
+      },
+      {
+        "id": "FieldZenter",
+        "kind": "call",
+        "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ByteByte",
+        "defaults": {
+          "B": "1"
+        }
+      },
+      {
+        "id": "FieldZentered",
+        "kind": "branch"
+      },
+      {
+        "id": "FieldZviewport",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "numeric_done"
+        }
+      },
+      {
+        "id": "FieldPitchenter",
+        "kind": "call",
+        "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ByteByte",
+        "defaults": {
+          "B": "1"
+        }
+      },
+      {
+        "id": "FieldPitchentered",
+        "kind": "branch"
+      },
+      {
+        "id": "FieldPitchviewport",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "numeric_done"
+        }
+      },
+      {
+        "id": "FieldYawenter",
+        "kind": "call",
+        "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ByteByte",
+        "defaults": {
+          "B": "1"
+        }
+      },
+      {
+        "id": "FieldYawentered",
+        "kind": "branch"
+      },
+      {
+        "id": "FieldYawviewport",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "numeric_done"
+        }
+      },
+      {
+        "id": "FieldRollenter",
+        "kind": "call",
+        "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ByteByte",
+        "defaults": {
+          "B": "1"
+        }
+      },
+      {
+        "id": "FieldRollentered",
+        "kind": "branch"
+      },
+      {
+        "id": "FieldRollviewport",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "numeric_done"
+        }
+      },
+      {
+        "id": "FieldScaleenter",
+        "kind": "call",
+        "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ByteByte",
+        "defaults": {
+          "B": "1"
+        }
+      },
+      {
+        "id": "FieldScaleentered",
+        "kind": "branch"
+      },
+      {
+        "id": "FieldScaleviewport",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "numeric_done"
+        }
+      }
+    ],
+    "links": [
+      [
+        "FieldX.then",
+        "FieldX_event.execute"
+      ],
+      [
+        "FieldX.Text",
+        "FieldX_event.Arg"
+      ],
+      [
+        "FieldY.then",
+        "FieldY_event.execute"
+      ],
+      [
+        "FieldY.Text",
+        "FieldY_event.Arg"
+      ],
+      [
+        "FieldZ.then",
+        "FieldZ_event.execute"
+      ],
+      [
+        "FieldZ.Text",
+        "FieldZ_event.Arg"
+      ],
+      [
+        "FieldPitch.then",
+        "FieldPitch_event.execute"
+      ],
+      [
+        "FieldPitch.Text",
+        "FieldPitch_event.Arg"
+      ],
+      [
+        "FieldYaw.then",
+        "FieldYaw_event.execute"
+      ],
+      [
+        "FieldYaw.Text",
+        "FieldYaw_event.Arg"
+      ],
+      [
+        "FieldRoll.then",
+        "FieldRoll_event.execute"
+      ],
+      [
+        "FieldRoll.Text",
+        "FieldRoll_event.Arg"
+      ],
+      [
+        "FieldScale.then",
+        "FieldScale_event.execute"
+      ],
+      [
+        "FieldScale.Text",
+        "FieldScale_event.Arg"
+      ],
+      [
+        "Move.then",
+        "Move_event.execute"
+      ],
+      [
+        "Rotate.then",
+        "Rotate_event.execute"
+      ],
+      [
+        "ScaleMode.then",
+        "ScaleMode_event.execute"
+      ],
+      [
+        "Copy.then",
+        "Copy_event.execute"
+      ],
+      [
+        "Store.then",
+        "Store_event.execute"
+      ],
+      [
+        "Reset.then",
+        "Reset_event.execute"
+      ],
+      [
+        "Focus.then",
+        "Focus_event.execute"
+      ],
+      [
+        "FieldX.CommitMethod",
+        "FieldXenter.A"
+      ],
+      [
+        "FieldXenter.ReturnValue",
+        "FieldXentered.Condition"
+      ],
+      [
+        "FieldX_event.then",
+        "FieldXentered.execute"
+      ],
+      [
+        "FieldXentered.then",
+        "FieldXviewport.execute"
+      ],
+      [
+        "FieldY.CommitMethod",
+        "FieldYenter.A"
+      ],
+      [
+        "FieldYenter.ReturnValue",
+        "FieldYentered.Condition"
+      ],
+      [
+        "FieldY_event.then",
+        "FieldYentered.execute"
+      ],
+      [
+        "FieldYentered.then",
+        "FieldYviewport.execute"
+      ],
+      [
+        "FieldZ.CommitMethod",
+        "FieldZenter.A"
+      ],
+      [
+        "FieldZenter.ReturnValue",
+        "FieldZentered.Condition"
+      ],
+      [
+        "FieldZ_event.then",
+        "FieldZentered.execute"
+      ],
+      [
+        "FieldZentered.then",
+        "FieldZviewport.execute"
+      ],
+      [
+        "FieldPitch.CommitMethod",
+        "FieldPitchenter.A"
+      ],
+      [
+        "FieldPitchenter.ReturnValue",
+        "FieldPitchentered.Condition"
+      ],
+      [
+        "FieldPitch_event.then",
+        "FieldPitchentered.execute"
+      ],
+      [
+        "FieldPitchentered.then",
+        "FieldPitchviewport.execute"
+      ],
+      [
+        "FieldYaw.CommitMethod",
+        "FieldYawenter.A"
+      ],
+      [
+        "FieldYawenter.ReturnValue",
+        "FieldYawentered.Condition"
+      ],
+      [
+        "FieldYaw_event.then",
+        "FieldYawentered.execute"
+      ],
+      [
+        "FieldYawentered.then",
+        "FieldYawviewport.execute"
+      ],
+      [
+        "FieldRoll.CommitMethod",
+        "FieldRollenter.A"
+      ],
+      [
+        "FieldRollenter.ReturnValue",
+        "FieldRollentered.Condition"
+      ],
+      [
+        "FieldRoll_event.then",
+        "FieldRollentered.execute"
+      ],
+      [
+        "FieldRollentered.then",
+        "FieldRollviewport.execute"
+      ],
+      [
+        "FieldScale.CommitMethod",
+        "FieldScaleenter.A"
+      ],
+      [
+        "FieldScaleenter.ReturnValue",
+        "FieldScaleentered.Condition"
+      ],
+      [
+        "FieldScale_event.then",
+        "FieldScaleentered.execute"
+      ],
+      [
+        "FieldScaleentered.then",
+        "FieldScaleviewport.execute"
+      ]
+    ]
+  },
+  "variables": [
+    {
+      "name": "EditorBus",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenEditorBus"
+    }
+  ]
+}

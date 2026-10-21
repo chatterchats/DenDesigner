@@ -1,0 +1,1881 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenPresets",
+  "parent": "/DenDesignerGF/Runtime/BP_DenPresetStore",
+  "variables": [
+    {
+      "name": "LibraryKey",
+      "type": "string",
+      "default": "presets"
+    }
+  ],
+  "functions": [
+    {
+      "name": "NormalizeName",
+      "inputs": [
+        {
+          "name": "Name",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CleanName",
+          "type": "string"
+        },
+        {
+          "name": "Valid",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "NameValid",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "left",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Trim",
+          "defaults": {}
+        },
+        {
+          "id": "trimmed",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:TrimTrailing",
+          "defaults": {}
+        },
+        {
+          "id": "length",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Len",
+          "defaults": {}
+        },
+        {
+          "id": "low",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "high",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "40"
+          }
+        },
+        {
+          "id": "sizeok0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "size",
+          "kind": "branch"
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "char",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:GetCharacterAsNumber",
+          "defaults": {}
+        },
+        {
+          "id": "printable",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "32"
+          }
+        },
+        {
+          "id": "notdel",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:NotEqual_IntInt",
+          "defaults": {
+            "B": "127"
+          }
+        },
+        {
+          "id": "charok0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "allowed",
+          "kind": "branch"
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:NameValid",
+          "defaults": {
+            "NameValid": "true"
+          }
+        },
+        {
+          "id": "yesout",
+          "kind": "get",
+          "var": "local:NameValid"
+        }
+      ],
+      "links": [
+        [
+          "entry.Name",
+          "left.SourceString"
+        ],
+        [
+          "left.ReturnValue",
+          "trimmed.SourceString"
+        ],
+        [
+          "trimmed.ReturnValue",
+          "length.S"
+        ],
+        [
+          "length.ReturnValue",
+          "low.A"
+        ],
+        [
+          "length.ReturnValue",
+          "high.A"
+        ],
+        [
+          "low.ReturnValue",
+          "sizeok0.A"
+        ],
+        [
+          "high.ReturnValue",
+          "sizeok0.B"
+        ],
+        [
+          "sizeok0.ReturnValue",
+          "size.Condition"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "length.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "trimmed.ReturnValue",
+          "char.SourceString"
+        ],
+        [
+          "i.Cursor",
+          "char.Index"
+        ],
+        [
+          "char.ReturnValue",
+          "printable.A"
+        ],
+        [
+          "char.ReturnValue",
+          "notdel.A"
+        ],
+        [
+          "printable.ReturnValue",
+          "charok0.A"
+        ],
+        [
+          "notdel.ReturnValue",
+          "charok0.B"
+        ],
+        [
+          "charok0.ReturnValue",
+          "allowed.Condition"
+        ],
+        [
+          "i.Cursor",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.Cursor"
+        ],
+        [
+          "trimmed.ReturnValue",
+          "result.CleanName"
+        ],
+        [
+          "yesout.NameValid",
+          "result.Valid"
+        ],
+        [
+          "entry.then",
+          "size.execute"
+        ],
+        [
+          "size.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "allowed.execute"
+        ],
+        [
+          "allowed.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "loop.execute"
+        ],
+        [
+          "size.else",
+          "result.execute"
+        ],
+        [
+          "allowed.else",
+          "result.execute"
+        ],
+        [
+          "loop.else",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "OpenLibrary",
+      "outputs": [
+        {
+          "name": "Library",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenPresetLibrary"
+        },
+        {
+          "name": "Status",
+          "type": "int"
+        }
+      ],
+      "locals": [
+        {
+          "name": "ResultLibrary",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenPresetLibrary"
+        },
+        {
+          "name": "ResultStatus",
+          "type": "int",
+          "default": "0"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "librarykey",
+          "kind": "get",
+          "var": "LibraryKey"
+        },
+        {
+          "id": "load",
+          "kind": "call",
+          "function": "self:LoadLibrary",
+          "defaults": {
+            "Draft": "false",
+            "BeforeRevision": "0"
+          }
+        },
+        {
+          "id": "status",
+          "kind": "set",
+          "var": "local:ResultStatus"
+        },
+        {
+          "id": "missing",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "new",
+          "kind": "branch"
+        },
+        {
+          "id": "create",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:CreateSaveGameObject",
+          "defaults": {
+            "SaveGameClass": "/DenDesignerGF/Runtime/BP_DenPresetLibrary"
+          }
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenPresetLibrary"
+        },
+        {
+          "id": "created",
+          "kind": "set",
+          "var": "local:ResultLibrary"
+        },
+        {
+          "id": "loaded",
+          "kind": "set",
+          "var": "local:ResultLibrary"
+        },
+        {
+          "id": "fail",
+          "kind": "set",
+          "var": "local:ResultStatus",
+          "defaults": {
+            "ResultStatus": "7"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:ResultLibrary"
+        },
+        {
+          "id": "statusout",
+          "kind": "get",
+          "var": "local:ResultStatus"
+        }
+      ],
+      "links": [
+        [
+          "librarykey.LibraryKey",
+          "load.Key"
+        ],
+        [
+          "load.Status",
+          "status.ResultStatus"
+        ],
+        [
+          "load.Status",
+          "missing.A"
+        ],
+        [
+          "missing.ReturnValue",
+          "new.Condition"
+        ],
+        [
+          "create.ReturnValue",
+          "cast.Object"
+        ],
+        [
+          "cast.AsBP Den Preset Library",
+          "created.ResultLibrary"
+        ],
+        [
+          "load.Document",
+          "loaded.ResultLibrary"
+        ],
+        [
+          "out.ResultLibrary",
+          "result.Library"
+        ],
+        [
+          "statusout.ResultStatus",
+          "result.Status"
+        ],
+        [
+          "entry.then",
+          "load.execute"
+        ],
+        [
+          "load.then",
+          "status.execute"
+        ],
+        [
+          "status.then",
+          "new.execute"
+        ],
+        [
+          "new.then",
+          "create.execute"
+        ],
+        [
+          "create.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "created.execute"
+        ],
+        [
+          "created.then",
+          "result.execute"
+        ],
+        [
+          "new.else",
+          "loaded.execute"
+        ],
+        [
+          "loaded.then",
+          "result.execute"
+        ],
+        [
+          "cast.CastFailed",
+          "fail.execute"
+        ],
+        [
+          "fail.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "FindPreset",
+      "inputs": [
+        {
+          "name": "Library",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenPresetLibrary"
+        },
+        {
+          "name": "Name",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Index",
+          "type": "int"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "FoundIndex",
+          "type": "int",
+          "default": "-1"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "valid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "guard",
+          "kind": "branch"
+        },
+        {
+          "id": "rows",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPresetLibrary:Entries"
+        },
+        {
+          "id": "length",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "row",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "fields",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenPresetValue"
+        },
+        {
+          "id": "same",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StriStri",
+          "defaults": {}
+        },
+        {
+          "id": "match",
+          "kind": "branch"
+        },
+        {
+          "id": "found",
+          "kind": "set",
+          "var": "local:FoundIndex"
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:FoundIndex"
+        }
+      ],
+      "links": [
+        [
+          "entry.Library",
+          "valid.Object"
+        ],
+        [
+          "valid.ReturnValue",
+          "guard.Condition"
+        ],
+        [
+          "entry.Library",
+          "rows.self"
+        ],
+        [
+          "rows.Entries",
+          "length.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "length.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "rows.Entries",
+          "row.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "row.Index"
+        ],
+        [
+          "row.Item",
+          "fields.ST_DenPresetValue"
+        ],
+        [
+          "entry.Name",
+          "same.A"
+        ],
+        [
+          "fields.Name",
+          "same.B"
+        ],
+        [
+          "same.ReturnValue",
+          "match.Condition"
+        ],
+        [
+          "i.Cursor",
+          "found.FoundIndex"
+        ],
+        [
+          "i.Cursor",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.Cursor"
+        ],
+        [
+          "out.FoundIndex",
+          "result.Index"
+        ],
+        [
+          "entry.then",
+          "guard.execute"
+        ],
+        [
+          "guard.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "match.execute"
+        ],
+        [
+          "match.then",
+          "found.execute"
+        ],
+        [
+          "found.then",
+          "result.execute"
+        ],
+        [
+          "guard.else",
+          "result.execute"
+        ],
+        [
+          "loop.else",
+          "result.execute"
+        ],
+        [
+          "match.else",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "loop.execute"
+        ]
+      ]
+    },
+    {
+      "name": "SavePreset",
+      "inputs": [
+        {
+          "name": "Name",
+          "type": "string"
+        },
+        {
+          "name": "Document",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Status",
+          "type": "int"
+        },
+        {
+          "name": "CleanName",
+          "type": "string"
+        }
+      ],
+      "locals": [
+        {
+          "name": "ResultStatus",
+          "type": "int",
+          "default": "7"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "name",
+          "kind": "call",
+          "function": "self:NormalizeName",
+          "defaults": {}
+        },
+        {
+          "id": "validname",
+          "kind": "branch"
+        },
+        {
+          "id": "open",
+          "kind": "call",
+          "function": "self:OpenLibrary",
+          "defaults": {}
+        },
+        {
+          "id": "status",
+          "kind": "set",
+          "var": "local:ResultStatus"
+        },
+        {
+          "id": "healthy",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "usable",
+          "kind": "branch"
+        },
+        {
+          "id": "find",
+          "kind": "call",
+          "function": "self:FindPreset",
+          "defaults": {}
+        },
+        {
+          "id": "rows",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPresetLibrary:Entries"
+        },
+        {
+          "id": "statusout",
+          "kind": "get",
+          "var": "local:ResultStatus"
+        },
+        {
+          "id": "docvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "hasdoc",
+          "kind": "branch"
+        },
+        {
+          "id": "schema",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:SchemaVersion"
+        },
+        {
+          "id": "schemaok",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "current",
+          "kind": "branch"
+        },
+        {
+          "id": "preset",
+          "kind": "make_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenPresetValue"
+        },
+        {
+          "id": "sourceEntries",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Entries"
+        },
+        {
+          "id": "sourceGameVersion",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:GameVersion"
+        },
+        {
+          "id": "found",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "replace",
+          "kind": "branch"
+        },
+        {
+          "id": "set",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Set",
+          "defaults": {
+            "bSizeToFit": "false"
+          }
+        },
+        {
+          "id": "add",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "librarykey",
+          "kind": "get",
+          "var": "LibraryKey"
+        },
+        {
+          "id": "save",
+          "kind": "call",
+          "function": "self:SaveLibrary",
+          "defaults": {
+            "Draft": "false",
+            "BaseRevision": "0",
+            "BaseID": ""
+          }
+        },
+        {
+          "id": "savedstatus",
+          "kind": "set",
+          "var": "local:ResultStatus"
+        },
+        {
+          "id": "bad",
+          "kind": "set",
+          "var": "local:ResultStatus",
+          "defaults": {
+            "ResultStatus": "7"
+          }
+        }
+      ],
+      "links": [
+        [
+          "entry.Name",
+          "name.Name"
+        ],
+        [
+          "name.Valid",
+          "validname.Condition"
+        ],
+        [
+          "open.Status",
+          "status.ResultStatus"
+        ],
+        [
+          "open.Status",
+          "healthy.A"
+        ],
+        [
+          "healthy.ReturnValue",
+          "usable.Condition"
+        ],
+        [
+          "open.Library",
+          "find.Library"
+        ],
+        [
+          "name.CleanName",
+          "find.Name"
+        ],
+        [
+          "open.Library",
+          "rows.self"
+        ],
+        [
+          "statusout.ResultStatus",
+          "result.Status"
+        ],
+        [
+          "entry.then",
+          "name.execute"
+        ],
+        [
+          "name.then",
+          "validname.execute"
+        ],
+        [
+          "validname.then",
+          "open.execute"
+        ],
+        [
+          "open.then",
+          "status.execute"
+        ],
+        [
+          "status.then",
+          "usable.execute"
+        ],
+        [
+          "usable.then",
+          "find.execute"
+        ],
+        [
+          "validname.else",
+          "result.execute"
+        ],
+        [
+          "usable.else",
+          "result.execute"
+        ],
+        [
+          "entry.Document",
+          "docvalid.Object"
+        ],
+        [
+          "docvalid.ReturnValue",
+          "hasdoc.Condition"
+        ],
+        [
+          "entry.Document",
+          "schema.self"
+        ],
+        [
+          "schema.SchemaVersion",
+          "schemaok.A"
+        ],
+        [
+          "schemaok.ReturnValue",
+          "current.Condition"
+        ],
+        [
+          "entry.Document",
+          "sourceEntries.self"
+        ],
+        [
+          "sourceEntries.Entries",
+          "preset.Entries"
+        ],
+        [
+          "entry.Document",
+          "sourceGameVersion.self"
+        ],
+        [
+          "sourceGameVersion.GameVersion",
+          "preset.GameVersion"
+        ],
+        [
+          "name.CleanName",
+          "preset.Name"
+        ],
+        [
+          "find.Index",
+          "found.A"
+        ],
+        [
+          "found.ReturnValue",
+          "replace.Condition"
+        ],
+        [
+          "rows.Entries",
+          "set.TargetArray"
+        ],
+        [
+          "rows.Entries",
+          "add.TargetArray"
+        ],
+        [
+          "find.Index",
+          "set.Index"
+        ],
+        [
+          "preset.ST_DenPresetValue",
+          "set.Item"
+        ],
+        [
+          "preset.ST_DenPresetValue",
+          "add.NewItem"
+        ],
+        [
+          "librarykey.LibraryKey",
+          "save.Key"
+        ],
+        [
+          "open.Library",
+          "save.Document"
+        ],
+        [
+          "save.Status",
+          "savedstatus.ResultStatus"
+        ],
+        [
+          "name.CleanName",
+          "result.CleanName"
+        ],
+        [
+          "find.then",
+          "hasdoc.execute"
+        ],
+        [
+          "hasdoc.then",
+          "current.execute"
+        ],
+        [
+          "current.then",
+          "replace.execute"
+        ],
+        [
+          "replace.then",
+          "set.execute"
+        ],
+        [
+          "set.then",
+          "save.execute"
+        ],
+        [
+          "save.then",
+          "savedstatus.execute"
+        ],
+        [
+          "savedstatus.then",
+          "result.execute"
+        ],
+        [
+          "replace.else",
+          "add.execute"
+        ],
+        [
+          "add.then",
+          "save.execute"
+        ],
+        [
+          "hasdoc.else",
+          "bad.execute"
+        ],
+        [
+          "bad.then",
+          "result.execute"
+        ],
+        [
+          "current.else",
+          "bad.execute"
+        ]
+      ]
+    },
+    {
+      "name": "LoadPreset",
+      "inputs": [
+        {
+          "name": "Name",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Document",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        },
+        {
+          "name": "Status",
+          "type": "int"
+        }
+      ],
+      "locals": [
+        {
+          "name": "ResultDocument",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        },
+        {
+          "name": "ResultStatus",
+          "type": "int",
+          "default": "7"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "name",
+          "kind": "call",
+          "function": "self:NormalizeName",
+          "defaults": {}
+        },
+        {
+          "id": "validname",
+          "kind": "branch"
+        },
+        {
+          "id": "open",
+          "kind": "call",
+          "function": "self:OpenLibrary",
+          "defaults": {}
+        },
+        {
+          "id": "status",
+          "kind": "set",
+          "var": "local:ResultStatus"
+        },
+        {
+          "id": "healthy",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "usable",
+          "kind": "branch"
+        },
+        {
+          "id": "find",
+          "kind": "call",
+          "function": "self:FindPreset",
+          "defaults": {}
+        },
+        {
+          "id": "rows",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPresetLibrary:Entries"
+        },
+        {
+          "id": "statusout",
+          "kind": "get",
+          "var": "local:ResultStatus"
+        },
+        {
+          "id": "found",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "exists",
+          "kind": "branch"
+        },
+        {
+          "id": "row",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "fields",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenPresetValue"
+        },
+        {
+          "id": "create",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:CreateSaveGameObject",
+          "defaults": {
+            "SaveGameClass": "/DenDesignerGF/Runtime/BP_DenLayoutSave"
+          }
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        },
+        {
+          "id": "setEntries",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Entries"
+        },
+        {
+          "id": "setGameVersion",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:GameVersion"
+        },
+        {
+          "id": "setDisplayName",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:DisplayName"
+        },
+        {
+          "id": "scope",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Scope",
+          "defaults": {
+            "Scope": "preset"
+          }
+        },
+        {
+          "id": "copy",
+          "kind": "set",
+          "var": "local:ResultDocument"
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:ResultDocument"
+        },
+        {
+          "id": "missing",
+          "kind": "set",
+          "var": "local:ResultStatus",
+          "defaults": {
+            "ResultStatus": "0"
+          }
+        },
+        {
+          "id": "failed",
+          "kind": "set",
+          "var": "local:ResultStatus",
+          "defaults": {
+            "ResultStatus": "7"
+          }
+        }
+      ],
+      "links": [
+        [
+          "entry.Name",
+          "name.Name"
+        ],
+        [
+          "name.Valid",
+          "validname.Condition"
+        ],
+        [
+          "open.Status",
+          "status.ResultStatus"
+        ],
+        [
+          "open.Status",
+          "healthy.A"
+        ],
+        [
+          "healthy.ReturnValue",
+          "usable.Condition"
+        ],
+        [
+          "open.Library",
+          "find.Library"
+        ],
+        [
+          "name.CleanName",
+          "find.Name"
+        ],
+        [
+          "open.Library",
+          "rows.self"
+        ],
+        [
+          "statusout.ResultStatus",
+          "result.Status"
+        ],
+        [
+          "entry.then",
+          "name.execute"
+        ],
+        [
+          "name.then",
+          "validname.execute"
+        ],
+        [
+          "validname.then",
+          "open.execute"
+        ],
+        [
+          "open.then",
+          "status.execute"
+        ],
+        [
+          "status.then",
+          "usable.execute"
+        ],
+        [
+          "usable.then",
+          "find.execute"
+        ],
+        [
+          "validname.else",
+          "result.execute"
+        ],
+        [
+          "usable.else",
+          "result.execute"
+        ],
+        [
+          "find.Index",
+          "found.A"
+        ],
+        [
+          "found.ReturnValue",
+          "exists.Condition"
+        ],
+        [
+          "rows.Entries",
+          "row.TargetArray"
+        ],
+        [
+          "find.Index",
+          "row.Index"
+        ],
+        [
+          "row.Item",
+          "fields.ST_DenPresetValue"
+        ],
+        [
+          "create.ReturnValue",
+          "cast.Object"
+        ],
+        [
+          "cast.AsBP Den Layout Save",
+          "setEntries.self"
+        ],
+        [
+          "fields.Entries",
+          "setEntries.Entries"
+        ],
+        [
+          "cast.AsBP Den Layout Save",
+          "setGameVersion.self"
+        ],
+        [
+          "fields.GameVersion",
+          "setGameVersion.GameVersion"
+        ],
+        [
+          "cast.AsBP Den Layout Save",
+          "setDisplayName.self"
+        ],
+        [
+          "fields.Name",
+          "setDisplayName.DisplayName"
+        ],
+        [
+          "cast.AsBP Den Layout Save",
+          "scope.self"
+        ],
+        [
+          "cast.AsBP Den Layout Save",
+          "copy.ResultDocument"
+        ],
+        [
+          "out.ResultDocument",
+          "result.Document"
+        ],
+        [
+          "find.then",
+          "exists.execute"
+        ],
+        [
+          "exists.then",
+          "create.execute"
+        ],
+        [
+          "create.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "setEntries.execute"
+        ],
+        [
+          "setEntries.then",
+          "setGameVersion.execute"
+        ],
+        [
+          "setGameVersion.then",
+          "setDisplayName.execute"
+        ],
+        [
+          "setDisplayName.then",
+          "scope.execute"
+        ],
+        [
+          "scope.then",
+          "copy.execute"
+        ],
+        [
+          "copy.then",
+          "result.execute"
+        ],
+        [
+          "exists.else",
+          "missing.execute"
+        ],
+        [
+          "missing.then",
+          "result.execute"
+        ],
+        [
+          "cast.CastFailed",
+          "failed.execute"
+        ],
+        [
+          "failed.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "DeletePreset",
+      "inputs": [
+        {
+          "name": "Name",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Status",
+          "type": "int"
+        }
+      ],
+      "locals": [
+        {
+          "name": "ResultStatus",
+          "type": "int",
+          "default": "7"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "name",
+          "kind": "call",
+          "function": "self:NormalizeName",
+          "defaults": {}
+        },
+        {
+          "id": "validname",
+          "kind": "branch"
+        },
+        {
+          "id": "open",
+          "kind": "call",
+          "function": "self:OpenLibrary",
+          "defaults": {}
+        },
+        {
+          "id": "status",
+          "kind": "set",
+          "var": "local:ResultStatus"
+        },
+        {
+          "id": "healthy",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "usable",
+          "kind": "branch"
+        },
+        {
+          "id": "find",
+          "kind": "call",
+          "function": "self:FindPreset",
+          "defaults": {}
+        },
+        {
+          "id": "rows",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPresetLibrary:Entries"
+        },
+        {
+          "id": "statusout",
+          "kind": "get",
+          "var": "local:ResultStatus"
+        },
+        {
+          "id": "found",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "exists",
+          "kind": "branch"
+        },
+        {
+          "id": "remove",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Remove",
+          "defaults": {}
+        },
+        {
+          "id": "librarykey",
+          "kind": "get",
+          "var": "LibraryKey"
+        },
+        {
+          "id": "save",
+          "kind": "call",
+          "function": "self:SaveLibrary",
+          "defaults": {
+            "Draft": "false",
+            "BaseRevision": "0",
+            "BaseID": ""
+          }
+        },
+        {
+          "id": "savedstatus",
+          "kind": "set",
+          "var": "local:ResultStatus"
+        },
+        {
+          "id": "missing",
+          "kind": "set",
+          "var": "local:ResultStatus",
+          "defaults": {
+            "ResultStatus": "1"
+          }
+        }
+      ],
+      "links": [
+        [
+          "entry.Name",
+          "name.Name"
+        ],
+        [
+          "name.Valid",
+          "validname.Condition"
+        ],
+        [
+          "open.Status",
+          "status.ResultStatus"
+        ],
+        [
+          "open.Status",
+          "healthy.A"
+        ],
+        [
+          "healthy.ReturnValue",
+          "usable.Condition"
+        ],
+        [
+          "open.Library",
+          "find.Library"
+        ],
+        [
+          "name.CleanName",
+          "find.Name"
+        ],
+        [
+          "open.Library",
+          "rows.self"
+        ],
+        [
+          "statusout.ResultStatus",
+          "result.Status"
+        ],
+        [
+          "entry.then",
+          "name.execute"
+        ],
+        [
+          "name.then",
+          "validname.execute"
+        ],
+        [
+          "validname.then",
+          "open.execute"
+        ],
+        [
+          "open.then",
+          "status.execute"
+        ],
+        [
+          "status.then",
+          "usable.execute"
+        ],
+        [
+          "usable.then",
+          "find.execute"
+        ],
+        [
+          "validname.else",
+          "result.execute"
+        ],
+        [
+          "usable.else",
+          "result.execute"
+        ],
+        [
+          "find.Index",
+          "found.A"
+        ],
+        [
+          "found.ReturnValue",
+          "exists.Condition"
+        ],
+        [
+          "rows.Entries",
+          "remove.TargetArray"
+        ],
+        [
+          "find.Index",
+          "remove.IndexToRemove"
+        ],
+        [
+          "librarykey.LibraryKey",
+          "save.Key"
+        ],
+        [
+          "open.Library",
+          "save.Document"
+        ],
+        [
+          "save.Status",
+          "savedstatus.ResultStatus"
+        ],
+        [
+          "find.then",
+          "exists.execute"
+        ],
+        [
+          "exists.then",
+          "remove.execute"
+        ],
+        [
+          "remove.then",
+          "save.execute"
+        ],
+        [
+          "save.then",
+          "savedstatus.execute"
+        ],
+        [
+          "savedstatus.then",
+          "result.execute"
+        ],
+        [
+          "exists.else",
+          "missing.execute"
+        ],
+        [
+          "missing.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ListPresets",
+      "outputs": [
+        {
+          "name": "Names",
+          "type": "string[]"
+        },
+        {
+          "name": "Status",
+          "type": "int"
+        }
+      ],
+      "locals": [
+        {
+          "name": "ResultNames",
+          "type": "string[]"
+        },
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "open",
+          "kind": "call",
+          "function": "self:OpenLibrary",
+          "defaults": {}
+        },
+        {
+          "id": "healthy",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "usable",
+          "kind": "branch"
+        },
+        {
+          "id": "rows",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPresetLibrary:Entries"
+        },
+        {
+          "id": "length",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "row",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "fields",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenPresetValue"
+        },
+        {
+          "id": "names",
+          "kind": "get",
+          "var": "local:ResultNames"
+        },
+        {
+          "id": "append",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "sort",
+          "kind": "call",
+          "function": "/Script/Engine.KismetArrayLibrary:SortStringArray",
+          "defaults": {
+            "bStableSort": "true",
+            "SortOrder": "Ascending"
+          }
+        }
+      ],
+      "links": [
+        [
+          "open.Status",
+          "healthy.A"
+        ],
+        [
+          "healthy.ReturnValue",
+          "usable.Condition"
+        ],
+        [
+          "open.Library",
+          "rows.self"
+        ],
+        [
+          "rows.Entries",
+          "length.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "length.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "rows.Entries",
+          "row.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "row.Index"
+        ],
+        [
+          "row.Item",
+          "fields.ST_DenPresetValue"
+        ],
+        [
+          "names.ResultNames",
+          "append.TargetArray"
+        ],
+        [
+          "fields.Name",
+          "append.NewItem"
+        ],
+        [
+          "i.Cursor",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.Cursor"
+        ],
+        [
+          "names.ResultNames",
+          "sort.TargetArray"
+        ],
+        [
+          "names.ResultNames",
+          "result.Names"
+        ],
+        [
+          "open.Status",
+          "result.Status"
+        ],
+        [
+          "entry.then",
+          "open.execute"
+        ],
+        [
+          "open.then",
+          "usable.execute"
+        ],
+        [
+          "usable.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "append.execute"
+        ],
+        [
+          "append.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "loop.execute"
+        ],
+        [
+          "loop.else",
+          "sort.execute"
+        ],
+        [
+          "sort.then",
+          "result.execute"
+        ],
+        [
+          "usable.else",
+          "result.execute"
+        ]
+      ]
+    }
+  ]
+}

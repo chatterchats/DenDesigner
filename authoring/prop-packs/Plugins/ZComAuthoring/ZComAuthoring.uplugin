@@ -1,0 +1,19 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "0.1.0",
+	"FriendlyName": "ZCom Authoring",
+	"Description": "Editor-only: builds Blueprints, Widget Blueprints, InputActions and InputMappingContexts from JSON specs, so mod UI and input assets rebuild headlessly from git. Never cooked or shipped.",
+	"Category": "Editor",
+	"CreatedBy": "Chats",
+	"EnabledByDefault": true,
+	"CanContainContent": true,
+	"Installed": false,
+	"Modules": [
+		{ "Name": "ZComAuthoring", "Type": "Editor", "LoadingPhase": "Default", "PlatformAllowList": ["Linux"] }
+	],
+	"Plugins": [
+		{ "Name": "EnhancedInput", "Enabled": true },
+		{ "Name": "PythonScriptPlugin", "Enabled": true }
+	]
+}

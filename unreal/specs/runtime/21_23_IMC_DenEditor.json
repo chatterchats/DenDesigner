@@ -1,0 +1,395 @@
+{
+  "kind": "mapping_context",
+  "path": "/DenDesignerGF/Editor/IMC_DenEditor",
+  "mappings": [
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Move",
+      "key": "W"
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Move",
+      "key": "S",
+      "modifiers": [
+        {
+          "class": "/Script/EnhancedInput.InputModifierNegate"
+        }
+      ]
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Move",
+      "key": "D",
+      "modifiers": [
+        {
+          "class": "/Script/EnhancedInput.InputModifierSwizzleAxis",
+          "props": {
+            "Order": "YXZ"
+          }
+        }
+      ]
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Move",
+      "key": "A",
+      "modifiers": [
+        {
+          "class": "/Script/EnhancedInput.InputModifierSwizzleAxis",
+          "props": {
+            "Order": "YXZ"
+          }
+        },
+        {
+          "class": "/Script/EnhancedInput.InputModifierNegate"
+        }
+      ]
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Move",
+      "key": "SpaceBar",
+      "modifiers": [
+        {
+          "class": "/Script/EnhancedInput.InputModifierSwizzleAxis",
+          "props": {
+            "Order": "ZYX"
+          }
+        }
+      ]
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Move",
+      "key": "LeftControl",
+      "modifiers": [
+        {
+          "class": "/Script/EnhancedInput.InputModifierSwizzleAxis",
+          "props": {
+            "Order": "ZYX"
+          }
+        },
+        {
+          "class": "/Script/EnhancedInput.InputModifierNegate"
+        }
+      ]
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_LookHold",
+      "key": "RightMouseButton"
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Look",
+      "key": "Mouse2D",
+      "triggers": [
+        {
+          "class": "/Script/EnhancedInput.InputTriggerChordAction",
+          "props": {
+            "ChordAction": "/DenDesignerGF/Editor/IA_Den_LookHold"
+          }
+        }
+      ]
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Fast",
+      "key": "LeftShift"
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Alt",
+      "key": "LeftAlt"
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Select",
+      "key": "LeftMouseButton"
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_RotateFine",
+      "key": "MouseWheelAxis",
+      "triggers": [
+        {
+          "class": "/Script/EnhancedInput.InputTriggerChordAction",
+          "props": {
+            "ChordAction": "/DenDesignerGF/Editor/IA_Den_Fast"
+          }
+        }
+      ]
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Scale",
+      "key": "MouseWheelAxis",
+      "triggers": [
+        {
+          "class": "/Script/EnhancedInput.InputTriggerChordAction",
+          "props": {
+            "ChordAction": "/DenDesignerGF/Editor/IA_Den_Alt"
+          }
+        }
+      ]
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Rotate",
+      "key": "MouseWheelAxis"
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Rotate",
+      "key": "Q",
+      "modifiers": [
+        {
+          "class": "/Script/EnhancedInput.InputModifierNegate"
+        }
+      ],
+      "triggers": [
+        {
+          "class": "/Script/EnhancedInput.InputTriggerPulse",
+          "props": {
+            "Interval": 0.15,
+            "bTriggerOnStart": "true"
+          }
+        }
+      ]
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Rotate",
+      "key": "E",
+      "triggers": [
+        {
+          "class": "/Script/EnhancedInput.InputTriggerPulse",
+          "props": {
+            "Interval": 0.15,
+            "bTriggerOnStart": "true"
+          }
+        }
+      ]
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Scale",
+      "key": "Equals",
+      "triggers": [
+        {
+          "class": "/Script/EnhancedInput.InputTriggerPulse",
+          "props": {
+            "Interval": 0.15,
+            "bTriggerOnStart": "true"
+          }
+        }
+      ]
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Scale",
+      "key": "Hyphen",
+      "modifiers": [
+        {
+          "class": "/Script/EnhancedInput.InputModifierNegate"
+        }
+      ],
+      "triggers": [
+        {
+          "class": "/Script/EnhancedInput.InputTriggerPulse",
+          "props": {
+            "Interval": 0.15,
+            "bTriggerOnStart": "true"
+          }
+        }
+      ]
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Scale",
+      "key": "Add",
+      "triggers": [
+        {
+          "class": "/Script/EnhancedInput.InputTriggerPulse",
+          "props": {
+            "Interval": 0.15,
+            "bTriggerOnStart": "true"
+          }
+        }
+      ]
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Scale",
+      "key": "Subtract",
+      "modifiers": [
+        {
+          "class": "/Script/EnhancedInput.InputModifierNegate"
+        }
+      ],
+      "triggers": [
+        {
+          "class": "/Script/EnhancedInput.InputTriggerPulse",
+          "props": {
+            "Interval": 0.15,
+            "bTriggerOnStart": "true"
+          }
+        }
+      ]
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Nudge",
+      "key": "Up",
+      "triggers": [
+        {
+          "class": "/Script/EnhancedInput.InputTriggerPulse",
+          "props": {
+            "Interval": 0.12,
+            "bTriggerOnStart": "true"
+          }
+        }
+      ]
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Nudge",
+      "key": "Down",
+      "modifiers": [
+        {
+          "class": "/Script/EnhancedInput.InputModifierNegate"
+        }
+      ],
+      "triggers": [
+        {
+          "class": "/Script/EnhancedInput.InputTriggerPulse",
+          "props": {
+            "Interval": 0.12,
+            "bTriggerOnStart": "true"
+          }
+        }
+      ]
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Nudge",
+      "key": "Right",
+      "modifiers": [
+        {
+          "class": "/Script/EnhancedInput.InputModifierSwizzleAxis",
+          "props": {
+            "Order": "YXZ"
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "class": "/Script/EnhancedInput.InputTriggerPulse",
+          "props": {
+            "Interval": 0.12,
+            "bTriggerOnStart": "true"
+          }
+        }
+      ]
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Nudge",
+      "key": "Left",
+      "modifiers": [
+        {
+          "class": "/Script/EnhancedInput.InputModifierSwizzleAxis",
+          "props": {
+            "Order": "YXZ"
+          }
+        },
+        {
+          "class": "/Script/EnhancedInput.InputModifierNegate"
+        }
+      ],
+      "triggers": [
+        {
+          "class": "/Script/EnhancedInput.InputTriggerPulse",
+          "props": {
+            "Interval": 0.12,
+            "bTriggerOnStart": "true"
+          }
+        }
+      ]
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Nudge",
+      "key": "PageUp",
+      "modifiers": [
+        {
+          "class": "/Script/EnhancedInput.InputModifierSwizzleAxis",
+          "props": {
+            "Order": "ZYX"
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "class": "/Script/EnhancedInput.InputTriggerPulse",
+          "props": {
+            "Interval": 0.12,
+            "bTriggerOnStart": "true"
+          }
+        }
+      ]
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Nudge",
+      "key": "PageDown",
+      "modifiers": [
+        {
+          "class": "/Script/EnhancedInput.InputModifierSwizzleAxis",
+          "props": {
+            "Order": "ZYX"
+          }
+        },
+        {
+          "class": "/Script/EnhancedInput.InputModifierNegate"
+        }
+      ],
+      "triggers": [
+        {
+          "class": "/Script/EnhancedInput.InputTriggerPulse",
+          "props": {
+            "Interval": 0.12,
+            "bTriggerOnStart": "true"
+          }
+        }
+      ]
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Store",
+      "key": "Delete"
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Store",
+      "key": "X"
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Duplicate",
+      "key": "C"
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Undo",
+      "key": "Z"
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Redo",
+      "key": "Y"
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Focus",
+      "key": "F"
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Reset",
+      "key": "R"
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Snap",
+      "key": "G"
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Back",
+      "key": "Escape"
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Catalog",
+      "key": "Tab"
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Layouts",
+      "key": "L"
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Storeroom",
+      "key": "H"
+    },
+    {
+      "action": "/DenDesignerGF/Editor/IA_Den_Gimbal",
+      "key": "T"
+    }
+  ]
+}

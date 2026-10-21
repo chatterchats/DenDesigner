@@ -1,0 +1,1182 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenLayoutSave",
+  "parent": "/Script/Engine.SaveGame",
+  "variables": [
+    {
+      "name": "SchemaVersion",
+      "type": "int",
+      "default": "1"
+    },
+    {
+      "name": "StorageKey",
+      "type": "string"
+    },
+    {
+      "name": "Scope",
+      "type": "string",
+      "default": "home"
+    },
+    {
+      "name": "CampaignID",
+      "type": "string"
+    },
+    {
+      "name": "Enabled",
+      "type": "bool",
+      "default": "true"
+    },
+    {
+      "name": "DisplayName",
+      "type": "string"
+    },
+    {
+      "name": "GameVersion",
+      "type": "string"
+    },
+    {
+      "name": "Revision",
+      "type": "int64",
+      "default": "0"
+    },
+    {
+      "name": "ContentID",
+      "type": "string"
+    },
+    {
+      "name": "DraftBaseRevision",
+      "type": "int64",
+      "default": "0"
+    },
+    {
+      "name": "DraftBaseID",
+      "type": "string"
+    },
+    {
+      "name": "WrittenAt",
+      "type": "string"
+    },
+    {
+      "name": "IsDraft",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "EntryCount",
+      "type": "int",
+      "default": "0"
+    },
+    {
+      "name": "Entries",
+      "type": "struct:/DenDesignerGF/Runtime/ST_DenEntry[]"
+    },
+    {
+      "name": "WriteCompleteID",
+      "type": "string"
+    }
+  ],
+  "functions": [
+    {
+      "name": "FindEntry",
+      "inputs": [
+        {
+          "name": "Kind",
+          "type": "int"
+        },
+        {
+          "name": "Key",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Index",
+          "type": "int"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "Found",
+          "type": "int",
+          "default": "-1"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "entries",
+          "kind": "get",
+          "var": "Entries"
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "found",
+          "kind": "get",
+          "var": "local:Found"
+        },
+        {
+          "id": "length",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "fields",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "kind",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "key",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "both",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "match",
+          "kind": "branch"
+        },
+        {
+          "id": "remember",
+          "kind": "set",
+          "var": "local:Found"
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:Cursor"
+        }
+      ],
+      "links": [
+        [
+          "entries.Entries",
+          "length.TargetArray"
+        ],
+        [
+          "entries.Entries",
+          "item.TargetArray"
+        ],
+        [
+          "item.Item",
+          "fields.ST_DenEntry"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "length.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "i.Cursor",
+          "item.Index"
+        ],
+        [
+          "fields.Kind",
+          "kind.A"
+        ],
+        [
+          "entry.Kind",
+          "kind.B"
+        ],
+        [
+          "fields.Key",
+          "key.A"
+        ],
+        [
+          "entry.Key",
+          "key.B"
+        ],
+        [
+          "kind.ReturnValue",
+          "both.A"
+        ],
+        [
+          "key.ReturnValue",
+          "both.B"
+        ],
+        [
+          "both.ReturnValue",
+          "match.Condition"
+        ],
+        [
+          "i.Cursor",
+          "remember.Found"
+        ],
+        [
+          "i.Cursor",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.Cursor"
+        ],
+        [
+          "found.Found",
+          "result.Index"
+        ],
+        [
+          "entry.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "match.execute"
+        ],
+        [
+          "match.then",
+          "remember.execute"
+        ],
+        [
+          "remember.then",
+          "result.execute"
+        ],
+        [
+          "loop.else",
+          "result.execute"
+        ],
+        [
+          "match.else",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "loop.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ReadEntry",
+      "inputs": [
+        {
+          "name": "Kind",
+          "type": "int"
+        },
+        {
+          "name": "Key",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Exists",
+          "type": "bool"
+        },
+        {
+          "name": "Value",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenEntry"
+        }
+      ],
+      "locals": [
+        {
+          "name": "ReadExists",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "ReadValue",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenEntry"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "entries",
+          "kind": "get",
+          "var": "Entries"
+        },
+        {
+          "id": "find",
+          "kind": "call",
+          "function": "self:FindEntry",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "has",
+          "kind": "branch"
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "value",
+          "kind": "set",
+          "var": "local:ReadValue"
+        },
+        {
+          "id": "exists",
+          "kind": "set",
+          "var": "local:ReadExists",
+          "defaults": {
+            "ReadExists": "true"
+          }
+        },
+        {
+          "id": "valueout",
+          "kind": "get",
+          "var": "local:ReadValue"
+        },
+        {
+          "id": "existsout",
+          "kind": "get",
+          "var": "local:ReadExists"
+        }
+      ],
+      "links": [
+        [
+          "entries.Entries",
+          "item.TargetArray"
+        ],
+        [
+          "entry.Kind",
+          "find.Kind"
+        ],
+        [
+          "entry.Key",
+          "find.Key"
+        ],
+        [
+          "find.Index",
+          "valid.A"
+        ],
+        [
+          "valid.ReturnValue",
+          "has.Condition"
+        ],
+        [
+          "find.Index",
+          "item.Index"
+        ],
+        [
+          "item.Item",
+          "value.ReadValue"
+        ],
+        [
+          "valueout.ReadValue",
+          "result.Value"
+        ],
+        [
+          "existsout.ReadExists",
+          "result.Exists"
+        ],
+        [
+          "entry.then",
+          "find.execute"
+        ],
+        [
+          "find.then",
+          "has.execute"
+        ],
+        [
+          "has.then",
+          "value.execute"
+        ],
+        [
+          "value.then",
+          "exists.execute"
+        ],
+        [
+          "exists.then",
+          "result.execute"
+        ],
+        [
+          "has.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "WriteEntry",
+      "inputs": [
+        {
+          "name": "Value",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "name": "Present",
+          "type": "bool"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "WasAccepted",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "entries",
+          "kind": "get",
+          "var": "Entries"
+        },
+        {
+          "id": "fields",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "keyok",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:NotEqual_StriStri",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "min",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "max",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "range",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "guard",
+          "kind": "branch"
+        },
+        {
+          "id": "find",
+          "kind": "call",
+          "function": "self:FindEntry",
+          "defaults": {}
+        },
+        {
+          "id": "exists",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "present",
+          "kind": "branch"
+        },
+        {
+          "id": "replace",
+          "kind": "branch"
+        },
+        {
+          "id": "remove",
+          "kind": "branch"
+        },
+        {
+          "id": "set",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Set",
+          "defaults": {
+            "bSizeToFit": "false"
+          }
+        },
+        {
+          "id": "add",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "delete",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Remove",
+          "defaults": {}
+        },
+        {
+          "id": "ok",
+          "kind": "set",
+          "var": "local:WasAccepted",
+          "defaults": {
+            "WasAccepted": "true"
+          }
+        },
+        {
+          "id": "okout",
+          "kind": "get",
+          "var": "local:WasAccepted"
+        }
+      ],
+      "links": [
+        [
+          "entry.Value",
+          "fields.ST_DenEntry"
+        ],
+        [
+          "entries.Entries",
+          "set.TargetArray"
+        ],
+        [
+          "entries.Entries",
+          "add.TargetArray"
+        ],
+        [
+          "entries.Entries",
+          "delete.TargetArray"
+        ],
+        [
+          "fields.Key",
+          "keyok.A"
+        ],
+        [
+          "fields.Kind",
+          "min.A"
+        ],
+        [
+          "fields.Kind",
+          "max.A"
+        ],
+        [
+          "min.ReturnValue",
+          "range.A"
+        ],
+        [
+          "max.ReturnValue",
+          "range.B"
+        ],
+        [
+          "range.ReturnValue",
+          "valid.A"
+        ],
+        [
+          "keyok.ReturnValue",
+          "valid.B"
+        ],
+        [
+          "valid.ReturnValue",
+          "guard.Condition"
+        ],
+        [
+          "fields.Kind",
+          "find.Kind"
+        ],
+        [
+          "fields.Key",
+          "find.Key"
+        ],
+        [
+          "find.Index",
+          "exists.A"
+        ],
+        [
+          "entry.Present",
+          "present.Condition"
+        ],
+        [
+          "exists.ReturnValue",
+          "replace.Condition"
+        ],
+        [
+          "exists.ReturnValue",
+          "remove.Condition"
+        ],
+        [
+          "find.Index",
+          "set.Index"
+        ],
+        [
+          "find.Index",
+          "delete.IndexToRemove"
+        ],
+        [
+          "entry.Value",
+          "set.Item"
+        ],
+        [
+          "entry.Value",
+          "add.NewItem"
+        ],
+        [
+          "okout.WasAccepted",
+          "result.Accepted"
+        ],
+        [
+          "entry.then",
+          "guard.execute"
+        ],
+        [
+          "guard.then",
+          "find.execute"
+        ],
+        [
+          "find.then",
+          "ok.execute"
+        ],
+        [
+          "ok.then",
+          "present.execute"
+        ],
+        [
+          "present.then",
+          "replace.execute"
+        ],
+        [
+          "replace.then",
+          "set.execute"
+        ],
+        [
+          "set.then",
+          "result.execute"
+        ],
+        [
+          "guard.else",
+          "result.execute"
+        ],
+        [
+          "replace.else",
+          "add.execute"
+        ],
+        [
+          "add.then",
+          "result.execute"
+        ],
+        [
+          "present.else",
+          "remove.execute"
+        ],
+        [
+          "remove.then",
+          "delete.execute"
+        ],
+        [
+          "delete.then",
+          "result.execute"
+        ],
+        [
+          "remove.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ApplyBatch",
+      "inputs": [
+        {
+          "name": "Mutations",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenMutation[]"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        },
+        {
+          "name": "Changes",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenChange[]"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Scratch",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        },
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "Original",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "name": "Captured",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenChange[]"
+        },
+        {
+          "name": "WasAccepted",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "length",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "nonempty",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "start",
+          "kind": "branch"
+        },
+        {
+          "id": "create",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:CreateSaveGameObject",
+          "defaults": {
+            "SaveGameClass": "/DenDesignerGF/Runtime/BP_DenLayoutSave"
+          }
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        },
+        {
+          "id": "scratch",
+          "kind": "set",
+          "var": "local:Scratch"
+        },
+        {
+          "id": "scratchget",
+          "kind": "get",
+          "var": "local:Scratch"
+        },
+        {
+          "id": "originals",
+          "kind": "get",
+          "var": "Entries"
+        },
+        {
+          "id": "copy",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Entries"
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "mutation",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenMutation"
+        },
+        {
+          "id": "identity",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "read",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenLayoutSave:ReadEntry",
+          "defaults": {}
+        },
+        {
+          "id": "beforeid",
+          "kind": "set",
+          "var": "local:Original"
+        },
+        {
+          "id": "found",
+          "kind": "branch"
+        },
+        {
+          "id": "beforevalue",
+          "kind": "set",
+          "var": "local:Original"
+        },
+        {
+          "id": "beforeget",
+          "kind": "get",
+          "var": "local:Original"
+        },
+        {
+          "id": "write",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenLayoutSave:WriteEntry",
+          "defaults": {}
+        },
+        {
+          "id": "accepted",
+          "kind": "branch"
+        },
+        {
+          "id": "changes",
+          "kind": "get",
+          "var": "local:Captured"
+        },
+        {
+          "id": "change",
+          "kind": "make_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenChange"
+        },
+        {
+          "id": "append",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "edited",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Entries"
+        },
+        {
+          "id": "commit",
+          "kind": "set",
+          "var": "Entries"
+        },
+        {
+          "id": "ok",
+          "kind": "set",
+          "var": "local:WasAccepted",
+          "defaults": {
+            "WasAccepted": "true"
+          }
+        },
+        {
+          "id": "okget",
+          "kind": "get",
+          "var": "local:WasAccepted"
+        }
+      ],
+      "links": [
+        [
+          "entry.Mutations",
+          "length.TargetArray"
+        ],
+        [
+          "entry.Mutations",
+          "item.TargetArray"
+        ],
+        [
+          "item.Item",
+          "mutation.ST_DenMutation"
+        ],
+        [
+          "mutation.Value",
+          "identity.ST_DenEntry"
+        ],
+        [
+          "changes.Captured",
+          "append.TargetArray"
+        ],
+        [
+          "length.ReturnValue",
+          "nonempty.A"
+        ],
+        [
+          "nonempty.ReturnValue",
+          "start.Condition"
+        ],
+        [
+          "create.ReturnValue",
+          "cast.Object"
+        ],
+        [
+          "cast.AsBP Den Layout Save",
+          "scratch.Scratch"
+        ],
+        [
+          "scratchget.Scratch",
+          "copy.self"
+        ],
+        [
+          "originals.Entries",
+          "copy.Entries"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "length.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "i.Cursor",
+          "item.Index"
+        ],
+        [
+          "scratchget.Scratch",
+          "read.self"
+        ],
+        [
+          "identity.Kind",
+          "read.Kind"
+        ],
+        [
+          "identity.Key",
+          "read.Key"
+        ],
+        [
+          "mutation.Value",
+          "beforeid.Original"
+        ],
+        [
+          "read.Exists",
+          "found.Condition"
+        ],
+        [
+          "read.Value",
+          "beforevalue.Original"
+        ],
+        [
+          "scratchget.Scratch",
+          "write.self"
+        ],
+        [
+          "mutation.Value",
+          "write.Value"
+        ],
+        [
+          "mutation.Present",
+          "write.Present"
+        ],
+        [
+          "write.Accepted",
+          "accepted.Condition"
+        ],
+        [
+          "read.Exists",
+          "change.BeforeExists"
+        ],
+        [
+          "beforeget.Original",
+          "change.Before"
+        ],
+        [
+          "mutation.Present",
+          "change.AfterExists"
+        ],
+        [
+          "mutation.Value",
+          "change.After"
+        ],
+        [
+          "change.ST_DenChange",
+          "append.NewItem"
+        ],
+        [
+          "i.Cursor",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.Cursor"
+        ],
+        [
+          "scratchget.Scratch",
+          "edited.self"
+        ],
+        [
+          "edited.Entries",
+          "commit.Entries"
+        ],
+        [
+          "okget.WasAccepted",
+          "result.Accepted"
+        ],
+        [
+          "changes.Captured",
+          "result.Changes"
+        ],
+        [
+          "entry.then",
+          "start.execute"
+        ],
+        [
+          "start.then",
+          "create.execute"
+        ],
+        [
+          "create.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "scratch.execute"
+        ],
+        [
+          "scratch.then",
+          "copy.execute"
+        ],
+        [
+          "copy.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "read.execute"
+        ],
+        [
+          "read.then",
+          "beforeid.execute"
+        ],
+        [
+          "beforeid.then",
+          "found.execute"
+        ],
+        [
+          "found.then",
+          "beforevalue.execute"
+        ],
+        [
+          "beforevalue.then",
+          "write.execute"
+        ],
+        [
+          "write.then",
+          "accepted.execute"
+        ],
+        [
+          "accepted.then",
+          "append.execute"
+        ],
+        [
+          "append.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "loop.execute"
+        ],
+        [
+          "found.else",
+          "write.execute"
+        ],
+        [
+          "loop.else",
+          "commit.execute"
+        ],
+        [
+          "commit.then",
+          "ok.execute"
+        ],
+        [
+          "ok.then",
+          "result.execute"
+        ],
+        [
+          "accepted.else",
+          "result.execute"
+        ],
+        [
+          "start.else",
+          "result.execute"
+        ],
+        [
+          "cast.CastFailed",
+          "result.execute"
+        ]
+      ]
+    }
+  ]
+}

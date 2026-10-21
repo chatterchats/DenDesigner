@@ -1,0 +1,48 @@
+{
+  "kind": "struct",
+  "path": "/DenDesignerGF/Runtime/ST_DenPick",
+  "guid": "8b761119-303d-57f2-b0ce-c242f49e598d",
+  "fields": [
+    {
+      "name": "Allowed",
+      "type": "bool",
+      "guid": "3df9df1e-c5bf-5341-bb3e-7db616ad6b64"
+    },
+    {
+      "name": "Reason",
+      "type": "string",
+      "guid": "81c0bf0e-0a17-5127-bd34-5dc08bacf982"
+    },
+    {
+      "name": "Component",
+      "type": "object:/Script/Engine.StaticMeshComponent",
+      "guid": "d9c8d91d-ceaa-5e51-9351-fabb7df43555"
+    },
+    {
+      "name": "Target",
+      "type": "object:/Script/CoreUObject.Object",
+      "guid": "6dfd0756-8aea-50c3-9280-036e7eacc1a1"
+    },
+    {
+      "name": "Kind",
+      "type": "int",
+      "default": "2",
+      "guid": "bba29d4f-78ec-57b8-8e3f-e370f376355c"
+    },
+    {
+      "name": "Key",
+      "type": "string",
+      "guid": "db0d7fe7-4762-5866-bf6e-1b3cffdb54a3"
+    },
+    {
+      "name": "Mesh",
+      "type": "string",
+      "guid": "fd228d18-4533-5f54-af38-f6520133295a"
+    },
+    {
+      "name": "Label",
+      "type": "string",
+      "guid": "2d48151d-0be2-54ea-9296-59aeb262e191"
+    }
+  ]
+}

@@ -1,0 +1,1168 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenLayouts",
+  "parent": "/DenDesignerGF/Runtime/BP_DenStore",
+  "functions": [
+    {
+      "name": "CampaignKey",
+      "inputs": [
+        {
+          "name": "CampaignID",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Key",
+          "type": "string"
+        },
+        {
+          "name": "Valid",
+          "type": "bool"
+        },
+        {
+          "name": "CanonicalID",
+          "type": "string"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "Known",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "StorageKey",
+          "type": "string"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "upper",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:ToUpper",
+          "defaults": {}
+        },
+        {
+          "id": "length",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Len",
+          "defaults": {}
+        },
+        {
+          "id": "rightlength",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "32"
+          }
+        },
+        {
+          "id": "nonzero",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:NotEqual_StrStr",
+          "defaults": {
+            "B": "00000000000000000000000000000000"
+          }
+        },
+        {
+          "id": "knownid0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "lengthok",
+          "kind": "branch"
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {
+            "B": "32"
+          }
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "char",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:GetCharacterAsNumber",
+          "defaults": {}
+        },
+        {
+          "id": "digitlow",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "48"
+          }
+        },
+        {
+          "id": "digithigh",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "57"
+          }
+        },
+        {
+          "id": "digit0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "hexlow",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "65"
+          }
+        },
+        {
+          "id": "hexhigh",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "70"
+          }
+        },
+        {
+          "id": "hex0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "any0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "allowed",
+          "kind": "branch"
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "key",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "A": "campaign-"
+          }
+        },
+        {
+          "id": "output",
+          "kind": "set",
+          "var": "local:StorageKey"
+        },
+        {
+          "id": "valid",
+          "kind": "set",
+          "var": "local:Known",
+          "defaults": {
+            "Known": "true"
+          }
+        },
+        {
+          "id": "keyout",
+          "kind": "get",
+          "var": "local:StorageKey"
+        },
+        {
+          "id": "validout",
+          "kind": "get",
+          "var": "local:Known"
+        }
+      ],
+      "links": [
+        [
+          "entry.CampaignID",
+          "upper.SourceString"
+        ],
+        [
+          "upper.ReturnValue",
+          "length.S"
+        ],
+        [
+          "length.ReturnValue",
+          "rightlength.A"
+        ],
+        [
+          "upper.ReturnValue",
+          "nonzero.A"
+        ],
+        [
+          "rightlength.ReturnValue",
+          "knownid0.A"
+        ],
+        [
+          "nonzero.ReturnValue",
+          "knownid0.B"
+        ],
+        [
+          "knownid0.ReturnValue",
+          "lengthok.Condition"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "upper.ReturnValue",
+          "char.SourceString"
+        ],
+        [
+          "i.Cursor",
+          "char.Index"
+        ],
+        [
+          "char.ReturnValue",
+          "digitlow.A"
+        ],
+        [
+          "char.ReturnValue",
+          "digithigh.A"
+        ],
+        [
+          "digitlow.ReturnValue",
+          "digit0.A"
+        ],
+        [
+          "digithigh.ReturnValue",
+          "digit0.B"
+        ],
+        [
+          "char.ReturnValue",
+          "hexlow.A"
+        ],
+        [
+          "char.ReturnValue",
+          "hexhigh.A"
+        ],
+        [
+          "hexlow.ReturnValue",
+          "hex0.A"
+        ],
+        [
+          "hexhigh.ReturnValue",
+          "hex0.B"
+        ],
+        [
+          "digit0.ReturnValue",
+          "any0.A"
+        ],
+        [
+          "hex0.ReturnValue",
+          "any0.B"
+        ],
+        [
+          "any0.ReturnValue",
+          "allowed.Condition"
+        ],
+        [
+          "i.Cursor",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.Cursor"
+        ],
+        [
+          "upper.ReturnValue",
+          "key.B"
+        ],
+        [
+          "key.ReturnValue",
+          "output.StorageKey"
+        ],
+        [
+          "keyout.StorageKey",
+          "result.Key"
+        ],
+        [
+          "validout.Known",
+          "result.Valid"
+        ],
+        [
+          "upper.ReturnValue",
+          "result.CanonicalID"
+        ],
+        [
+          "entry.then",
+          "lengthok.execute"
+        ],
+        [
+          "lengthok.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "allowed.execute"
+        ],
+        [
+          "allowed.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "loop.execute"
+        ],
+        [
+          "lengthok.else",
+          "result.execute"
+        ],
+        [
+          "allowed.else",
+          "result.execute"
+        ],
+        [
+          "loop.else",
+          "output.execute"
+        ],
+        [
+          "output.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ResolveLayout",
+      "inputs": [
+        {
+          "name": "CampaignID",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Document",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        },
+        {
+          "name": "Status",
+          "type": "int"
+        },
+        {
+          "name": "Key",
+          "type": "string"
+        },
+        {
+          "name": "Own",
+          "type": "bool"
+        },
+        {
+          "name": "CampaignKnown",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "ResolvedDocument",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        },
+        {
+          "name": "ResolvedStatus",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "ResolvedKey",
+          "type": "string",
+          "default": "home"
+        },
+        {
+          "name": "UseOwn",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "key",
+          "kind": "call",
+          "function": "self:CampaignKey",
+          "defaults": {}
+        },
+        {
+          "id": "known",
+          "kind": "branch"
+        },
+        {
+          "id": "campaign",
+          "kind": "call",
+          "function": "self:LoadLayout",
+          "defaults": {
+            "Draft": "false",
+            "BeforeRevision": "0"
+          }
+        },
+        {
+          "id": "absent",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "missing",
+          "kind": "branch"
+        },
+        {
+          "id": "healthy",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "healthybranch",
+          "kind": "branch"
+        },
+        {
+          "id": "enabled",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Enabled"
+        },
+        {
+          "id": "own",
+          "kind": "branch"
+        },
+        {
+          "id": "useKey",
+          "kind": "set",
+          "var": "local:ResolvedKey"
+        },
+        {
+          "id": "useDocument",
+          "kind": "set",
+          "var": "local:ResolvedDocument"
+        },
+        {
+          "id": "useStatus",
+          "kind": "set",
+          "var": "local:ResolvedStatus"
+        },
+        {
+          "id": "ownflag",
+          "kind": "set",
+          "var": "local:UseOwn",
+          "defaults": {
+            "UseOwn": "true"
+          }
+        },
+        {
+          "id": "home",
+          "kind": "call",
+          "function": "self:LoadLayout",
+          "defaults": {
+            "Key": "home",
+            "Draft": "false",
+            "BeforeRevision": "0"
+          }
+        },
+        {
+          "id": "homedoc",
+          "kind": "set",
+          "var": "local:ResolvedDocument"
+        },
+        {
+          "id": "homestatus",
+          "kind": "set",
+          "var": "local:ResolvedStatus"
+        },
+        {
+          "id": "outKey",
+          "kind": "get",
+          "var": "local:ResolvedKey"
+        },
+        {
+          "id": "outDocument",
+          "kind": "get",
+          "var": "local:ResolvedDocument"
+        },
+        {
+          "id": "outStatus",
+          "kind": "get",
+          "var": "local:ResolvedStatus"
+        },
+        {
+          "id": "ownout",
+          "kind": "get",
+          "var": "local:UseOwn"
+        }
+      ],
+      "links": [
+        [
+          "entry.CampaignID",
+          "key.CampaignID"
+        ],
+        [
+          "key.Valid",
+          "known.Condition"
+        ],
+        [
+          "key.Key",
+          "campaign.Key"
+        ],
+        [
+          "campaign.Status",
+          "absent.A"
+        ],
+        [
+          "absent.ReturnValue",
+          "missing.Condition"
+        ],
+        [
+          "campaign.Status",
+          "healthy.A"
+        ],
+        [
+          "healthy.ReturnValue",
+          "healthybranch.Condition"
+        ],
+        [
+          "campaign.Document",
+          "enabled.self"
+        ],
+        [
+          "enabled.Enabled",
+          "own.Condition"
+        ],
+        [
+          "key.Key",
+          "useKey.ResolvedKey"
+        ],
+        [
+          "campaign.Document",
+          "useDocument.ResolvedDocument"
+        ],
+        [
+          "campaign.Status",
+          "useStatus.ResolvedStatus"
+        ],
+        [
+          "home.Document",
+          "homedoc.ResolvedDocument"
+        ],
+        [
+          "home.Status",
+          "homestatus.ResolvedStatus"
+        ],
+        [
+          "outKey.ResolvedKey",
+          "result.Key"
+        ],
+        [
+          "outDocument.ResolvedDocument",
+          "result.Document"
+        ],
+        [
+          "outStatus.ResolvedStatus",
+          "result.Status"
+        ],
+        [
+          "ownout.UseOwn",
+          "result.Own"
+        ],
+        [
+          "key.Valid",
+          "result.CampaignKnown"
+        ],
+        [
+          "entry.then",
+          "key.execute"
+        ],
+        [
+          "key.then",
+          "known.execute"
+        ],
+        [
+          "known.then",
+          "campaign.execute"
+        ],
+        [
+          "campaign.then",
+          "missing.execute"
+        ],
+        [
+          "missing.then",
+          "home.execute"
+        ],
+        [
+          "home.then",
+          "homedoc.execute"
+        ],
+        [
+          "homedoc.then",
+          "homestatus.execute"
+        ],
+        [
+          "homestatus.then",
+          "result.execute"
+        ],
+        [
+          "known.else",
+          "home.execute"
+        ],
+        [
+          "missing.else",
+          "healthybranch.execute"
+        ],
+        [
+          "healthybranch.then",
+          "own.execute"
+        ],
+        [
+          "own.then",
+          "useKey.execute"
+        ],
+        [
+          "useKey.then",
+          "useDocument.execute"
+        ],
+        [
+          "useDocument.then",
+          "useStatus.execute"
+        ],
+        [
+          "useStatus.then",
+          "ownflag.execute"
+        ],
+        [
+          "ownflag.then",
+          "result.execute"
+        ],
+        [
+          "own.else",
+          "home.execute"
+        ],
+        [
+          "healthybranch.else",
+          "useKey.execute"
+        ]
+      ]
+    },
+    {
+      "name": "MakeCampaign",
+      "inputs": [
+        {
+          "name": "CampaignID",
+          "type": "string"
+        },
+        {
+          "name": "Document",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "SavedDocument",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        },
+        {
+          "name": "Status",
+          "type": "int"
+        }
+      ],
+      "locals": [
+        {
+          "name": "ResultStatus",
+          "type": "int",
+          "default": "7"
+        },
+        {
+          "name": "ResultDocument",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "key",
+          "kind": "call",
+          "function": "self:CampaignKey",
+          "defaults": {}
+        },
+        {
+          "id": "known",
+          "kind": "branch"
+        },
+        {
+          "id": "clone",
+          "kind": "call",
+          "function": "self:CloneLayout",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "hasdoc",
+          "kind": "branch"
+        },
+        {
+          "id": "writeScope",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Scope",
+          "defaults": {
+            "Scope": "campaign"
+          }
+        },
+        {
+          "id": "writeEnabled",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Enabled",
+          "defaults": {
+            "Enabled": "true"
+          }
+        },
+        {
+          "id": "id",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:CampaignID"
+        },
+        {
+          "id": "save",
+          "kind": "call",
+          "function": "self:SaveLayout",
+          "defaults": {
+            "Draft": "false",
+            "BaseRevision": "0",
+            "BaseID": ""
+          }
+        },
+        {
+          "id": "status",
+          "kind": "set",
+          "var": "local:ResultStatus"
+        },
+        {
+          "id": "doc",
+          "kind": "set",
+          "var": "local:ResultDocument"
+        },
+        {
+          "id": "statusout",
+          "kind": "get",
+          "var": "local:ResultStatus"
+        },
+        {
+          "id": "docout",
+          "kind": "get",
+          "var": "local:ResultDocument"
+        }
+      ],
+      "links": [
+        [
+          "entry.CampaignID",
+          "key.CampaignID"
+        ],
+        [
+          "key.Valid",
+          "known.Condition"
+        ],
+        [
+          "entry.Document",
+          "clone.Document"
+        ],
+        [
+          "clone.DocumentCopy",
+          "valid.Object"
+        ],
+        [
+          "valid.ReturnValue",
+          "hasdoc.Condition"
+        ],
+        [
+          "clone.DocumentCopy",
+          "writeScope.self"
+        ],
+        [
+          "clone.DocumentCopy",
+          "writeEnabled.self"
+        ],
+        [
+          "clone.DocumentCopy",
+          "id.self"
+        ],
+        [
+          "key.CanonicalID",
+          "id.CampaignID"
+        ],
+        [
+          "key.Key",
+          "save.Key"
+        ],
+        [
+          "clone.DocumentCopy",
+          "save.Document"
+        ],
+        [
+          "save.Status",
+          "status.ResultStatus"
+        ],
+        [
+          "save.SavedDocument",
+          "doc.ResultDocument"
+        ],
+        [
+          "statusout.ResultStatus",
+          "result.Status"
+        ],
+        [
+          "docout.ResultDocument",
+          "result.SavedDocument"
+        ],
+        [
+          "entry.then",
+          "key.execute"
+        ],
+        [
+          "key.then",
+          "known.execute"
+        ],
+        [
+          "known.then",
+          "clone.execute"
+        ],
+        [
+          "clone.then",
+          "hasdoc.execute"
+        ],
+        [
+          "hasdoc.then",
+          "writeScope.execute"
+        ],
+        [
+          "writeScope.then",
+          "writeEnabled.execute"
+        ],
+        [
+          "writeEnabled.then",
+          "id.execute"
+        ],
+        [
+          "id.then",
+          "save.execute"
+        ],
+        [
+          "save.then",
+          "status.execute"
+        ],
+        [
+          "status.then",
+          "doc.execute"
+        ],
+        [
+          "doc.then",
+          "result.execute"
+        ],
+        [
+          "known.else",
+          "result.execute"
+        ],
+        [
+          "hasdoc.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "UseHome",
+      "inputs": [
+        {
+          "name": "CampaignID",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Status",
+          "type": "int"
+        }
+      ],
+      "locals": [
+        {
+          "name": "ResultStatus",
+          "type": "int",
+          "default": "7"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "key",
+          "kind": "call",
+          "function": "self:CampaignKey",
+          "defaults": {}
+        },
+        {
+          "id": "known",
+          "kind": "branch"
+        },
+        {
+          "id": "load",
+          "kind": "call",
+          "function": "self:LoadLayout",
+          "defaults": {
+            "Draft": "false",
+            "BeforeRevision": "0"
+          }
+        },
+        {
+          "id": "status",
+          "kind": "set",
+          "var": "local:ResultStatus"
+        },
+        {
+          "id": "absent",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "missing",
+          "kind": "branch"
+        },
+        {
+          "id": "healthy",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "usable",
+          "kind": "branch"
+        },
+        {
+          "id": "enabled",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Enabled"
+        },
+        {
+          "id": "active",
+          "kind": "branch"
+        },
+        {
+          "id": "clone",
+          "kind": "call",
+          "function": "self:CloneLayout",
+          "defaults": {}
+        },
+        {
+          "id": "disable",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Enabled",
+          "defaults": {
+            "Enabled": "false"
+          }
+        },
+        {
+          "id": "save",
+          "kind": "call",
+          "function": "self:SaveLayout",
+          "defaults": {
+            "Draft": "false",
+            "BaseRevision": "0",
+            "BaseID": ""
+          }
+        },
+        {
+          "id": "saved",
+          "kind": "set",
+          "var": "local:ResultStatus"
+        },
+        {
+          "id": "ok",
+          "kind": "set",
+          "var": "local:ResultStatus",
+          "defaults": {
+            "ResultStatus": "1"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:ResultStatus"
+        }
+      ],
+      "links": [
+        [
+          "entry.CampaignID",
+          "key.CampaignID"
+        ],
+        [
+          "key.Valid",
+          "known.Condition"
+        ],
+        [
+          "key.Key",
+          "load.Key"
+        ],
+        [
+          "load.Status",
+          "status.ResultStatus"
+        ],
+        [
+          "load.Status",
+          "absent.A"
+        ],
+        [
+          "absent.ReturnValue",
+          "missing.Condition"
+        ],
+        [
+          "load.Status",
+          "healthy.A"
+        ],
+        [
+          "healthy.ReturnValue",
+          "usable.Condition"
+        ],
+        [
+          "load.Document",
+          "enabled.self"
+        ],
+        [
+          "enabled.Enabled",
+          "active.Condition"
+        ],
+        [
+          "load.Document",
+          "clone.Document"
+        ],
+        [
+          "clone.DocumentCopy",
+          "disable.self"
+        ],
+        [
+          "key.Key",
+          "save.Key"
+        ],
+        [
+          "clone.DocumentCopy",
+          "save.Document"
+        ],
+        [
+          "save.Status",
+          "saved.ResultStatus"
+        ],
+        [
+          "out.ResultStatus",
+          "result.Status"
+        ],
+        [
+          "entry.then",
+          "key.execute"
+        ],
+        [
+          "key.then",
+          "known.execute"
+        ],
+        [
+          "known.then",
+          "load.execute"
+        ],
+        [
+          "load.then",
+          "status.execute"
+        ],
+        [
+          "status.then",
+          "missing.execute"
+        ],
+        [
+          "missing.then",
+          "ok.execute"
+        ],
+        [
+          "ok.then",
+          "result.execute"
+        ],
+        [
+          "known.else",
+          "result.execute"
+        ],
+        [
+          "missing.else",
+          "usable.execute"
+        ],
+        [
+          "usable.then",
+          "active.execute"
+        ],
+        [
+          "active.then",
+          "clone.execute"
+        ],
+        [
+          "clone.then",
+          "disable.execute"
+        ],
+        [
+          "disable.then",
+          "save.execute"
+        ],
+        [
+          "save.then",
+          "saved.execute"
+        ],
+        [
+          "saved.then",
+          "result.execute"
+        ],
+        [
+          "usable.else",
+          "result.execute"
+        ],
+        [
+          "active.else",
+          "ok.execute"
+        ]
+      ]
+    }
+  ]
+}

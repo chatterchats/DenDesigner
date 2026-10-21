@@ -8,9 +8,9 @@
     tools/dd.py restart                kill + launch + den
     tools/dd.py send "<sandbox command>"   one ZC Sandbox command (cmd.txt / reply.txt)
     tools/dd.py lua "<code>" | -f file     Lua in the game (PlagueNightConsole, through ZComPlagueNight/tools/pn.py)
-    tools/dd.py con "<console line>"       an Unreal console command, e.g. "zcomden open"
-    tools/dd.py shot [out.jpg]             the game's monitor (right half of the desktop), 1280 px wide
-    tools/dd.py log [n]                    the last n lines of Den Designer's log
+    tools/dd.py con "<console line>"       an Unreal console command, requires the optional development console
+    tools/dd.py shot [out.jpg]             capture only the game window
+    tools/dd.py log [n]                    the last n lines of the game log
 
 The sandbox campaign is the throwaway one (BA3302BC...); ZC Sandbox refuses changes anywhere else.
 """
@@ -20,6 +20,7 @@ import re
 import subprocess
 import sys
 import time
+import uuid
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
@@ -27,7 +28,7 @@ MODS = REPO.parent
 GAME = Path("/run/media/chats/e0057d4a-fe46-43eb-a837-db51979c500f/Games/STAR WARS Zero Company (2026)")
 UE4SS = GAME / "Star Wars Zero Company/SWZeroCompany/Binaries/Win64/ue4ss"
 SANDBOX = UE4SS / "Mods/ZCSandbox"
-LOG = REPO / "src/ZComDen/zcom_den.log"
+LOG = GAME / "prefix/drive_c/users/steamuser/AppData/Local/SWZeroCompany/Saved/Logs/SWZeroCompany.log"
 PN = MODS / "ZComPlagueNight/tools/pn.py"
 LUTRIS_ID = 2
 
@@ -96,6 +97,8 @@ def launch():
 
 def den(save="newest", timeout=400):
     """Waits for a fresh sandbox session at the main menu, then loads the sandbox Den."""
+    if save not in ("newest", "baseline"):
+        sys.exit("sandbox campaign load accepts only newest or baseline")
     started = time.time()
     while time.time() - started < timeout:
         if game_pids() and hello():
@@ -105,21 +108,70 @@ def den(save="newest", timeout=400):
         sys.exit("no sandbox session after %d s" % timeout)
     print(hello()[:120])
     time.sleep(5)  # let the title screen settle
-    print(send("campaign load %s" % save, timeout=300))
+    reply = send("campaign load %s" % save, timeout=300)
+    print(reply)
+    if not reply or " err " in reply:
+        sys.exit("sandbox campaign load failed")
     print(send("wait phase=hub settled=1 timeout=240000", timeout=260))
 
 
+def game_window():
+    """Match both the running game process and its exact main-window title."""
+    pids = set(game_pids())
+    windows = subprocess.check_output(["wmctrl", "-lp"], text=True)
+    matches = []
+    for line in windows.splitlines():
+        parts = line.split(None, 4)
+        if len(parts) == 5 and int(parts[2]) in pids and parts[4].strip() in (
+                "STAR WARS Zero Company™", "STAR WARS Zero Company"):
+            matches.append(parts[0])
+    if len(matches) != 1:
+        raise RuntimeError("Could not uniquely identify the game window; no desktop action taken")
+    return matches[0]
+
+
 def shot(out):
-    full = REPO / "dist/shot-full.png"
-    subprocess.run(["spectacle", "-b", "-n", "-f", "-o", str(full)], check=True)
-    from PIL import Image
-    im = Image.open(full).convert("RGB")
-    w, h = im.size
-    if w >= 2 * h:  # two monitors side by side: the game is on the right one
-        im = im.crop((w // 2, 0, w, h))
-    im.thumbnail((1280, 1280))
-    im.save(out, quality=85)
-    full.unlink()
+    # XGetImage/ImageMagick can return an old Vulkan window pixmap indefinitely.
+    # Ask the compositor for the active window, with focus guards and a unique
+    # output file: Spectacle may return before its asynchronous export completes.
+    window = game_window()
+    output = Path(out).resolve()
+    output.parent.mkdir(parents=True, exist_ok=True)
+    temporary = output.with_name(f".{output.stem}.{uuid.uuid4().hex}{output.suffix or '.png'}")
+    subprocess.run(["wmctrl", "-ia", window], check=True)
+    time.sleep(1)
+
+    def require_focus():
+        active = subprocess.check_output(["xprop", "-root", "_NET_ACTIVE_WINDOW"], text=True)
+        if game_window() != window or int(active.split()[-1], 16) != int(window, 16):
+            raise RuntimeError("Game lost active-window focus; capture discarded")
+
+    process = None
+    try:
+        require_focus()
+        process = subprocess.Popen(["spectacle", "-a", "-b", "-n", "-e", "-S", "-o", str(temporary)],
+                                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        deadline = time.monotonic() + 15
+        prior_size = None
+        while time.monotonic() < deadline:
+            require_focus()
+            code = process.poll()
+            if code not in (None, 0):
+                raise RuntimeError(f"Game window capture failed ({code})")
+            size = temporary.stat().st_size if temporary.exists() else 0
+            if code == 0 and size > 0 and size == prior_size:
+                require_focus()
+                temporary.replace(output)
+                break
+            prior_size = size
+            time.sleep(.2)
+        else:
+            raise RuntimeError("Game window capture did not finish exporting")
+    finally:
+        if process is not None and process.poll() is None:
+            process.terminate()
+            process.wait(timeout=5)
+        temporary.unlink(missing_ok=True)
     print(out)
 
 

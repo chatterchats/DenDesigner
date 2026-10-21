@@ -1,0 +1,981 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenShortcut",
+  "parent": "/Script/CoreUObject.Object",
+  "variables": [
+    {
+      "name": "Key",
+      "type": "struct:/Script/InputCore.Key",
+      "default": "Home"
+    },
+    {
+      "name": "KeyName",
+      "type": "string",
+      "default": "Home"
+    },
+    {
+      "name": "Modifier",
+      "type": "string",
+      "default": "ctrl"
+    },
+    {
+      "name": "KeyWasDown",
+      "type": "bool",
+      "default": "false"
+    }
+  ],
+  "functions": [
+    {
+      "name": "Configure",
+      "inputs": [
+        {
+          "name": "Document",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenPreferencesSave"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "defaultkey",
+          "kind": "set",
+          "var": "Key",
+          "defaults": {
+            "Key": "Home"
+          }
+        },
+        {
+          "id": "defaultname",
+          "kind": "set",
+          "var": "KeyName",
+          "defaults": {
+            "KeyName": "Home"
+          }
+        },
+        {
+          "id": "defaultmodifier",
+          "kind": "set",
+          "var": "Modifier",
+          "defaults": {
+            "Modifier": "ctrl"
+          }
+        },
+        {
+          "id": "document",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "builder",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:SpawnObject",
+          "defaults": {
+            "ObjectClass": "/DenDesignerGF/Runtime/BP_DenInputMappings"
+          }
+        },
+        {
+          "id": "castbuilder",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenInputMappings"
+        },
+        {
+          "id": "validate",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenInputMappings:ValidateBindings",
+          "defaults": {}
+        },
+        {
+          "id": "bindings",
+          "kind": "branch"
+        },
+        {
+          "id": "codec",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:SpawnObject",
+          "defaults": {
+            "ObjectClass": "/DenDesignerGF/Runtime/BP_DenKeyNames"
+          }
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenKeyNames"
+        },
+        {
+          "id": "readkey",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "toggle_key"
+          }
+        },
+        {
+          "id": "readmodifier",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "toggle_modifier"
+          }
+        },
+        {
+          "id": "key",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenKeyNames:KeyFromName",
+          "defaults": {}
+        },
+        {
+          "id": "known",
+          "kind": "branch"
+        },
+        {
+          "id": "savekey",
+          "kind": "set",
+          "var": "Key"
+        },
+        {
+          "id": "savename",
+          "kind": "set",
+          "var": "KeyName"
+        },
+        {
+          "id": "savemodifier",
+          "kind": "set",
+          "var": "Modifier"
+        }
+      ],
+      "links": [
+        [
+          "entry.Document",
+          "document.Object"
+        ],
+        [
+          "document.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "self.self",
+          "builder.Outer"
+        ],
+        [
+          "builder.ReturnValue",
+          "castbuilder.Object"
+        ],
+        [
+          "castbuilder.AsBP Den Input Mappings",
+          "validate.self"
+        ],
+        [
+          "entry.Document",
+          "validate.Document"
+        ],
+        [
+          "validate.Valid",
+          "bindings.Condition"
+        ],
+        [
+          "self.self",
+          "codec.Outer"
+        ],
+        [
+          "codec.ReturnValue",
+          "cast.Object"
+        ],
+        [
+          "entry.Document",
+          "readkey.self"
+        ],
+        [
+          "entry.Document",
+          "readmodifier.self"
+        ],
+        [
+          "cast.AsBP Den Key Names",
+          "key.self"
+        ],
+        [
+          "readkey.Value",
+          "key.Name"
+        ],
+        [
+          "key.Known",
+          "known.Condition"
+        ],
+        [
+          "key.Key",
+          "savekey.Key"
+        ],
+        [
+          "readkey.Value",
+          "savename.KeyName"
+        ],
+        [
+          "readmodifier.Value",
+          "savemodifier.Modifier"
+        ],
+        [
+          "entry.then",
+          "defaultkey.execute"
+        ],
+        [
+          "defaultkey.then",
+          "defaultname.execute"
+        ],
+        [
+          "defaultname.then",
+          "defaultmodifier.execute"
+        ],
+        [
+          "defaultmodifier.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "builder.execute"
+        ],
+        [
+          "builder.then",
+          "castbuilder.execute"
+        ],
+        [
+          "castbuilder.then",
+          "validate.execute"
+        ],
+        [
+          "validate.then",
+          "bindings.execute"
+        ],
+        [
+          "bindings.then",
+          "codec.execute"
+        ],
+        [
+          "codec.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "readkey.execute"
+        ],
+        [
+          "readkey.then",
+          "readmodifier.execute"
+        ],
+        [
+          "readmodifier.then",
+          "key.execute"
+        ],
+        [
+          "key.then",
+          "known.execute"
+        ],
+        [
+          "known.then",
+          "savekey.execute"
+        ],
+        [
+          "savekey.then",
+          "savename.execute"
+        ],
+        [
+          "savename.then",
+          "savemodifier.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ObserveKey",
+      "inputs": [
+        {
+          "name": "Down",
+          "type": "bool"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Pressed",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Rising",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getKeyWasDown",
+          "kind": "get",
+          "var": "KeyWasDown"
+        },
+        {
+          "id": "released",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "rising0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "capture",
+          "kind": "set",
+          "var": "local:Rising"
+        },
+        {
+          "id": "remember",
+          "kind": "set",
+          "var": "KeyWasDown"
+        },
+        {
+          "id": "output",
+          "kind": "get",
+          "var": "local:Rising"
+        }
+      ],
+      "links": [
+        [
+          "getKeyWasDown.KeyWasDown",
+          "released.A"
+        ],
+        [
+          "entry.Down",
+          "rising0.A"
+        ],
+        [
+          "released.ReturnValue",
+          "rising0.B"
+        ],
+        [
+          "rising0.ReturnValue",
+          "capture.Rising"
+        ],
+        [
+          "entry.Down",
+          "remember.KeyWasDown"
+        ],
+        [
+          "output.Rising",
+          "result.Pressed"
+        ],
+        [
+          "entry.then",
+          "capture.execute"
+        ],
+        [
+          "capture.then",
+          "remember.execute"
+        ],
+        [
+          "remember.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Pressed",
+      "inputs": [
+        {
+          "name": "Player",
+          "type": "object:/Script/Engine.PlayerController"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Pressed",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "ResultPressed",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "player",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "getKey",
+          "kind": "get",
+          "var": "Key"
+        },
+        {
+          "id": "down",
+          "kind": "call",
+          "function": "/Script/Engine.PlayerController:IsInputKeyDown",
+          "defaults": {}
+        },
+        {
+          "id": "edge",
+          "kind": "call",
+          "function": "self:ObserveKey",
+          "defaults": {}
+        },
+        {
+          "id": "key",
+          "kind": "branch"
+        },
+        {
+          "id": "LeftControl",
+          "kind": "call",
+          "function": "/Script/Engine.PlayerController:IsInputKeyDown",
+          "defaults": {
+            "Key": "LeftControl"
+          }
+        },
+        {
+          "id": "RightControl",
+          "kind": "call",
+          "function": "/Script/Engine.PlayerController:IsInputKeyDown",
+          "defaults": {
+            "Key": "RightControl"
+          }
+        },
+        {
+          "id": "ctrlheld0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "LeftShift",
+          "kind": "call",
+          "function": "/Script/Engine.PlayerController:IsInputKeyDown",
+          "defaults": {
+            "Key": "LeftShift"
+          }
+        },
+        {
+          "id": "RightShift",
+          "kind": "call",
+          "function": "/Script/Engine.PlayerController:IsInputKeyDown",
+          "defaults": {
+            "Key": "RightShift"
+          }
+        },
+        {
+          "id": "shiftheld0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "LeftAlt",
+          "kind": "call",
+          "function": "/Script/Engine.PlayerController:IsInputKeyDown",
+          "defaults": {
+            "Key": "LeftAlt"
+          }
+        },
+        {
+          "id": "RightAlt",
+          "kind": "call",
+          "function": "/Script/Engine.PlayerController:IsInputKeyDown",
+          "defaults": {
+            "Key": "RightAlt"
+          }
+        },
+        {
+          "id": "altheld0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "getModifier",
+          "kind": "get",
+          "var": "Modifier"
+        },
+        {
+          "id": "ctrlselected",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "ctrl"
+          }
+        },
+        {
+          "id": "ctrlnotshift",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "ctrlnotalt",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "ctrlmatches0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "ctrlmatches1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "ctrlmatches2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "shiftselected",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "shift"
+          }
+        },
+        {
+          "id": "shiftnotctrl",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "shiftnotalt",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "shiftmatches0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "shiftmatches1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "shiftmatches2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "altselected",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "alt"
+          }
+        },
+        {
+          "id": "altnotctrl",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "altnotshift",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "altmatches0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "altmatches1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "altmatches2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "noneselected",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "none"
+          }
+        },
+        {
+          "id": "nonenotctrl",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "nonenotshift",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "nonenotalt",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "nonematches0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "nonematches1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "nonematches2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "matched0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "matched1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "matched2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "save",
+          "kind": "set",
+          "var": "local:ResultPressed"
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:ResultPressed"
+        }
+      ],
+      "links": [
+        [
+          "entry.Player",
+          "player.Object"
+        ],
+        [
+          "player.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.Player",
+          "down.self"
+        ],
+        [
+          "getKey.Key",
+          "down.Key"
+        ],
+        [
+          "down.ReturnValue",
+          "edge.Down"
+        ],
+        [
+          "edge.Pressed",
+          "key.Condition"
+        ],
+        [
+          "entry.Player",
+          "LeftControl.self"
+        ],
+        [
+          "entry.Player",
+          "RightControl.self"
+        ],
+        [
+          "LeftControl.ReturnValue",
+          "ctrlheld0.A"
+        ],
+        [
+          "RightControl.ReturnValue",
+          "ctrlheld0.B"
+        ],
+        [
+          "entry.Player",
+          "LeftShift.self"
+        ],
+        [
+          "entry.Player",
+          "RightShift.self"
+        ],
+        [
+          "LeftShift.ReturnValue",
+          "shiftheld0.A"
+        ],
+        [
+          "RightShift.ReturnValue",
+          "shiftheld0.B"
+        ],
+        [
+          "entry.Player",
+          "LeftAlt.self"
+        ],
+        [
+          "entry.Player",
+          "RightAlt.self"
+        ],
+        [
+          "LeftAlt.ReturnValue",
+          "altheld0.A"
+        ],
+        [
+          "RightAlt.ReturnValue",
+          "altheld0.B"
+        ],
+        [
+          "getModifier.Modifier",
+          "ctrlselected.A"
+        ],
+        [
+          "shiftheld0.ReturnValue",
+          "ctrlnotshift.A"
+        ],
+        [
+          "altheld0.ReturnValue",
+          "ctrlnotalt.A"
+        ],
+        [
+          "ctrlselected.ReturnValue",
+          "ctrlmatches0.A"
+        ],
+        [
+          "ctrlheld0.ReturnValue",
+          "ctrlmatches0.B"
+        ],
+        [
+          "ctrlmatches0.ReturnValue",
+          "ctrlmatches1.A"
+        ],
+        [
+          "ctrlnotshift.ReturnValue",
+          "ctrlmatches1.B"
+        ],
+        [
+          "ctrlmatches1.ReturnValue",
+          "ctrlmatches2.A"
+        ],
+        [
+          "ctrlnotalt.ReturnValue",
+          "ctrlmatches2.B"
+        ],
+        [
+          "getModifier.Modifier",
+          "shiftselected.A"
+        ],
+        [
+          "ctrlheld0.ReturnValue",
+          "shiftnotctrl.A"
+        ],
+        [
+          "altheld0.ReturnValue",
+          "shiftnotalt.A"
+        ],
+        [
+          "shiftselected.ReturnValue",
+          "shiftmatches0.A"
+        ],
+        [
+          "shiftnotctrl.ReturnValue",
+          "shiftmatches0.B"
+        ],
+        [
+          "shiftmatches0.ReturnValue",
+          "shiftmatches1.A"
+        ],
+        [
+          "shiftheld0.ReturnValue",
+          "shiftmatches1.B"
+        ],
+        [
+          "shiftmatches1.ReturnValue",
+          "shiftmatches2.A"
+        ],
+        [
+          "shiftnotalt.ReturnValue",
+          "shiftmatches2.B"
+        ],
+        [
+          "getModifier.Modifier",
+          "altselected.A"
+        ],
+        [
+          "ctrlheld0.ReturnValue",
+          "altnotctrl.A"
+        ],
+        [
+          "shiftheld0.ReturnValue",
+          "altnotshift.A"
+        ],
+        [
+          "altselected.ReturnValue",
+          "altmatches0.A"
+        ],
+        [
+          "altnotctrl.ReturnValue",
+          "altmatches0.B"
+        ],
+        [
+          "altmatches0.ReturnValue",
+          "altmatches1.A"
+        ],
+        [
+          "altnotshift.ReturnValue",
+          "altmatches1.B"
+        ],
+        [
+          "altmatches1.ReturnValue",
+          "altmatches2.A"
+        ],
+        [
+          "altheld0.ReturnValue",
+          "altmatches2.B"
+        ],
+        [
+          "getModifier.Modifier",
+          "noneselected.A"
+        ],
+        [
+          "ctrlheld0.ReturnValue",
+          "nonenotctrl.A"
+        ],
+        [
+          "shiftheld0.ReturnValue",
+          "nonenotshift.A"
+        ],
+        [
+          "altheld0.ReturnValue",
+          "nonenotalt.A"
+        ],
+        [
+          "noneselected.ReturnValue",
+          "nonematches0.A"
+        ],
+        [
+          "nonenotctrl.ReturnValue",
+          "nonematches0.B"
+        ],
+        [
+          "nonematches0.ReturnValue",
+          "nonematches1.A"
+        ],
+        [
+          "nonenotshift.ReturnValue",
+          "nonematches1.B"
+        ],
+        [
+          "nonematches1.ReturnValue",
+          "nonematches2.A"
+        ],
+        [
+          "nonenotalt.ReturnValue",
+          "nonematches2.B"
+        ],
+        [
+          "ctrlmatches2.ReturnValue",
+          "matched0.A"
+        ],
+        [
+          "shiftmatches2.ReturnValue",
+          "matched0.B"
+        ],
+        [
+          "matched0.ReturnValue",
+          "matched1.A"
+        ],
+        [
+          "altmatches2.ReturnValue",
+          "matched1.B"
+        ],
+        [
+          "matched1.ReturnValue",
+          "matched2.A"
+        ],
+        [
+          "nonematches2.ReturnValue",
+          "matched2.B"
+        ],
+        [
+          "matched2.ReturnValue",
+          "save.ResultPressed"
+        ],
+        [
+          "out.ResultPressed",
+          "result.Pressed"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "edge.execute"
+        ],
+        [
+          "edge.then",
+          "key.execute"
+        ],
+        [
+          "key.then",
+          "save.execute"
+        ],
+        [
+          "save.then",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ],
+        [
+          "key.else",
+          "result.execute"
+        ]
+      ]
+    }
+  ]
+}

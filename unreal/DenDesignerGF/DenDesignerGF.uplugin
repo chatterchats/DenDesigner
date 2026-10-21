@@ -1,0 +1,31 @@
+{
+  "FileVersion": 3,
+  "Version": 13,
+  "VersionName": "0.9.0-preview.2",
+  "FriendlyName": "Den Designer",
+  "Description": "Standalone Den customization editor. No UE4SS runtime required.",
+  "Category": "Game Features",
+  "CanContainContent": true,
+  "IsExperimentalVersion": false,
+  "Installed": false,
+  "ExplicitlyLoaded": true,
+  "BuiltInInitialFeatureState": "Active",
+  "Plugins": [
+    {
+      "Name": "GameFeatures",
+      "Enabled": true
+    },
+    {
+      "Name": "ModularGameplay",
+      "Enabled": true
+    },
+    {
+      "Name": "EnhancedInput",
+      "Enabled": true
+    },
+    {
+      "Name": "ProceduralMeshComponent",
+      "Enabled": true
+    }
+  ]
+}

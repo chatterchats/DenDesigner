@@ -1,0 +1,3085 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenInputMappings",
+  "parent": "/Script/CoreUObject.Object",
+  "variables": [
+    {
+      "name": "Template",
+      "type": "object:/Script/EnhancedInput.InputMappingContext",
+      "default": "/DenDesignerGF/Editor/IMC_DenEditor"
+    }
+  ],
+  "functions": [
+    {
+      "name": "BindingForMapping",
+      "inputs": [
+        {
+          "name": "Mapping",
+          "type": "struct:/Script/EnhancedInput.EnhancedActionKeyMapping"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Setting",
+          "type": "string"
+        }
+      ],
+      "locals": [
+        {
+          "name": "ResultSetting",
+          "type": "string"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "fields",
+          "kind": "break_struct",
+          "struct": "/Script/EnhancedInput.EnhancedActionKeyMapping"
+        },
+        {
+          "id": "b0action",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {
+            "B": "/DenDesignerGF/Editor/IA_Den_Move"
+          }
+        },
+        {
+          "id": "b0key",
+          "kind": "call",
+          "function": "/Script/Engine.KismetInputLibrary:EqualEqual_KeyKey",
+          "defaults": {
+            "B": "W"
+          }
+        },
+        {
+          "id": "b0same0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "b0",
+          "kind": "branch"
+        },
+        {
+          "id": "b0value",
+          "kind": "set",
+          "var": "local:ResultSetting",
+          "defaults": {
+            "ResultSetting": "key_forward"
+          }
+        },
+        {
+          "id": "b1action",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {
+            "B": "/DenDesignerGF/Editor/IA_Den_Move"
+          }
+        },
+        {
+          "id": "b1key",
+          "kind": "call",
+          "function": "/Script/Engine.KismetInputLibrary:EqualEqual_KeyKey",
+          "defaults": {
+            "B": "S"
+          }
+        },
+        {
+          "id": "b1same0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "b1",
+          "kind": "branch"
+        },
+        {
+          "id": "b1value",
+          "kind": "set",
+          "var": "local:ResultSetting",
+          "defaults": {
+            "ResultSetting": "key_back"
+          }
+        },
+        {
+          "id": "b2action",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {
+            "B": "/DenDesignerGF/Editor/IA_Den_Move"
+          }
+        },
+        {
+          "id": "b2key",
+          "kind": "call",
+          "function": "/Script/Engine.KismetInputLibrary:EqualEqual_KeyKey",
+          "defaults": {
+            "B": "A"
+          }
+        },
+        {
+          "id": "b2same0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "b2",
+          "kind": "branch"
+        },
+        {
+          "id": "b2value",
+          "kind": "set",
+          "var": "local:ResultSetting",
+          "defaults": {
+            "ResultSetting": "key_left"
+          }
+        },
+        {
+          "id": "b3action",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {
+            "B": "/DenDesignerGF/Editor/IA_Den_Move"
+          }
+        },
+        {
+          "id": "b3key",
+          "kind": "call",
+          "function": "/Script/Engine.KismetInputLibrary:EqualEqual_KeyKey",
+          "defaults": {
+            "B": "D"
+          }
+        },
+        {
+          "id": "b3same0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "b3",
+          "kind": "branch"
+        },
+        {
+          "id": "b3value",
+          "kind": "set",
+          "var": "local:ResultSetting",
+          "defaults": {
+            "ResultSetting": "key_right"
+          }
+        },
+        {
+          "id": "b4action",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {
+            "B": "/DenDesignerGF/Editor/IA_Den_Move"
+          }
+        },
+        {
+          "id": "b4key",
+          "kind": "call",
+          "function": "/Script/Engine.KismetInputLibrary:EqualEqual_KeyKey",
+          "defaults": {
+            "B": "SpaceBar"
+          }
+        },
+        {
+          "id": "b4same0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "b4",
+          "kind": "branch"
+        },
+        {
+          "id": "b4value",
+          "kind": "set",
+          "var": "local:ResultSetting",
+          "defaults": {
+            "ResultSetting": "key_up"
+          }
+        },
+        {
+          "id": "b5action",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {
+            "B": "/DenDesignerGF/Editor/IA_Den_Move"
+          }
+        },
+        {
+          "id": "b5key",
+          "kind": "call",
+          "function": "/Script/Engine.KismetInputLibrary:EqualEqual_KeyKey",
+          "defaults": {
+            "B": "LeftControl"
+          }
+        },
+        {
+          "id": "b5same0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "b5",
+          "kind": "branch"
+        },
+        {
+          "id": "b5value",
+          "kind": "set",
+          "var": "local:ResultSetting",
+          "defaults": {
+            "ResultSetting": "key_down"
+          }
+        },
+        {
+          "id": "b6action",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {
+            "B": "/DenDesignerGF/Editor/IA_Den_Fast"
+          }
+        },
+        {
+          "id": "b6key",
+          "kind": "call",
+          "function": "/Script/Engine.KismetInputLibrary:EqualEqual_KeyKey",
+          "defaults": {
+            "B": "LeftShift"
+          }
+        },
+        {
+          "id": "b6same0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "b6",
+          "kind": "branch"
+        },
+        {
+          "id": "b6value",
+          "kind": "set",
+          "var": "local:ResultSetting",
+          "defaults": {
+            "ResultSetting": "key_fast"
+          }
+        },
+        {
+          "id": "b7action",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {
+            "B": "/DenDesignerGF/Editor/IA_Den_Rotate"
+          }
+        },
+        {
+          "id": "b7key",
+          "kind": "call",
+          "function": "/Script/Engine.KismetInputLibrary:EqualEqual_KeyKey",
+          "defaults": {
+            "B": "Q"
+          }
+        },
+        {
+          "id": "b7same0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "b7",
+          "kind": "branch"
+        },
+        {
+          "id": "b7value",
+          "kind": "set",
+          "var": "local:ResultSetting",
+          "defaults": {
+            "ResultSetting": "key_turn_left"
+          }
+        },
+        {
+          "id": "b8action",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {
+            "B": "/DenDesignerGF/Editor/IA_Den_Rotate"
+          }
+        },
+        {
+          "id": "b8key",
+          "kind": "call",
+          "function": "/Script/Engine.KismetInputLibrary:EqualEqual_KeyKey",
+          "defaults": {
+            "B": "E"
+          }
+        },
+        {
+          "id": "b8same0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "b8",
+          "kind": "branch"
+        },
+        {
+          "id": "b8value",
+          "kind": "set",
+          "var": "local:ResultSetting",
+          "defaults": {
+            "ResultSetting": "key_turn_right"
+          }
+        },
+        {
+          "id": "b9action",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {
+            "B": "/DenDesignerGF/Editor/IA_Den_Store"
+          }
+        },
+        {
+          "id": "b9key",
+          "kind": "call",
+          "function": "/Script/Engine.KismetInputLibrary:EqualEqual_KeyKey",
+          "defaults": {
+            "B": "X"
+          }
+        },
+        {
+          "id": "b9same0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "b9",
+          "kind": "branch"
+        },
+        {
+          "id": "b9value",
+          "kind": "set",
+          "var": "local:ResultSetting",
+          "defaults": {
+            "ResultSetting": "key_store"
+          }
+        },
+        {
+          "id": "b10action",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {
+            "B": "/DenDesignerGF/Editor/IA_Den_Duplicate"
+          }
+        },
+        {
+          "id": "b10key",
+          "kind": "call",
+          "function": "/Script/Engine.KismetInputLibrary:EqualEqual_KeyKey",
+          "defaults": {
+            "B": "C"
+          }
+        },
+        {
+          "id": "b10same0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "b10",
+          "kind": "branch"
+        },
+        {
+          "id": "b10value",
+          "kind": "set",
+          "var": "local:ResultSetting",
+          "defaults": {
+            "ResultSetting": "key_copy"
+          }
+        },
+        {
+          "id": "b11action",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {
+            "B": "/DenDesignerGF/Editor/IA_Den_Undo"
+          }
+        },
+        {
+          "id": "b11key",
+          "kind": "call",
+          "function": "/Script/Engine.KismetInputLibrary:EqualEqual_KeyKey",
+          "defaults": {
+            "B": "Z"
+          }
+        },
+        {
+          "id": "b11same0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "b11",
+          "kind": "branch"
+        },
+        {
+          "id": "b11value",
+          "kind": "set",
+          "var": "local:ResultSetting",
+          "defaults": {
+            "ResultSetting": "key_undo"
+          }
+        },
+        {
+          "id": "b12action",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {
+            "B": "/DenDesignerGF/Editor/IA_Den_Redo"
+          }
+        },
+        {
+          "id": "b12key",
+          "kind": "call",
+          "function": "/Script/Engine.KismetInputLibrary:EqualEqual_KeyKey",
+          "defaults": {
+            "B": "Y"
+          }
+        },
+        {
+          "id": "b12same0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "b12",
+          "kind": "branch"
+        },
+        {
+          "id": "b12value",
+          "kind": "set",
+          "var": "local:ResultSetting",
+          "defaults": {
+            "ResultSetting": "key_redo"
+          }
+        },
+        {
+          "id": "b13action",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {
+            "B": "/DenDesignerGF/Editor/IA_Den_Focus"
+          }
+        },
+        {
+          "id": "b13key",
+          "kind": "call",
+          "function": "/Script/Engine.KismetInputLibrary:EqualEqual_KeyKey",
+          "defaults": {
+            "B": "F"
+          }
+        },
+        {
+          "id": "b13same0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "b13",
+          "kind": "branch"
+        },
+        {
+          "id": "b13value",
+          "kind": "set",
+          "var": "local:ResultSetting",
+          "defaults": {
+            "ResultSetting": "key_focus"
+          }
+        },
+        {
+          "id": "b14action",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {
+            "B": "/DenDesignerGF/Editor/IA_Den_Reset"
+          }
+        },
+        {
+          "id": "b14key",
+          "kind": "call",
+          "function": "/Script/Engine.KismetInputLibrary:EqualEqual_KeyKey",
+          "defaults": {
+            "B": "R"
+          }
+        },
+        {
+          "id": "b14same0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "b14",
+          "kind": "branch"
+        },
+        {
+          "id": "b14value",
+          "kind": "set",
+          "var": "local:ResultSetting",
+          "defaults": {
+            "ResultSetting": "key_reset"
+          }
+        },
+        {
+          "id": "b15action",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {
+            "B": "/DenDesignerGF/Editor/IA_Den_Snap"
+          }
+        },
+        {
+          "id": "b15key",
+          "kind": "call",
+          "function": "/Script/Engine.KismetInputLibrary:EqualEqual_KeyKey",
+          "defaults": {
+            "B": "G"
+          }
+        },
+        {
+          "id": "b15same0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "b15",
+          "kind": "branch"
+        },
+        {
+          "id": "b15value",
+          "kind": "set",
+          "var": "local:ResultSetting",
+          "defaults": {
+            "ResultSetting": "key_snap"
+          }
+        },
+        {
+          "id": "b16action",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {
+            "B": "/DenDesignerGF/Editor/IA_Den_Catalog"
+          }
+        },
+        {
+          "id": "b16key",
+          "kind": "call",
+          "function": "/Script/Engine.KismetInputLibrary:EqualEqual_KeyKey",
+          "defaults": {
+            "B": "Tab"
+          }
+        },
+        {
+          "id": "b16same0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "b16",
+          "kind": "branch"
+        },
+        {
+          "id": "b16value",
+          "kind": "set",
+          "var": "local:ResultSetting",
+          "defaults": {
+            "ResultSetting": "key_catalog"
+          }
+        },
+        {
+          "id": "b17action",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {
+            "B": "/DenDesignerGF/Editor/IA_Den_Storeroom"
+          }
+        },
+        {
+          "id": "b17key",
+          "kind": "call",
+          "function": "/Script/Engine.KismetInputLibrary:EqualEqual_KeyKey",
+          "defaults": {
+            "B": "H"
+          }
+        },
+        {
+          "id": "b17same0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "b17",
+          "kind": "branch"
+        },
+        {
+          "id": "b17value",
+          "kind": "set",
+          "var": "local:ResultSetting",
+          "defaults": {
+            "ResultSetting": "key_storeroom"
+          }
+        },
+        {
+          "id": "b18action",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {
+            "B": "/DenDesignerGF/Editor/IA_Den_Layouts"
+          }
+        },
+        {
+          "id": "b18key",
+          "kind": "call",
+          "function": "/Script/Engine.KismetInputLibrary:EqualEqual_KeyKey",
+          "defaults": {
+            "B": "L"
+          }
+        },
+        {
+          "id": "b18same0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "b18",
+          "kind": "branch"
+        },
+        {
+          "id": "b18value",
+          "kind": "set",
+          "var": "local:ResultSetting",
+          "defaults": {
+            "ResultSetting": "key_layouts"
+          }
+        },
+        {
+          "id": "b19action",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {
+            "B": "/DenDesignerGF/Editor/IA_Den_Gimbal"
+          }
+        },
+        {
+          "id": "b19key",
+          "kind": "call",
+          "function": "/Script/Engine.KismetInputLibrary:EqualEqual_KeyKey",
+          "defaults": {
+            "B": "T"
+          }
+        },
+        {
+          "id": "b19same0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "b19",
+          "kind": "branch"
+        },
+        {
+          "id": "b19value",
+          "kind": "set",
+          "var": "local:ResultSetting",
+          "defaults": {
+            "ResultSetting": "key_gimbal"
+          }
+        },
+        {
+          "id": "outSetting",
+          "kind": "get",
+          "var": "local:ResultSetting"
+        }
+      ],
+      "links": [
+        [
+          "entry.Mapping",
+          "fields.EnhancedActionKeyMapping"
+        ],
+        [
+          "fields.Action",
+          "b0action.A"
+        ],
+        [
+          "fields.Key",
+          "b0key.A"
+        ],
+        [
+          "b0action.ReturnValue",
+          "b0same0.A"
+        ],
+        [
+          "b0key.ReturnValue",
+          "b0same0.B"
+        ],
+        [
+          "b0same0.ReturnValue",
+          "b0.Condition"
+        ],
+        [
+          "entry.then",
+          "b0.execute"
+        ],
+        [
+          "b0.then",
+          "b0value.execute"
+        ],
+        [
+          "b0value.then",
+          "result.execute"
+        ],
+        [
+          "fields.Action",
+          "b1action.A"
+        ],
+        [
+          "fields.Key",
+          "b1key.A"
+        ],
+        [
+          "b1action.ReturnValue",
+          "b1same0.A"
+        ],
+        [
+          "b1key.ReturnValue",
+          "b1same0.B"
+        ],
+        [
+          "b1same0.ReturnValue",
+          "b1.Condition"
+        ],
+        [
+          "b0.else",
+          "b1.execute"
+        ],
+        [
+          "b1.then",
+          "b1value.execute"
+        ],
+        [
+          "b1value.then",
+          "result.execute"
+        ],
+        [
+          "fields.Action",
+          "b2action.A"
+        ],
+        [
+          "fields.Key",
+          "b2key.A"
+        ],
+        [
+          "b2action.ReturnValue",
+          "b2same0.A"
+        ],
+        [
+          "b2key.ReturnValue",
+          "b2same0.B"
+        ],
+        [
+          "b2same0.ReturnValue",
+          "b2.Condition"
+        ],
+        [
+          "b1.else",
+          "b2.execute"
+        ],
+        [
+          "b2.then",
+          "b2value.execute"
+        ],
+        [
+          "b2value.then",
+          "result.execute"
+        ],
+        [
+          "fields.Action",
+          "b3action.A"
+        ],
+        [
+          "fields.Key",
+          "b3key.A"
+        ],
+        [
+          "b3action.ReturnValue",
+          "b3same0.A"
+        ],
+        [
+          "b3key.ReturnValue",
+          "b3same0.B"
+        ],
+        [
+          "b3same0.ReturnValue",
+          "b3.Condition"
+        ],
+        [
+          "b2.else",
+          "b3.execute"
+        ],
+        [
+          "b3.then",
+          "b3value.execute"
+        ],
+        [
+          "b3value.then",
+          "result.execute"
+        ],
+        [
+          "fields.Action",
+          "b4action.A"
+        ],
+        [
+          "fields.Key",
+          "b4key.A"
+        ],
+        [
+          "b4action.ReturnValue",
+          "b4same0.A"
+        ],
+        [
+          "b4key.ReturnValue",
+          "b4same0.B"
+        ],
+        [
+          "b4same0.ReturnValue",
+          "b4.Condition"
+        ],
+        [
+          "b3.else",
+          "b4.execute"
+        ],
+        [
+          "b4.then",
+          "b4value.execute"
+        ],
+        [
+          "b4value.then",
+          "result.execute"
+        ],
+        [
+          "fields.Action",
+          "b5action.A"
+        ],
+        [
+          "fields.Key",
+          "b5key.A"
+        ],
+        [
+          "b5action.ReturnValue",
+          "b5same0.A"
+        ],
+        [
+          "b5key.ReturnValue",
+          "b5same0.B"
+        ],
+        [
+          "b5same0.ReturnValue",
+          "b5.Condition"
+        ],
+        [
+          "b4.else",
+          "b5.execute"
+        ],
+        [
+          "b5.then",
+          "b5value.execute"
+        ],
+        [
+          "b5value.then",
+          "result.execute"
+        ],
+        [
+          "fields.Action",
+          "b6action.A"
+        ],
+        [
+          "fields.Key",
+          "b6key.A"
+        ],
+        [
+          "b6action.ReturnValue",
+          "b6same0.A"
+        ],
+        [
+          "b6key.ReturnValue",
+          "b6same0.B"
+        ],
+        [
+          "b6same0.ReturnValue",
+          "b6.Condition"
+        ],
+        [
+          "b5.else",
+          "b6.execute"
+        ],
+        [
+          "b6.then",
+          "b6value.execute"
+        ],
+        [
+          "b6value.then",
+          "result.execute"
+        ],
+        [
+          "fields.Action",
+          "b7action.A"
+        ],
+        [
+          "fields.Key",
+          "b7key.A"
+        ],
+        [
+          "b7action.ReturnValue",
+          "b7same0.A"
+        ],
+        [
+          "b7key.ReturnValue",
+          "b7same0.B"
+        ],
+        [
+          "b7same0.ReturnValue",
+          "b7.Condition"
+        ],
+        [
+          "b6.else",
+          "b7.execute"
+        ],
+        [
+          "b7.then",
+          "b7value.execute"
+        ],
+        [
+          "b7value.then",
+          "result.execute"
+        ],
+        [
+          "fields.Action",
+          "b8action.A"
+        ],
+        [
+          "fields.Key",
+          "b8key.A"
+        ],
+        [
+          "b8action.ReturnValue",
+          "b8same0.A"
+        ],
+        [
+          "b8key.ReturnValue",
+          "b8same0.B"
+        ],
+        [
+          "b8same0.ReturnValue",
+          "b8.Condition"
+        ],
+        [
+          "b7.else",
+          "b8.execute"
+        ],
+        [
+          "b8.then",
+          "b8value.execute"
+        ],
+        [
+          "b8value.then",
+          "result.execute"
+        ],
+        [
+          "fields.Action",
+          "b9action.A"
+        ],
+        [
+          "fields.Key",
+          "b9key.A"
+        ],
+        [
+          "b9action.ReturnValue",
+          "b9same0.A"
+        ],
+        [
+          "b9key.ReturnValue",
+          "b9same0.B"
+        ],
+        [
+          "b9same0.ReturnValue",
+          "b9.Condition"
+        ],
+        [
+          "b8.else",
+          "b9.execute"
+        ],
+        [
+          "b9.then",
+          "b9value.execute"
+        ],
+        [
+          "b9value.then",
+          "result.execute"
+        ],
+        [
+          "fields.Action",
+          "b10action.A"
+        ],
+        [
+          "fields.Key",
+          "b10key.A"
+        ],
+        [
+          "b10action.ReturnValue",
+          "b10same0.A"
+        ],
+        [
+          "b10key.ReturnValue",
+          "b10same0.B"
+        ],
+        [
+          "b10same0.ReturnValue",
+          "b10.Condition"
+        ],
+        [
+          "b9.else",
+          "b10.execute"
+        ],
+        [
+          "b10.then",
+          "b10value.execute"
+        ],
+        [
+          "b10value.then",
+          "result.execute"
+        ],
+        [
+          "fields.Action",
+          "b11action.A"
+        ],
+        [
+          "fields.Key",
+          "b11key.A"
+        ],
+        [
+          "b11action.ReturnValue",
+          "b11same0.A"
+        ],
+        [
+          "b11key.ReturnValue",
+          "b11same0.B"
+        ],
+        [
+          "b11same0.ReturnValue",
+          "b11.Condition"
+        ],
+        [
+          "b10.else",
+          "b11.execute"
+        ],
+        [
+          "b11.then",
+          "b11value.execute"
+        ],
+        [
+          "b11value.then",
+          "result.execute"
+        ],
+        [
+          "fields.Action",
+          "b12action.A"
+        ],
+        [
+          "fields.Key",
+          "b12key.A"
+        ],
+        [
+          "b12action.ReturnValue",
+          "b12same0.A"
+        ],
+        [
+          "b12key.ReturnValue",
+          "b12same0.B"
+        ],
+        [
+          "b12same0.ReturnValue",
+          "b12.Condition"
+        ],
+        [
+          "b11.else",
+          "b12.execute"
+        ],
+        [
+          "b12.then",
+          "b12value.execute"
+        ],
+        [
+          "b12value.then",
+          "result.execute"
+        ],
+        [
+          "fields.Action",
+          "b13action.A"
+        ],
+        [
+          "fields.Key",
+          "b13key.A"
+        ],
+        [
+          "b13action.ReturnValue",
+          "b13same0.A"
+        ],
+        [
+          "b13key.ReturnValue",
+          "b13same0.B"
+        ],
+        [
+          "b13same0.ReturnValue",
+          "b13.Condition"
+        ],
+        [
+          "b12.else",
+          "b13.execute"
+        ],
+        [
+          "b13.then",
+          "b13value.execute"
+        ],
+        [
+          "b13value.then",
+          "result.execute"
+        ],
+        [
+          "fields.Action",
+          "b14action.A"
+        ],
+        [
+          "fields.Key",
+          "b14key.A"
+        ],
+        [
+          "b14action.ReturnValue",
+          "b14same0.A"
+        ],
+        [
+          "b14key.ReturnValue",
+          "b14same0.B"
+        ],
+        [
+          "b14same0.ReturnValue",
+          "b14.Condition"
+        ],
+        [
+          "b13.else",
+          "b14.execute"
+        ],
+        [
+          "b14.then",
+          "b14value.execute"
+        ],
+        [
+          "b14value.then",
+          "result.execute"
+        ],
+        [
+          "fields.Action",
+          "b15action.A"
+        ],
+        [
+          "fields.Key",
+          "b15key.A"
+        ],
+        [
+          "b15action.ReturnValue",
+          "b15same0.A"
+        ],
+        [
+          "b15key.ReturnValue",
+          "b15same0.B"
+        ],
+        [
+          "b15same0.ReturnValue",
+          "b15.Condition"
+        ],
+        [
+          "b14.else",
+          "b15.execute"
+        ],
+        [
+          "b15.then",
+          "b15value.execute"
+        ],
+        [
+          "b15value.then",
+          "result.execute"
+        ],
+        [
+          "fields.Action",
+          "b16action.A"
+        ],
+        [
+          "fields.Key",
+          "b16key.A"
+        ],
+        [
+          "b16action.ReturnValue",
+          "b16same0.A"
+        ],
+        [
+          "b16key.ReturnValue",
+          "b16same0.B"
+        ],
+        [
+          "b16same0.ReturnValue",
+          "b16.Condition"
+        ],
+        [
+          "b15.else",
+          "b16.execute"
+        ],
+        [
+          "b16.then",
+          "b16value.execute"
+        ],
+        [
+          "b16value.then",
+          "result.execute"
+        ],
+        [
+          "fields.Action",
+          "b17action.A"
+        ],
+        [
+          "fields.Key",
+          "b17key.A"
+        ],
+        [
+          "b17action.ReturnValue",
+          "b17same0.A"
+        ],
+        [
+          "b17key.ReturnValue",
+          "b17same0.B"
+        ],
+        [
+          "b17same0.ReturnValue",
+          "b17.Condition"
+        ],
+        [
+          "b16.else",
+          "b17.execute"
+        ],
+        [
+          "b17.then",
+          "b17value.execute"
+        ],
+        [
+          "b17value.then",
+          "result.execute"
+        ],
+        [
+          "fields.Action",
+          "b18action.A"
+        ],
+        [
+          "fields.Key",
+          "b18key.A"
+        ],
+        [
+          "b18action.ReturnValue",
+          "b18same0.A"
+        ],
+        [
+          "b18key.ReturnValue",
+          "b18same0.B"
+        ],
+        [
+          "b18same0.ReturnValue",
+          "b18.Condition"
+        ],
+        [
+          "b17.else",
+          "b18.execute"
+        ],
+        [
+          "b18.then",
+          "b18value.execute"
+        ],
+        [
+          "b18value.then",
+          "result.execute"
+        ],
+        [
+          "fields.Action",
+          "b19action.A"
+        ],
+        [
+          "fields.Key",
+          "b19key.A"
+        ],
+        [
+          "b19action.ReturnValue",
+          "b19same0.A"
+        ],
+        [
+          "b19key.ReturnValue",
+          "b19same0.B"
+        ],
+        [
+          "b19same0.ReturnValue",
+          "b19.Condition"
+        ],
+        [
+          "b18.else",
+          "b19.execute"
+        ],
+        [
+          "b19.then",
+          "b19value.execute"
+        ],
+        [
+          "b19value.then",
+          "result.execute"
+        ],
+        [
+          "b19.else",
+          "result.execute"
+        ],
+        [
+          "outSetting.ResultSetting",
+          "result.Setting"
+        ]
+      ]
+    },
+    {
+      "name": "ValidateBindings",
+      "inputs": [
+        {
+          "name": "Document",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenPreferencesSave"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Valid",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "ResultValid",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "alive",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "b0read",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "key_forward"
+          }
+        },
+        {
+          "id": "b0available",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:BindingAvailable",
+          "defaults": {
+            "Key": "key_forward"
+          }
+        },
+        {
+          "id": "b0free",
+          "kind": "branch"
+        },
+        {
+          "id": "b1read",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "key_back"
+          }
+        },
+        {
+          "id": "b1available",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:BindingAvailable",
+          "defaults": {
+            "Key": "key_back"
+          }
+        },
+        {
+          "id": "b1free",
+          "kind": "branch"
+        },
+        {
+          "id": "b2read",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "key_left"
+          }
+        },
+        {
+          "id": "b2available",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:BindingAvailable",
+          "defaults": {
+            "Key": "key_left"
+          }
+        },
+        {
+          "id": "b2free",
+          "kind": "branch"
+        },
+        {
+          "id": "b3read",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "key_right"
+          }
+        },
+        {
+          "id": "b3available",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:BindingAvailable",
+          "defaults": {
+            "Key": "key_right"
+          }
+        },
+        {
+          "id": "b3free",
+          "kind": "branch"
+        },
+        {
+          "id": "b4read",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "key_up"
+          }
+        },
+        {
+          "id": "b4available",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:BindingAvailable",
+          "defaults": {
+            "Key": "key_up"
+          }
+        },
+        {
+          "id": "b4free",
+          "kind": "branch"
+        },
+        {
+          "id": "b5read",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "key_down"
+          }
+        },
+        {
+          "id": "b5available",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:BindingAvailable",
+          "defaults": {
+            "Key": "key_down"
+          }
+        },
+        {
+          "id": "b5free",
+          "kind": "branch"
+        },
+        {
+          "id": "b6read",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "key_fast"
+          }
+        },
+        {
+          "id": "b6available",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:BindingAvailable",
+          "defaults": {
+            "Key": "key_fast"
+          }
+        },
+        {
+          "id": "b6free",
+          "kind": "branch"
+        },
+        {
+          "id": "b7read",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "key_turn_left"
+          }
+        },
+        {
+          "id": "b7available",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:BindingAvailable",
+          "defaults": {
+            "Key": "key_turn_left"
+          }
+        },
+        {
+          "id": "b7free",
+          "kind": "branch"
+        },
+        {
+          "id": "b8read",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "key_turn_right"
+          }
+        },
+        {
+          "id": "b8available",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:BindingAvailable",
+          "defaults": {
+            "Key": "key_turn_right"
+          }
+        },
+        {
+          "id": "b8free",
+          "kind": "branch"
+        },
+        {
+          "id": "b9read",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "key_store"
+          }
+        },
+        {
+          "id": "b9available",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:BindingAvailable",
+          "defaults": {
+            "Key": "key_store"
+          }
+        },
+        {
+          "id": "b9free",
+          "kind": "branch"
+        },
+        {
+          "id": "b10read",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "key_copy"
+          }
+        },
+        {
+          "id": "b10available",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:BindingAvailable",
+          "defaults": {
+            "Key": "key_copy"
+          }
+        },
+        {
+          "id": "b10free",
+          "kind": "branch"
+        },
+        {
+          "id": "b11read",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "key_undo"
+          }
+        },
+        {
+          "id": "b11available",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:BindingAvailable",
+          "defaults": {
+            "Key": "key_undo"
+          }
+        },
+        {
+          "id": "b11free",
+          "kind": "branch"
+        },
+        {
+          "id": "b12read",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "key_redo"
+          }
+        },
+        {
+          "id": "b12available",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:BindingAvailable",
+          "defaults": {
+            "Key": "key_redo"
+          }
+        },
+        {
+          "id": "b12free",
+          "kind": "branch"
+        },
+        {
+          "id": "b13read",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "key_focus"
+          }
+        },
+        {
+          "id": "b13available",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:BindingAvailable",
+          "defaults": {
+            "Key": "key_focus"
+          }
+        },
+        {
+          "id": "b13free",
+          "kind": "branch"
+        },
+        {
+          "id": "b14read",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "key_reset"
+          }
+        },
+        {
+          "id": "b14available",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:BindingAvailable",
+          "defaults": {
+            "Key": "key_reset"
+          }
+        },
+        {
+          "id": "b14free",
+          "kind": "branch"
+        },
+        {
+          "id": "b15read",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "key_snap"
+          }
+        },
+        {
+          "id": "b15available",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:BindingAvailable",
+          "defaults": {
+            "Key": "key_snap"
+          }
+        },
+        {
+          "id": "b15free",
+          "kind": "branch"
+        },
+        {
+          "id": "b16read",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "key_catalog"
+          }
+        },
+        {
+          "id": "b16available",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:BindingAvailable",
+          "defaults": {
+            "Key": "key_catalog"
+          }
+        },
+        {
+          "id": "b16free",
+          "kind": "branch"
+        },
+        {
+          "id": "b17read",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "key_storeroom"
+          }
+        },
+        {
+          "id": "b17available",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:BindingAvailable",
+          "defaults": {
+            "Key": "key_storeroom"
+          }
+        },
+        {
+          "id": "b17free",
+          "kind": "branch"
+        },
+        {
+          "id": "b18read",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "key_layouts"
+          }
+        },
+        {
+          "id": "b18available",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:BindingAvailable",
+          "defaults": {
+            "Key": "key_layouts"
+          }
+        },
+        {
+          "id": "b18free",
+          "kind": "branch"
+        },
+        {
+          "id": "b19read",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "key_gimbal"
+          }
+        },
+        {
+          "id": "b19available",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:BindingAvailable",
+          "defaults": {
+            "Key": "key_gimbal"
+          }
+        },
+        {
+          "id": "b19free",
+          "kind": "branch"
+        },
+        {
+          "id": "b20read",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "toggle_key"
+          }
+        },
+        {
+          "id": "b20available",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:BindingAvailable",
+          "defaults": {
+            "Key": "toggle_key"
+          }
+        },
+        {
+          "id": "b20free",
+          "kind": "branch"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:ResultValid",
+          "defaults": {
+            "ResultValid": "true"
+          }
+        },
+        {
+          "id": "outValid",
+          "kind": "get",
+          "var": "local:ResultValid"
+        }
+      ],
+      "links": [
+        [
+          "entry.Document",
+          "alive.Object"
+        ],
+        [
+          "alive.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.Document",
+          "b0read.self"
+        ],
+        [
+          "entry.Document",
+          "b0available.self"
+        ],
+        [
+          "b0read.Value",
+          "b0available.Value"
+        ],
+        [
+          "b0available.Available",
+          "b0free.Condition"
+        ],
+        [
+          "valid.then",
+          "b0read.execute"
+        ],
+        [
+          "b0read.then",
+          "b0available.execute"
+        ],
+        [
+          "b0available.then",
+          "b0free.execute"
+        ],
+        [
+          "b0free.else",
+          "result.execute"
+        ],
+        [
+          "entry.Document",
+          "b1read.self"
+        ],
+        [
+          "entry.Document",
+          "b1available.self"
+        ],
+        [
+          "b1read.Value",
+          "b1available.Value"
+        ],
+        [
+          "b1available.Available",
+          "b1free.Condition"
+        ],
+        [
+          "b0free.then",
+          "b1read.execute"
+        ],
+        [
+          "b1read.then",
+          "b1available.execute"
+        ],
+        [
+          "b1available.then",
+          "b1free.execute"
+        ],
+        [
+          "b1free.else",
+          "result.execute"
+        ],
+        [
+          "entry.Document",
+          "b2read.self"
+        ],
+        [
+          "entry.Document",
+          "b2available.self"
+        ],
+        [
+          "b2read.Value",
+          "b2available.Value"
+        ],
+        [
+          "b2available.Available",
+          "b2free.Condition"
+        ],
+        [
+          "b1free.then",
+          "b2read.execute"
+        ],
+        [
+          "b2read.then",
+          "b2available.execute"
+        ],
+        [
+          "b2available.then",
+          "b2free.execute"
+        ],
+        [
+          "b2free.else",
+          "result.execute"
+        ],
+        [
+          "entry.Document",
+          "b3read.self"
+        ],
+        [
+          "entry.Document",
+          "b3available.self"
+        ],
+        [
+          "b3read.Value",
+          "b3available.Value"
+        ],
+        [
+          "b3available.Available",
+          "b3free.Condition"
+        ],
+        [
+          "b2free.then",
+          "b3read.execute"
+        ],
+        [
+          "b3read.then",
+          "b3available.execute"
+        ],
+        [
+          "b3available.then",
+          "b3free.execute"
+        ],
+        [
+          "b3free.else",
+          "result.execute"
+        ],
+        [
+          "entry.Document",
+          "b4read.self"
+        ],
+        [
+          "entry.Document",
+          "b4available.self"
+        ],
+        [
+          "b4read.Value",
+          "b4available.Value"
+        ],
+        [
+          "b4available.Available",
+          "b4free.Condition"
+        ],
+        [
+          "b3free.then",
+          "b4read.execute"
+        ],
+        [
+          "b4read.then",
+          "b4available.execute"
+        ],
+        [
+          "b4available.then",
+          "b4free.execute"
+        ],
+        [
+          "b4free.else",
+          "result.execute"
+        ],
+        [
+          "entry.Document",
+          "b5read.self"
+        ],
+        [
+          "entry.Document",
+          "b5available.self"
+        ],
+        [
+          "b5read.Value",
+          "b5available.Value"
+        ],
+        [
+          "b5available.Available",
+          "b5free.Condition"
+        ],
+        [
+          "b4free.then",
+          "b5read.execute"
+        ],
+        [
+          "b5read.then",
+          "b5available.execute"
+        ],
+        [
+          "b5available.then",
+          "b5free.execute"
+        ],
+        [
+          "b5free.else",
+          "result.execute"
+        ],
+        [
+          "entry.Document",
+          "b6read.self"
+        ],
+        [
+          "entry.Document",
+          "b6available.self"
+        ],
+        [
+          "b6read.Value",
+          "b6available.Value"
+        ],
+        [
+          "b6available.Available",
+          "b6free.Condition"
+        ],
+        [
+          "b5free.then",
+          "b6read.execute"
+        ],
+        [
+          "b6read.then",
+          "b6available.execute"
+        ],
+        [
+          "b6available.then",
+          "b6free.execute"
+        ],
+        [
+          "b6free.else",
+          "result.execute"
+        ],
+        [
+          "entry.Document",
+          "b7read.self"
+        ],
+        [
+          "entry.Document",
+          "b7available.self"
+        ],
+        [
+          "b7read.Value",
+          "b7available.Value"
+        ],
+        [
+          "b7available.Available",
+          "b7free.Condition"
+        ],
+        [
+          "b6free.then",
+          "b7read.execute"
+        ],
+        [
+          "b7read.then",
+          "b7available.execute"
+        ],
+        [
+          "b7available.then",
+          "b7free.execute"
+        ],
+        [
+          "b7free.else",
+          "result.execute"
+        ],
+        [
+          "entry.Document",
+          "b8read.self"
+        ],
+        [
+          "entry.Document",
+          "b8available.self"
+        ],
+        [
+          "b8read.Value",
+          "b8available.Value"
+        ],
+        [
+          "b8available.Available",
+          "b8free.Condition"
+        ],
+        [
+          "b7free.then",
+          "b8read.execute"
+        ],
+        [
+          "b8read.then",
+          "b8available.execute"
+        ],
+        [
+          "b8available.then",
+          "b8free.execute"
+        ],
+        [
+          "b8free.else",
+          "result.execute"
+        ],
+        [
+          "entry.Document",
+          "b9read.self"
+        ],
+        [
+          "entry.Document",
+          "b9available.self"
+        ],
+        [
+          "b9read.Value",
+          "b9available.Value"
+        ],
+        [
+          "b9available.Available",
+          "b9free.Condition"
+        ],
+        [
+          "b8free.then",
+          "b9read.execute"
+        ],
+        [
+          "b9read.then",
+          "b9available.execute"
+        ],
+        [
+          "b9available.then",
+          "b9free.execute"
+        ],
+        [
+          "b9free.else",
+          "result.execute"
+        ],
+        [
+          "entry.Document",
+          "b10read.self"
+        ],
+        [
+          "entry.Document",
+          "b10available.self"
+        ],
+        [
+          "b10read.Value",
+          "b10available.Value"
+        ],
+        [
+          "b10available.Available",
+          "b10free.Condition"
+        ],
+        [
+          "b9free.then",
+          "b10read.execute"
+        ],
+        [
+          "b10read.then",
+          "b10available.execute"
+        ],
+        [
+          "b10available.then",
+          "b10free.execute"
+        ],
+        [
+          "b10free.else",
+          "result.execute"
+        ],
+        [
+          "entry.Document",
+          "b11read.self"
+        ],
+        [
+          "entry.Document",
+          "b11available.self"
+        ],
+        [
+          "b11read.Value",
+          "b11available.Value"
+        ],
+        [
+          "b11available.Available",
+          "b11free.Condition"
+        ],
+        [
+          "b10free.then",
+          "b11read.execute"
+        ],
+        [
+          "b11read.then",
+          "b11available.execute"
+        ],
+        [
+          "b11available.then",
+          "b11free.execute"
+        ],
+        [
+          "b11free.else",
+          "result.execute"
+        ],
+        [
+          "entry.Document",
+          "b12read.self"
+        ],
+        [
+          "entry.Document",
+          "b12available.self"
+        ],
+        [
+          "b12read.Value",
+          "b12available.Value"
+        ],
+        [
+          "b12available.Available",
+          "b12free.Condition"
+        ],
+        [
+          "b11free.then",
+          "b12read.execute"
+        ],
+        [
+          "b12read.then",
+          "b12available.execute"
+        ],
+        [
+          "b12available.then",
+          "b12free.execute"
+        ],
+        [
+          "b12free.else",
+          "result.execute"
+        ],
+        [
+          "entry.Document",
+          "b13read.self"
+        ],
+        [
+          "entry.Document",
+          "b13available.self"
+        ],
+        [
+          "b13read.Value",
+          "b13available.Value"
+        ],
+        [
+          "b13available.Available",
+          "b13free.Condition"
+        ],
+        [
+          "b12free.then",
+          "b13read.execute"
+        ],
+        [
+          "b13read.then",
+          "b13available.execute"
+        ],
+        [
+          "b13available.then",
+          "b13free.execute"
+        ],
+        [
+          "b13free.else",
+          "result.execute"
+        ],
+        [
+          "entry.Document",
+          "b14read.self"
+        ],
+        [
+          "entry.Document",
+          "b14available.self"
+        ],
+        [
+          "b14read.Value",
+          "b14available.Value"
+        ],
+        [
+          "b14available.Available",
+          "b14free.Condition"
+        ],
+        [
+          "b13free.then",
+          "b14read.execute"
+        ],
+        [
+          "b14read.then",
+          "b14available.execute"
+        ],
+        [
+          "b14available.then",
+          "b14free.execute"
+        ],
+        [
+          "b14free.else",
+          "result.execute"
+        ],
+        [
+          "entry.Document",
+          "b15read.self"
+        ],
+        [
+          "entry.Document",
+          "b15available.self"
+        ],
+        [
+          "b15read.Value",
+          "b15available.Value"
+        ],
+        [
+          "b15available.Available",
+          "b15free.Condition"
+        ],
+        [
+          "b14free.then",
+          "b15read.execute"
+        ],
+        [
+          "b15read.then",
+          "b15available.execute"
+        ],
+        [
+          "b15available.then",
+          "b15free.execute"
+        ],
+        [
+          "b15free.else",
+          "result.execute"
+        ],
+        [
+          "entry.Document",
+          "b16read.self"
+        ],
+        [
+          "entry.Document",
+          "b16available.self"
+        ],
+        [
+          "b16read.Value",
+          "b16available.Value"
+        ],
+        [
+          "b16available.Available",
+          "b16free.Condition"
+        ],
+        [
+          "b15free.then",
+          "b16read.execute"
+        ],
+        [
+          "b16read.then",
+          "b16available.execute"
+        ],
+        [
+          "b16available.then",
+          "b16free.execute"
+        ],
+        [
+          "b16free.else",
+          "result.execute"
+        ],
+        [
+          "entry.Document",
+          "b17read.self"
+        ],
+        [
+          "entry.Document",
+          "b17available.self"
+        ],
+        [
+          "b17read.Value",
+          "b17available.Value"
+        ],
+        [
+          "b17available.Available",
+          "b17free.Condition"
+        ],
+        [
+          "b16free.then",
+          "b17read.execute"
+        ],
+        [
+          "b17read.then",
+          "b17available.execute"
+        ],
+        [
+          "b17available.then",
+          "b17free.execute"
+        ],
+        [
+          "b17free.else",
+          "result.execute"
+        ],
+        [
+          "entry.Document",
+          "b18read.self"
+        ],
+        [
+          "entry.Document",
+          "b18available.self"
+        ],
+        [
+          "b18read.Value",
+          "b18available.Value"
+        ],
+        [
+          "b18available.Available",
+          "b18free.Condition"
+        ],
+        [
+          "b17free.then",
+          "b18read.execute"
+        ],
+        [
+          "b18read.then",
+          "b18available.execute"
+        ],
+        [
+          "b18available.then",
+          "b18free.execute"
+        ],
+        [
+          "b18free.else",
+          "result.execute"
+        ],
+        [
+          "entry.Document",
+          "b19read.self"
+        ],
+        [
+          "entry.Document",
+          "b19available.self"
+        ],
+        [
+          "b19read.Value",
+          "b19available.Value"
+        ],
+        [
+          "b19available.Available",
+          "b19free.Condition"
+        ],
+        [
+          "b18free.then",
+          "b19read.execute"
+        ],
+        [
+          "b19read.then",
+          "b19available.execute"
+        ],
+        [
+          "b19available.then",
+          "b19free.execute"
+        ],
+        [
+          "b19free.else",
+          "result.execute"
+        ],
+        [
+          "entry.Document",
+          "b20read.self"
+        ],
+        [
+          "entry.Document",
+          "b20available.self"
+        ],
+        [
+          "b20read.Value",
+          "b20available.Value"
+        ],
+        [
+          "b20available.Available",
+          "b20free.Condition"
+        ],
+        [
+          "b19free.then",
+          "b20read.execute"
+        ],
+        [
+          "b20read.then",
+          "b20available.execute"
+        ],
+        [
+          "b20available.then",
+          "b20free.execute"
+        ],
+        [
+          "b20free.else",
+          "result.execute"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "b20free.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ],
+        [
+          "outValid.ResultValid",
+          "result.Valid"
+        ]
+      ]
+    },
+    {
+      "name": "BuildEditorContext",
+      "inputs": [
+        {
+          "name": "Document",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenPreferencesSave"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Context",
+          "type": "object:/Script/EnhancedInput.InputMappingContext"
+        },
+        {
+          "name": "Accepted",
+          "type": "bool"
+        },
+        {
+          "name": "UsedDefaults",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "ChosenKey",
+          "type": "struct:/Script/InputCore.Key"
+        },
+        {
+          "name": "ResultContext",
+          "type": "object:/Script/EnhancedInput.InputMappingContext"
+        },
+        {
+          "name": "ResultAccepted",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "ResultUsedDefaults",
+          "type": "bool",
+          "default": "true"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "template",
+          "kind": "get",
+          "var": "Template"
+        },
+        {
+          "id": "templatealive",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "templatevalid",
+          "kind": "branch"
+        },
+        {
+          "id": "validate",
+          "kind": "call",
+          "function": "self:ValidateBindings",
+          "defaults": {}
+        },
+        {
+          "id": "defaultflag",
+          "kind": "set",
+          "var": "local:ResultUsedDefaults"
+        },
+        {
+          "id": "fallback",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "create",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:SpawnObject",
+          "defaults": {
+            "ObjectClass": "/Script/EnhancedInput.InputMappingContext"
+          }
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/Script/EnhancedInput.InputMappingContext"
+        },
+        {
+          "id": "codec",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:SpawnObject",
+          "defaults": {
+            "ObjectClass": "/DenDesignerGF/Runtime/BP_DenKeyNames"
+          }
+        },
+        {
+          "id": "keycast",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenKeyNames"
+        },
+        {
+          "id": "source",
+          "kind": "get",
+          "var": "/Script/EnhancedInput.InputMappingContext:Mappings"
+        },
+        {
+          "id": "length",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "row",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "fields",
+          "kind": "break_struct",
+          "struct": "/Script/EnhancedInput.EnhancedActionKeyMapping"
+        },
+        {
+          "id": "original",
+          "kind": "set",
+          "var": "local:ChosenKey"
+        },
+        {
+          "id": "binding",
+          "kind": "call",
+          "function": "self:BindingForMapping",
+          "defaults": {}
+        },
+        {
+          "id": "setting",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:NotEqual_StrStr",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "canoverride0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "override",
+          "kind": "branch"
+        },
+        {
+          "id": "read",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {}
+        },
+        {
+          "id": "resolve",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenKeyNames:KeyFromName",
+          "defaults": {}
+        },
+        {
+          "id": "known",
+          "kind": "branch"
+        },
+        {
+          "id": "chosen",
+          "kind": "set",
+          "var": "local:ChosenKey"
+        },
+        {
+          "id": "key",
+          "kind": "get",
+          "var": "local:ChosenKey"
+        },
+        {
+          "id": "mapping",
+          "kind": "make_struct",
+          "struct": "/Script/EnhancedInput.EnhancedActionKeyMapping"
+        },
+        {
+          "id": "target",
+          "kind": "get",
+          "var": "/Script/EnhancedInput.InputMappingContext:Mappings"
+        },
+        {
+          "id": "append",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "next",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "add",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "context",
+          "kind": "set",
+          "var": "local:ResultContext"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:ResultAccepted",
+          "defaults": {
+            "ResultAccepted": "true"
+          }
+        },
+        {
+          "id": "outContext",
+          "kind": "get",
+          "var": "local:ResultContext"
+        },
+        {
+          "id": "outAccepted",
+          "kind": "get",
+          "var": "local:ResultAccepted"
+        },
+        {
+          "id": "outUsedDefaults",
+          "kind": "get",
+          "var": "local:ResultUsedDefaults"
+        }
+      ],
+      "links": [
+        [
+          "template.Template",
+          "templatealive.Object"
+        ],
+        [
+          "templatealive.ReturnValue",
+          "templatevalid.Condition"
+        ],
+        [
+          "entry.Document",
+          "validate.Document"
+        ],
+        [
+          "validate.Valid",
+          "fallback.A"
+        ],
+        [
+          "fallback.ReturnValue",
+          "defaultflag.ResultUsedDefaults"
+        ],
+        [
+          "self.self",
+          "create.Outer"
+        ],
+        [
+          "create.ReturnValue",
+          "cast.Object"
+        ],
+        [
+          "self.self",
+          "codec.Outer"
+        ],
+        [
+          "codec.ReturnValue",
+          "keycast.Object"
+        ],
+        [
+          "template.Template",
+          "source.self"
+        ],
+        [
+          "source.Mappings",
+          "length.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "length.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "source.Mappings",
+          "row.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "row.Index"
+        ],
+        [
+          "row.Item",
+          "fields.EnhancedActionKeyMapping"
+        ],
+        [
+          "fields.Key",
+          "original.ChosenKey"
+        ],
+        [
+          "row.Item",
+          "binding.Mapping"
+        ],
+        [
+          "binding.Setting",
+          "setting.A"
+        ],
+        [
+          "validate.Valid",
+          "canoverride0.A"
+        ],
+        [
+          "setting.ReturnValue",
+          "canoverride0.B"
+        ],
+        [
+          "canoverride0.ReturnValue",
+          "override.Condition"
+        ],
+        [
+          "entry.Document",
+          "read.self"
+        ],
+        [
+          "binding.Setting",
+          "read.Key"
+        ],
+        [
+          "keycast.AsBP Den Key Names",
+          "resolve.self"
+        ],
+        [
+          "read.Value",
+          "resolve.Name"
+        ],
+        [
+          "resolve.Known",
+          "known.Condition"
+        ],
+        [
+          "resolve.Key",
+          "chosen.ChosenKey"
+        ],
+        [
+          "fields.Action",
+          "mapping.Action"
+        ],
+        [
+          "fields.Modifiers",
+          "mapping.Modifiers"
+        ],
+        [
+          "fields.Triggers",
+          "mapping.Triggers"
+        ],
+        [
+          "key.ChosenKey",
+          "mapping.Key"
+        ],
+        [
+          "cast.AsInput Mapping Context",
+          "target.self"
+        ],
+        [
+          "target.Mappings",
+          "append.TargetArray"
+        ],
+        [
+          "mapping.EnhancedActionKeyMapping",
+          "append.NewItem"
+        ],
+        [
+          "i.Cursor",
+          "add.A"
+        ],
+        [
+          "add.ReturnValue",
+          "next.Cursor"
+        ],
+        [
+          "cast.AsInput Mapping Context",
+          "context.ResultContext"
+        ],
+        [
+          "entry.then",
+          "templatevalid.execute"
+        ],
+        [
+          "templatevalid.then",
+          "validate.execute"
+        ],
+        [
+          "validate.then",
+          "defaultflag.execute"
+        ],
+        [
+          "defaultflag.then",
+          "create.execute"
+        ],
+        [
+          "create.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "codec.execute"
+        ],
+        [
+          "codec.then",
+          "keycast.execute"
+        ],
+        [
+          "keycast.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "original.execute"
+        ],
+        [
+          "original.then",
+          "binding.execute"
+        ],
+        [
+          "binding.then",
+          "override.execute"
+        ],
+        [
+          "override.then",
+          "read.execute"
+        ],
+        [
+          "read.then",
+          "resolve.execute"
+        ],
+        [
+          "resolve.then",
+          "known.execute"
+        ],
+        [
+          "known.then",
+          "chosen.execute"
+        ],
+        [
+          "chosen.then",
+          "append.execute"
+        ],
+        [
+          "append.then",
+          "next.execute"
+        ],
+        [
+          "next.then",
+          "loop.execute"
+        ],
+        [
+          "override.else",
+          "append.execute"
+        ],
+        [
+          "known.else",
+          "result.execute"
+        ],
+        [
+          "loop.else",
+          "context.execute"
+        ],
+        [
+          "context.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "templatevalid.else",
+          "result.execute"
+        ],
+        [
+          "cast.CastFailed",
+          "result.execute"
+        ],
+        [
+          "keycast.CastFailed",
+          "result.execute"
+        ],
+        [
+          "outContext.ResultContext",
+          "result.Context"
+        ],
+        [
+          "outAccepted.ResultAccepted",
+          "result.Accepted"
+        ],
+        [
+          "outUsedDefaults.ResultUsedDefaults",
+          "result.UsedDefaults"
+        ]
+      ]
+    }
+  ]
+}

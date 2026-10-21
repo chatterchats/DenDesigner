@@ -1,0 +1,17 @@
+{
+  "kind": "struct",
+  "path": "/DenDesignerGF/Runtime/ST_DenApplyIssue",
+  "guid": "af04a73c-a78a-5478-a9ad-784daefb931a",
+  "fields": [
+    {
+      "name": "Value",
+      "type": "struct:/DenDesignerGF/Runtime/ST_DenEntry",
+      "guid": "b02cc3ad-2680-5f39-a78a-27840e46f2d7"
+    },
+    {
+      "name": "Code",
+      "type": "int",
+      "guid": "ff9e393e-8c12-5dba-ba4c-26c00668ba80"
+    }
+  ]
+}

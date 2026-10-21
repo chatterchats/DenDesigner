@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "plugin": "MyFurniture",
+  "id": "my-furniture",
+  "title": "My Furniture",
+  "author": "Your name",
+  "version": "1.0.0",
+  "props": [
+    {
+      "name": "Chair",
+      "mesh": "/MyFurniture/Meshes/SM_Chair.SM_Chair",
+      "size": [
+        50,
+        50,
+        90
+      ],
+      "collision": true,
+      "tags": "chair furniture",
+      "description": ""
+    }
+  ]
+}

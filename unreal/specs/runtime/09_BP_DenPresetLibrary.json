@@ -1,0 +1,78 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenPresetLibrary",
+  "parent": "/Script/Engine.SaveGame",
+  "variables": [
+    {
+      "name": "SchemaVersion",
+      "type": "int",
+      "default": "1"
+    },
+    {
+      "name": "StorageKey",
+      "type": "string"
+    },
+    {
+      "name": "Scope",
+      "type": "string",
+      "default": "preset-library"
+    },
+    {
+      "name": "CampaignID",
+      "type": "string"
+    },
+    {
+      "name": "Enabled",
+      "type": "bool",
+      "default": "true"
+    },
+    {
+      "name": "DisplayName",
+      "type": "string"
+    },
+    {
+      "name": "GameVersion",
+      "type": "string"
+    },
+    {
+      "name": "Revision",
+      "type": "int64",
+      "default": "0"
+    },
+    {
+      "name": "ContentID",
+      "type": "string"
+    },
+    {
+      "name": "DraftBaseRevision",
+      "type": "int64",
+      "default": "0"
+    },
+    {
+      "name": "DraftBaseID",
+      "type": "string"
+    },
+    {
+      "name": "WrittenAt",
+      "type": "string"
+    },
+    {
+      "name": "IsDraft",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "EntryCount",
+      "type": "int",
+      "default": "0"
+    },
+    {
+      "name": "Entries",
+      "type": "struct:/DenDesignerGF/Runtime/ST_DenPresetValue[]"
+    },
+    {
+      "name": "WriteCompleteID",
+      "type": "string"
+    }
+  ]
+}

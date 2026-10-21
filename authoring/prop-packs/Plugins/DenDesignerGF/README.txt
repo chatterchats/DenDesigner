@@ -1,0 +1,1 @@
+Editor authoring reference only. Keep this plugin in Plugins/DenDesignerGF, not Mods or Plugins/GameFeatures. Do not install or ship it with your pack. The real Den Designer supplies this class in game.

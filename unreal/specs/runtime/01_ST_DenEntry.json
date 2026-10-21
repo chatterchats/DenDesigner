@@ -1,0 +1,88 @@
+{
+  "kind": "struct",
+  "path": "/DenDesignerGF/Runtime/ST_DenEntry",
+  "guid": "a24576f7-d187-5874-8f14-dece0e5757a6",
+  "fields": [
+    {
+      "name": "Kind",
+      "type": "int",
+      "guid": "dea248b3-4aa0-5519-8589-7d2cdb22be03"
+    },
+    {
+      "name": "Key",
+      "type": "string",
+      "guid": "7d56cfdf-3a78-553a-9711-09debec042c9"
+    },
+    {
+      "name": "Mesh",
+      "type": "string",
+      "guid": "97cd0b73-2eb9-595a-9f71-85f3012f749f"
+    },
+    {
+      "name": "Position",
+      "type": "vector",
+      "guid": "52d62f16-21d5-5986-8b25-933babe5ea25"
+    },
+    {
+      "name": "Rotation",
+      "type": "rotator",
+      "guid": "a7dbc92d-4631-5911-aa2c-201e77816aea"
+    },
+    {
+      "name": "Scale",
+      "type": "vector",
+      "default": "1,1,1",
+      "guid": "0290e93f-a572-519a-a6b2-d4f7b48e3d30"
+    },
+    {
+      "name": "HasPosition",
+      "type": "bool",
+      "guid": "c858ea98-d927-530d-b253-1a8ca0cb062c"
+    },
+    {
+      "name": "HasRotation",
+      "type": "bool",
+      "guid": "672f76cf-81c9-5a44-9249-f22ff8d3c00e"
+    },
+    {
+      "name": "HasScale",
+      "type": "bool",
+      "guid": "75418a43-0b30-561f-a3f1-3ef561f40558"
+    },
+    {
+      "name": "Hidden",
+      "type": "bool",
+      "guid": "4c8d16cf-c156-5568-93df-f41c9cb45a42"
+    },
+    {
+      "name": "CollisionMode",
+      "type": "int",
+      "guid": "9cc599c1-b632-5399-8ac3-6db84afd174d"
+    },
+    {
+      "name": "Materials",
+      "type": "string[]",
+      "guid": "5081fcd9-9b34-5656-8018-04242b9b1b9c"
+    },
+    {
+      "name": "Source",
+      "type": "string",
+      "guid": "715c01e0-a69a-59cd-bc19-ef6f871fe7b4"
+    },
+    {
+      "name": "HasFingerprint",
+      "type": "bool",
+      "guid": "4e2d7152-9fca-53ae-a523-7efbd40cbacb"
+    },
+    {
+      "name": "FingerprintMesh",
+      "type": "string",
+      "guid": "85464573-524d-580e-a520-889e8f7d86ae"
+    },
+    {
+      "name": "FingerprintPosition",
+      "type": "vector",
+      "guid": "b6f69c7c-e39c-5cf3-af9b-290f1b4efbd5"
+    }
+  ]
+}

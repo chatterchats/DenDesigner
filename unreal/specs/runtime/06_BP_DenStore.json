@@ -1,0 +1,3949 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenStore",
+  "parent": "/Script/CoreUObject.Object",
+  "functions": [
+    {
+      "name": "ValidKey",
+      "inputs": [
+        {
+          "name": "Key",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Valid",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "IsValidKey",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "size",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Len",
+          "defaults": {}
+        },
+        {
+          "id": "low",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "high",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "96"
+          }
+        },
+        {
+          "id": "lengthok0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "length",
+          "kind": "branch"
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "char",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:GetCharacterAsNumber",
+          "defaults": {}
+        },
+        {
+          "id": "upperlo",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "65"
+          }
+        },
+        {
+          "id": "upperhi",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "90"
+          }
+        },
+        {
+          "id": "upper0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "lowerlo",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "97"
+          }
+        },
+        {
+          "id": "lowerhi",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "122"
+          }
+        },
+        {
+          "id": "lower0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "digitlo",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "48"
+          }
+        },
+        {
+          "id": "digithi",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "57"
+          }
+        },
+        {
+          "id": "digit0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "dash",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "45"
+          }
+        },
+        {
+          "id": "underscore",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "95"
+          }
+        },
+        {
+          "id": "any0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "any1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "any2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "any3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "allowed",
+          "kind": "branch"
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "valid",
+          "kind": "set",
+          "var": "local:IsValidKey",
+          "defaults": {
+            "IsValidKey": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:IsValidKey"
+        }
+      ],
+      "links": [
+        [
+          "entry.Key",
+          "size.S"
+        ],
+        [
+          "size.ReturnValue",
+          "low.A"
+        ],
+        [
+          "size.ReturnValue",
+          "high.A"
+        ],
+        [
+          "low.ReturnValue",
+          "lengthok0.A"
+        ],
+        [
+          "high.ReturnValue",
+          "lengthok0.B"
+        ],
+        [
+          "lengthok0.ReturnValue",
+          "length.Condition"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "size.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "entry.Key",
+          "char.SourceString"
+        ],
+        [
+          "i.Cursor",
+          "char.Index"
+        ],
+        [
+          "char.ReturnValue",
+          "upperlo.A"
+        ],
+        [
+          "char.ReturnValue",
+          "upperhi.A"
+        ],
+        [
+          "upperlo.ReturnValue",
+          "upper0.A"
+        ],
+        [
+          "upperhi.ReturnValue",
+          "upper0.B"
+        ],
+        [
+          "char.ReturnValue",
+          "lowerlo.A"
+        ],
+        [
+          "char.ReturnValue",
+          "lowerhi.A"
+        ],
+        [
+          "lowerlo.ReturnValue",
+          "lower0.A"
+        ],
+        [
+          "lowerhi.ReturnValue",
+          "lower0.B"
+        ],
+        [
+          "char.ReturnValue",
+          "digitlo.A"
+        ],
+        [
+          "char.ReturnValue",
+          "digithi.A"
+        ],
+        [
+          "digitlo.ReturnValue",
+          "digit0.A"
+        ],
+        [
+          "digithi.ReturnValue",
+          "digit0.B"
+        ],
+        [
+          "char.ReturnValue",
+          "dash.A"
+        ],
+        [
+          "char.ReturnValue",
+          "underscore.A"
+        ],
+        [
+          "upper0.ReturnValue",
+          "any0.A"
+        ],
+        [
+          "lower0.ReturnValue",
+          "any0.B"
+        ],
+        [
+          "any0.ReturnValue",
+          "any1.A"
+        ],
+        [
+          "digit0.ReturnValue",
+          "any1.B"
+        ],
+        [
+          "any1.ReturnValue",
+          "any2.A"
+        ],
+        [
+          "dash.ReturnValue",
+          "any2.B"
+        ],
+        [
+          "any2.ReturnValue",
+          "any3.A"
+        ],
+        [
+          "underscore.ReturnValue",
+          "any3.B"
+        ],
+        [
+          "any3.ReturnValue",
+          "allowed.Condition"
+        ],
+        [
+          "i.Cursor",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.Cursor"
+        ],
+        [
+          "out.IsValidKey",
+          "result.Valid"
+        ],
+        [
+          "entry.then",
+          "length.execute"
+        ],
+        [
+          "length.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "allowed.execute"
+        ],
+        [
+          "allowed.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "loop.execute"
+        ],
+        [
+          "length.else",
+          "result.execute"
+        ],
+        [
+          "allowed.else",
+          "result.execute"
+        ],
+        [
+          "loop.else",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "BankSlot",
+      "inputs": [
+        {
+          "name": "Key",
+          "type": "string"
+        },
+        {
+          "name": "Bank",
+          "type": "int"
+        },
+        {
+          "name": "Draft",
+          "type": "bool"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Slot",
+          "type": "string"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "suffix",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectString",
+          "defaults": {
+            "A": "-draft-",
+            "B": "-layout-"
+          }
+        },
+        {
+          "id": "prefix",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "A": "ZComDen/Native/v1/"
+          }
+        },
+        {
+          "id": "keyed",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "number",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Conv_IntToString",
+          "defaults": {}
+        },
+        {
+          "id": "slot",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "entry.Draft",
+          "suffix.bPickA"
+        ],
+        [
+          "entry.Key",
+          "prefix.B"
+        ],
+        [
+          "prefix.ReturnValue",
+          "keyed.A"
+        ],
+        [
+          "suffix.ReturnValue",
+          "keyed.B"
+        ],
+        [
+          "entry.Bank",
+          "number.InInt"
+        ],
+        [
+          "keyed.ReturnValue",
+          "slot.A"
+        ],
+        [
+          "number.ReturnValue",
+          "slot.B"
+        ],
+        [
+          "slot.ReturnValue",
+          "result.Slot"
+        ],
+        [
+          "entry.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "LoadLayout",
+      "inputs": [
+        {
+          "name": "Key",
+          "type": "string"
+        },
+        {
+          "name": "Draft",
+          "type": "bool"
+        },
+        {
+          "name": "BeforeRevision",
+          "type": "int64"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Document",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        },
+        {
+          "name": "Status",
+          "type": "int"
+        },
+        {
+          "name": "Bank",
+          "type": "int"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "Best",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        },
+        {
+          "name": "BestRevision",
+          "type": "int64",
+          "default": "0"
+        },
+        {
+          "name": "BestBank",
+          "type": "int",
+          "default": "-1"
+        },
+        {
+          "name": "HasDamage",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "HasFuture",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "LoadStatus",
+          "type": "int",
+          "default": "0"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "key",
+          "kind": "call",
+          "function": "self:ValidKey",
+          "defaults": {}
+        },
+        {
+          "id": "beforeok",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_Int64Int64",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "requestok0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "invalid",
+          "kind": "set",
+          "var": "local:LoadStatus",
+          "defaults": {
+            "LoadStatus": "5"
+          }
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "banks",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectInt",
+          "defaults": {
+            "A": "2",
+            "B": "6"
+          }
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "slot",
+          "kind": "call",
+          "function": "self:BankSlot",
+          "defaults": {}
+        },
+        {
+          "id": "exists",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:DoesSaveGameExist",
+          "defaults": {
+            "UserIndex": "0"
+          }
+        },
+        {
+          "id": "has",
+          "kind": "branch"
+        },
+        {
+          "id": "load",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:LoadGameFromSlot",
+          "defaults": {
+            "UserIndex": "0"
+          }
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        },
+        {
+          "id": "candidateSchemaVersion",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:SchemaVersion"
+        },
+        {
+          "id": "candidateStorageKey",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:StorageKey"
+        },
+        {
+          "id": "candidateRevision",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Revision"
+        },
+        {
+          "id": "candidateIsDraft",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:IsDraft"
+        },
+        {
+          "id": "candidateContentID",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:ContentID"
+        },
+        {
+          "id": "candidateEntryCount",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:EntryCount"
+        },
+        {
+          "id": "candidateEntries",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Entries"
+        },
+        {
+          "id": "candidateWriteCompleteID",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:WriteCompleteID"
+        },
+        {
+          "id": "future",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "isfuture",
+          "kind": "branch"
+        },
+        {
+          "id": "rememberfuture",
+          "kind": "set",
+          "var": "local:HasFuture",
+          "defaults": {
+            "HasFuture": "true"
+          }
+        },
+        {
+          "id": "schema",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "samekey",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "samedraft",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_BoolBool",
+          "defaults": {}
+        },
+        {
+          "id": "positive",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_Int64Int64",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "entrycount",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length"
+        },
+        {
+          "id": "hasid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:NotEqual_StrStr",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "complete",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "countmatches",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "saneall0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "saneall1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "saneall2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "saneall3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "saneall4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "saneall5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "sane",
+          "kind": "branch"
+        },
+        {
+          "id": "damage",
+          "kind": "set",
+          "var": "local:HasDamage",
+          "defaults": {
+            "HasDamage": "true"
+          }
+        },
+        {
+          "id": "bestrev",
+          "kind": "get",
+          "var": "local:BestRevision"
+        },
+        {
+          "id": "newer",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_Int64Int64",
+          "defaults": {}
+        },
+        {
+          "id": "unbounded",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_Int64Int64",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "older",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_Int64Int64",
+          "defaults": {}
+        },
+        {
+          "id": "below0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "eligible0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "choose",
+          "kind": "branch"
+        },
+        {
+          "id": "best",
+          "kind": "set",
+          "var": "local:Best"
+        },
+        {
+          "id": "bestrevision",
+          "kind": "set",
+          "var": "local:BestRevision"
+        },
+        {
+          "id": "bestbank",
+          "kind": "set",
+          "var": "local:BestBank"
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "futureread",
+          "kind": "get",
+          "var": "local:HasFuture"
+        },
+        {
+          "id": "finishfuture",
+          "kind": "branch"
+        },
+        {
+          "id": "unsupported",
+          "kind": "set",
+          "var": "local:LoadStatus",
+          "defaults": {
+            "LoadStatus": "4"
+          }
+        },
+        {
+          "id": "clearbest",
+          "kind": "set",
+          "var": "local:Best"
+        },
+        {
+          "id": "bestread",
+          "kind": "get",
+          "var": "local:Best"
+        },
+        {
+          "id": "hasbest",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "finishbest",
+          "kind": "branch"
+        },
+        {
+          "id": "damageread",
+          "kind": "get",
+          "var": "local:HasDamage"
+        },
+        {
+          "id": "recovered",
+          "kind": "branch"
+        },
+        {
+          "id": "broken",
+          "kind": "branch"
+        },
+        {
+          "id": "normal",
+          "kind": "set",
+          "var": "local:LoadStatus",
+          "defaults": {
+            "LoadStatus": "1"
+          }
+        },
+        {
+          "id": "recovery",
+          "kind": "set",
+          "var": "local:LoadStatus",
+          "defaults": {
+            "LoadStatus": "2"
+          }
+        },
+        {
+          "id": "corrupt",
+          "kind": "set",
+          "var": "local:LoadStatus",
+          "defaults": {
+            "LoadStatus": "3"
+          }
+        },
+        {
+          "id": "statusread",
+          "kind": "get",
+          "var": "local:LoadStatus"
+        },
+        {
+          "id": "bankread",
+          "kind": "get",
+          "var": "local:BestBank"
+        }
+      ],
+      "links": [
+        [
+          "entry.Key",
+          "key.Key"
+        ],
+        [
+          "entry.BeforeRevision",
+          "beforeok.A"
+        ],
+        [
+          "key.Valid",
+          "requestok0.A"
+        ],
+        [
+          "beforeok.ReturnValue",
+          "requestok0.B"
+        ],
+        [
+          "requestok0.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.Draft",
+          "banks.bPickA"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "banks.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "entry.Key",
+          "slot.Key"
+        ],
+        [
+          "entry.Draft",
+          "slot.Draft"
+        ],
+        [
+          "i.Cursor",
+          "slot.Bank"
+        ],
+        [
+          "slot.Slot",
+          "exists.SlotName"
+        ],
+        [
+          "exists.ReturnValue",
+          "has.Condition"
+        ],
+        [
+          "slot.Slot",
+          "load.SlotName"
+        ],
+        [
+          "load.ReturnValue",
+          "cast.Object"
+        ],
+        [
+          "cast.AsBP Den Layout Save",
+          "candidateSchemaVersion.self"
+        ],
+        [
+          "cast.AsBP Den Layout Save",
+          "candidateStorageKey.self"
+        ],
+        [
+          "cast.AsBP Den Layout Save",
+          "candidateRevision.self"
+        ],
+        [
+          "cast.AsBP Den Layout Save",
+          "candidateIsDraft.self"
+        ],
+        [
+          "cast.AsBP Den Layout Save",
+          "candidateContentID.self"
+        ],
+        [
+          "cast.AsBP Den Layout Save",
+          "candidateEntryCount.self"
+        ],
+        [
+          "cast.AsBP Den Layout Save",
+          "candidateEntries.self"
+        ],
+        [
+          "cast.AsBP Den Layout Save",
+          "candidateWriteCompleteID.self"
+        ],
+        [
+          "candidateSchemaVersion.SchemaVersion",
+          "future.A"
+        ],
+        [
+          "future.ReturnValue",
+          "isfuture.Condition"
+        ],
+        [
+          "candidateSchemaVersion.SchemaVersion",
+          "schema.A"
+        ],
+        [
+          "candidateStorageKey.StorageKey",
+          "samekey.A"
+        ],
+        [
+          "entry.Key",
+          "samekey.B"
+        ],
+        [
+          "candidateIsDraft.IsDraft",
+          "samedraft.A"
+        ],
+        [
+          "entry.Draft",
+          "samedraft.B"
+        ],
+        [
+          "candidateRevision.Revision",
+          "positive.A"
+        ],
+        [
+          "candidateEntries.Entries",
+          "entrycount.TargetArray"
+        ],
+        [
+          "candidateContentID.ContentID",
+          "hasid.A"
+        ],
+        [
+          "candidateContentID.ContentID",
+          "complete.A"
+        ],
+        [
+          "candidateWriteCompleteID.WriteCompleteID",
+          "complete.B"
+        ],
+        [
+          "candidateEntryCount.EntryCount",
+          "countmatches.A"
+        ],
+        [
+          "entrycount.ReturnValue",
+          "countmatches.B"
+        ],
+        [
+          "schema.ReturnValue",
+          "saneall0.A"
+        ],
+        [
+          "samekey.ReturnValue",
+          "saneall0.B"
+        ],
+        [
+          "saneall0.ReturnValue",
+          "saneall1.A"
+        ],
+        [
+          "samedraft.ReturnValue",
+          "saneall1.B"
+        ],
+        [
+          "saneall1.ReturnValue",
+          "saneall2.A"
+        ],
+        [
+          "positive.ReturnValue",
+          "saneall2.B"
+        ],
+        [
+          "saneall2.ReturnValue",
+          "saneall3.A"
+        ],
+        [
+          "hasid.ReturnValue",
+          "saneall3.B"
+        ],
+        [
+          "saneall3.ReturnValue",
+          "saneall4.A"
+        ],
+        [
+          "complete.ReturnValue",
+          "saneall4.B"
+        ],
+        [
+          "saneall4.ReturnValue",
+          "saneall5.A"
+        ],
+        [
+          "countmatches.ReturnValue",
+          "saneall5.B"
+        ],
+        [
+          "saneall5.ReturnValue",
+          "sane.Condition"
+        ],
+        [
+          "candidateRevision.Revision",
+          "newer.A"
+        ],
+        [
+          "bestrev.BestRevision",
+          "newer.B"
+        ],
+        [
+          "entry.BeforeRevision",
+          "unbounded.A"
+        ],
+        [
+          "candidateRevision.Revision",
+          "older.A"
+        ],
+        [
+          "entry.BeforeRevision",
+          "older.B"
+        ],
+        [
+          "unbounded.ReturnValue",
+          "below0.A"
+        ],
+        [
+          "older.ReturnValue",
+          "below0.B"
+        ],
+        [
+          "newer.ReturnValue",
+          "eligible0.A"
+        ],
+        [
+          "below0.ReturnValue",
+          "eligible0.B"
+        ],
+        [
+          "eligible0.ReturnValue",
+          "choose.Condition"
+        ],
+        [
+          "cast.AsBP Den Layout Save",
+          "best.Best"
+        ],
+        [
+          "candidateRevision.Revision",
+          "bestrevision.BestRevision"
+        ],
+        [
+          "i.Cursor",
+          "bestbank.BestBank"
+        ],
+        [
+          "i.Cursor",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.Cursor"
+        ],
+        [
+          "futureread.HasFuture",
+          "finishfuture.Condition"
+        ],
+        [
+          "bestread.Best",
+          "hasbest.Object"
+        ],
+        [
+          "hasbest.ReturnValue",
+          "finishbest.Condition"
+        ],
+        [
+          "damageread.HasDamage",
+          "recovered.Condition"
+        ],
+        [
+          "damageread.HasDamage",
+          "broken.Condition"
+        ],
+        [
+          "bestread.Best",
+          "result.Document"
+        ],
+        [
+          "statusread.LoadStatus",
+          "result.Status"
+        ],
+        [
+          "bankread.BestBank",
+          "result.Bank"
+        ],
+        [
+          "entry.then",
+          "key.execute"
+        ],
+        [
+          "key.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "slot.execute"
+        ],
+        [
+          "slot.then",
+          "exists.execute"
+        ],
+        [
+          "exists.then",
+          "has.execute"
+        ],
+        [
+          "has.then",
+          "load.execute"
+        ],
+        [
+          "load.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "isfuture.execute"
+        ],
+        [
+          "isfuture.then",
+          "rememberfuture.execute"
+        ],
+        [
+          "rememberfuture.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "loop.execute"
+        ],
+        [
+          "valid.else",
+          "invalid.execute"
+        ],
+        [
+          "invalid.then",
+          "result.execute"
+        ],
+        [
+          "has.else",
+          "advance.execute"
+        ],
+        [
+          "cast.CastFailed",
+          "damage.execute"
+        ],
+        [
+          "damage.then",
+          "advance.execute"
+        ],
+        [
+          "isfuture.else",
+          "sane.execute"
+        ],
+        [
+          "sane.then",
+          "choose.execute"
+        ],
+        [
+          "choose.then",
+          "best.execute"
+        ],
+        [
+          "best.then",
+          "bestrevision.execute"
+        ],
+        [
+          "bestrevision.then",
+          "bestbank.execute"
+        ],
+        [
+          "bestbank.then",
+          "advance.execute"
+        ],
+        [
+          "sane.else",
+          "damage.execute"
+        ],
+        [
+          "choose.else",
+          "advance.execute"
+        ],
+        [
+          "loop.else",
+          "finishfuture.execute"
+        ],
+        [
+          "finishfuture.then",
+          "unsupported.execute"
+        ],
+        [
+          "unsupported.then",
+          "clearbest.execute"
+        ],
+        [
+          "clearbest.then",
+          "result.execute"
+        ],
+        [
+          "finishfuture.else",
+          "finishbest.execute"
+        ],
+        [
+          "finishbest.then",
+          "recovered.execute"
+        ],
+        [
+          "recovered.then",
+          "recovery.execute"
+        ],
+        [
+          "recovery.then",
+          "result.execute"
+        ],
+        [
+          "recovered.else",
+          "normal.execute"
+        ],
+        [
+          "normal.then",
+          "result.execute"
+        ],
+        [
+          "finishbest.else",
+          "broken.execute"
+        ],
+        [
+          "broken.then",
+          "corrupt.execute"
+        ],
+        [
+          "corrupt.then",
+          "result.execute"
+        ],
+        [
+          "broken.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "CloneLayout",
+      "inputs": [
+        {
+          "name": "Document",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "DocumentCopy",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Copy",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "valid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "guard",
+          "kind": "branch"
+        },
+        {
+          "id": "create",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:CreateSaveGameObject",
+          "defaults": {
+            "SaveGameClass": "/DenDesignerGF/Runtime/BP_DenLayoutSave"
+          }
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        },
+        {
+          "id": "cache",
+          "kind": "set",
+          "var": "local:Copy"
+        },
+        {
+          "id": "copied",
+          "kind": "get",
+          "var": "local:Copy"
+        },
+        {
+          "id": "readSchemaVersion",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:SchemaVersion"
+        },
+        {
+          "id": "writeSchemaVersion",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:SchemaVersion"
+        },
+        {
+          "id": "readStorageKey",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:StorageKey"
+        },
+        {
+          "id": "writeStorageKey",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:StorageKey"
+        },
+        {
+          "id": "readScope",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Scope"
+        },
+        {
+          "id": "writeScope",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Scope"
+        },
+        {
+          "id": "readCampaignID",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:CampaignID"
+        },
+        {
+          "id": "writeCampaignID",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:CampaignID"
+        },
+        {
+          "id": "readEnabled",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Enabled"
+        },
+        {
+          "id": "writeEnabled",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Enabled"
+        },
+        {
+          "id": "readDisplayName",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:DisplayName"
+        },
+        {
+          "id": "writeDisplayName",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:DisplayName"
+        },
+        {
+          "id": "readGameVersion",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:GameVersion"
+        },
+        {
+          "id": "writeGameVersion",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:GameVersion"
+        },
+        {
+          "id": "readRevision",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Revision"
+        },
+        {
+          "id": "writeRevision",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Revision"
+        },
+        {
+          "id": "readContentID",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:ContentID"
+        },
+        {
+          "id": "writeContentID",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:ContentID"
+        },
+        {
+          "id": "readWrittenAt",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:WrittenAt"
+        },
+        {
+          "id": "writeWrittenAt",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:WrittenAt"
+        },
+        {
+          "id": "readIsDraft",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:IsDraft"
+        },
+        {
+          "id": "writeIsDraft",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:IsDraft"
+        },
+        {
+          "id": "readDraftBaseRevision",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:DraftBaseRevision"
+        },
+        {
+          "id": "writeDraftBaseRevision",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:DraftBaseRevision"
+        },
+        {
+          "id": "readDraftBaseID",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:DraftBaseID"
+        },
+        {
+          "id": "writeDraftBaseID",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:DraftBaseID"
+        },
+        {
+          "id": "readEntryCount",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:EntryCount"
+        },
+        {
+          "id": "writeEntryCount",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:EntryCount"
+        },
+        {
+          "id": "readEntries",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Entries"
+        },
+        {
+          "id": "writeEntries",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Entries"
+        },
+        {
+          "id": "readWriteCompleteID",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:WriteCompleteID"
+        },
+        {
+          "id": "writeWriteCompleteID",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:WriteCompleteID"
+        }
+      ],
+      "links": [
+        [
+          "entry.Document",
+          "valid.Object"
+        ],
+        [
+          "valid.ReturnValue",
+          "guard.Condition"
+        ],
+        [
+          "create.ReturnValue",
+          "cast.Object"
+        ],
+        [
+          "cast.AsBP Den Layout Save",
+          "cache.Copy"
+        ],
+        [
+          "entry.Document",
+          "readSchemaVersion.self"
+        ],
+        [
+          "copied.Copy",
+          "writeSchemaVersion.self"
+        ],
+        [
+          "readSchemaVersion.SchemaVersion",
+          "writeSchemaVersion.SchemaVersion"
+        ],
+        [
+          "entry.Document",
+          "readStorageKey.self"
+        ],
+        [
+          "copied.Copy",
+          "writeStorageKey.self"
+        ],
+        [
+          "readStorageKey.StorageKey",
+          "writeStorageKey.StorageKey"
+        ],
+        [
+          "entry.Document",
+          "readScope.self"
+        ],
+        [
+          "copied.Copy",
+          "writeScope.self"
+        ],
+        [
+          "readScope.Scope",
+          "writeScope.Scope"
+        ],
+        [
+          "entry.Document",
+          "readCampaignID.self"
+        ],
+        [
+          "copied.Copy",
+          "writeCampaignID.self"
+        ],
+        [
+          "readCampaignID.CampaignID",
+          "writeCampaignID.CampaignID"
+        ],
+        [
+          "entry.Document",
+          "readEnabled.self"
+        ],
+        [
+          "copied.Copy",
+          "writeEnabled.self"
+        ],
+        [
+          "readEnabled.Enabled",
+          "writeEnabled.Enabled"
+        ],
+        [
+          "entry.Document",
+          "readDisplayName.self"
+        ],
+        [
+          "copied.Copy",
+          "writeDisplayName.self"
+        ],
+        [
+          "readDisplayName.DisplayName",
+          "writeDisplayName.DisplayName"
+        ],
+        [
+          "entry.Document",
+          "readGameVersion.self"
+        ],
+        [
+          "copied.Copy",
+          "writeGameVersion.self"
+        ],
+        [
+          "readGameVersion.GameVersion",
+          "writeGameVersion.GameVersion"
+        ],
+        [
+          "entry.Document",
+          "readRevision.self"
+        ],
+        [
+          "copied.Copy",
+          "writeRevision.self"
+        ],
+        [
+          "readRevision.Revision",
+          "writeRevision.Revision"
+        ],
+        [
+          "entry.Document",
+          "readContentID.self"
+        ],
+        [
+          "copied.Copy",
+          "writeContentID.self"
+        ],
+        [
+          "readContentID.ContentID",
+          "writeContentID.ContentID"
+        ],
+        [
+          "entry.Document",
+          "readWrittenAt.self"
+        ],
+        [
+          "copied.Copy",
+          "writeWrittenAt.self"
+        ],
+        [
+          "readWrittenAt.WrittenAt",
+          "writeWrittenAt.WrittenAt"
+        ],
+        [
+          "entry.Document",
+          "readIsDraft.self"
+        ],
+        [
+          "copied.Copy",
+          "writeIsDraft.self"
+        ],
+        [
+          "readIsDraft.IsDraft",
+          "writeIsDraft.IsDraft"
+        ],
+        [
+          "entry.Document",
+          "readDraftBaseRevision.self"
+        ],
+        [
+          "copied.Copy",
+          "writeDraftBaseRevision.self"
+        ],
+        [
+          "readDraftBaseRevision.DraftBaseRevision",
+          "writeDraftBaseRevision.DraftBaseRevision"
+        ],
+        [
+          "entry.Document",
+          "readDraftBaseID.self"
+        ],
+        [
+          "copied.Copy",
+          "writeDraftBaseID.self"
+        ],
+        [
+          "readDraftBaseID.DraftBaseID",
+          "writeDraftBaseID.DraftBaseID"
+        ],
+        [
+          "entry.Document",
+          "readEntryCount.self"
+        ],
+        [
+          "copied.Copy",
+          "writeEntryCount.self"
+        ],
+        [
+          "readEntryCount.EntryCount",
+          "writeEntryCount.EntryCount"
+        ],
+        [
+          "entry.Document",
+          "readEntries.self"
+        ],
+        [
+          "copied.Copy",
+          "writeEntries.self"
+        ],
+        [
+          "readEntries.Entries",
+          "writeEntries.Entries"
+        ],
+        [
+          "entry.Document",
+          "readWriteCompleteID.self"
+        ],
+        [
+          "copied.Copy",
+          "writeWriteCompleteID.self"
+        ],
+        [
+          "readWriteCompleteID.WriteCompleteID",
+          "writeWriteCompleteID.WriteCompleteID"
+        ],
+        [
+          "entry.then",
+          "guard.execute"
+        ],
+        [
+          "guard.then",
+          "create.execute"
+        ],
+        [
+          "create.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "cache.execute"
+        ],
+        [
+          "cache.then",
+          "writeSchemaVersion.execute"
+        ],
+        [
+          "writeSchemaVersion.then",
+          "writeStorageKey.execute"
+        ],
+        [
+          "writeStorageKey.then",
+          "writeScope.execute"
+        ],
+        [
+          "writeScope.then",
+          "writeCampaignID.execute"
+        ],
+        [
+          "writeCampaignID.then",
+          "writeEnabled.execute"
+        ],
+        [
+          "writeEnabled.then",
+          "writeDisplayName.execute"
+        ],
+        [
+          "writeDisplayName.then",
+          "writeGameVersion.execute"
+        ],
+        [
+          "writeGameVersion.then",
+          "writeRevision.execute"
+        ],
+        [
+          "writeRevision.then",
+          "writeContentID.execute"
+        ],
+        [
+          "writeContentID.then",
+          "writeWrittenAt.execute"
+        ],
+        [
+          "writeWrittenAt.then",
+          "writeIsDraft.execute"
+        ],
+        [
+          "writeIsDraft.then",
+          "writeDraftBaseRevision.execute"
+        ],
+        [
+          "writeDraftBaseRevision.then",
+          "writeDraftBaseID.execute"
+        ],
+        [
+          "writeDraftBaseID.then",
+          "writeEntryCount.execute"
+        ],
+        [
+          "writeEntryCount.then",
+          "writeEntries.execute"
+        ],
+        [
+          "writeEntries.then",
+          "writeWriteCompleteID.execute"
+        ],
+        [
+          "writeWriteCompleteID.then",
+          "result.execute"
+        ],
+        [
+          "guard.else",
+          "result.execute"
+        ],
+        [
+          "cast.CastFailed",
+          "result.execute"
+        ],
+        [
+          "copied.Copy",
+          "result.DocumentCopy"
+        ]
+      ]
+    },
+    {
+      "name": "SameLayout",
+      "inputs": [
+        {
+          "name": "A",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        },
+        {
+          "name": "B",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Equal",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Same",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "av",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "bv",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "bothvalid0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "guard",
+          "kind": "branch"
+        },
+        {
+          "id": "ASchemaVersion",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:SchemaVersion"
+        },
+        {
+          "id": "BSchemaVersion",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:SchemaVersion"
+        },
+        {
+          "id": "equalSchemaVersion",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "AStorageKey",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:StorageKey"
+        },
+        {
+          "id": "BStorageKey",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:StorageKey"
+        },
+        {
+          "id": "equalStorageKey",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "AScope",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Scope"
+        },
+        {
+          "id": "BScope",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Scope"
+        },
+        {
+          "id": "equalScope",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "ACampaignID",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:CampaignID"
+        },
+        {
+          "id": "BCampaignID",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:CampaignID"
+        },
+        {
+          "id": "equalCampaignID",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "AEnabled",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Enabled"
+        },
+        {
+          "id": "BEnabled",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Enabled"
+        },
+        {
+          "id": "equalEnabled",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_BoolBool",
+          "defaults": {}
+        },
+        {
+          "id": "ADisplayName",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:DisplayName"
+        },
+        {
+          "id": "BDisplayName",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:DisplayName"
+        },
+        {
+          "id": "equalDisplayName",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "AGameVersion",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:GameVersion"
+        },
+        {
+          "id": "BGameVersion",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:GameVersion"
+        },
+        {
+          "id": "equalGameVersion",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "ARevision",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Revision"
+        },
+        {
+          "id": "BRevision",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Revision"
+        },
+        {
+          "id": "equalRevision",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_Int64Int64",
+          "defaults": {}
+        },
+        {
+          "id": "AContentID",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:ContentID"
+        },
+        {
+          "id": "BContentID",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:ContentID"
+        },
+        {
+          "id": "equalContentID",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "AWrittenAt",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:WrittenAt"
+        },
+        {
+          "id": "BWrittenAt",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:WrittenAt"
+        },
+        {
+          "id": "equalWrittenAt",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "AIsDraft",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:IsDraft"
+        },
+        {
+          "id": "BIsDraft",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:IsDraft"
+        },
+        {
+          "id": "equalIsDraft",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_BoolBool",
+          "defaults": {}
+        },
+        {
+          "id": "ADraftBaseRevision",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:DraftBaseRevision"
+        },
+        {
+          "id": "BDraftBaseRevision",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:DraftBaseRevision"
+        },
+        {
+          "id": "equalDraftBaseRevision",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_Int64Int64",
+          "defaults": {}
+        },
+        {
+          "id": "ADraftBaseID",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:DraftBaseID"
+        },
+        {
+          "id": "BDraftBaseID",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:DraftBaseID"
+        },
+        {
+          "id": "equalDraftBaseID",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "AEntryCount",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:EntryCount"
+        },
+        {
+          "id": "BEntryCount",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:EntryCount"
+        },
+        {
+          "id": "equalEntryCount",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "AEntries",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Entries"
+        },
+        {
+          "id": "BEntries",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Entries"
+        },
+        {
+          "id": "equalEntries",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Identical"
+        },
+        {
+          "id": "AWriteCompleteID",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:WriteCompleteID"
+        },
+        {
+          "id": "BWriteCompleteID",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:WriteCompleteID"
+        },
+        {
+          "id": "equalWriteCompleteID",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "equal",
+          "kind": "set",
+          "var": "local:Same"
+        },
+        {
+          "id": "allfields0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "allfields1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "allfields2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "allfields3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "allfields4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "allfields5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "allfields6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "allfields7",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "allfields8",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "allfields9",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "allfields10",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "allfields11",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "allfields12",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "allfields13",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "allfields14",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:Same"
+        }
+      ],
+      "links": [
+        [
+          "entry.A",
+          "av.Object"
+        ],
+        [
+          "entry.B",
+          "bv.Object"
+        ],
+        [
+          "av.ReturnValue",
+          "bothvalid0.A"
+        ],
+        [
+          "bv.ReturnValue",
+          "bothvalid0.B"
+        ],
+        [
+          "bothvalid0.ReturnValue",
+          "guard.Condition"
+        ],
+        [
+          "entry.A",
+          "ASchemaVersion.self"
+        ],
+        [
+          "entry.B",
+          "BSchemaVersion.self"
+        ],
+        [
+          "ASchemaVersion.SchemaVersion",
+          "equalSchemaVersion.A"
+        ],
+        [
+          "BSchemaVersion.SchemaVersion",
+          "equalSchemaVersion.B"
+        ],
+        [
+          "entry.A",
+          "AStorageKey.self"
+        ],
+        [
+          "entry.B",
+          "BStorageKey.self"
+        ],
+        [
+          "AStorageKey.StorageKey",
+          "equalStorageKey.A"
+        ],
+        [
+          "BStorageKey.StorageKey",
+          "equalStorageKey.B"
+        ],
+        [
+          "entry.A",
+          "AScope.self"
+        ],
+        [
+          "entry.B",
+          "BScope.self"
+        ],
+        [
+          "AScope.Scope",
+          "equalScope.A"
+        ],
+        [
+          "BScope.Scope",
+          "equalScope.B"
+        ],
+        [
+          "entry.A",
+          "ACampaignID.self"
+        ],
+        [
+          "entry.B",
+          "BCampaignID.self"
+        ],
+        [
+          "ACampaignID.CampaignID",
+          "equalCampaignID.A"
+        ],
+        [
+          "BCampaignID.CampaignID",
+          "equalCampaignID.B"
+        ],
+        [
+          "entry.A",
+          "AEnabled.self"
+        ],
+        [
+          "entry.B",
+          "BEnabled.self"
+        ],
+        [
+          "AEnabled.Enabled",
+          "equalEnabled.A"
+        ],
+        [
+          "BEnabled.Enabled",
+          "equalEnabled.B"
+        ],
+        [
+          "entry.A",
+          "ADisplayName.self"
+        ],
+        [
+          "entry.B",
+          "BDisplayName.self"
+        ],
+        [
+          "ADisplayName.DisplayName",
+          "equalDisplayName.A"
+        ],
+        [
+          "BDisplayName.DisplayName",
+          "equalDisplayName.B"
+        ],
+        [
+          "entry.A",
+          "AGameVersion.self"
+        ],
+        [
+          "entry.B",
+          "BGameVersion.self"
+        ],
+        [
+          "AGameVersion.GameVersion",
+          "equalGameVersion.A"
+        ],
+        [
+          "BGameVersion.GameVersion",
+          "equalGameVersion.B"
+        ],
+        [
+          "entry.A",
+          "ARevision.self"
+        ],
+        [
+          "entry.B",
+          "BRevision.self"
+        ],
+        [
+          "ARevision.Revision",
+          "equalRevision.A"
+        ],
+        [
+          "BRevision.Revision",
+          "equalRevision.B"
+        ],
+        [
+          "entry.A",
+          "AContentID.self"
+        ],
+        [
+          "entry.B",
+          "BContentID.self"
+        ],
+        [
+          "AContentID.ContentID",
+          "equalContentID.A"
+        ],
+        [
+          "BContentID.ContentID",
+          "equalContentID.B"
+        ],
+        [
+          "entry.A",
+          "AWrittenAt.self"
+        ],
+        [
+          "entry.B",
+          "BWrittenAt.self"
+        ],
+        [
+          "AWrittenAt.WrittenAt",
+          "equalWrittenAt.A"
+        ],
+        [
+          "BWrittenAt.WrittenAt",
+          "equalWrittenAt.B"
+        ],
+        [
+          "entry.A",
+          "AIsDraft.self"
+        ],
+        [
+          "entry.B",
+          "BIsDraft.self"
+        ],
+        [
+          "AIsDraft.IsDraft",
+          "equalIsDraft.A"
+        ],
+        [
+          "BIsDraft.IsDraft",
+          "equalIsDraft.B"
+        ],
+        [
+          "entry.A",
+          "ADraftBaseRevision.self"
+        ],
+        [
+          "entry.B",
+          "BDraftBaseRevision.self"
+        ],
+        [
+          "ADraftBaseRevision.DraftBaseRevision",
+          "equalDraftBaseRevision.A"
+        ],
+        [
+          "BDraftBaseRevision.DraftBaseRevision",
+          "equalDraftBaseRevision.B"
+        ],
+        [
+          "entry.A",
+          "ADraftBaseID.self"
+        ],
+        [
+          "entry.B",
+          "BDraftBaseID.self"
+        ],
+        [
+          "ADraftBaseID.DraftBaseID",
+          "equalDraftBaseID.A"
+        ],
+        [
+          "BDraftBaseID.DraftBaseID",
+          "equalDraftBaseID.B"
+        ],
+        [
+          "entry.A",
+          "AEntryCount.self"
+        ],
+        [
+          "entry.B",
+          "BEntryCount.self"
+        ],
+        [
+          "AEntryCount.EntryCount",
+          "equalEntryCount.A"
+        ],
+        [
+          "BEntryCount.EntryCount",
+          "equalEntryCount.B"
+        ],
+        [
+          "entry.A",
+          "AEntries.self"
+        ],
+        [
+          "entry.B",
+          "BEntries.self"
+        ],
+        [
+          "AEntries.Entries",
+          "equalEntries.ArrayA"
+        ],
+        [
+          "BEntries.Entries",
+          "equalEntries.ArrayB"
+        ],
+        [
+          "entry.A",
+          "AWriteCompleteID.self"
+        ],
+        [
+          "entry.B",
+          "BWriteCompleteID.self"
+        ],
+        [
+          "AWriteCompleteID.WriteCompleteID",
+          "equalWriteCompleteID.A"
+        ],
+        [
+          "BWriteCompleteID.WriteCompleteID",
+          "equalWriteCompleteID.B"
+        ],
+        [
+          "equalSchemaVersion.ReturnValue",
+          "allfields0.A"
+        ],
+        [
+          "equalStorageKey.ReturnValue",
+          "allfields0.B"
+        ],
+        [
+          "allfields0.ReturnValue",
+          "allfields1.A"
+        ],
+        [
+          "equalScope.ReturnValue",
+          "allfields1.B"
+        ],
+        [
+          "allfields1.ReturnValue",
+          "allfields2.A"
+        ],
+        [
+          "equalCampaignID.ReturnValue",
+          "allfields2.B"
+        ],
+        [
+          "allfields2.ReturnValue",
+          "allfields3.A"
+        ],
+        [
+          "equalEnabled.ReturnValue",
+          "allfields3.B"
+        ],
+        [
+          "allfields3.ReturnValue",
+          "allfields4.A"
+        ],
+        [
+          "equalDisplayName.ReturnValue",
+          "allfields4.B"
+        ],
+        [
+          "allfields4.ReturnValue",
+          "allfields5.A"
+        ],
+        [
+          "equalGameVersion.ReturnValue",
+          "allfields5.B"
+        ],
+        [
+          "allfields5.ReturnValue",
+          "allfields6.A"
+        ],
+        [
+          "equalRevision.ReturnValue",
+          "allfields6.B"
+        ],
+        [
+          "allfields6.ReturnValue",
+          "allfields7.A"
+        ],
+        [
+          "equalContentID.ReturnValue",
+          "allfields7.B"
+        ],
+        [
+          "allfields7.ReturnValue",
+          "allfields8.A"
+        ],
+        [
+          "equalWrittenAt.ReturnValue",
+          "allfields8.B"
+        ],
+        [
+          "allfields8.ReturnValue",
+          "allfields9.A"
+        ],
+        [
+          "equalIsDraft.ReturnValue",
+          "allfields9.B"
+        ],
+        [
+          "allfields9.ReturnValue",
+          "allfields10.A"
+        ],
+        [
+          "equalDraftBaseRevision.ReturnValue",
+          "allfields10.B"
+        ],
+        [
+          "allfields10.ReturnValue",
+          "allfields11.A"
+        ],
+        [
+          "equalDraftBaseID.ReturnValue",
+          "allfields11.B"
+        ],
+        [
+          "allfields11.ReturnValue",
+          "allfields12.A"
+        ],
+        [
+          "equalEntryCount.ReturnValue",
+          "allfields12.B"
+        ],
+        [
+          "allfields12.ReturnValue",
+          "allfields13.A"
+        ],
+        [
+          "equalEntries.ReturnValue",
+          "allfields13.B"
+        ],
+        [
+          "allfields13.ReturnValue",
+          "allfields14.A"
+        ],
+        [
+          "equalWriteCompleteID.ReturnValue",
+          "allfields14.B"
+        ],
+        [
+          "allfields14.ReturnValue",
+          "equal.Same"
+        ],
+        [
+          "out.Same",
+          "result.Equal"
+        ],
+        [
+          "entry.then",
+          "guard.execute"
+        ],
+        [
+          "guard.then",
+          "equal.execute"
+        ],
+        [
+          "equal.then",
+          "result.execute"
+        ],
+        [
+          "guard.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "SaveLayout",
+      "inputs": [
+        {
+          "name": "Key",
+          "type": "string"
+        },
+        {
+          "name": "Document",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        },
+        {
+          "name": "Draft",
+          "type": "bool"
+        },
+        {
+          "name": "BaseRevision",
+          "type": "int64"
+        },
+        {
+          "name": "BaseID",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "SavedDocument",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        },
+        {
+          "name": "Status",
+          "type": "int"
+        }
+      ],
+      "locals": [
+        {
+          "name": "SaveStatus",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "NextRevision",
+          "type": "int64",
+          "default": "1"
+        },
+        {
+          "name": "Candidate",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        },
+        {
+          "name": "Persisted",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "load",
+          "kind": "call",
+          "function": "self:LoadLayout",
+          "defaults": {
+            "BeforeRevision": "0"
+          }
+        },
+        {
+          "id": "status",
+          "kind": "set",
+          "var": "local:SaveStatus"
+        },
+        {
+          "id": "statusok",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "allowed",
+          "kind": "branch"
+        },
+        {
+          "id": "inputvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "schema",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:SchemaVersion"
+        },
+        {
+          "id": "schemaok",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "baseok",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_Int64Int64",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "basezero",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_Int64Int64",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "baseempty",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "basepaired",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_BoolBool",
+          "defaults": {}
+        },
+        {
+          "id": "nobase0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "savedbase0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "inputok0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "inputok1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "inputok2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "schemaallowed",
+          "kind": "branch"
+        },
+        {
+          "id": "invalid",
+          "kind": "set",
+          "var": "local:SaveStatus",
+          "defaults": {
+            "SaveStatus": "7"
+          }
+        },
+        {
+          "id": "oldvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "old",
+          "kind": "branch"
+        },
+        {
+          "id": "oldrev",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Revision"
+        },
+        {
+          "id": "nextrevision",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_Int64Int64",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "rev",
+          "kind": "set",
+          "var": "local:NextRevision"
+        },
+        {
+          "id": "revread",
+          "kind": "get",
+          "var": "local:NextRevision"
+        },
+        {
+          "id": "positive",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_Int64Int64",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "nooverflow",
+          "kind": "branch"
+        },
+        {
+          "id": "clone",
+          "kind": "call",
+          "function": "self:CloneLayout",
+          "defaults": {}
+        },
+        {
+          "id": "copyvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "copied",
+          "kind": "branch"
+        },
+        {
+          "id": "candidate",
+          "kind": "set",
+          "var": "local:Candidate"
+        },
+        {
+          "id": "candidateget",
+          "kind": "get",
+          "var": "local:Candidate"
+        },
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:UtcNow",
+          "defaults": {}
+        },
+        {
+          "id": "unix",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:ToUnixTimestamp",
+          "defaults": {}
+        },
+        {
+          "id": "timestamp",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Conv_Int64ToString",
+          "defaults": {}
+        },
+        {
+          "id": "guid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetGuidLibrary:NewGuid",
+          "defaults": {}
+        },
+        {
+          "id": "identity",
+          "kind": "call",
+          "function": "/Script/Engine.KismetGuidLibrary:Conv_GuidToString",
+          "defaults": {}
+        },
+        {
+          "id": "entries",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Entries"
+        },
+        {
+          "id": "entrycount",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length"
+        },
+        {
+          "id": "idread",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:ContentID"
+        },
+        {
+          "id": "writeStorageKey",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:StorageKey"
+        },
+        {
+          "id": "writeRevision",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Revision"
+        },
+        {
+          "id": "writeIsDraft",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:IsDraft"
+        },
+        {
+          "id": "writeDraftBaseRevision",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:DraftBaseRevision"
+        },
+        {
+          "id": "writeDraftBaseID",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:DraftBaseID"
+        },
+        {
+          "id": "writeWrittenAt",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:WrittenAt"
+        },
+        {
+          "id": "writeContentID",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:ContentID"
+        },
+        {
+          "id": "writeEntryCount",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:EntryCount"
+        },
+        {
+          "id": "writeWriteCompleteID",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:WriteCompleteID"
+        },
+        {
+          "id": "banks",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectInt",
+          "defaults": {
+            "A": "2",
+            "B": "6"
+          }
+        },
+        {
+          "id": "nextbank",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "bank",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Percent_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "slot",
+          "kind": "call",
+          "function": "self:BankSlot",
+          "defaults": {}
+        },
+        {
+          "id": "writing",
+          "kind": "set",
+          "var": "local:SaveStatus",
+          "defaults": {
+            "SaveStatus": "6"
+          }
+        },
+        {
+          "id": "save",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:SaveGameToSlot",
+          "defaults": {
+            "UserIndex": "0"
+          }
+        },
+        {
+          "id": "saved",
+          "kind": "branch"
+        },
+        {
+          "id": "readback",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:LoadGameFromSlot",
+          "defaults": {
+            "UserIndex": "0"
+          }
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        },
+        {
+          "id": "verify",
+          "kind": "call",
+          "function": "self:SameLayout",
+          "defaults": {}
+        },
+        {
+          "id": "verified",
+          "kind": "branch"
+        },
+        {
+          "id": "success",
+          "kind": "set",
+          "var": "local:SaveStatus",
+          "defaults": {
+            "SaveStatus": "1"
+          }
+        },
+        {
+          "id": "persisted",
+          "kind": "set",
+          "var": "local:Persisted"
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:Persisted"
+        },
+        {
+          "id": "statusout",
+          "kind": "get",
+          "var": "local:SaveStatus"
+        }
+      ],
+      "links": [
+        [
+          "entry.Key",
+          "load.Key"
+        ],
+        [
+          "entry.Draft",
+          "load.Draft"
+        ],
+        [
+          "load.Status",
+          "status.SaveStatus"
+        ],
+        [
+          "load.Status",
+          "statusok.A"
+        ],
+        [
+          "statusok.ReturnValue",
+          "allowed.Condition"
+        ],
+        [
+          "entry.Document",
+          "inputvalid.Object"
+        ],
+        [
+          "inputvalid.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.Document",
+          "schema.self"
+        ],
+        [
+          "schema.SchemaVersion",
+          "schemaok.A"
+        ],
+        [
+          "entry.BaseRevision",
+          "baseok.A"
+        ],
+        [
+          "entry.BaseRevision",
+          "basezero.A"
+        ],
+        [
+          "entry.BaseID",
+          "baseempty.A"
+        ],
+        [
+          "basezero.ReturnValue",
+          "basepaired.A"
+        ],
+        [
+          "baseempty.ReturnValue",
+          "basepaired.B"
+        ],
+        [
+          "basezero.ReturnValue",
+          "nobase0.A"
+        ],
+        [
+          "baseempty.ReturnValue",
+          "nobase0.B"
+        ],
+        [
+          "entry.Draft",
+          "savedbase0.A"
+        ],
+        [
+          "nobase0.ReturnValue",
+          "savedbase0.B"
+        ],
+        [
+          "schemaok.ReturnValue",
+          "inputok0.A"
+        ],
+        [
+          "baseok.ReturnValue",
+          "inputok0.B"
+        ],
+        [
+          "inputok0.ReturnValue",
+          "inputok1.A"
+        ],
+        [
+          "basepaired.ReturnValue",
+          "inputok1.B"
+        ],
+        [
+          "inputok1.ReturnValue",
+          "inputok2.A"
+        ],
+        [
+          "savedbase0.ReturnValue",
+          "inputok2.B"
+        ],
+        [
+          "inputok2.ReturnValue",
+          "schemaallowed.Condition"
+        ],
+        [
+          "load.Document",
+          "oldvalid.Object"
+        ],
+        [
+          "oldvalid.ReturnValue",
+          "old.Condition"
+        ],
+        [
+          "load.Document",
+          "oldrev.self"
+        ],
+        [
+          "oldrev.Revision",
+          "nextrevision.A"
+        ],
+        [
+          "nextrevision.ReturnValue",
+          "rev.NextRevision"
+        ],
+        [
+          "revread.NextRevision",
+          "positive.A"
+        ],
+        [
+          "positive.ReturnValue",
+          "nooverflow.Condition"
+        ],
+        [
+          "entry.Document",
+          "clone.Document"
+        ],
+        [
+          "clone.DocumentCopy",
+          "copyvalid.Object"
+        ],
+        [
+          "copyvalid.ReturnValue",
+          "copied.Condition"
+        ],
+        [
+          "clone.DocumentCopy",
+          "candidate.Candidate"
+        ],
+        [
+          "now.ReturnValue",
+          "unix.Time"
+        ],
+        [
+          "unix.ReturnValue",
+          "timestamp.InInt"
+        ],
+        [
+          "guid.ReturnValue",
+          "identity.InGuid"
+        ],
+        [
+          "candidateget.Candidate",
+          "entries.self"
+        ],
+        [
+          "entries.Entries",
+          "entrycount.TargetArray"
+        ],
+        [
+          "candidateget.Candidate",
+          "idread.self"
+        ],
+        [
+          "candidateget.Candidate",
+          "writeStorageKey.self"
+        ],
+        [
+          "entry.Key",
+          "writeStorageKey.StorageKey"
+        ],
+        [
+          "candidateget.Candidate",
+          "writeRevision.self"
+        ],
+        [
+          "revread.NextRevision",
+          "writeRevision.Revision"
+        ],
+        [
+          "candidateget.Candidate",
+          "writeIsDraft.self"
+        ],
+        [
+          "entry.Draft",
+          "writeIsDraft.IsDraft"
+        ],
+        [
+          "candidateget.Candidate",
+          "writeDraftBaseRevision.self"
+        ],
+        [
+          "entry.BaseRevision",
+          "writeDraftBaseRevision.DraftBaseRevision"
+        ],
+        [
+          "candidateget.Candidate",
+          "writeDraftBaseID.self"
+        ],
+        [
+          "entry.BaseID",
+          "writeDraftBaseID.DraftBaseID"
+        ],
+        [
+          "candidateget.Candidate",
+          "writeWrittenAt.self"
+        ],
+        [
+          "timestamp.ReturnValue",
+          "writeWrittenAt.WrittenAt"
+        ],
+        [
+          "candidateget.Candidate",
+          "writeContentID.self"
+        ],
+        [
+          "identity.ReturnValue",
+          "writeContentID.ContentID"
+        ],
+        [
+          "candidateget.Candidate",
+          "writeEntryCount.self"
+        ],
+        [
+          "entrycount.ReturnValue",
+          "writeEntryCount.EntryCount"
+        ],
+        [
+          "candidateget.Candidate",
+          "writeWriteCompleteID.self"
+        ],
+        [
+          "idread.ContentID",
+          "writeWriteCompleteID.WriteCompleteID"
+        ],
+        [
+          "entry.Draft",
+          "banks.bPickA"
+        ],
+        [
+          "load.Bank",
+          "nextbank.A"
+        ],
+        [
+          "nextbank.ReturnValue",
+          "bank.A"
+        ],
+        [
+          "banks.ReturnValue",
+          "bank.B"
+        ],
+        [
+          "entry.Key",
+          "slot.Key"
+        ],
+        [
+          "entry.Draft",
+          "slot.Draft"
+        ],
+        [
+          "bank.ReturnValue",
+          "slot.Bank"
+        ],
+        [
+          "candidateget.Candidate",
+          "save.SaveGameObject"
+        ],
+        [
+          "slot.Slot",
+          "save.SlotName"
+        ],
+        [
+          "save.ReturnValue",
+          "saved.Condition"
+        ],
+        [
+          "slot.Slot",
+          "readback.SlotName"
+        ],
+        [
+          "readback.ReturnValue",
+          "cast.Object"
+        ],
+        [
+          "candidateget.Candidate",
+          "verify.A"
+        ],
+        [
+          "cast.AsBP Den Layout Save",
+          "verify.B"
+        ],
+        [
+          "verify.Equal",
+          "verified.Condition"
+        ],
+        [
+          "cast.AsBP Den Layout Save",
+          "persisted.Persisted"
+        ],
+        [
+          "out.Persisted",
+          "result.SavedDocument"
+        ],
+        [
+          "statusout.SaveStatus",
+          "result.Status"
+        ],
+        [
+          "entry.then",
+          "load.execute"
+        ],
+        [
+          "load.then",
+          "status.execute"
+        ],
+        [
+          "status.then",
+          "allowed.execute"
+        ],
+        [
+          "allowed.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "schemaallowed.execute"
+        ],
+        [
+          "schemaallowed.then",
+          "old.execute"
+        ],
+        [
+          "old.then",
+          "rev.execute"
+        ],
+        [
+          "rev.then",
+          "nooverflow.execute"
+        ],
+        [
+          "nooverflow.then",
+          "clone.execute"
+        ],
+        [
+          "clone.then",
+          "copied.execute"
+        ],
+        [
+          "copied.then",
+          "candidate.execute"
+        ],
+        [
+          "candidate.then",
+          "writeStorageKey.execute"
+        ],
+        [
+          "writeStorageKey.then",
+          "writeRevision.execute"
+        ],
+        [
+          "writeRevision.then",
+          "writeIsDraft.execute"
+        ],
+        [
+          "writeIsDraft.then",
+          "writeDraftBaseRevision.execute"
+        ],
+        [
+          "writeDraftBaseRevision.then",
+          "writeDraftBaseID.execute"
+        ],
+        [
+          "writeDraftBaseID.then",
+          "writeWrittenAt.execute"
+        ],
+        [
+          "writeWrittenAt.then",
+          "writeContentID.execute"
+        ],
+        [
+          "writeContentID.then",
+          "writeEntryCount.execute"
+        ],
+        [
+          "writeEntryCount.then",
+          "writeWriteCompleteID.execute"
+        ],
+        [
+          "writeWriteCompleteID.then",
+          "slot.execute"
+        ],
+        [
+          "slot.then",
+          "writing.execute"
+        ],
+        [
+          "writing.then",
+          "save.execute"
+        ],
+        [
+          "save.then",
+          "saved.execute"
+        ],
+        [
+          "saved.then",
+          "readback.execute"
+        ],
+        [
+          "readback.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "verify.execute"
+        ],
+        [
+          "verify.then",
+          "verified.execute"
+        ],
+        [
+          "verified.then",
+          "success.execute"
+        ],
+        [
+          "success.then",
+          "persisted.execute"
+        ],
+        [
+          "persisted.then",
+          "result.execute"
+        ],
+        [
+          "allowed.else",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "invalid.execute"
+        ],
+        [
+          "invalid.then",
+          "result.execute"
+        ],
+        [
+          "schemaallowed.else",
+          "invalid.execute"
+        ],
+        [
+          "old.else",
+          "nooverflow.execute"
+        ],
+        [
+          "nooverflow.else",
+          "invalid.execute"
+        ],
+        [
+          "copied.else",
+          "invalid.execute"
+        ],
+        [
+          "saved.else",
+          "result.execute"
+        ],
+        [
+          "cast.CastFailed",
+          "result.execute"
+        ],
+        [
+          "verified.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ClearDraft",
+      "inputs": [
+        {
+          "name": "Key",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Cleared",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "AllRemoved",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "key",
+          "kind": "call",
+          "function": "self:ValidKey",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "ok",
+          "kind": "set",
+          "var": "local:AllRemoved",
+          "defaults": {
+            "AllRemoved": "true"
+          }
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "slot",
+          "kind": "call",
+          "function": "self:BankSlot",
+          "defaults": {
+            "Draft": "true"
+          }
+        },
+        {
+          "id": "exists",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:DoesSaveGameExist",
+          "defaults": {
+            "UserIndex": "0"
+          }
+        },
+        {
+          "id": "has",
+          "kind": "branch"
+        },
+        {
+          "id": "delete",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:DeleteGameInSlot",
+          "defaults": {
+            "UserIndex": "0"
+          }
+        },
+        {
+          "id": "still",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:DoesSaveGameExist",
+          "defaults": {
+            "UserIndex": "0"
+          }
+        },
+        {
+          "id": "remains",
+          "kind": "branch"
+        },
+        {
+          "id": "failed",
+          "kind": "set",
+          "var": "local:AllRemoved",
+          "defaults": {
+            "AllRemoved": "false"
+          }
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:AllRemoved"
+        }
+      ],
+      "links": [
+        [
+          "entry.Key",
+          "key.Key"
+        ],
+        [
+          "key.Valid",
+          "valid.Condition"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "entry.Key",
+          "slot.Key"
+        ],
+        [
+          "i.Cursor",
+          "slot.Bank"
+        ],
+        [
+          "slot.Slot",
+          "exists.SlotName"
+        ],
+        [
+          "exists.ReturnValue",
+          "has.Condition"
+        ],
+        [
+          "slot.Slot",
+          "delete.SlotName"
+        ],
+        [
+          "slot.Slot",
+          "still.SlotName"
+        ],
+        [
+          "still.ReturnValue",
+          "remains.Condition"
+        ],
+        [
+          "i.Cursor",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.Cursor"
+        ],
+        [
+          "out.AllRemoved",
+          "result.Cleared"
+        ],
+        [
+          "entry.then",
+          "key.execute"
+        ],
+        [
+          "key.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "ok.execute"
+        ],
+        [
+          "ok.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "slot.execute"
+        ],
+        [
+          "slot.then",
+          "exists.execute"
+        ],
+        [
+          "exists.then",
+          "has.execute"
+        ],
+        [
+          "has.then",
+          "delete.execute"
+        ],
+        [
+          "delete.then",
+          "still.execute"
+        ],
+        [
+          "still.then",
+          "remains.execute"
+        ],
+        [
+          "remains.then",
+          "failed.execute"
+        ],
+        [
+          "failed.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "loop.execute"
+        ],
+        [
+          "has.else",
+          "advance.execute"
+        ],
+        [
+          "remains.else",
+          "advance.execute"
+        ],
+        [
+          "loop.else",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ]
+      ]
+    }
+  ]
+}

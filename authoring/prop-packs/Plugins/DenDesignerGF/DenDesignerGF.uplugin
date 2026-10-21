@@ -1,0 +1,11 @@
+{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "0.9.0-preview.2-authoring",
+  "FriendlyName": "Den Designer pack authoring reference (DO NOT SHIP)",
+  "Description": "Editor-only content reference. Install the real Den Designer in the game.",
+  "CanContainContent": true,
+  "EnabledByDefault": true,
+  "ExplicitlyLoaded": false,
+  "Installed": false
+}

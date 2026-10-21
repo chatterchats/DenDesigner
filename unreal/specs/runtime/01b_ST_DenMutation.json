@@ -1,0 +1,17 @@
+{
+  "kind": "struct",
+  "path": "/DenDesignerGF/Runtime/ST_DenMutation",
+  "guid": "3fb8c998-1a5c-56f8-85f6-b7bbb8afb3bf",
+  "fields": [
+    {
+      "name": "Value",
+      "type": "struct:/DenDesignerGF/Runtime/ST_DenEntry",
+      "guid": "5ac38256-2ef7-5ca1-b765-c17c3013bd98"
+    },
+    {
+      "name": "Present",
+      "type": "bool",
+      "guid": "ad3859c5-57b4-5d4d-8bf5-7046ea8bb914"
+    }
+  ]
+}

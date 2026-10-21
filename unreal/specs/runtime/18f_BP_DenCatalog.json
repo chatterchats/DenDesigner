@@ -1,0 +1,5695 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenCatalog",
+  "parent": "/Script/CoreUObject.Object",
+  "variables": [
+    {
+      "name": "Data",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenCatalogData"
+    },
+    {
+      "name": "Recent",
+      "type": "int[]"
+    },
+    {
+      "name": "QueryRecent",
+      "type": "int[]"
+    },
+    {
+      "name": "Results",
+      "type": "int[]"
+    },
+    {
+      "name": "Tokens",
+      "type": "string[]"
+    },
+    {
+      "name": "Query",
+      "type": "string"
+    },
+    {
+      "name": "QueryKind",
+      "type": "int"
+    },
+    {
+      "name": "Revision",
+      "type": "int"
+    },
+    {
+      "name": "Cursor",
+      "type": "int"
+    },
+    {
+      "name": "TokenCursor",
+      "type": "int"
+    },
+    {
+      "name": "EndIndex",
+      "type": "int"
+    },
+    {
+      "name": "MatchCount",
+      "type": "int"
+    },
+    {
+      "name": "Active",
+      "type": "bool"
+    },
+    {
+      "name": "Ready",
+      "type": "bool"
+    },
+    {
+      "name": "BudgetSeconds",
+      "type": "double",
+      "default": "0.003"
+    },
+    {
+      "name": "MaxSteps",
+      "type": "int",
+      "default": "512"
+    },
+    {
+      "name": "PendingPacks",
+      "type": "object:/Script/Engine.ActorComponent[]"
+    },
+    {
+      "name": "CurrentPack",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenPropPack"
+    },
+    {
+      "name": "PacksLoading",
+      "type": "bool"
+    },
+    {
+      "name": "PackCursor",
+      "type": "int"
+    },
+    {
+      "name": "PackRow",
+      "type": "int"
+    },
+    {
+      "name": "PackShelf",
+      "type": "int",
+      "default": "-1"
+    },
+    {
+      "name": "PackGroup",
+      "type": "int",
+      "default": "-1"
+    },
+    {
+      "name": "RegisteredPackIDs",
+      "type": "string[]"
+    },
+    {
+      "name": "PackIssues",
+      "type": "string[]"
+    }
+  ],
+  "functions": [
+    {
+      "name": "Initialize",
+      "nodes": [
+        {
+          "id": "getData",
+          "kind": "get",
+          "var": "Data"
+        },
+        {
+          "id": "valid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "exists",
+          "kind": "branch"
+        },
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "create",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:SpawnObject",
+          "defaults": {
+            "ObjectClass": "/DenDesignerGF/Runtime/BP_DenCatalogData"
+          }
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenCatalogData"
+        },
+        {
+          "id": "data",
+          "kind": "set",
+          "var": "Data"
+        }
+      ],
+      "links": [
+        [
+          "getData.Data",
+          "valid.Object"
+        ],
+        [
+          "valid.ReturnValue",
+          "exists.Condition"
+        ],
+        [
+          "self.self",
+          "create.Outer"
+        ],
+        [
+          "create.ReturnValue",
+          "cast.Object"
+        ],
+        [
+          "cast.AsBP Den Catalog Data",
+          "data.Data"
+        ],
+        [
+          "entry.then",
+          "exists.execute"
+        ],
+        [
+          "exists.else",
+          "create.execute"
+        ],
+        [
+          "create.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "data.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Cancel",
+      "nodes": [
+        {
+          "id": "inactive",
+          "kind": "set",
+          "var": "Active",
+          "defaults": {
+            "Active": "false"
+          }
+        },
+        {
+          "id": "notready",
+          "kind": "set",
+          "var": "Ready",
+          "defaults": {
+            "Ready": "false"
+          }
+        },
+        {
+          "id": "getResults",
+          "kind": "get",
+          "var": "Results"
+        },
+        {
+          "id": "results",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "getQueryRecent",
+          "kind": "get",
+          "var": "QueryRecent"
+        },
+        {
+          "id": "recent",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "total",
+          "kind": "set",
+          "var": "MatchCount",
+          "defaults": {
+            "MatchCount": "0"
+          }
+        },
+        {
+          "id": "cursor",
+          "kind": "set",
+          "var": "Cursor",
+          "defaults": {
+            "Cursor": "0"
+          }
+        },
+        {
+          "id": "token",
+          "kind": "set",
+          "var": "TokenCursor",
+          "defaults": {
+            "TokenCursor": "0"
+          }
+        },
+        {
+          "id": "getRevision",
+          "kind": "get",
+          "var": "Revision"
+        },
+        {
+          "id": "revisionadd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "revision",
+          "kind": "set",
+          "var": "Revision"
+        }
+      ],
+      "links": [
+        [
+          "getResults.Results",
+          "results.TargetArray"
+        ],
+        [
+          "getQueryRecent.QueryRecent",
+          "recent.TargetArray"
+        ],
+        [
+          "getRevision.Revision",
+          "revisionadd.A"
+        ],
+        [
+          "revisionadd.ReturnValue",
+          "revision.Revision"
+        ],
+        [
+          "entry.then",
+          "inactive.execute"
+        ],
+        [
+          "inactive.then",
+          "notready.execute"
+        ],
+        [
+          "notready.then",
+          "results.execute"
+        ],
+        [
+          "results.then",
+          "recent.execute"
+        ],
+        [
+          "recent.then",
+          "total.execute"
+        ],
+        [
+          "total.then",
+          "cursor.execute"
+        ],
+        [
+          "cursor.then",
+          "token.execute"
+        ],
+        [
+          "token.then",
+          "revision.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ReadItem",
+      "inputs": [
+        {
+          "name": "Index",
+          "type": "int"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Found",
+          "type": "bool"
+        },
+        {
+          "name": "Path",
+          "type": "string"
+        },
+        {
+          "name": "Label",
+          "type": "string"
+        },
+        {
+          "name": "Detail",
+          "type": "string"
+        },
+        {
+          "name": "Size",
+          "type": "vector"
+        },
+        {
+          "name": "Shelf",
+          "type": "int"
+        },
+        {
+          "name": "HasCollision",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "OutPath",
+          "type": "string"
+        },
+        {
+          "name": "OutLabel",
+          "type": "string"
+        },
+        {
+          "name": "OutDetail",
+          "type": "string"
+        },
+        {
+          "name": "OutSize",
+          "type": "vector"
+        },
+        {
+          "name": "OutShelf",
+          "type": "int"
+        },
+        {
+          "name": "OutHasCollision",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getData",
+          "kind": "get",
+          "var": "Data"
+        },
+        {
+          "id": "data",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "min",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "dataCount",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:Count"
+        },
+        {
+          "id": "max",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "rangecheck0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "range",
+          "kind": "branch"
+        },
+        {
+          "id": "dataPaths",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:Paths"
+        },
+        {
+          "id": "readPath",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "savePath",
+          "kind": "set",
+          "var": "local:OutPath"
+        },
+        {
+          "id": "outPath",
+          "kind": "get",
+          "var": "local:OutPath"
+        },
+        {
+          "id": "dataLabels",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:Labels"
+        },
+        {
+          "id": "readLabel",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "saveLabel",
+          "kind": "set",
+          "var": "local:OutLabel"
+        },
+        {
+          "id": "outLabel",
+          "kind": "get",
+          "var": "local:OutLabel"
+        },
+        {
+          "id": "dataDetails",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:Details"
+        },
+        {
+          "id": "readDetail",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "saveDetail",
+          "kind": "set",
+          "var": "local:OutDetail"
+        },
+        {
+          "id": "outDetail",
+          "kind": "get",
+          "var": "local:OutDetail"
+        },
+        {
+          "id": "dataDimensions",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:Dimensions"
+        },
+        {
+          "id": "readSize",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "saveSize",
+          "kind": "set",
+          "var": "local:OutSize"
+        },
+        {
+          "id": "outSize",
+          "kind": "get",
+          "var": "local:OutSize"
+        },
+        {
+          "id": "dataShelfIDs",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:ShelfIDs"
+        },
+        {
+          "id": "readShelf",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "saveShelf",
+          "kind": "set",
+          "var": "local:OutShelf"
+        },
+        {
+          "id": "outShelf",
+          "kind": "get",
+          "var": "local:OutShelf"
+        },
+        {
+          "id": "dataSolid",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:Solid"
+        },
+        {
+          "id": "readHasCollision",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "saveHasCollision",
+          "kind": "set",
+          "var": "local:OutHasCollision"
+        },
+        {
+          "id": "outHasCollision",
+          "kind": "get",
+          "var": "local:OutHasCollision"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        }
+      ],
+      "links": [
+        [
+          "getData.Data",
+          "data.Object"
+        ],
+        [
+          "data.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.Index",
+          "min.A"
+        ],
+        [
+          "getData.Data",
+          "dataCount.self"
+        ],
+        [
+          "entry.Index",
+          "max.A"
+        ],
+        [
+          "dataCount.Count",
+          "max.B"
+        ],
+        [
+          "min.ReturnValue",
+          "rangecheck0.A"
+        ],
+        [
+          "max.ReturnValue",
+          "rangecheck0.B"
+        ],
+        [
+          "rangecheck0.ReturnValue",
+          "range.Condition"
+        ],
+        [
+          "getData.Data",
+          "dataPaths.self"
+        ],
+        [
+          "dataPaths.Paths",
+          "readPath.TargetArray"
+        ],
+        [
+          "entry.Index",
+          "readPath.Index"
+        ],
+        [
+          "readPath.Item",
+          "savePath.OutPath"
+        ],
+        [
+          "range.then",
+          "savePath.execute"
+        ],
+        [
+          "outPath.OutPath",
+          "result.Path"
+        ],
+        [
+          "getData.Data",
+          "dataLabels.self"
+        ],
+        [
+          "dataLabels.Labels",
+          "readLabel.TargetArray"
+        ],
+        [
+          "entry.Index",
+          "readLabel.Index"
+        ],
+        [
+          "readLabel.Item",
+          "saveLabel.OutLabel"
+        ],
+        [
+          "savePath.then",
+          "saveLabel.execute"
+        ],
+        [
+          "outLabel.OutLabel",
+          "result.Label"
+        ],
+        [
+          "getData.Data",
+          "dataDetails.self"
+        ],
+        [
+          "dataDetails.Details",
+          "readDetail.TargetArray"
+        ],
+        [
+          "entry.Index",
+          "readDetail.Index"
+        ],
+        [
+          "readDetail.Item",
+          "saveDetail.OutDetail"
+        ],
+        [
+          "saveLabel.then",
+          "saveDetail.execute"
+        ],
+        [
+          "outDetail.OutDetail",
+          "result.Detail"
+        ],
+        [
+          "getData.Data",
+          "dataDimensions.self"
+        ],
+        [
+          "dataDimensions.Dimensions",
+          "readSize.TargetArray"
+        ],
+        [
+          "entry.Index",
+          "readSize.Index"
+        ],
+        [
+          "readSize.Item",
+          "saveSize.OutSize"
+        ],
+        [
+          "saveDetail.then",
+          "saveSize.execute"
+        ],
+        [
+          "outSize.OutSize",
+          "result.Size"
+        ],
+        [
+          "getData.Data",
+          "dataShelfIDs.self"
+        ],
+        [
+          "dataShelfIDs.ShelfIDs",
+          "readShelf.TargetArray"
+        ],
+        [
+          "entry.Index",
+          "readShelf.Index"
+        ],
+        [
+          "readShelf.Item",
+          "saveShelf.OutShelf"
+        ],
+        [
+          "saveSize.then",
+          "saveShelf.execute"
+        ],
+        [
+          "outShelf.OutShelf",
+          "result.Shelf"
+        ],
+        [
+          "getData.Data",
+          "dataSolid.self"
+        ],
+        [
+          "dataSolid.Solid",
+          "readHasCollision.TargetArray"
+        ],
+        [
+          "entry.Index",
+          "readHasCollision.Index"
+        ],
+        [
+          "readHasCollision.Item",
+          "saveHasCollision.OutHasCollision"
+        ],
+        [
+          "saveShelf.then",
+          "saveHasCollision.execute"
+        ],
+        [
+          "outHasCollision.OutHasCollision",
+          "result.HasCollision"
+        ],
+        [
+          "out.OK",
+          "result.Found"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "range.execute"
+        ],
+        [
+          "saveHasCollision.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ],
+        [
+          "range.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "FindPath",
+      "inputs": [
+        {
+          "name": "Path",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Index",
+          "type": "int"
+        }
+      ],
+      "locals": [
+        {
+          "name": "FoundIndex",
+          "type": "int",
+          "default": "-1"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getData",
+          "kind": "get",
+          "var": "Data"
+        },
+        {
+          "id": "data",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "dataPaths",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:Paths"
+        },
+        {
+          "id": "find",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Find",
+          "defaults": {}
+        },
+        {
+          "id": "found",
+          "kind": "set",
+          "var": "local:FoundIndex"
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:FoundIndex"
+        }
+      ],
+      "links": [
+        [
+          "getData.Data",
+          "data.Object"
+        ],
+        [
+          "data.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "getData.Data",
+          "dataPaths.self"
+        ],
+        [
+          "dataPaths.Paths",
+          "find.TargetArray"
+        ],
+        [
+          "entry.Path",
+          "find.ItemToFind"
+        ],
+        [
+          "find.ReturnValue",
+          "found.FoundIndex"
+        ],
+        [
+          "out.FoundIndex",
+          "result.Index"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "found.execute"
+        ],
+        [
+          "found.then",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Search",
+      "inputs": [
+        {
+          "name": "Text",
+          "type": "string"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "init",
+          "kind": "call",
+          "function": "self:Initialize",
+          "defaults": {}
+        },
+        {
+          "id": "cancel",
+          "kind": "call",
+          "function": "self:Cancel",
+          "defaults": {}
+        },
+        {
+          "id": "query",
+          "kind": "set",
+          "var": "Query"
+        },
+        {
+          "id": "kind",
+          "kind": "set",
+          "var": "QueryKind",
+          "defaults": {
+            "QueryKind": "0"
+          }
+        },
+        {
+          "id": "lower",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:ToLower",
+          "defaults": {}
+        },
+        {
+          "id": "space0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Replace",
+          "defaults": {
+            "From": "\t",
+            "To": " ",
+            "SearchCase": "CaseSensitive"
+          }
+        },
+        {
+          "id": "space1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Replace",
+          "defaults": {
+            "From": "\r",
+            "To": " ",
+            "SearchCase": "CaseSensitive"
+          }
+        },
+        {
+          "id": "space2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Replace",
+          "defaults": {
+            "From": "\n",
+            "To": " ",
+            "SearchCase": "CaseSensitive"
+          }
+        },
+        {
+          "id": "space3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Replace",
+          "defaults": {
+            "From": "\u000b",
+            "To": " ",
+            "SearchCase": "CaseSensitive"
+          }
+        },
+        {
+          "id": "space4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Replace",
+          "defaults": {
+            "From": "\f",
+            "To": " ",
+            "SearchCase": "CaseSensitive"
+          }
+        },
+        {
+          "id": "split",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:ParseIntoArray",
+          "defaults": {
+            "Delimiter": " ",
+            "CullEmptyStrings": "true"
+          }
+        },
+        {
+          "id": "tokens",
+          "kind": "set",
+          "var": "Tokens"
+        },
+        {
+          "id": "getData",
+          "kind": "get",
+          "var": "Data"
+        },
+        {
+          "id": "dataCount",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:Count"
+        },
+        {
+          "id": "end",
+          "kind": "set",
+          "var": "EndIndex"
+        },
+        {
+          "id": "getTokens",
+          "kind": "get",
+          "var": "Tokens"
+        },
+        {
+          "id": "len",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "words",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "any",
+          "kind": "branch"
+        },
+        {
+          "id": "active",
+          "kind": "set",
+          "var": "Active",
+          "defaults": {
+            "Active": "true"
+          }
+        },
+        {
+          "id": "empty",
+          "kind": "set",
+          "var": "Ready",
+          "defaults": {
+            "Ready": "true"
+          }
+        }
+      ],
+      "links": [
+        [
+          "entry.Text",
+          "query.Query"
+        ],
+        [
+          "entry.Text",
+          "lower.SourceString"
+        ],
+        [
+          "lower.ReturnValue",
+          "space0.SourceString"
+        ],
+        [
+          "space0.ReturnValue",
+          "space1.SourceString"
+        ],
+        [
+          "space1.ReturnValue",
+          "space2.SourceString"
+        ],
+        [
+          "space2.ReturnValue",
+          "space3.SourceString"
+        ],
+        [
+          "space3.ReturnValue",
+          "space4.SourceString"
+        ],
+        [
+          "space4.ReturnValue",
+          "split.SourceString"
+        ],
+        [
+          "split.ReturnValue",
+          "tokens.Tokens"
+        ],
+        [
+          "getData.Data",
+          "dataCount.self"
+        ],
+        [
+          "dataCount.Count",
+          "end.EndIndex"
+        ],
+        [
+          "getTokens.Tokens",
+          "len.TargetArray"
+        ],
+        [
+          "len.ReturnValue",
+          "words.A"
+        ],
+        [
+          "words.ReturnValue",
+          "any.Condition"
+        ],
+        [
+          "entry.then",
+          "init.execute"
+        ],
+        [
+          "init.then",
+          "cancel.execute"
+        ],
+        [
+          "cancel.then",
+          "query.execute"
+        ],
+        [
+          "query.then",
+          "kind.execute"
+        ],
+        [
+          "kind.then",
+          "tokens.execute"
+        ],
+        [
+          "tokens.then",
+          "end.execute"
+        ],
+        [
+          "end.then",
+          "any.execute"
+        ],
+        [
+          "any.then",
+          "active.execute"
+        ],
+        [
+          "any.else",
+          "empty.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Browse",
+      "inputs": [
+        {
+          "name": "Shelf",
+          "type": "int"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "init",
+          "kind": "call",
+          "function": "self:Initialize",
+          "defaults": {}
+        },
+        {
+          "id": "cancel",
+          "kind": "call",
+          "function": "self:Cancel",
+          "defaults": {}
+        },
+        {
+          "id": "isrecent",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "recent",
+          "kind": "branch"
+        },
+        {
+          "id": "recentkind",
+          "kind": "set",
+          "var": "QueryKind",
+          "defaults": {
+            "QueryKind": "2"
+          }
+        },
+        {
+          "id": "getRecent",
+          "kind": "get",
+          "var": "Recent"
+        },
+        {
+          "id": "recentcopy",
+          "kind": "set",
+          "var": "QueryRecent"
+        },
+        {
+          "id": "getQueryRecent",
+          "kind": "get",
+          "var": "QueryRecent"
+        },
+        {
+          "id": "recentlen",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "recentend",
+          "kind": "set",
+          "var": "EndIndex"
+        },
+        {
+          "id": "getData",
+          "kind": "get",
+          "var": "Data"
+        },
+        {
+          "id": "dataShelfStarts",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:ShelfStarts"
+        },
+        {
+          "id": "shelves",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "min",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "max",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "range0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "index",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "start",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "dataShelfCounts",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:ShelfCounts"
+        },
+        {
+          "id": "count",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "kind",
+          "kind": "set",
+          "var": "QueryKind",
+          "defaults": {
+            "QueryKind": "1"
+          }
+        },
+        {
+          "id": "cursor",
+          "kind": "set",
+          "var": "Cursor"
+        },
+        {
+          "id": "endvalue",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "end",
+          "kind": "set",
+          "var": "EndIndex"
+        },
+        {
+          "id": "active",
+          "kind": "set",
+          "var": "Active",
+          "defaults": {
+            "Active": "true"
+          }
+        },
+        {
+          "id": "empty",
+          "kind": "set",
+          "var": "Ready",
+          "defaults": {
+            "Ready": "true"
+          }
+        }
+      ],
+      "links": [
+        [
+          "entry.Shelf",
+          "isrecent.A"
+        ],
+        [
+          "isrecent.ReturnValue",
+          "recent.Condition"
+        ],
+        [
+          "getRecent.Recent",
+          "recentcopy.QueryRecent"
+        ],
+        [
+          "getQueryRecent.QueryRecent",
+          "recentlen.TargetArray"
+        ],
+        [
+          "recentlen.ReturnValue",
+          "recentend.EndIndex"
+        ],
+        [
+          "getData.Data",
+          "dataShelfStarts.self"
+        ],
+        [
+          "dataShelfStarts.ShelfStarts",
+          "shelves.TargetArray"
+        ],
+        [
+          "entry.Shelf",
+          "min.A"
+        ],
+        [
+          "entry.Shelf",
+          "max.A"
+        ],
+        [
+          "shelves.ReturnValue",
+          "max.B"
+        ],
+        [
+          "min.ReturnValue",
+          "range0.A"
+        ],
+        [
+          "max.ReturnValue",
+          "range0.B"
+        ],
+        [
+          "range0.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.Shelf",
+          "index.A"
+        ],
+        [
+          "dataShelfStarts.ShelfStarts",
+          "start.TargetArray"
+        ],
+        [
+          "index.ReturnValue",
+          "start.Index"
+        ],
+        [
+          "getData.Data",
+          "dataShelfCounts.self"
+        ],
+        [
+          "dataShelfCounts.ShelfCounts",
+          "count.TargetArray"
+        ],
+        [
+          "index.ReturnValue",
+          "count.Index"
+        ],
+        [
+          "start.Item",
+          "cursor.Cursor"
+        ],
+        [
+          "start.Item",
+          "endvalue.A"
+        ],
+        [
+          "count.Item",
+          "endvalue.B"
+        ],
+        [
+          "endvalue.ReturnValue",
+          "end.EndIndex"
+        ],
+        [
+          "entry.then",
+          "init.execute"
+        ],
+        [
+          "init.then",
+          "cancel.execute"
+        ],
+        [
+          "cancel.then",
+          "recent.execute"
+        ],
+        [
+          "recent.then",
+          "recentkind.execute"
+        ],
+        [
+          "recentkind.then",
+          "recentcopy.execute"
+        ],
+        [
+          "recentcopy.then",
+          "recentend.execute"
+        ],
+        [
+          "recentend.then",
+          "active.execute"
+        ],
+        [
+          "recent.else",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "kind.execute"
+        ],
+        [
+          "kind.then",
+          "cursor.execute"
+        ],
+        [
+          "cursor.then",
+          "end.execute"
+        ],
+        [
+          "end.then",
+          "active.execute"
+        ],
+        [
+          "valid.else",
+          "empty.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Remember",
+      "inputs": [
+        {
+          "name": "Index",
+          "type": "int"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getData",
+          "kind": "get",
+          "var": "Data"
+        },
+        {
+          "id": "data",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "min",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "dataCount",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:Count"
+        },
+        {
+          "id": "max",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "limits0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "range",
+          "kind": "branch"
+        },
+        {
+          "id": "getRecent",
+          "kind": "get",
+          "var": "Recent"
+        },
+        {
+          "id": "remove",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_RemoveItem",
+          "defaults": {}
+        },
+        {
+          "id": "insert",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Insert",
+          "defaults": {
+            "Index": "0"
+          }
+        },
+        {
+          "id": "len",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "limit",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "40"
+          }
+        },
+        {
+          "id": "full",
+          "kind": "branch"
+        },
+        {
+          "id": "trim",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Resize",
+          "defaults": {
+            "Size": "40"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getData.Data",
+          "data.Object"
+        ],
+        [
+          "data.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.Index",
+          "min.A"
+        ],
+        [
+          "getData.Data",
+          "dataCount.self"
+        ],
+        [
+          "entry.Index",
+          "max.A"
+        ],
+        [
+          "dataCount.Count",
+          "max.B"
+        ],
+        [
+          "min.ReturnValue",
+          "limits0.A"
+        ],
+        [
+          "max.ReturnValue",
+          "limits0.B"
+        ],
+        [
+          "limits0.ReturnValue",
+          "range.Condition"
+        ],
+        [
+          "getRecent.Recent",
+          "remove.TargetArray"
+        ],
+        [
+          "entry.Index",
+          "remove.Item"
+        ],
+        [
+          "getRecent.Recent",
+          "insert.TargetArray"
+        ],
+        [
+          "entry.Index",
+          "insert.NewItem"
+        ],
+        [
+          "getRecent.Recent",
+          "len.TargetArray"
+        ],
+        [
+          "len.ReturnValue",
+          "limit.A"
+        ],
+        [
+          "limit.ReturnValue",
+          "full.Condition"
+        ],
+        [
+          "getRecent.Recent",
+          "trim.TargetArray"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "range.execute"
+        ],
+        [
+          "range.then",
+          "remove.execute"
+        ],
+        [
+          "remove.then",
+          "insert.execute"
+        ],
+        [
+          "insert.then",
+          "full.execute"
+        ],
+        [
+          "full.then",
+          "trim.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Advance",
+      "nodes": [
+        {
+          "id": "getCursor",
+          "kind": "get",
+          "var": "Cursor"
+        },
+        {
+          "id": "nextadd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "next",
+          "kind": "set",
+          "var": "Cursor"
+        },
+        {
+          "id": "token",
+          "kind": "set",
+          "var": "TokenCursor",
+          "defaults": {
+            "TokenCursor": "0"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getCursor.Cursor",
+          "nextadd.A"
+        ],
+        [
+          "nextadd.ReturnValue",
+          "next.Cursor"
+        ],
+        [
+          "entry.then",
+          "next.execute"
+        ],
+        [
+          "next.then",
+          "token.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Match",
+      "inputs": [
+        {
+          "name": "Index",
+          "type": "int"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getResults",
+          "kind": "get",
+          "var": "Results"
+        },
+        {
+          "id": "len",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "getQueryKind",
+          "kind": "get",
+          "var": "QueryKind"
+        },
+        {
+          "id": "browse",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:NotEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "underlimit",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {
+            "B": "300"
+          }
+        },
+        {
+          "id": "roomcheck0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "room",
+          "kind": "branch"
+        },
+        {
+          "id": "append",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "getMatchCount",
+          "kind": "get",
+          "var": "MatchCount"
+        },
+        {
+          "id": "totaladd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "total",
+          "kind": "set",
+          "var": "MatchCount"
+        },
+        {
+          "id": "advance",
+          "kind": "call",
+          "function": "self:Advance",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getResults.Results",
+          "len.TargetArray"
+        ],
+        [
+          "getQueryKind.QueryKind",
+          "browse.A"
+        ],
+        [
+          "len.ReturnValue",
+          "underlimit.A"
+        ],
+        [
+          "browse.ReturnValue",
+          "roomcheck0.A"
+        ],
+        [
+          "underlimit.ReturnValue",
+          "roomcheck0.B"
+        ],
+        [
+          "roomcheck0.ReturnValue",
+          "room.Condition"
+        ],
+        [
+          "getResults.Results",
+          "append.TargetArray"
+        ],
+        [
+          "entry.Index",
+          "append.NewItem"
+        ],
+        [
+          "getMatchCount.MatchCount",
+          "totaladd.A"
+        ],
+        [
+          "totaladd.ReturnValue",
+          "total.MatchCount"
+        ],
+        [
+          "entry.then",
+          "room.execute"
+        ],
+        [
+          "room.then",
+          "append.execute"
+        ],
+        [
+          "append.then",
+          "total.execute"
+        ],
+        [
+          "total.then",
+          "advance.execute"
+        ],
+        [
+          "room.else",
+          "total.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Step",
+      "nodes": [
+        {
+          "id": "getActive",
+          "kind": "get",
+          "var": "Active"
+        },
+        {
+          "id": "active",
+          "kind": "branch"
+        },
+        {
+          "id": "getCursor",
+          "kind": "get",
+          "var": "Cursor"
+        },
+        {
+          "id": "getEndIndex",
+          "kind": "get",
+          "var": "EndIndex"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "more",
+          "kind": "branch"
+        },
+        {
+          "id": "getQueryKind",
+          "kind": "get",
+          "var": "QueryKind"
+        },
+        {
+          "id": "issearch",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "search",
+          "kind": "branch"
+        },
+        {
+          "id": "getTokens",
+          "kind": "get",
+          "var": "Tokens"
+        },
+        {
+          "id": "len",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "getTokenCursor",
+          "kind": "get",
+          "var": "TokenCursor"
+        },
+        {
+          "id": "morewords",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "words",
+          "kind": "branch"
+        },
+        {
+          "id": "word",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "getData",
+          "kind": "get",
+          "var": "Data"
+        },
+        {
+          "id": "dataSearchTexts",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:SearchTexts"
+        },
+        {
+          "id": "text",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "contains",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "found",
+          "kind": "branch"
+        },
+        {
+          "id": "tokenadd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "token",
+          "kind": "set",
+          "var": "TokenCursor"
+        },
+        {
+          "id": "skip",
+          "kind": "call",
+          "function": "self:Advance",
+          "defaults": {}
+        },
+        {
+          "id": "isrecent",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "recent",
+          "kind": "branch"
+        },
+        {
+          "id": "getQueryRecent",
+          "kind": "get",
+          "var": "QueryRecent"
+        },
+        {
+          "id": "recentitem",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "recentmatch",
+          "kind": "call",
+          "function": "self:Match",
+          "defaults": {}
+        },
+        {
+          "id": "match",
+          "kind": "call",
+          "function": "self:Match",
+          "defaults": {}
+        },
+        {
+          "id": "done",
+          "kind": "set",
+          "var": "Active",
+          "defaults": {
+            "Active": "false"
+          }
+        },
+        {
+          "id": "ready",
+          "kind": "set",
+          "var": "Ready",
+          "defaults": {
+            "Ready": "true"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getActive.Active",
+          "active.Condition"
+        ],
+        [
+          "getCursor.Cursor",
+          "within.A"
+        ],
+        [
+          "getEndIndex.EndIndex",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "more.Condition"
+        ],
+        [
+          "getQueryKind.QueryKind",
+          "issearch.A"
+        ],
+        [
+          "issearch.ReturnValue",
+          "search.Condition"
+        ],
+        [
+          "getTokens.Tokens",
+          "len.TargetArray"
+        ],
+        [
+          "getTokenCursor.TokenCursor",
+          "morewords.A"
+        ],
+        [
+          "len.ReturnValue",
+          "morewords.B"
+        ],
+        [
+          "morewords.ReturnValue",
+          "words.Condition"
+        ],
+        [
+          "getTokens.Tokens",
+          "word.TargetArray"
+        ],
+        [
+          "getTokenCursor.TokenCursor",
+          "word.Index"
+        ],
+        [
+          "getData.Data",
+          "dataSearchTexts.self"
+        ],
+        [
+          "dataSearchTexts.SearchTexts",
+          "text.TargetArray"
+        ],
+        [
+          "getCursor.Cursor",
+          "text.Index"
+        ],
+        [
+          "text.Item",
+          "contains.SearchIn"
+        ],
+        [
+          "word.Item",
+          "contains.Substring"
+        ],
+        [
+          "contains.ReturnValue",
+          "found.Condition"
+        ],
+        [
+          "getTokenCursor.TokenCursor",
+          "tokenadd.A"
+        ],
+        [
+          "tokenadd.ReturnValue",
+          "token.TokenCursor"
+        ],
+        [
+          "getQueryKind.QueryKind",
+          "isrecent.A"
+        ],
+        [
+          "isrecent.ReturnValue",
+          "recent.Condition"
+        ],
+        [
+          "getQueryRecent.QueryRecent",
+          "recentitem.TargetArray"
+        ],
+        [
+          "getCursor.Cursor",
+          "recentitem.Index"
+        ],
+        [
+          "recentitem.Item",
+          "recentmatch.Index"
+        ],
+        [
+          "getCursor.Cursor",
+          "match.Index"
+        ],
+        [
+          "entry.then",
+          "active.execute"
+        ],
+        [
+          "active.then",
+          "more.execute"
+        ],
+        [
+          "more.then",
+          "search.execute"
+        ],
+        [
+          "search.then",
+          "words.execute"
+        ],
+        [
+          "words.then",
+          "found.execute"
+        ],
+        [
+          "found.then",
+          "token.execute"
+        ],
+        [
+          "found.else",
+          "skip.execute"
+        ],
+        [
+          "words.else",
+          "match.execute"
+        ],
+        [
+          "search.else",
+          "recent.execute"
+        ],
+        [
+          "recent.then",
+          "recentmatch.execute"
+        ],
+        [
+          "recent.else",
+          "match.execute"
+        ],
+        [
+          "more.else",
+          "done.execute"
+        ],
+        [
+          "done.then",
+          "ready.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Pump",
+      "locals": [
+        {
+          "name": "StartedAt",
+          "type": "double"
+        },
+        {
+          "name": "Steps",
+          "type": "int",
+          "default": "0"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "clock",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "clocksum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "start",
+          "kind": "set",
+          "var": "local:StartedAt"
+        },
+        {
+          "id": "started",
+          "kind": "get",
+          "var": "local:StartedAt"
+        },
+        {
+          "id": "steps",
+          "kind": "get",
+          "var": "local:Steps"
+        },
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "nowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "elapsed",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getActive",
+          "kind": "get",
+          "var": "Active"
+        },
+        {
+          "id": "getBudgetSeconds",
+          "kind": "get",
+          "var": "BudgetSeconds"
+        },
+        {
+          "id": "time",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getMaxSteps",
+          "kind": "get",
+          "var": "MaxSteps"
+        },
+        {
+          "id": "limit",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "budget0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "budget1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "step",
+          "kind": "call",
+          "function": "self:Step",
+          "defaults": {}
+        },
+        {
+          "id": "increment",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "next",
+          "kind": "set",
+          "var": "local:Steps"
+        }
+      ],
+      "links": [
+        [
+          "clock.Seconds",
+          "clocksum.A"
+        ],
+        [
+          "clock.PartialSeconds",
+          "clocksum.B"
+        ],
+        [
+          "clocksum.ReturnValue",
+          "start.StartedAt"
+        ],
+        [
+          "now.Seconds",
+          "nowsum.A"
+        ],
+        [
+          "now.PartialSeconds",
+          "nowsum.B"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "elapsed.A"
+        ],
+        [
+          "started.StartedAt",
+          "elapsed.B"
+        ],
+        [
+          "elapsed.ReturnValue",
+          "time.A"
+        ],
+        [
+          "getBudgetSeconds.BudgetSeconds",
+          "time.B"
+        ],
+        [
+          "steps.Steps",
+          "limit.A"
+        ],
+        [
+          "getMaxSteps.MaxSteps",
+          "limit.B"
+        ],
+        [
+          "getActive.Active",
+          "budget0.A"
+        ],
+        [
+          "time.ReturnValue",
+          "budget0.B"
+        ],
+        [
+          "budget0.ReturnValue",
+          "budget1.A"
+        ],
+        [
+          "limit.ReturnValue",
+          "budget1.B"
+        ],
+        [
+          "budget1.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "steps.Steps",
+          "increment.A"
+        ],
+        [
+          "increment.ReturnValue",
+          "next.Steps"
+        ],
+        [
+          "entry.then",
+          "start.execute"
+        ],
+        [
+          "start.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "step.execute"
+        ],
+        [
+          "step.then",
+          "next.execute"
+        ],
+        [
+          "next.then",
+          "loop.execute"
+        ]
+      ]
+    },
+    {
+      "name": "PackIssue",
+      "inputs": [
+        {
+          "name": "Message",
+          "type": "string"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getPackIssues",
+          "kind": "get",
+          "var": "PackIssues"
+        },
+        {
+          "id": "len",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "under",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {
+            "B": "128"
+          }
+        },
+        {
+          "id": "room",
+          "kind": "branch"
+        },
+        {
+          "id": "append",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getPackIssues.PackIssues",
+          "len.TargetArray"
+        ],
+        [
+          "len.ReturnValue",
+          "under.A"
+        ],
+        [
+          "under.ReturnValue",
+          "room.Condition"
+        ],
+        [
+          "getPackIssues.PackIssues",
+          "append.TargetArray"
+        ],
+        [
+          "entry.Message",
+          "append.NewItem"
+        ],
+        [
+          "entry.then",
+          "room.execute"
+        ],
+        [
+          "room.then",
+          "append.execute"
+        ]
+      ]
+    },
+    {
+      "name": "QueuePropPacks",
+      "inputs": [
+        {
+          "name": "Providers",
+          "type": "object:/Script/Engine.ActorComponent[]"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getPacksLoading",
+          "kind": "get",
+          "var": "PacksLoading"
+        },
+        {
+          "id": "notbusy",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "idle",
+          "kind": "branch"
+        },
+        {
+          "id": "len",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "max",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "32"
+          }
+        },
+        {
+          "id": "limit",
+          "kind": "branch"
+        },
+        {
+          "id": "providers",
+          "kind": "set",
+          "var": "PendingPacks"
+        },
+        {
+          "id": "cursor",
+          "kind": "set",
+          "var": "PackCursor",
+          "defaults": {
+            "PackCursor": "0"
+          }
+        },
+        {
+          "id": "row",
+          "kind": "set",
+          "var": "PackRow",
+          "defaults": {
+            "PackRow": "0"
+          }
+        },
+        {
+          "id": "active",
+          "kind": "set",
+          "var": "PacksLoading",
+          "defaults": {
+            "PacksLoading": "true"
+          }
+        },
+        {
+          "id": "current",
+          "kind": "set",
+          "var": "CurrentPack"
+        },
+        {
+          "id": "issue",
+          "kind": "call",
+          "function": "self:PackIssue",
+          "defaults": {
+            "Message": "Too many prop packs (maximum 32); pack import skipped."
+          }
+        }
+      ],
+      "links": [
+        [
+          "getPacksLoading.PacksLoading",
+          "notbusy.A"
+        ],
+        [
+          "notbusy.ReturnValue",
+          "idle.Condition"
+        ],
+        [
+          "entry.Providers",
+          "len.TargetArray"
+        ],
+        [
+          "len.ReturnValue",
+          "max.A"
+        ],
+        [
+          "max.ReturnValue",
+          "limit.Condition"
+        ],
+        [
+          "entry.Providers",
+          "providers.PendingPacks"
+        ],
+        [
+          "entry.then",
+          "idle.execute"
+        ],
+        [
+          "idle.then",
+          "limit.execute"
+        ],
+        [
+          "limit.then",
+          "providers.execute"
+        ],
+        [
+          "providers.then",
+          "cursor.execute"
+        ],
+        [
+          "cursor.then",
+          "row.execute"
+        ],
+        [
+          "row.then",
+          "current.execute"
+        ],
+        [
+          "current.then",
+          "active.execute"
+        ],
+        [
+          "limit.else",
+          "issue.execute"
+        ]
+      ]
+    },
+    {
+      "name": "DiscoverPropPacks",
+      "inputs": [
+        {
+          "name": "Context",
+          "type": "object:/Script/CoreUObject.Object"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "init",
+          "kind": "call",
+          "function": "self:Initialize",
+          "defaults": {}
+        },
+        {
+          "id": "state",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetGameState",
+          "defaults": {}
+        },
+        {
+          "id": "statevalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "components",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:K2_GetComponentsByClass",
+          "defaults": {
+            "ComponentClass": "/DenDesignerGF/Runtime/BP_DenPropPack"
+          }
+        },
+        {
+          "id": "queue",
+          "kind": "call",
+          "function": "self:QueuePropPacks",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "entry.Context",
+          "state.WorldContextObject"
+        ],
+        [
+          "state.ReturnValue",
+          "statevalid.Object"
+        ],
+        [
+          "statevalid.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "state.ReturnValue",
+          "components.self"
+        ],
+        [
+          "components.ReturnValue",
+          "queue.Providers"
+        ],
+        [
+          "entry.then",
+          "init.execute"
+        ],
+        [
+          "init.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "queue.execute"
+        ]
+      ]
+    },
+    {
+      "name": "BeginPropPack",
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "WasAccepted",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "Scan",
+          "type": "int",
+          "default": "0"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getCurrentPack",
+          "kind": "get",
+          "var": "CurrentPack"
+        },
+        {
+          "id": "object",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "packPackID",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPropPack:PackID"
+        },
+        {
+          "id": "id",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPropPack:ValidPackID",
+          "defaults": {}
+        },
+        {
+          "id": "packPaths",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPropPack:Paths"
+        },
+        {
+          "id": "rows",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "packSchemaVersion",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPropPack:SchemaVersion"
+        },
+        {
+          "id": "schema",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "nonempty",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "limit",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "2048"
+          }
+        },
+        {
+          "id": "packTitle",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPropPack:Title"
+        },
+        {
+          "id": "lenTitle",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Len",
+          "defaults": {}
+        },
+        {
+          "id": "maxTitle",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "96"
+          }
+        },
+        {
+          "id": "minTitle",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "packAuthor",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPropPack:Author"
+        },
+        {
+          "id": "lenAuthor",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Len",
+          "defaults": {}
+        },
+        {
+          "id": "maxAuthor",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "96"
+          }
+        },
+        {
+          "id": "packVersion",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPropPack:Version"
+        },
+        {
+          "id": "lenVersion",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Len",
+          "defaults": {}
+        },
+        {
+          "id": "maxVersion",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "96"
+          }
+        },
+        {
+          "id": "packLabels",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPropPack:Labels"
+        },
+        {
+          "id": "lenLabels",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "alignedLabels",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "packDetails",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPropPack:Details"
+        },
+        {
+          "id": "lenDetails",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "alignedDetails",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "packDimensions",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPropPack:Dimensions"
+        },
+        {
+          "id": "lenDimensions",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "alignedDimensions",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "packSolid",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPropPack:Solid"
+        },
+        {
+          "id": "lenSolid",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "alignedSolid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "packSearchTexts",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPropPack:SearchTexts"
+        },
+        {
+          "id": "lenSearchTexts",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "alignedSearchTexts",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "headerok0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "headerok1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "headerok2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "headerok3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "headerok4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "headerok5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "headerok6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "headerok7",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "headerok8",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "headerok9",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "headerok10",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "headerok11",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "header",
+          "kind": "branch"
+        },
+        {
+          "id": "scan",
+          "kind": "get",
+          "var": "local:Scan"
+        },
+        {
+          "id": "getPendingPacks",
+          "kind": "get",
+          "var": "PendingPacks"
+        },
+        {
+          "id": "total",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "more",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "other",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenPropPack"
+        },
+        {
+          "id": "otherid",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPropPack:PackID"
+        },
+        {
+          "id": "sameid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StriStri",
+          "defaults": {}
+        },
+        {
+          "id": "getPackCursor",
+          "kind": "get",
+          "var": "PackCursor"
+        },
+        {
+          "id": "different",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:NotEqual_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "conflictcheck0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "conflict",
+          "kind": "branch"
+        },
+        {
+          "id": "inc",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "next",
+          "kind": "set",
+          "var": "local:Scan"
+        },
+        {
+          "id": "getRegisteredPackIDs",
+          "kind": "get",
+          "var": "RegisteredPackIDs"
+        },
+        {
+          "id": "known",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Contains",
+          "defaults": {}
+        },
+        {
+          "id": "unknown",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "new",
+          "kind": "branch"
+        },
+        {
+          "id": "remember",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "row",
+          "kind": "set",
+          "var": "PackRow",
+          "defaults": {
+            "PackRow": "0"
+          }
+        },
+        {
+          "id": "shelf",
+          "kind": "set",
+          "var": "PackShelf",
+          "defaults": {
+            "PackShelf": "-1"
+          }
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:WasAccepted",
+          "defaults": {
+            "WasAccepted": "true"
+          }
+        },
+        {
+          "id": "accepted",
+          "kind": "get",
+          "var": "local:WasAccepted"
+        },
+        {
+          "id": "message",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "A": "Ignored invalid or conflicting prop pack: "
+          }
+        },
+        {
+          "id": "issue",
+          "kind": "call",
+          "function": "self:PackIssue",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getCurrentPack.CurrentPack",
+          "object.Object"
+        ],
+        [
+          "object.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "getCurrentPack.CurrentPack",
+          "packPackID.self"
+        ],
+        [
+          "getCurrentPack.CurrentPack",
+          "id.self"
+        ],
+        [
+          "packPackID.PackID",
+          "id.Key"
+        ],
+        [
+          "getCurrentPack.CurrentPack",
+          "packPaths.self"
+        ],
+        [
+          "packPaths.Paths",
+          "rows.TargetArray"
+        ],
+        [
+          "getCurrentPack.CurrentPack",
+          "packSchemaVersion.self"
+        ],
+        [
+          "packSchemaVersion.SchemaVersion",
+          "schema.A"
+        ],
+        [
+          "rows.ReturnValue",
+          "nonempty.A"
+        ],
+        [
+          "rows.ReturnValue",
+          "limit.A"
+        ],
+        [
+          "getCurrentPack.CurrentPack",
+          "packTitle.self"
+        ],
+        [
+          "packTitle.Title",
+          "lenTitle.S"
+        ],
+        [
+          "lenTitle.ReturnValue",
+          "maxTitle.A"
+        ],
+        [
+          "lenTitle.ReturnValue",
+          "minTitle.A"
+        ],
+        [
+          "getCurrentPack.CurrentPack",
+          "packAuthor.self"
+        ],
+        [
+          "packAuthor.Author",
+          "lenAuthor.S"
+        ],
+        [
+          "lenAuthor.ReturnValue",
+          "maxAuthor.A"
+        ],
+        [
+          "getCurrentPack.CurrentPack",
+          "packVersion.self"
+        ],
+        [
+          "packVersion.Version",
+          "lenVersion.S"
+        ],
+        [
+          "lenVersion.ReturnValue",
+          "maxVersion.A"
+        ],
+        [
+          "getCurrentPack.CurrentPack",
+          "packLabels.self"
+        ],
+        [
+          "packLabels.Labels",
+          "lenLabels.TargetArray"
+        ],
+        [
+          "lenLabels.ReturnValue",
+          "alignedLabels.A"
+        ],
+        [
+          "rows.ReturnValue",
+          "alignedLabels.B"
+        ],
+        [
+          "getCurrentPack.CurrentPack",
+          "packDetails.self"
+        ],
+        [
+          "packDetails.Details",
+          "lenDetails.TargetArray"
+        ],
+        [
+          "lenDetails.ReturnValue",
+          "alignedDetails.A"
+        ],
+        [
+          "rows.ReturnValue",
+          "alignedDetails.B"
+        ],
+        [
+          "getCurrentPack.CurrentPack",
+          "packDimensions.self"
+        ],
+        [
+          "packDimensions.Dimensions",
+          "lenDimensions.TargetArray"
+        ],
+        [
+          "lenDimensions.ReturnValue",
+          "alignedDimensions.A"
+        ],
+        [
+          "rows.ReturnValue",
+          "alignedDimensions.B"
+        ],
+        [
+          "getCurrentPack.CurrentPack",
+          "packSolid.self"
+        ],
+        [
+          "packSolid.Solid",
+          "lenSolid.TargetArray"
+        ],
+        [
+          "lenSolid.ReturnValue",
+          "alignedSolid.A"
+        ],
+        [
+          "rows.ReturnValue",
+          "alignedSolid.B"
+        ],
+        [
+          "getCurrentPack.CurrentPack",
+          "packSearchTexts.self"
+        ],
+        [
+          "packSearchTexts.SearchTexts",
+          "lenSearchTexts.TargetArray"
+        ],
+        [
+          "lenSearchTexts.ReturnValue",
+          "alignedSearchTexts.A"
+        ],
+        [
+          "rows.ReturnValue",
+          "alignedSearchTexts.B"
+        ],
+        [
+          "id.Valid",
+          "headerok0.A"
+        ],
+        [
+          "schema.ReturnValue",
+          "headerok0.B"
+        ],
+        [
+          "headerok0.ReturnValue",
+          "headerok1.A"
+        ],
+        [
+          "nonempty.ReturnValue",
+          "headerok1.B"
+        ],
+        [
+          "headerok1.ReturnValue",
+          "headerok2.A"
+        ],
+        [
+          "limit.ReturnValue",
+          "headerok2.B"
+        ],
+        [
+          "headerok2.ReturnValue",
+          "headerok3.A"
+        ],
+        [
+          "maxTitle.ReturnValue",
+          "headerok3.B"
+        ],
+        [
+          "headerok3.ReturnValue",
+          "headerok4.A"
+        ],
+        [
+          "minTitle.ReturnValue",
+          "headerok4.B"
+        ],
+        [
+          "headerok4.ReturnValue",
+          "headerok5.A"
+        ],
+        [
+          "maxAuthor.ReturnValue",
+          "headerok5.B"
+        ],
+        [
+          "headerok5.ReturnValue",
+          "headerok6.A"
+        ],
+        [
+          "maxVersion.ReturnValue",
+          "headerok6.B"
+        ],
+        [
+          "headerok6.ReturnValue",
+          "headerok7.A"
+        ],
+        [
+          "alignedLabels.ReturnValue",
+          "headerok7.B"
+        ],
+        [
+          "headerok7.ReturnValue",
+          "headerok8.A"
+        ],
+        [
+          "alignedDetails.ReturnValue",
+          "headerok8.B"
+        ],
+        [
+          "headerok8.ReturnValue",
+          "headerok9.A"
+        ],
+        [
+          "alignedDimensions.ReturnValue",
+          "headerok9.B"
+        ],
+        [
+          "headerok9.ReturnValue",
+          "headerok10.A"
+        ],
+        [
+          "alignedSolid.ReturnValue",
+          "headerok10.B"
+        ],
+        [
+          "headerok10.ReturnValue",
+          "headerok11.A"
+        ],
+        [
+          "alignedSearchTexts.ReturnValue",
+          "headerok11.B"
+        ],
+        [
+          "headerok11.ReturnValue",
+          "header.Condition"
+        ],
+        [
+          "getPendingPacks.PendingPacks",
+          "total.TargetArray"
+        ],
+        [
+          "scan.Scan",
+          "more.A"
+        ],
+        [
+          "total.ReturnValue",
+          "more.B"
+        ],
+        [
+          "more.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "getPendingPacks.PendingPacks",
+          "other.TargetArray"
+        ],
+        [
+          "scan.Scan",
+          "other.Index"
+        ],
+        [
+          "other.Item",
+          "cast.Object"
+        ],
+        [
+          "cast.AsBP Den Prop Pack",
+          "otherid.self"
+        ],
+        [
+          "otherid.PackID",
+          "sameid.A"
+        ],
+        [
+          "packPackID.PackID",
+          "sameid.B"
+        ],
+        [
+          "scan.Scan",
+          "different.A"
+        ],
+        [
+          "getPackCursor.PackCursor",
+          "different.B"
+        ],
+        [
+          "sameid.ReturnValue",
+          "conflictcheck0.A"
+        ],
+        [
+          "different.ReturnValue",
+          "conflictcheck0.B"
+        ],
+        [
+          "conflictcheck0.ReturnValue",
+          "conflict.Condition"
+        ],
+        [
+          "scan.Scan",
+          "inc.A"
+        ],
+        [
+          "inc.ReturnValue",
+          "next.Scan"
+        ],
+        [
+          "getRegisteredPackIDs.RegisteredPackIDs",
+          "known.TargetArray"
+        ],
+        [
+          "packPackID.PackID",
+          "known.ItemToFind"
+        ],
+        [
+          "known.ReturnValue",
+          "unknown.A"
+        ],
+        [
+          "unknown.ReturnValue",
+          "new.Condition"
+        ],
+        [
+          "getRegisteredPackIDs.RegisteredPackIDs",
+          "remember.TargetArray"
+        ],
+        [
+          "packPackID.PackID",
+          "remember.NewItem"
+        ],
+        [
+          "accepted.WasAccepted",
+          "result.Accepted"
+        ],
+        [
+          "packPackID.PackID",
+          "message.B"
+        ],
+        [
+          "message.ReturnValue",
+          "issue.Message"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "id.execute"
+        ],
+        [
+          "id.then",
+          "header.execute"
+        ],
+        [
+          "header.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "conflict.execute"
+        ],
+        [
+          "conflict.else",
+          "next.execute"
+        ],
+        [
+          "next.then",
+          "loop.execute"
+        ],
+        [
+          "cast.CastFailed",
+          "next.execute"
+        ],
+        [
+          "loop.else",
+          "new.execute"
+        ],
+        [
+          "new.then",
+          "remember.execute"
+        ],
+        [
+          "remember.then",
+          "row.execute"
+        ],
+        [
+          "row.then",
+          "shelf.execute"
+        ],
+        [
+          "shelf.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "new.else",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ],
+        [
+          "header.else",
+          "issue.execute"
+        ],
+        [
+          "issue.then",
+          "result.execute"
+        ],
+        [
+          "conflict.then",
+          "issue.execute"
+        ]
+      ]
+    },
+    {
+      "name": "EnsurePackShelf",
+      "locals": [
+        {
+          "name": "GroupTitle",
+          "type": "string",
+          "default": "Prop packs"
+        },
+        {
+          "name": "Zero",
+          "type": "int",
+          "default": "0"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getPackShelf",
+          "kind": "get",
+          "var": "PackShelf"
+        },
+        {
+          "id": "noshelf",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "needed",
+          "kind": "branch"
+        },
+        {
+          "id": "getPackGroup",
+          "kind": "get",
+          "var": "PackGroup"
+        },
+        {
+          "id": "nogroup",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "group",
+          "kind": "branch"
+        },
+        {
+          "id": "getData",
+          "kind": "get",
+          "var": "Data"
+        },
+        {
+          "id": "dataGroups",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:Groups"
+        },
+        {
+          "id": "groupcount",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "groupid",
+          "kind": "set",
+          "var": "PackGroup"
+        },
+        {
+          "id": "grouptext",
+          "kind": "get",
+          "var": "local:GroupTitle"
+        },
+        {
+          "id": "zero",
+          "kind": "get",
+          "var": "local:Zero"
+        },
+        {
+          "id": "groupname",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "dataGroupCounts",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:GroupCounts"
+        },
+        {
+          "id": "count",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "dataShelfLabels",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:ShelfLabels"
+        },
+        {
+          "id": "shelflen",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "shelfid",
+          "kind": "set",
+          "var": "PackShelf"
+        },
+        {
+          "id": "getCurrentPack",
+          "kind": "get",
+          "var": "CurrentPack"
+        },
+        {
+          "id": "packTitle",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPropPack:Title"
+        },
+        {
+          "id": "dataCount",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:Count"
+        },
+        {
+          "id": "ShelfLabels",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "dataShelfTitles",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:ShelfTitles"
+        },
+        {
+          "id": "ShelfTitles",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "dataShelfStarts",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:ShelfStarts"
+        },
+        {
+          "id": "ShelfStarts",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "dataShelfGroups",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:ShelfGroups"
+        },
+        {
+          "id": "ShelfGroups",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "dataShelfCounts",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:ShelfCounts"
+        },
+        {
+          "id": "shelfcount",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getPackShelf.PackShelf",
+          "noshelf.A"
+        ],
+        [
+          "noshelf.ReturnValue",
+          "needed.Condition"
+        ],
+        [
+          "getPackGroup.PackGroup",
+          "nogroup.A"
+        ],
+        [
+          "nogroup.ReturnValue",
+          "group.Condition"
+        ],
+        [
+          "getData.Data",
+          "dataGroups.self"
+        ],
+        [
+          "dataGroups.Groups",
+          "groupcount.TargetArray"
+        ],
+        [
+          "groupcount.ReturnValue",
+          "groupid.PackGroup"
+        ],
+        [
+          "dataGroups.Groups",
+          "groupname.TargetArray"
+        ],
+        [
+          "grouptext.GroupTitle",
+          "groupname.NewItem"
+        ],
+        [
+          "getData.Data",
+          "dataGroupCounts.self"
+        ],
+        [
+          "dataGroupCounts.GroupCounts",
+          "count.TargetArray"
+        ],
+        [
+          "zero.Zero",
+          "count.NewItem"
+        ],
+        [
+          "getData.Data",
+          "dataShelfLabels.self"
+        ],
+        [
+          "dataShelfLabels.ShelfLabels",
+          "shelflen.TargetArray"
+        ],
+        [
+          "shelflen.ReturnValue",
+          "shelfid.PackShelf"
+        ],
+        [
+          "getCurrentPack.CurrentPack",
+          "packTitle.self"
+        ],
+        [
+          "getData.Data",
+          "dataCount.self"
+        ],
+        [
+          "dataShelfLabels.ShelfLabels",
+          "ShelfLabels.TargetArray"
+        ],
+        [
+          "packTitle.Title",
+          "ShelfLabels.NewItem"
+        ],
+        [
+          "shelfid.then",
+          "ShelfLabels.execute"
+        ],
+        [
+          "getData.Data",
+          "dataShelfTitles.self"
+        ],
+        [
+          "dataShelfTitles.ShelfTitles",
+          "ShelfTitles.TargetArray"
+        ],
+        [
+          "packTitle.Title",
+          "ShelfTitles.NewItem"
+        ],
+        [
+          "ShelfLabels.then",
+          "ShelfTitles.execute"
+        ],
+        [
+          "getData.Data",
+          "dataShelfStarts.self"
+        ],
+        [
+          "dataShelfStarts.ShelfStarts",
+          "ShelfStarts.TargetArray"
+        ],
+        [
+          "dataCount.Count",
+          "ShelfStarts.NewItem"
+        ],
+        [
+          "ShelfTitles.then",
+          "ShelfStarts.execute"
+        ],
+        [
+          "getData.Data",
+          "dataShelfGroups.self"
+        ],
+        [
+          "dataShelfGroups.ShelfGroups",
+          "ShelfGroups.TargetArray"
+        ],
+        [
+          "getPackGroup.PackGroup",
+          "ShelfGroups.NewItem"
+        ],
+        [
+          "ShelfStarts.then",
+          "ShelfGroups.execute"
+        ],
+        [
+          "getData.Data",
+          "dataShelfCounts.self"
+        ],
+        [
+          "dataShelfCounts.ShelfCounts",
+          "shelfcount.TargetArray"
+        ],
+        [
+          "zero.Zero",
+          "shelfcount.NewItem"
+        ],
+        [
+          "entry.then",
+          "needed.execute"
+        ],
+        [
+          "needed.then",
+          "group.execute"
+        ],
+        [
+          "group.then",
+          "groupid.execute"
+        ],
+        [
+          "groupid.then",
+          "groupname.execute"
+        ],
+        [
+          "groupname.then",
+          "count.execute"
+        ],
+        [
+          "count.then",
+          "shelfid.execute"
+        ],
+        [
+          "group.else",
+          "shelfid.execute"
+        ],
+        [
+          "ShelfGroups.then",
+          "shelfcount.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ImportPackRow",
+      "nodes": [
+        {
+          "id": "getCurrentPack",
+          "kind": "get",
+          "var": "CurrentPack"
+        },
+        {
+          "id": "packPaths",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPropPack:Paths"
+        },
+        {
+          "id": "readPaths",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "getPackRow",
+          "kind": "get",
+          "var": "PackRow"
+        },
+        {
+          "id": "packLabels",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPropPack:Labels"
+        },
+        {
+          "id": "readLabels",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "packDetails",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPropPack:Details"
+        },
+        {
+          "id": "readDetails",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "packDimensions",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPropPack:Dimensions"
+        },
+        {
+          "id": "readDimensions",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "packSolid",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPropPack:Solid"
+        },
+        {
+          "id": "readSolid",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "packSearchTexts",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPropPack:SearchTexts"
+        },
+        {
+          "id": "readSearchTexts",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "prefix",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:StartsWith",
+          "defaults": {
+            "InPrefix": "/"
+          }
+        },
+        {
+          "id": "dot",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": ".",
+            "bUseCase": "true"
+          }
+        },
+        {
+          "id": "sub",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": ":",
+            "bUseCase": "true"
+          }
+        },
+        {
+          "id": "nosub",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "pathlen",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Len",
+          "defaults": {}
+        },
+        {
+          "id": "pathmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "1023"
+          }
+        },
+        {
+          "id": "labellen",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Len",
+          "defaults": {}
+        },
+        {
+          "id": "labelmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "labelmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "96"
+          }
+        },
+        {
+          "id": "lenDetails",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Len",
+          "defaults": {}
+        },
+        {
+          "id": "maxDetails",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "512"
+          }
+        },
+        {
+          "id": "lenSearchTexts",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Len",
+          "defaults": {}
+        },
+        {
+          "id": "maxSearchTexts",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "512"
+          }
+        },
+        {
+          "id": "xyz",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakVector",
+          "defaults": {}
+        },
+        {
+          "id": "minX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "maxX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "100000"
+          }
+        },
+        {
+          "id": "minY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "maxY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "100000"
+          }
+        },
+        {
+          "id": "minZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "maxZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "100000"
+          }
+        },
+        {
+          "id": "rowok0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "rowok1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "rowok2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "rowok3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "rowok4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "rowok5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "rowok6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "rowok7",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "rowok8",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "rowok9",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "rowok10",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "rowok11",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "rowok12",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "find",
+          "kind": "call",
+          "function": "self:FindPath",
+          "defaults": {}
+        },
+        {
+          "id": "missing",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "unique",
+          "kind": "branch"
+        },
+        {
+          "id": "shelf",
+          "kind": "call",
+          "function": "self:EnsurePackShelf",
+          "defaults": {}
+        },
+        {
+          "id": "getData",
+          "kind": "get",
+          "var": "Data"
+        },
+        {
+          "id": "dataPaths",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:Paths"
+        },
+        {
+          "id": "addPaths",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "dataLabels",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:Labels"
+        },
+        {
+          "id": "addLabels",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "dataDetails",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:Details"
+        },
+        {
+          "id": "addDetails",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "dataDimensions",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:Dimensions"
+        },
+        {
+          "id": "addDimensions",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "dataSolid",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:Solid"
+        },
+        {
+          "id": "addSolid",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "packPackID",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPropPack:PackID"
+        },
+        {
+          "id": "packTitle",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPropPack:Title"
+        },
+        {
+          "id": "packAuthor",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPropPack:Author"
+        },
+        {
+          "id": "searchspace0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "B": " "
+          }
+        },
+        {
+          "id": "searchjoin0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "searchspace1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "B": " "
+          }
+        },
+        {
+          "id": "searchjoin1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "searchspace2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "B": " "
+          }
+        },
+        {
+          "id": "searchjoin2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "searchspace3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "B": " "
+          }
+        },
+        {
+          "id": "searchjoin3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "searchspace4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "B": " "
+          }
+        },
+        {
+          "id": "searchjoin4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "lower",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:ToLower",
+          "defaults": {}
+        },
+        {
+          "id": "dataSearchTexts",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:SearchTexts"
+        },
+        {
+          "id": "addSearchTexts",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "dataShelfIDs",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:ShelfIDs"
+        },
+        {
+          "id": "getPackShelf",
+          "kind": "get",
+          "var": "PackShelf"
+        },
+        {
+          "id": "shelfnumber",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "shelfref",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "dataCount",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:Count"
+        },
+        {
+          "id": "newcount",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "count",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:Count"
+        },
+        {
+          "id": "getPackGroup",
+          "kind": "get",
+          "var": "PackGroup"
+        },
+        {
+          "id": "dataShelfCounts",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:ShelfCounts"
+        },
+        {
+          "id": "oldShelfCounts",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "setShelfCounts",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Set",
+          "defaults": {}
+        },
+        {
+          "id": "plusShelfCounts",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "dataGroupCounts",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenCatalogData:GroupCounts"
+        },
+        {
+          "id": "oldGroupCounts",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "setGroupCounts",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Set",
+          "defaults": {}
+        },
+        {
+          "id": "plusGroupCounts",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "nextadd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "next",
+          "kind": "set",
+          "var": "PackRow"
+        },
+        {
+          "id": "issue",
+          "kind": "call",
+          "function": "self:PackIssue",
+          "defaults": {}
+        },
+        {
+          "id": "message",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "A": "Skipped invalid or duplicate prop: "
+          }
+        }
+      ],
+      "links": [
+        [
+          "getCurrentPack.CurrentPack",
+          "packPaths.self"
+        ],
+        [
+          "packPaths.Paths",
+          "readPaths.TargetArray"
+        ],
+        [
+          "getPackRow.PackRow",
+          "readPaths.Index"
+        ],
+        [
+          "getCurrentPack.CurrentPack",
+          "packLabels.self"
+        ],
+        [
+          "packLabels.Labels",
+          "readLabels.TargetArray"
+        ],
+        [
+          "getPackRow.PackRow",
+          "readLabels.Index"
+        ],
+        [
+          "getCurrentPack.CurrentPack",
+          "packDetails.self"
+        ],
+        [
+          "packDetails.Details",
+          "readDetails.TargetArray"
+        ],
+        [
+          "getPackRow.PackRow",
+          "readDetails.Index"
+        ],
+        [
+          "getCurrentPack.CurrentPack",
+          "packDimensions.self"
+        ],
+        [
+          "packDimensions.Dimensions",
+          "readDimensions.TargetArray"
+        ],
+        [
+          "getPackRow.PackRow",
+          "readDimensions.Index"
+        ],
+        [
+          "getCurrentPack.CurrentPack",
+          "packSolid.self"
+        ],
+        [
+          "packSolid.Solid",
+          "readSolid.TargetArray"
+        ],
+        [
+          "getPackRow.PackRow",
+          "readSolid.Index"
+        ],
+        [
+          "getCurrentPack.CurrentPack",
+          "packSearchTexts.self"
+        ],
+        [
+          "packSearchTexts.SearchTexts",
+          "readSearchTexts.TargetArray"
+        ],
+        [
+          "getPackRow.PackRow",
+          "readSearchTexts.Index"
+        ],
+        [
+          "readPaths.Item",
+          "prefix.SourceString"
+        ],
+        [
+          "readPaths.Item",
+          "dot.SearchIn"
+        ],
+        [
+          "readPaths.Item",
+          "sub.SearchIn"
+        ],
+        [
+          "sub.ReturnValue",
+          "nosub.A"
+        ],
+        [
+          "readPaths.Item",
+          "pathlen.S"
+        ],
+        [
+          "pathlen.ReturnValue",
+          "pathmax.A"
+        ],
+        [
+          "readLabels.Item",
+          "labellen.S"
+        ],
+        [
+          "labellen.ReturnValue",
+          "labelmin.A"
+        ],
+        [
+          "labellen.ReturnValue",
+          "labelmax.A"
+        ],
+        [
+          "readDetails.Item",
+          "lenDetails.S"
+        ],
+        [
+          "lenDetails.ReturnValue",
+          "maxDetails.A"
+        ],
+        [
+          "readSearchTexts.Item",
+          "lenSearchTexts.S"
+        ],
+        [
+          "lenSearchTexts.ReturnValue",
+          "maxSearchTexts.A"
+        ],
+        [
+          "readDimensions.Item",
+          "xyz.InVec"
+        ],
+        [
+          "xyz.X",
+          "minX.A"
+        ],
+        [
+          "xyz.X",
+          "maxX.A"
+        ],
+        [
+          "xyz.Y",
+          "minY.A"
+        ],
+        [
+          "xyz.Y",
+          "maxY.A"
+        ],
+        [
+          "xyz.Z",
+          "minZ.A"
+        ],
+        [
+          "xyz.Z",
+          "maxZ.A"
+        ],
+        [
+          "prefix.ReturnValue",
+          "rowok0.A"
+        ],
+        [
+          "dot.ReturnValue",
+          "rowok0.B"
+        ],
+        [
+          "rowok0.ReturnValue",
+          "rowok1.A"
+        ],
+        [
+          "nosub.ReturnValue",
+          "rowok1.B"
+        ],
+        [
+          "rowok1.ReturnValue",
+          "rowok2.A"
+        ],
+        [
+          "pathmax.ReturnValue",
+          "rowok2.B"
+        ],
+        [
+          "rowok2.ReturnValue",
+          "rowok3.A"
+        ],
+        [
+          "labelmin.ReturnValue",
+          "rowok3.B"
+        ],
+        [
+          "rowok3.ReturnValue",
+          "rowok4.A"
+        ],
+        [
+          "labelmax.ReturnValue",
+          "rowok4.B"
+        ],
+        [
+          "rowok4.ReturnValue",
+          "rowok5.A"
+        ],
+        [
+          "maxDetails.ReturnValue",
+          "rowok5.B"
+        ],
+        [
+          "rowok5.ReturnValue",
+          "rowok6.A"
+        ],
+        [
+          "maxSearchTexts.ReturnValue",
+          "rowok6.B"
+        ],
+        [
+          "rowok6.ReturnValue",
+          "rowok7.A"
+        ],
+        [
+          "minX.ReturnValue",
+          "rowok7.B"
+        ],
+        [
+          "rowok7.ReturnValue",
+          "rowok8.A"
+        ],
+        [
+          "maxX.ReturnValue",
+          "rowok8.B"
+        ],
+        [
+          "rowok8.ReturnValue",
+          "rowok9.A"
+        ],
+        [
+          "minY.ReturnValue",
+          "rowok9.B"
+        ],
+        [
+          "rowok9.ReturnValue",
+          "rowok10.A"
+        ],
+        [
+          "maxY.ReturnValue",
+          "rowok10.B"
+        ],
+        [
+          "rowok10.ReturnValue",
+          "rowok11.A"
+        ],
+        [
+          "minZ.ReturnValue",
+          "rowok11.B"
+        ],
+        [
+          "rowok11.ReturnValue",
+          "rowok12.A"
+        ],
+        [
+          "maxZ.ReturnValue",
+          "rowok12.B"
+        ],
+        [
+          "rowok12.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "readPaths.Item",
+          "find.Path"
+        ],
+        [
+          "find.Index",
+          "missing.A"
+        ],
+        [
+          "missing.ReturnValue",
+          "unique.Condition"
+        ],
+        [
+          "getData.Data",
+          "dataPaths.self"
+        ],
+        [
+          "dataPaths.Paths",
+          "addPaths.TargetArray"
+        ],
+        [
+          "readPaths.Item",
+          "addPaths.NewItem"
+        ],
+        [
+          "shelf.then",
+          "addPaths.execute"
+        ],
+        [
+          "getData.Data",
+          "dataLabels.self"
+        ],
+        [
+          "dataLabels.Labels",
+          "addLabels.TargetArray"
+        ],
+        [
+          "readLabels.Item",
+          "addLabels.NewItem"
+        ],
+        [
+          "addPaths.then",
+          "addLabels.execute"
+        ],
+        [
+          "getData.Data",
+          "dataDetails.self"
+        ],
+        [
+          "dataDetails.Details",
+          "addDetails.TargetArray"
+        ],
+        [
+          "readDetails.Item",
+          "addDetails.NewItem"
+        ],
+        [
+          "addLabels.then",
+          "addDetails.execute"
+        ],
+        [
+          "getData.Data",
+          "dataDimensions.self"
+        ],
+        [
+          "dataDimensions.Dimensions",
+          "addDimensions.TargetArray"
+        ],
+        [
+          "readDimensions.Item",
+          "addDimensions.NewItem"
+        ],
+        [
+          "addDetails.then",
+          "addDimensions.execute"
+        ],
+        [
+          "getData.Data",
+          "dataSolid.self"
+        ],
+        [
+          "dataSolid.Solid",
+          "addSolid.TargetArray"
+        ],
+        [
+          "readSolid.Item",
+          "addSolid.NewItem"
+        ],
+        [
+          "addDimensions.then",
+          "addSolid.execute"
+        ],
+        [
+          "getCurrentPack.CurrentPack",
+          "packPackID.self"
+        ],
+        [
+          "getCurrentPack.CurrentPack",
+          "packTitle.self"
+        ],
+        [
+          "getCurrentPack.CurrentPack",
+          "packAuthor.self"
+        ],
+        [
+          "readSearchTexts.Item",
+          "searchspace0.A"
+        ],
+        [
+          "searchspace0.ReturnValue",
+          "searchjoin0.A"
+        ],
+        [
+          "readLabels.Item",
+          "searchjoin0.B"
+        ],
+        [
+          "searchjoin0.ReturnValue",
+          "searchspace1.A"
+        ],
+        [
+          "searchspace1.ReturnValue",
+          "searchjoin1.A"
+        ],
+        [
+          "readPaths.Item",
+          "searchjoin1.B"
+        ],
+        [
+          "searchjoin1.ReturnValue",
+          "searchspace2.A"
+        ],
+        [
+          "searchspace2.ReturnValue",
+          "searchjoin2.A"
+        ],
+        [
+          "packPackID.PackID",
+          "searchjoin2.B"
+        ],
+        [
+          "searchjoin2.ReturnValue",
+          "searchspace3.A"
+        ],
+        [
+          "searchspace3.ReturnValue",
+          "searchjoin3.A"
+        ],
+        [
+          "packTitle.Title",
+          "searchjoin3.B"
+        ],
+        [
+          "searchjoin3.ReturnValue",
+          "searchspace4.A"
+        ],
+        [
+          "searchspace4.ReturnValue",
+          "searchjoin4.A"
+        ],
+        [
+          "packAuthor.Author",
+          "searchjoin4.B"
+        ],
+        [
+          "searchjoin4.ReturnValue",
+          "lower.SourceString"
+        ],
+        [
+          "getData.Data",
+          "dataSearchTexts.self"
+        ],
+        [
+          "dataSearchTexts.SearchTexts",
+          "addSearchTexts.TargetArray"
+        ],
+        [
+          "lower.ReturnValue",
+          "addSearchTexts.NewItem"
+        ],
+        [
+          "addSolid.then",
+          "addSearchTexts.execute"
+        ],
+        [
+          "getData.Data",
+          "dataShelfIDs.self"
+        ],
+        [
+          "getPackShelf.PackShelf",
+          "shelfnumber.A"
+        ],
+        [
+          "dataShelfIDs.ShelfIDs",
+          "shelfref.TargetArray"
+        ],
+        [
+          "shelfnumber.ReturnValue",
+          "shelfref.NewItem"
+        ],
+        [
+          "addSearchTexts.then",
+          "shelfref.execute"
+        ],
+        [
+          "getData.Data",
+          "dataCount.self"
+        ],
+        [
+          "dataCount.Count",
+          "newcount.A"
+        ],
+        [
+          "newcount.ReturnValue",
+          "count.Count"
+        ],
+        [
+          "getData.Data",
+          "count.self"
+        ],
+        [
+          "shelfref.then",
+          "count.execute"
+        ],
+        [
+          "getData.Data",
+          "dataShelfCounts.self"
+        ],
+        [
+          "dataShelfCounts.ShelfCounts",
+          "oldShelfCounts.TargetArray"
+        ],
+        [
+          "getPackShelf.PackShelf",
+          "oldShelfCounts.Index"
+        ],
+        [
+          "dataShelfCounts.ShelfCounts",
+          "setShelfCounts.TargetArray"
+        ],
+        [
+          "oldShelfCounts.Item",
+          "plusShelfCounts.A"
+        ],
+        [
+          "getPackShelf.PackShelf",
+          "setShelfCounts.Index"
+        ],
+        [
+          "plusShelfCounts.ReturnValue",
+          "setShelfCounts.Item"
+        ],
+        [
+          "count.then",
+          "setShelfCounts.execute"
+        ],
+        [
+          "getData.Data",
+          "dataGroupCounts.self"
+        ],
+        [
+          "dataGroupCounts.GroupCounts",
+          "oldGroupCounts.TargetArray"
+        ],
+        [
+          "getPackGroup.PackGroup",
+          "oldGroupCounts.Index"
+        ],
+        [
+          "dataGroupCounts.GroupCounts",
+          "setGroupCounts.TargetArray"
+        ],
+        [
+          "oldGroupCounts.Item",
+          "plusGroupCounts.A"
+        ],
+        [
+          "getPackGroup.PackGroup",
+          "setGroupCounts.Index"
+        ],
+        [
+          "plusGroupCounts.ReturnValue",
+          "setGroupCounts.Item"
+        ],
+        [
+          "setShelfCounts.then",
+          "setGroupCounts.execute"
+        ],
+        [
+          "getPackRow.PackRow",
+          "nextadd.A"
+        ],
+        [
+          "nextadd.ReturnValue",
+          "next.PackRow"
+        ],
+        [
+          "readPaths.Item",
+          "message.B"
+        ],
+        [
+          "message.ReturnValue",
+          "issue.Message"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "find.execute"
+        ],
+        [
+          "find.then",
+          "unique.execute"
+        ],
+        [
+          "unique.then",
+          "shelf.execute"
+        ],
+        [
+          "setGroupCounts.then",
+          "next.execute"
+        ],
+        [
+          "valid.else",
+          "issue.execute"
+        ],
+        [
+          "issue.then",
+          "next.execute"
+        ],
+        [
+          "unique.else",
+          "issue.execute"
+        ]
+      ]
+    },
+    {
+      "name": "StepPropPacks",
+      "nodes": [
+        {
+          "id": "getPacksLoading",
+          "kind": "get",
+          "var": "PacksLoading"
+        },
+        {
+          "id": "active",
+          "kind": "branch"
+        },
+        {
+          "id": "getPendingPacks",
+          "kind": "get",
+          "var": "PendingPacks"
+        },
+        {
+          "id": "len",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "getPackCursor",
+          "kind": "get",
+          "var": "PackCursor"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "more",
+          "kind": "branch"
+        },
+        {
+          "id": "getCurrentPack",
+          "kind": "get",
+          "var": "CurrentPack"
+        },
+        {
+          "id": "valid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "current",
+          "kind": "branch"
+        },
+        {
+          "id": "packPaths",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPropPack:Paths"
+        },
+        {
+          "id": "rows",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "getPackRow",
+          "kind": "get",
+          "var": "PackRow"
+        },
+        {
+          "id": "rowwithin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "row",
+          "kind": "branch"
+        },
+        {
+          "id": "import",
+          "kind": "call",
+          "function": "self:ImportPackRow",
+          "defaults": {}
+        },
+        {
+          "id": "nextadd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "next",
+          "kind": "set",
+          "var": "PackCursor"
+        },
+        {
+          "id": "reset",
+          "kind": "set",
+          "var": "CurrentPack"
+        },
+        {
+          "id": "pack",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenPropPack"
+        },
+        {
+          "id": "currentpack",
+          "kind": "set",
+          "var": "CurrentPack"
+        },
+        {
+          "id": "begin",
+          "kind": "call",
+          "function": "self:BeginPropPack",
+          "defaults": {}
+        },
+        {
+          "id": "accepted",
+          "kind": "branch"
+        },
+        {
+          "id": "done",
+          "kind": "set",
+          "var": "PacksLoading",
+          "defaults": {
+            "PacksLoading": "false"
+          }
+        },
+        {
+          "id": "clear",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getPacksLoading.PacksLoading",
+          "active.Condition"
+        ],
+        [
+          "getPendingPacks.PendingPacks",
+          "len.TargetArray"
+        ],
+        [
+          "getPackCursor.PackCursor",
+          "within.A"
+        ],
+        [
+          "len.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "more.Condition"
+        ],
+        [
+          "getCurrentPack.CurrentPack",
+          "valid.Object"
+        ],
+        [
+          "valid.ReturnValue",
+          "current.Condition"
+        ],
+        [
+          "getCurrentPack.CurrentPack",
+          "packPaths.self"
+        ],
+        [
+          "packPaths.Paths",
+          "rows.TargetArray"
+        ],
+        [
+          "getPackRow.PackRow",
+          "rowwithin.A"
+        ],
+        [
+          "rows.ReturnValue",
+          "rowwithin.B"
+        ],
+        [
+          "rowwithin.ReturnValue",
+          "row.Condition"
+        ],
+        [
+          "getPackCursor.PackCursor",
+          "nextadd.A"
+        ],
+        [
+          "nextadd.ReturnValue",
+          "next.PackCursor"
+        ],
+        [
+          "getPendingPacks.PendingPacks",
+          "pack.TargetArray"
+        ],
+        [
+          "getPackCursor.PackCursor",
+          "pack.Index"
+        ],
+        [
+          "pack.Item",
+          "cast.Object"
+        ],
+        [
+          "cast.AsBP Den Prop Pack",
+          "currentpack.CurrentPack"
+        ],
+        [
+          "begin.Accepted",
+          "accepted.Condition"
+        ],
+        [
+          "getPendingPacks.PendingPacks",
+          "clear.TargetArray"
+        ],
+        [
+          "entry.then",
+          "active.execute"
+        ],
+        [
+          "active.then",
+          "more.execute"
+        ],
+        [
+          "more.then",
+          "current.execute"
+        ],
+        [
+          "current.then",
+          "row.execute"
+        ],
+        [
+          "row.then",
+          "import.execute"
+        ],
+        [
+          "row.else",
+          "next.execute"
+        ],
+        [
+          "next.then",
+          "reset.execute"
+        ],
+        [
+          "current.else",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "currentpack.execute"
+        ],
+        [
+          "currentpack.then",
+          "begin.execute"
+        ],
+        [
+          "begin.then",
+          "accepted.execute"
+        ],
+        [
+          "accepted.else",
+          "next.execute"
+        ],
+        [
+          "cast.CastFailed",
+          "next.execute"
+        ],
+        [
+          "more.else",
+          "done.execute"
+        ],
+        [
+          "done.then",
+          "clear.execute"
+        ]
+      ]
+    },
+    {
+      "name": "PumpPropPacks",
+      "locals": [
+        {
+          "name": "StartedAt",
+          "type": "double"
+        },
+        {
+          "name": "Steps",
+          "type": "int",
+          "default": "0"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "clock",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "clocksum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "start",
+          "kind": "set",
+          "var": "local:StartedAt"
+        },
+        {
+          "id": "started",
+          "kind": "get",
+          "var": "local:StartedAt"
+        },
+        {
+          "id": "steps",
+          "kind": "get",
+          "var": "local:Steps"
+        },
+        {
+          "id": "getPacksLoading",
+          "kind": "get",
+          "var": "PacksLoading"
+        },
+        {
+          "id": "max",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {
+            "B": "8"
+          }
+        },
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "nowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "elapsed",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "time",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {
+            "B": "0.003"
+          }
+        },
+        {
+          "id": "budget0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "budget1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "step",
+          "kind": "call",
+          "function": "self:StepPropPacks",
+          "defaults": {}
+        },
+        {
+          "id": "inc",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "next",
+          "kind": "set",
+          "var": "local:Steps"
+        }
+      ],
+      "links": [
+        [
+          "clock.Seconds",
+          "clocksum.A"
+        ],
+        [
+          "clock.PartialSeconds",
+          "clocksum.B"
+        ],
+        [
+          "clocksum.ReturnValue",
+          "start.StartedAt"
+        ],
+        [
+          "steps.Steps",
+          "max.A"
+        ],
+        [
+          "now.Seconds",
+          "nowsum.A"
+        ],
+        [
+          "now.PartialSeconds",
+          "nowsum.B"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "elapsed.A"
+        ],
+        [
+          "started.StartedAt",
+          "elapsed.B"
+        ],
+        [
+          "elapsed.ReturnValue",
+          "time.A"
+        ],
+        [
+          "getPacksLoading.PacksLoading",
+          "budget0.A"
+        ],
+        [
+          "max.ReturnValue",
+          "budget0.B"
+        ],
+        [
+          "budget0.ReturnValue",
+          "budget1.A"
+        ],
+        [
+          "time.ReturnValue",
+          "budget1.B"
+        ],
+        [
+          "budget1.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "steps.Steps",
+          "inc.A"
+        ],
+        [
+          "inc.ReturnValue",
+          "next.Steps"
+        ],
+        [
+          "entry.then",
+          "start.execute"
+        ],
+        [
+          "start.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "step.execute"
+        ],
+        [
+          "step.then",
+          "next.execute"
+        ],
+        [
+          "next.then",
+          "loop.execute"
+        ]
+      ]
+    }
+  ]
+}

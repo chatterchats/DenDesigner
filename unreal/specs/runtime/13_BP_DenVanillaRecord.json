@@ -1,0 +1,2277 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenVanillaRecord",
+  "parent": "/Script/CoreUObject.Object",
+  "variables": [
+    {
+      "name": "Target",
+      "type": "object:/Script/CoreUObject.Object"
+    },
+    {
+      "name": "Root",
+      "type": "object:/Script/Engine.SceneComponent"
+    },
+    {
+      "name": "Actor",
+      "type": "object:/Script/Engine.Actor"
+    },
+    {
+      "name": "Primitive",
+      "type": "object:/Script/Engine.PrimitiveComponent"
+    },
+    {
+      "name": "Key",
+      "type": "string"
+    },
+    {
+      "name": "LayoutKey",
+      "type": "string"
+    },
+    {
+      "name": "Ready",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "IsActor",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "WasHidden",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "DidHide",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "Moved",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "OriginalPosition",
+      "type": "vector"
+    },
+    {
+      "name": "OriginalRotation",
+      "type": "rotator"
+    },
+    {
+      "name": "OriginalScale",
+      "type": "vector"
+    },
+    {
+      "name": "OriginalMobility",
+      "type": "byte"
+    },
+    {
+      "name": "OriginalCollision",
+      "type": "byte"
+    },
+    {
+      "name": "OriginalActorCollision",
+      "type": "bool"
+    }
+  ],
+  "functions": [
+    {
+      "name": "ValidTransform",
+      "inputs": [
+        {
+          "name": "Value",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenEntry"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Valid",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "data",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "posbreak",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakVector",
+          "defaults": {}
+        },
+        {
+          "id": "posXmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "-10000000.0"
+          }
+        },
+        {
+          "id": "posXmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "posYmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "-10000000.0"
+          }
+        },
+        {
+          "id": "posYmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "posZmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "-10000000.0"
+          }
+        },
+        {
+          "id": "posZmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "posvalid0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "posvalid1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "posvalid2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "posvalid3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "posvalid4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "scalebreak",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakVector",
+          "defaults": {}
+        },
+        {
+          "id": "scaleXmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_DoubleDouble",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "scaleXmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "scaleYmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_DoubleDouble",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "scaleYmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "scaleZmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_DoubleDouble",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "scaleZmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "scalevalid0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "scalevalid1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "scalevalid2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "scalevalid3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "scalevalid4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "rot",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakRotator",
+          "defaults": {}
+        },
+        {
+          "id": "Rollmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "-10000000.0"
+          }
+        },
+        {
+          "id": "Rollmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "Pitchmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "-10000000.0"
+          }
+        },
+        {
+          "id": "Pitchmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "Yawmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "-10000000.0"
+          }
+        },
+        {
+          "id": "Yawmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "valid0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "entry.Value",
+          "data.ST_DenEntry"
+        ],
+        [
+          "data.Position",
+          "posbreak.InVec"
+        ],
+        [
+          "posbreak.X",
+          "posXmin.A"
+        ],
+        [
+          "posbreak.X",
+          "posXmax.A"
+        ],
+        [
+          "posbreak.Y",
+          "posYmin.A"
+        ],
+        [
+          "posbreak.Y",
+          "posYmax.A"
+        ],
+        [
+          "posbreak.Z",
+          "posZmin.A"
+        ],
+        [
+          "posbreak.Z",
+          "posZmax.A"
+        ],
+        [
+          "posXmin.ReturnValue",
+          "posvalid0.A"
+        ],
+        [
+          "posXmax.ReturnValue",
+          "posvalid0.B"
+        ],
+        [
+          "posvalid0.ReturnValue",
+          "posvalid1.A"
+        ],
+        [
+          "posYmin.ReturnValue",
+          "posvalid1.B"
+        ],
+        [
+          "posvalid1.ReturnValue",
+          "posvalid2.A"
+        ],
+        [
+          "posYmax.ReturnValue",
+          "posvalid2.B"
+        ],
+        [
+          "posvalid2.ReturnValue",
+          "posvalid3.A"
+        ],
+        [
+          "posZmin.ReturnValue",
+          "posvalid3.B"
+        ],
+        [
+          "posvalid3.ReturnValue",
+          "posvalid4.A"
+        ],
+        [
+          "posZmax.ReturnValue",
+          "posvalid4.B"
+        ],
+        [
+          "data.Scale",
+          "scalebreak.InVec"
+        ],
+        [
+          "scalebreak.X",
+          "scaleXmin.A"
+        ],
+        [
+          "scalebreak.X",
+          "scaleXmax.A"
+        ],
+        [
+          "scalebreak.Y",
+          "scaleYmin.A"
+        ],
+        [
+          "scalebreak.Y",
+          "scaleYmax.A"
+        ],
+        [
+          "scalebreak.Z",
+          "scaleZmin.A"
+        ],
+        [
+          "scalebreak.Z",
+          "scaleZmax.A"
+        ],
+        [
+          "scaleXmin.ReturnValue",
+          "scalevalid0.A"
+        ],
+        [
+          "scaleXmax.ReturnValue",
+          "scalevalid0.B"
+        ],
+        [
+          "scalevalid0.ReturnValue",
+          "scalevalid1.A"
+        ],
+        [
+          "scaleYmin.ReturnValue",
+          "scalevalid1.B"
+        ],
+        [
+          "scalevalid1.ReturnValue",
+          "scalevalid2.A"
+        ],
+        [
+          "scaleYmax.ReturnValue",
+          "scalevalid2.B"
+        ],
+        [
+          "scalevalid2.ReturnValue",
+          "scalevalid3.A"
+        ],
+        [
+          "scaleZmin.ReturnValue",
+          "scalevalid3.B"
+        ],
+        [
+          "scalevalid3.ReturnValue",
+          "scalevalid4.A"
+        ],
+        [
+          "scaleZmax.ReturnValue",
+          "scalevalid4.B"
+        ],
+        [
+          "data.Rotation",
+          "rot.InRot"
+        ],
+        [
+          "rot.Roll",
+          "Rollmin.A"
+        ],
+        [
+          "rot.Roll",
+          "Rollmax.A"
+        ],
+        [
+          "rot.Pitch",
+          "Pitchmin.A"
+        ],
+        [
+          "rot.Pitch",
+          "Pitchmax.A"
+        ],
+        [
+          "rot.Yaw",
+          "Yawmin.A"
+        ],
+        [
+          "rot.Yaw",
+          "Yawmax.A"
+        ],
+        [
+          "posvalid4.ReturnValue",
+          "valid0.A"
+        ],
+        [
+          "scalevalid4.ReturnValue",
+          "valid0.B"
+        ],
+        [
+          "valid0.ReturnValue",
+          "valid1.A"
+        ],
+        [
+          "Rollmin.ReturnValue",
+          "valid1.B"
+        ],
+        [
+          "valid1.ReturnValue",
+          "valid2.A"
+        ],
+        [
+          "Rollmax.ReturnValue",
+          "valid2.B"
+        ],
+        [
+          "valid2.ReturnValue",
+          "valid3.A"
+        ],
+        [
+          "Pitchmin.ReturnValue",
+          "valid3.B"
+        ],
+        [
+          "valid3.ReturnValue",
+          "valid4.A"
+        ],
+        [
+          "Pitchmax.ReturnValue",
+          "valid4.B"
+        ],
+        [
+          "valid4.ReturnValue",
+          "valid5.A"
+        ],
+        [
+          "Yawmin.ReturnValue",
+          "valid5.B"
+        ],
+        [
+          "valid5.ReturnValue",
+          "valid6.A"
+        ],
+        [
+          "Yawmax.ReturnValue",
+          "valid6.B"
+        ],
+        [
+          "valid6.ReturnValue",
+          "result.Valid"
+        ],
+        [
+          "entry.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Capture",
+      "inputs": [
+        {
+          "name": "Object",
+          "type": "object:/Script/CoreUObject.Object"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "ready",
+          "kind": "get",
+          "var": "Ready"
+        },
+        {
+          "id": "already",
+          "kind": "branch"
+        },
+        {
+          "id": "oldtarget",
+          "kind": "get",
+          "var": "Target"
+        },
+        {
+          "id": "sametarget",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {}
+        },
+        {
+          "id": "oldalive",
+          "kind": "call",
+          "function": "self:IsAlive",
+          "defaults": {}
+        },
+        {
+          "id": "reuseok0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "reuse",
+          "kind": "set",
+          "var": "local:OK"
+        },
+        {
+          "id": "valid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "guard",
+          "kind": "branch"
+        },
+        {
+          "id": "actor",
+          "kind": "cast",
+          "class": "/Script/Engine.Actor"
+        },
+        {
+          "id": "actorref",
+          "kind": "set",
+          "var": "Actor"
+        },
+        {
+          "id": "actorroot",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:K2_GetRootComponent",
+          "defaults": {}
+        },
+        {
+          "id": "actorcomponent",
+          "kind": "set",
+          "var": "Root"
+        },
+        {
+          "id": "actorflag",
+          "kind": "set",
+          "var": "IsActor",
+          "defaults": {
+            "IsActor": "true"
+          }
+        },
+        {
+          "id": "component",
+          "kind": "cast",
+          "class": "/Script/Engine.SceneComponent"
+        },
+        {
+          "id": "componentref",
+          "kind": "set",
+          "var": "Root"
+        },
+        {
+          "id": "owner",
+          "kind": "call",
+          "function": "/Script/Engine.ActorComponent:GetOwner",
+          "defaults": {}
+        },
+        {
+          "id": "ownerref",
+          "kind": "set",
+          "var": "Actor"
+        },
+        {
+          "id": "componentflag",
+          "kind": "set",
+          "var": "IsActor",
+          "defaults": {
+            "IsActor": "false"
+          }
+        },
+        {
+          "id": "root",
+          "kind": "get",
+          "var": "Root"
+        },
+        {
+          "id": "actorget",
+          "kind": "get",
+          "var": "Actor"
+        },
+        {
+          "id": "rootvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "ownervalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "refs0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "rootguard",
+          "kind": "branch"
+        },
+        {
+          "id": "target",
+          "kind": "set",
+          "var": "Target"
+        },
+        {
+          "id": "path",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:GetPathName",
+          "defaults": {}
+        },
+        {
+          "id": "key",
+          "kind": "set",
+          "var": "Key"
+        },
+        {
+          "id": "layoutkey",
+          "kind": "set",
+          "var": "LayoutKey"
+        },
+        {
+          "id": "readPosition",
+          "kind": "call",
+          "function": "/Script/Engine.SceneComponent:K2_GetComponentLocation",
+          "defaults": {}
+        },
+        {
+          "id": "savePosition",
+          "kind": "set",
+          "var": "OriginalPosition"
+        },
+        {
+          "id": "readRotation",
+          "kind": "call",
+          "function": "/Script/Engine.SceneComponent:K2_GetComponentRotation",
+          "defaults": {}
+        },
+        {
+          "id": "saveRotation",
+          "kind": "set",
+          "var": "OriginalRotation"
+        },
+        {
+          "id": "readScale",
+          "kind": "call",
+          "function": "/Script/Engine.SceneComponent:K2_GetComponentScale",
+          "defaults": {}
+        },
+        {
+          "id": "saveScale",
+          "kind": "set",
+          "var": "OriginalScale"
+        },
+        {
+          "id": "mobility",
+          "kind": "get",
+          "var": "/Script/Engine.SceneComponent:Mobility"
+        },
+        {
+          "id": "savemobility",
+          "kind": "set",
+          "var": "OriginalMobility"
+        },
+        {
+          "id": "isactor",
+          "kind": "get",
+          "var": "IsActor"
+        },
+        {
+          "id": "actorstate",
+          "kind": "branch"
+        },
+        {
+          "id": "hidden",
+          "kind": "get",
+          "var": "/Script/Engine.Actor:bHidden"
+        },
+        {
+          "id": "actorhidden",
+          "kind": "set",
+          "var": "WasHidden"
+        },
+        {
+          "id": "actorcollision",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:GetActorEnableCollision",
+          "defaults": {}
+        },
+        {
+          "id": "actorcollisionsave",
+          "kind": "set",
+          "var": "OriginalActorCollision"
+        },
+        {
+          "id": "visible",
+          "kind": "call",
+          "function": "/Script/Engine.SceneComponent:IsVisible",
+          "defaults": {}
+        },
+        {
+          "id": "notvisible",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "componenthidden",
+          "kind": "set",
+          "var": "WasHidden"
+        },
+        {
+          "id": "primitive",
+          "kind": "cast",
+          "class": "/Script/Engine.PrimitiveComponent"
+        },
+        {
+          "id": "primitiveref",
+          "kind": "set",
+          "var": "Primitive"
+        },
+        {
+          "id": "collision",
+          "kind": "call",
+          "function": "/Script/Engine.PrimitiveComponent:GetCollisionEnabled",
+          "defaults": {}
+        },
+        {
+          "id": "savecollision",
+          "kind": "set",
+          "var": "OriginalCollision"
+        },
+        {
+          "id": "readyset",
+          "kind": "set",
+          "var": "Ready",
+          "defaults": {
+            "Ready": "true"
+          }
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        }
+      ],
+      "links": [
+        [
+          "ready.Ready",
+          "already.Condition"
+        ],
+        [
+          "oldtarget.Target",
+          "sametarget.A"
+        ],
+        [
+          "entry.Object",
+          "sametarget.B"
+        ],
+        [
+          "sametarget.ReturnValue",
+          "reuseok0.A"
+        ],
+        [
+          "oldalive.Alive",
+          "reuseok0.B"
+        ],
+        [
+          "reuseok0.ReturnValue",
+          "reuse.OK"
+        ],
+        [
+          "entry.Object",
+          "valid.Object"
+        ],
+        [
+          "valid.ReturnValue",
+          "guard.Condition"
+        ],
+        [
+          "entry.Object",
+          "actor.Object"
+        ],
+        [
+          "actor.AsActor",
+          "actorref.Actor"
+        ],
+        [
+          "actor.AsActor",
+          "actorroot.self"
+        ],
+        [
+          "actorroot.ReturnValue",
+          "actorcomponent.Root"
+        ],
+        [
+          "entry.Object",
+          "component.Object"
+        ],
+        [
+          "component.AsScene Component",
+          "componentref.Root"
+        ],
+        [
+          "component.AsScene Component",
+          "owner.self"
+        ],
+        [
+          "owner.ReturnValue",
+          "ownerref.Actor"
+        ],
+        [
+          "root.Root",
+          "rootvalid.Object"
+        ],
+        [
+          "actorget.Actor",
+          "ownervalid.Object"
+        ],
+        [
+          "rootvalid.ReturnValue",
+          "refs0.A"
+        ],
+        [
+          "ownervalid.ReturnValue",
+          "refs0.B"
+        ],
+        [
+          "refs0.ReturnValue",
+          "rootguard.Condition"
+        ],
+        [
+          "entry.Object",
+          "target.Target"
+        ],
+        [
+          "entry.Object",
+          "path.Object"
+        ],
+        [
+          "path.ReturnValue",
+          "key.Key"
+        ],
+        [
+          "path.ReturnValue",
+          "layoutkey.LayoutKey"
+        ],
+        [
+          "root.Root",
+          "readPosition.self"
+        ],
+        [
+          "readPosition.ReturnValue",
+          "savePosition.OriginalPosition"
+        ],
+        [
+          "root.Root",
+          "readRotation.self"
+        ],
+        [
+          "readRotation.ReturnValue",
+          "saveRotation.OriginalRotation"
+        ],
+        [
+          "root.Root",
+          "readScale.self"
+        ],
+        [
+          "readScale.ReturnValue",
+          "saveScale.OriginalScale"
+        ],
+        [
+          "root.Root",
+          "mobility.self"
+        ],
+        [
+          "mobility.Mobility",
+          "savemobility.OriginalMobility"
+        ],
+        [
+          "isactor.IsActor",
+          "actorstate.Condition"
+        ],
+        [
+          "actorget.Actor",
+          "hidden.self"
+        ],
+        [
+          "hidden.bHidden",
+          "actorhidden.WasHidden"
+        ],
+        [
+          "actorget.Actor",
+          "actorcollision.self"
+        ],
+        [
+          "actorcollision.ReturnValue",
+          "actorcollisionsave.OriginalActorCollision"
+        ],
+        [
+          "root.Root",
+          "visible.self"
+        ],
+        [
+          "visible.ReturnValue",
+          "notvisible.A"
+        ],
+        [
+          "notvisible.ReturnValue",
+          "componenthidden.WasHidden"
+        ],
+        [
+          "root.Root",
+          "primitive.Object"
+        ],
+        [
+          "primitive.AsPrimitive Component",
+          "primitiveref.Primitive"
+        ],
+        [
+          "primitive.AsPrimitive Component",
+          "collision.self"
+        ],
+        [
+          "collision.ReturnValue",
+          "savecollision.OriginalCollision"
+        ],
+        [
+          "out.OK",
+          "result.Accepted"
+        ],
+        [
+          "entry.then",
+          "already.execute"
+        ],
+        [
+          "already.then",
+          "oldalive.execute"
+        ],
+        [
+          "oldalive.then",
+          "reuse.execute"
+        ],
+        [
+          "reuse.then",
+          "result.execute"
+        ],
+        [
+          "already.else",
+          "guard.execute"
+        ],
+        [
+          "guard.then",
+          "actor.execute"
+        ],
+        [
+          "actor.then",
+          "actorref.execute"
+        ],
+        [
+          "actorref.then",
+          "actorcomponent.execute"
+        ],
+        [
+          "actorcomponent.then",
+          "actorflag.execute"
+        ],
+        [
+          "actorflag.then",
+          "rootguard.execute"
+        ],
+        [
+          "guard.else",
+          "result.execute"
+        ],
+        [
+          "actor.CastFailed",
+          "component.execute"
+        ],
+        [
+          "component.then",
+          "componentref.execute"
+        ],
+        [
+          "componentref.then",
+          "ownerref.execute"
+        ],
+        [
+          "ownerref.then",
+          "componentflag.execute"
+        ],
+        [
+          "componentflag.then",
+          "rootguard.execute"
+        ],
+        [
+          "component.CastFailed",
+          "result.execute"
+        ],
+        [
+          "rootguard.else",
+          "result.execute"
+        ],
+        [
+          "rootguard.then",
+          "target.execute"
+        ],
+        [
+          "target.then",
+          "key.execute"
+        ],
+        [
+          "key.then",
+          "layoutkey.execute"
+        ],
+        [
+          "layoutkey.then",
+          "savePosition.execute"
+        ],
+        [
+          "savePosition.then",
+          "saveRotation.execute"
+        ],
+        [
+          "saveRotation.then",
+          "saveScale.execute"
+        ],
+        [
+          "saveScale.then",
+          "savemobility.execute"
+        ],
+        [
+          "savemobility.then",
+          "actorstate.execute"
+        ],
+        [
+          "actorstate.then",
+          "actorhidden.execute"
+        ],
+        [
+          "actorhidden.then",
+          "actorcollisionsave.execute"
+        ],
+        [
+          "actorcollisionsave.then",
+          "primitive.execute"
+        ],
+        [
+          "primitive.then",
+          "primitiveref.execute"
+        ],
+        [
+          "primitiveref.then",
+          "savecollision.execute"
+        ],
+        [
+          "savecollision.then",
+          "readyset.execute"
+        ],
+        [
+          "readyset.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "actorstate.else",
+          "componenthidden.execute"
+        ],
+        [
+          "componenthidden.then",
+          "primitive.execute"
+        ],
+        [
+          "primitive.CastFailed",
+          "readyset.execute"
+        ]
+      ]
+    },
+    {
+      "name": "IsAlive",
+      "outputs": [
+        {
+          "name": "Alive",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "ready",
+          "kind": "get",
+          "var": "Ready"
+        },
+        {
+          "id": "root",
+          "kind": "get",
+          "var": "Root"
+        },
+        {
+          "id": "actor",
+          "kind": "get",
+          "var": "Actor"
+        },
+        {
+          "id": "target",
+          "kind": "get",
+          "var": "Target"
+        },
+        {
+          "id": "key",
+          "kind": "get",
+          "var": "Key"
+        },
+        {
+          "id": "path",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:GetPathName",
+          "defaults": {}
+        },
+        {
+          "id": "same",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "rootvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "actorvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "targetvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "alive0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "alive1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "alive2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "alive3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "target.Target",
+          "path.Object"
+        ],
+        [
+          "path.ReturnValue",
+          "same.A"
+        ],
+        [
+          "key.Key",
+          "same.B"
+        ],
+        [
+          "root.Root",
+          "rootvalid.Object"
+        ],
+        [
+          "actor.Actor",
+          "actorvalid.Object"
+        ],
+        [
+          "target.Target",
+          "targetvalid.Object"
+        ],
+        [
+          "ready.Ready",
+          "alive0.A"
+        ],
+        [
+          "rootvalid.ReturnValue",
+          "alive0.B"
+        ],
+        [
+          "alive0.ReturnValue",
+          "alive1.A"
+        ],
+        [
+          "actorvalid.ReturnValue",
+          "alive1.B"
+        ],
+        [
+          "alive1.ReturnValue",
+          "alive2.A"
+        ],
+        [
+          "targetvalid.ReturnValue",
+          "alive2.B"
+        ],
+        [
+          "alive2.ReturnValue",
+          "alive3.A"
+        ],
+        [
+          "same.ReturnValue",
+          "alive3.B"
+        ],
+        [
+          "alive3.ReturnValue",
+          "result.Alive"
+        ],
+        [
+          "entry.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ApplyTransform",
+      "inputs": [
+        {
+          "name": "Value",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "name": "Present",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "data",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "root",
+          "kind": "get",
+          "var": "Root"
+        },
+        {
+          "id": "moved",
+          "kind": "get",
+          "var": "Moved"
+        },
+        {
+          "id": "has0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "has1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "desired0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "apply",
+          "kind": "branch"
+        },
+        {
+          "id": "movable",
+          "kind": "call",
+          "function": "/Script/Engine.SceneComponent:SetMobility",
+          "defaults": {
+            "NewMobility": "Movable"
+          }
+        },
+        {
+          "id": "originalPosition",
+          "kind": "get",
+          "var": "OriginalPosition"
+        },
+        {
+          "id": "choosePosition",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectVector",
+          "defaults": {}
+        },
+        {
+          "id": "originalRotation",
+          "kind": "get",
+          "var": "OriginalRotation"
+        },
+        {
+          "id": "chooseRotation",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectRotator",
+          "defaults": {}
+        },
+        {
+          "id": "originalScale",
+          "kind": "get",
+          "var": "OriginalScale"
+        },
+        {
+          "id": "chooseScale",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectVector",
+          "defaults": {}
+        },
+        {
+          "id": "move",
+          "kind": "call",
+          "function": "/Script/Engine.SceneComponent:K2_SetWorldLocationAndRotation",
+          "defaults": {
+            "bSweep": "false",
+            "bTeleport": "true"
+          }
+        },
+        {
+          "id": "scale",
+          "kind": "call",
+          "function": "/Script/Engine.SceneComponent:SetWorldScale3D",
+          "defaults": {}
+        },
+        {
+          "id": "movedset",
+          "kind": "set",
+          "var": "Moved",
+          "defaults": {
+            "Moved": "true"
+          }
+        },
+        {
+          "id": "restore",
+          "kind": "branch"
+        },
+        {
+          "id": "restoremove",
+          "kind": "call",
+          "function": "/Script/Engine.SceneComponent:K2_SetWorldLocationAndRotation",
+          "defaults": {
+            "bSweep": "false",
+            "bTeleport": "true"
+          }
+        },
+        {
+          "id": "restorescale",
+          "kind": "call",
+          "function": "/Script/Engine.SceneComponent:SetWorldScale3D",
+          "defaults": {}
+        },
+        {
+          "id": "mobility",
+          "kind": "get",
+          "var": "OriginalMobility"
+        },
+        {
+          "id": "restoremobility",
+          "kind": "call",
+          "function": "/Script/Engine.SceneComponent:SetMobility",
+          "defaults": {}
+        },
+        {
+          "id": "movedclear",
+          "kind": "set",
+          "var": "Moved",
+          "defaults": {
+            "Moved": "false"
+          }
+        }
+      ],
+      "links": [
+        [
+          "entry.Value",
+          "data.ST_DenEntry"
+        ],
+        [
+          "data.HasPosition",
+          "has0.A"
+        ],
+        [
+          "data.HasRotation",
+          "has0.B"
+        ],
+        [
+          "has0.ReturnValue",
+          "has1.A"
+        ],
+        [
+          "data.HasScale",
+          "has1.B"
+        ],
+        [
+          "entry.Present",
+          "desired0.A"
+        ],
+        [
+          "has1.ReturnValue",
+          "desired0.B"
+        ],
+        [
+          "desired0.ReturnValue",
+          "apply.Condition"
+        ],
+        [
+          "root.Root",
+          "movable.self"
+        ],
+        [
+          "data.Position",
+          "choosePosition.A"
+        ],
+        [
+          "originalPosition.OriginalPosition",
+          "choosePosition.B"
+        ],
+        [
+          "data.HasPosition",
+          "choosePosition.bPickA"
+        ],
+        [
+          "data.Rotation",
+          "chooseRotation.A"
+        ],
+        [
+          "originalRotation.OriginalRotation",
+          "chooseRotation.B"
+        ],
+        [
+          "data.HasRotation",
+          "chooseRotation.bPickA"
+        ],
+        [
+          "data.Scale",
+          "chooseScale.A"
+        ],
+        [
+          "originalScale.OriginalScale",
+          "chooseScale.B"
+        ],
+        [
+          "data.HasScale",
+          "chooseScale.bPickA"
+        ],
+        [
+          "root.Root",
+          "move.self"
+        ],
+        [
+          "choosePosition.ReturnValue",
+          "move.NewLocation"
+        ],
+        [
+          "chooseRotation.ReturnValue",
+          "move.NewRotation"
+        ],
+        [
+          "root.Root",
+          "scale.self"
+        ],
+        [
+          "chooseScale.ReturnValue",
+          "scale.NewScale"
+        ],
+        [
+          "moved.Moved",
+          "restore.Condition"
+        ],
+        [
+          "root.Root",
+          "restoremove.self"
+        ],
+        [
+          "originalPosition.OriginalPosition",
+          "restoremove.NewLocation"
+        ],
+        [
+          "originalRotation.OriginalRotation",
+          "restoremove.NewRotation"
+        ],
+        [
+          "root.Root",
+          "restorescale.self"
+        ],
+        [
+          "originalScale.OriginalScale",
+          "restorescale.NewScale"
+        ],
+        [
+          "root.Root",
+          "restoremobility.self"
+        ],
+        [
+          "mobility.OriginalMobility",
+          "restoremobility.NewMobility"
+        ],
+        [
+          "entry.then",
+          "apply.execute"
+        ],
+        [
+          "apply.then",
+          "movable.execute"
+        ],
+        [
+          "movable.then",
+          "move.execute"
+        ],
+        [
+          "move.then",
+          "scale.execute"
+        ],
+        [
+          "scale.then",
+          "movedset.execute"
+        ],
+        [
+          "apply.else",
+          "restore.execute"
+        ],
+        [
+          "restore.then",
+          "restoremove.execute"
+        ],
+        [
+          "restoremove.then",
+          "restorescale.execute"
+        ],
+        [
+          "restorescale.then",
+          "restoremobility.execute"
+        ],
+        [
+          "restoremobility.then",
+          "movedclear.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ApplyVisibility",
+      "inputs": [
+        {
+          "name": "Hidden",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "root",
+          "kind": "get",
+          "var": "Root"
+        },
+        {
+          "id": "actor",
+          "kind": "get",
+          "var": "Actor"
+        },
+        {
+          "id": "primitive",
+          "kind": "get",
+          "var": "Primitive"
+        },
+        {
+          "id": "isactor",
+          "kind": "get",
+          "var": "IsActor"
+        },
+        {
+          "id": "didhide",
+          "kind": "get",
+          "var": "DidHide"
+        },
+        {
+          "id": "washidden",
+          "kind": "get",
+          "var": "WasHidden"
+        },
+        {
+          "id": "originalactorcollision",
+          "kind": "get",
+          "var": "OriginalActorCollision"
+        },
+        {
+          "id": "originalcollision",
+          "kind": "get",
+          "var": "OriginalCollision"
+        },
+        {
+          "id": "hide",
+          "kind": "branch"
+        },
+        {
+          "id": "hidalready",
+          "kind": "branch"
+        },
+        {
+          "id": "hideactor",
+          "kind": "branch"
+        },
+        {
+          "id": "hidea",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:SetActorHiddenInGame",
+          "defaults": {
+            "bNewHidden": "true"
+          }
+        },
+        {
+          "id": "disablea",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:SetActorEnableCollision",
+          "defaults": {
+            "bNewActorEnableCollision": "false"
+          }
+        },
+        {
+          "id": "hidec",
+          "kind": "call",
+          "function": "/Script/Engine.SceneComponent:SetVisibility",
+          "defaults": {
+            "bNewVisibility": "false",
+            "bPropagateToChildren": "false"
+          }
+        },
+        {
+          "id": "pvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "primitivevalid",
+          "kind": "branch"
+        },
+        {
+          "id": "disablec",
+          "kind": "call",
+          "function": "/Script/Engine.PrimitiveComponent:SetCollisionEnabled",
+          "defaults": {
+            "NewType": "NoCollision"
+          }
+        },
+        {
+          "id": "hiddenflag",
+          "kind": "set",
+          "var": "DidHide",
+          "defaults": {
+            "DidHide": "true"
+          }
+        },
+        {
+          "id": "restore",
+          "kind": "branch"
+        },
+        {
+          "id": "wasvisible",
+          "kind": "branch"
+        },
+        {
+          "id": "showactor",
+          "kind": "branch"
+        },
+        {
+          "id": "showa",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:SetActorHiddenInGame",
+          "defaults": {
+            "bNewHidden": "false"
+          }
+        },
+        {
+          "id": "enablea",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:SetActorEnableCollision",
+          "defaults": {}
+        },
+        {
+          "id": "showc",
+          "kind": "call",
+          "function": "/Script/Engine.SceneComponent:SetVisibility",
+          "defaults": {
+            "bNewVisibility": "true",
+            "bPropagateToChildren": "false"
+          }
+        },
+        {
+          "id": "rpvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "restoreprimitive",
+          "kind": "branch"
+        },
+        {
+          "id": "enablec",
+          "kind": "call",
+          "function": "/Script/Engine.PrimitiveComponent:SetCollisionEnabled",
+          "defaults": {}
+        },
+        {
+          "id": "clearhidden",
+          "kind": "set",
+          "var": "DidHide",
+          "defaults": {
+            "DidHide": "false"
+          }
+        },
+        {
+          "id": "componentwashidden",
+          "kind": "branch"
+        }
+      ],
+      "links": [
+        [
+          "entry.Hidden",
+          "hide.Condition"
+        ],
+        [
+          "didhide.DidHide",
+          "hidalready.Condition"
+        ],
+        [
+          "isactor.IsActor",
+          "hideactor.Condition"
+        ],
+        [
+          "actor.Actor",
+          "hidea.self"
+        ],
+        [
+          "actor.Actor",
+          "disablea.self"
+        ],
+        [
+          "root.Root",
+          "hidec.self"
+        ],
+        [
+          "primitive.Primitive",
+          "pvalid.Object"
+        ],
+        [
+          "pvalid.ReturnValue",
+          "primitivevalid.Condition"
+        ],
+        [
+          "primitive.Primitive",
+          "disablec.self"
+        ],
+        [
+          "didhide.DidHide",
+          "restore.Condition"
+        ],
+        [
+          "washidden.WasHidden",
+          "wasvisible.Condition"
+        ],
+        [
+          "isactor.IsActor",
+          "showactor.Condition"
+        ],
+        [
+          "actor.Actor",
+          "showa.self"
+        ],
+        [
+          "actor.Actor",
+          "enablea.self"
+        ],
+        [
+          "originalactorcollision.OriginalActorCollision",
+          "enablea.bNewActorEnableCollision"
+        ],
+        [
+          "root.Root",
+          "showc.self"
+        ],
+        [
+          "primitive.Primitive",
+          "rpvalid.Object"
+        ],
+        [
+          "rpvalid.ReturnValue",
+          "restoreprimitive.Condition"
+        ],
+        [
+          "primitive.Primitive",
+          "enablec.self"
+        ],
+        [
+          "originalcollision.OriginalCollision",
+          "enablec.NewType"
+        ],
+        [
+          "entry.then",
+          "hide.execute"
+        ],
+        [
+          "hide.then",
+          "hidalready.execute"
+        ],
+        [
+          "hidalready.else",
+          "hideactor.execute"
+        ],
+        [
+          "hideactor.then",
+          "hidea.execute"
+        ],
+        [
+          "hidea.then",
+          "disablea.execute"
+        ],
+        [
+          "disablea.then",
+          "hiddenflag.execute"
+        ],
+        [
+          "hideactor.else",
+          "hidec.execute"
+        ],
+        [
+          "hidec.then",
+          "primitivevalid.execute"
+        ],
+        [
+          "primitivevalid.then",
+          "disablec.execute"
+        ],
+        [
+          "disablec.then",
+          "hiddenflag.execute"
+        ],
+        [
+          "primitivevalid.else",
+          "hiddenflag.execute"
+        ],
+        [
+          "washidden.WasHidden",
+          "componentwashidden.Condition"
+        ],
+        [
+          "hide.else",
+          "restore.execute"
+        ],
+        [
+          "restore.then",
+          "showactor.execute"
+        ],
+        [
+          "showactor.then",
+          "wasvisible.execute"
+        ],
+        [
+          "wasvisible.then",
+          "enablea.execute"
+        ],
+        [
+          "enablea.then",
+          "clearhidden.execute"
+        ],
+        [
+          "wasvisible.else",
+          "showa.execute"
+        ],
+        [
+          "showa.then",
+          "enablea.execute"
+        ],
+        [
+          "showactor.else",
+          "componentwashidden.execute"
+        ],
+        [
+          "componentwashidden.then",
+          "restoreprimitive.execute"
+        ],
+        [
+          "restoreprimitive.then",
+          "enablec.execute"
+        ],
+        [
+          "enablec.then",
+          "clearhidden.execute"
+        ],
+        [
+          "componentwashidden.else",
+          "showc.execute"
+        ],
+        [
+          "showc.then",
+          "restoreprimitive.execute"
+        ],
+        [
+          "restoreprimitive.else",
+          "clearhidden.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Apply",
+      "inputs": [
+        {
+          "name": "Value",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "name": "Present",
+          "type": "bool"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "alive",
+          "kind": "call",
+          "function": "self:IsAlive",
+          "defaults": {}
+        },
+        {
+          "id": "validate",
+          "kind": "call",
+          "function": "self:ValidTransform",
+          "defaults": {}
+        },
+        {
+          "id": "absent",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "dataok0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "allowed0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "transform",
+          "kind": "call",
+          "function": "self:ApplyTransform",
+          "defaults": {}
+        },
+        {
+          "id": "data",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "hidden0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "visibility",
+          "kind": "call",
+          "function": "self:ApplyVisibility",
+          "defaults": {}
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        }
+      ],
+      "links": [
+        [
+          "entry.Value",
+          "validate.Value"
+        ],
+        [
+          "entry.Present",
+          "absent.A"
+        ],
+        [
+          "absent.ReturnValue",
+          "dataok0.A"
+        ],
+        [
+          "validate.Valid",
+          "dataok0.B"
+        ],
+        [
+          "alive.Alive",
+          "allowed0.A"
+        ],
+        [
+          "dataok0.ReturnValue",
+          "allowed0.B"
+        ],
+        [
+          "allowed0.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.Value",
+          "transform.Value"
+        ],
+        [
+          "entry.Present",
+          "transform.Present"
+        ],
+        [
+          "entry.Value",
+          "data.ST_DenEntry"
+        ],
+        [
+          "entry.Present",
+          "hidden0.A"
+        ],
+        [
+          "data.Hidden",
+          "hidden0.B"
+        ],
+        [
+          "hidden0.ReturnValue",
+          "visibility.Hidden"
+        ],
+        [
+          "out.OK",
+          "result.Accepted"
+        ],
+        [
+          "entry.then",
+          "alive.execute"
+        ],
+        [
+          "alive.then",
+          "validate.execute"
+        ],
+        [
+          "validate.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "transform.execute"
+        ],
+        [
+          "transform.then",
+          "visibility.execute"
+        ],
+        [
+          "visibility.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ]
+      ]
+    }
+  ]
+}

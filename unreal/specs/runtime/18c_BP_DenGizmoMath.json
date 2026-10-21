@@ -1,0 +1,6046 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenGizmoMath",
+  "parent": "/Script/CoreUObject.Object",
+  "functions": [
+    {
+      "name": "AxisParam",
+      "inputs": [
+        {
+          "name": "Origin",
+          "type": "vector"
+        },
+        {
+          "name": "Direction",
+          "type": "vector"
+        },
+        {
+          "name": "Center",
+          "type": "vector"
+        },
+        {
+          "name": "Axis",
+          "type": "vector"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Valid",
+          "type": "bool"
+        },
+        {
+          "name": "Distance",
+          "type": "double"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "ResultDistance",
+          "type": "double"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "d",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Normal",
+          "defaults": {
+            "Tolerance": "1e-12"
+          }
+        },
+        {
+          "id": "a",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Normal",
+          "defaults": {
+            "Tolerance": "1e-12"
+          }
+        },
+        {
+          "id": "dot",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "square",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "den",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {
+            "A": "1"
+          }
+        },
+        {
+          "id": "nonparallel",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "1e-06"
+          }
+        },
+        {
+          "id": "raysize",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:VSize",
+          "defaults": {}
+        },
+        {
+          "id": "raylength",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_DoubleDouble",
+          "defaults": {
+            "B": "0.5"
+          }
+        },
+        {
+          "id": "axissize",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:VSize",
+          "defaults": {}
+        },
+        {
+          "id": "axislength",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_DoubleDouble",
+          "defaults": {
+            "B": "0.5"
+          }
+        },
+        {
+          "id": "usable0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "usable1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "w",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "dw",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "aw",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "bdw",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "num",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "divide",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Divide_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "value",
+          "kind": "set",
+          "var": "local:ResultDistance"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        },
+        {
+          "id": "outDistance",
+          "kind": "get",
+          "var": "local:ResultDistance"
+        }
+      ],
+      "links": [
+        [
+          "entry.Direction",
+          "d.A"
+        ],
+        [
+          "entry.Axis",
+          "a.A"
+        ],
+        [
+          "a.ReturnValue",
+          "dot.A"
+        ],
+        [
+          "d.ReturnValue",
+          "dot.B"
+        ],
+        [
+          "dot.ReturnValue",
+          "square.A"
+        ],
+        [
+          "dot.ReturnValue",
+          "square.B"
+        ],
+        [
+          "square.ReturnValue",
+          "den.B"
+        ],
+        [
+          "den.ReturnValue",
+          "nonparallel.A"
+        ],
+        [
+          "d.ReturnValue",
+          "raysize.A"
+        ],
+        [
+          "raysize.ReturnValue",
+          "raylength.A"
+        ],
+        [
+          "a.ReturnValue",
+          "axissize.A"
+        ],
+        [
+          "axissize.ReturnValue",
+          "axislength.A"
+        ],
+        [
+          "nonparallel.ReturnValue",
+          "usable0.A"
+        ],
+        [
+          "raylength.ReturnValue",
+          "usable0.B"
+        ],
+        [
+          "usable0.ReturnValue",
+          "usable1.A"
+        ],
+        [
+          "axislength.ReturnValue",
+          "usable1.B"
+        ],
+        [
+          "usable1.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.Center",
+          "w.A"
+        ],
+        [
+          "entry.Origin",
+          "w.B"
+        ],
+        [
+          "d.ReturnValue",
+          "dw.A"
+        ],
+        [
+          "w.ReturnValue",
+          "dw.B"
+        ],
+        [
+          "a.ReturnValue",
+          "aw.A"
+        ],
+        [
+          "w.ReturnValue",
+          "aw.B"
+        ],
+        [
+          "dot.ReturnValue",
+          "bdw.A"
+        ],
+        [
+          "dw.ReturnValue",
+          "bdw.B"
+        ],
+        [
+          "bdw.ReturnValue",
+          "num.A"
+        ],
+        [
+          "aw.ReturnValue",
+          "num.B"
+        ],
+        [
+          "num.ReturnValue",
+          "divide.A"
+        ],
+        [
+          "den.ReturnValue",
+          "divide.B"
+        ],
+        [
+          "divide.ReturnValue",
+          "value.ResultDistance"
+        ],
+        [
+          "out.OK",
+          "result.Valid"
+        ],
+        [
+          "outDistance.ResultDistance",
+          "result.Distance"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "value.execute"
+        ],
+        [
+          "value.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "PlanePoint",
+      "inputs": [
+        {
+          "name": "Origin",
+          "type": "vector"
+        },
+        {
+          "name": "Direction",
+          "type": "vector"
+        },
+        {
+          "name": "Center",
+          "type": "vector"
+        },
+        {
+          "name": "Axis",
+          "type": "vector"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Valid",
+          "type": "bool"
+        },
+        {
+          "name": "Point",
+          "type": "vector"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "ResultPoint",
+          "type": "vector"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "d",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Normal",
+          "defaults": {
+            "Tolerance": "1e-12"
+          }
+        },
+        {
+          "id": "a",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Normal",
+          "defaults": {
+            "Tolerance": "1e-12"
+          }
+        },
+        {
+          "id": "den",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "abs",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "nonparallel",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "1e-06"
+          }
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "w",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "dot",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "t",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Divide_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "positive",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "forward",
+          "kind": "branch"
+        },
+        {
+          "id": "along",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {}
+        },
+        {
+          "id": "point",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "value",
+          "kind": "set",
+          "var": "local:ResultPoint"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        },
+        {
+          "id": "outPoint",
+          "kind": "get",
+          "var": "local:ResultPoint"
+        }
+      ],
+      "links": [
+        [
+          "entry.Direction",
+          "d.A"
+        ],
+        [
+          "entry.Axis",
+          "a.A"
+        ],
+        [
+          "d.ReturnValue",
+          "den.A"
+        ],
+        [
+          "a.ReturnValue",
+          "den.B"
+        ],
+        [
+          "den.ReturnValue",
+          "abs.A"
+        ],
+        [
+          "abs.ReturnValue",
+          "nonparallel.A"
+        ],
+        [
+          "nonparallel.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.Center",
+          "w.A"
+        ],
+        [
+          "entry.Origin",
+          "w.B"
+        ],
+        [
+          "w.ReturnValue",
+          "dot.A"
+        ],
+        [
+          "a.ReturnValue",
+          "dot.B"
+        ],
+        [
+          "dot.ReturnValue",
+          "t.A"
+        ],
+        [
+          "den.ReturnValue",
+          "t.B"
+        ],
+        [
+          "t.ReturnValue",
+          "positive.A"
+        ],
+        [
+          "positive.ReturnValue",
+          "forward.Condition"
+        ],
+        [
+          "d.ReturnValue",
+          "along.A"
+        ],
+        [
+          "t.ReturnValue",
+          "along.B"
+        ],
+        [
+          "entry.Origin",
+          "point.A"
+        ],
+        [
+          "along.ReturnValue",
+          "point.B"
+        ],
+        [
+          "point.ReturnValue",
+          "value.ResultPoint"
+        ],
+        [
+          "out.OK",
+          "result.Valid"
+        ],
+        [
+          "outPoint.ResultPoint",
+          "result.Point"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "forward.execute"
+        ],
+        [
+          "forward.then",
+          "value.execute"
+        ],
+        [
+          "value.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ],
+        [
+          "forward.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Angle",
+      "inputs": [
+        {
+          "name": "Point",
+          "type": "vector"
+        },
+        {
+          "name": "Center",
+          "type": "vector"
+        },
+        {
+          "name": "Axis",
+          "type": "vector"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Degrees",
+          "type": "double"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "normal",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Normal",
+          "defaults": {
+            "Tolerance": "1e-12"
+          }
+        },
+        {
+          "id": "parts",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakVector",
+          "defaults": {}
+        },
+        {
+          "id": "abs",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "vertical",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {
+            "B": "0.9"
+          }
+        },
+        {
+          "id": "helper",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectVector",
+          "defaults": {
+            "A": "0,0,1",
+            "B": "1,0,0"
+          }
+        },
+        {
+          "id": "cross",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Cross_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "u",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Normal",
+          "defaults": {
+            "Tolerance": "1e-12"
+          }
+        },
+        {
+          "id": "w",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Cross_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "r",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "y",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "x",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "angle",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:DegAtan2",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "entry.Axis",
+          "normal.A"
+        ],
+        [
+          "normal.ReturnValue",
+          "parts.InVec"
+        ],
+        [
+          "parts.Z",
+          "abs.A"
+        ],
+        [
+          "abs.ReturnValue",
+          "vertical.A"
+        ],
+        [
+          "vertical.ReturnValue",
+          "helper.bPickA"
+        ],
+        [
+          "helper.ReturnValue",
+          "cross.A"
+        ],
+        [
+          "normal.ReturnValue",
+          "cross.B"
+        ],
+        [
+          "cross.ReturnValue",
+          "u.A"
+        ],
+        [
+          "normal.ReturnValue",
+          "w.A"
+        ],
+        [
+          "u.ReturnValue",
+          "w.B"
+        ],
+        [
+          "entry.Point",
+          "r.A"
+        ],
+        [
+          "entry.Center",
+          "r.B"
+        ],
+        [
+          "r.ReturnValue",
+          "y.A"
+        ],
+        [
+          "w.ReturnValue",
+          "y.B"
+        ],
+        [
+          "r.ReturnValue",
+          "x.A"
+        ],
+        [
+          "u.ReturnValue",
+          "x.B"
+        ],
+        [
+          "y.ReturnValue",
+          "angle.Y"
+        ],
+        [
+          "x.ReturnValue",
+          "angle.X"
+        ],
+        [
+          "angle.ReturnValue",
+          "result.Degrees"
+        ],
+        [
+          "entry.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "SegmentDistance",
+      "inputs": [
+        {
+          "name": "Origin",
+          "type": "vector"
+        },
+        {
+          "name": "Direction",
+          "type": "vector"
+        },
+        {
+          "name": "Center",
+          "type": "vector"
+        },
+        {
+          "name": "Axis",
+          "type": "vector"
+        },
+        {
+          "name": "Length",
+          "type": "double"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Valid",
+          "type": "bool"
+        },
+        {
+          "name": "Distance",
+          "type": "double"
+        },
+        {
+          "name": "Along",
+          "type": "double"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "ResultDistance",
+          "type": "double"
+        },
+        {
+          "name": "ResultAlong",
+          "type": "double"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "positive",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_DoubleDouble",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "length",
+          "kind": "branch"
+        },
+        {
+          "id": "axis",
+          "kind": "call",
+          "function": "self:AxisParam",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "clamp",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FClamp",
+          "defaults": {
+            "Min": "0"
+          }
+        },
+        {
+          "id": "a",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Normal",
+          "defaults": {
+            "Tolerance": "1e-12"
+          }
+        },
+        {
+          "id": "d",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Normal",
+          "defaults": {
+            "Tolerance": "1e-12"
+          }
+        },
+        {
+          "id": "qa",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {}
+        },
+        {
+          "id": "q",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "w",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "dot",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "t",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "td",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {}
+        },
+        {
+          "id": "nearest",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "offset",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "dist",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:VSize",
+          "defaults": {}
+        },
+        {
+          "id": "distance",
+          "kind": "set",
+          "var": "local:ResultDistance"
+        },
+        {
+          "id": "along",
+          "kind": "set",
+          "var": "local:ResultAlong"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        },
+        {
+          "id": "outDistance",
+          "kind": "get",
+          "var": "local:ResultDistance"
+        },
+        {
+          "id": "outAlong",
+          "kind": "get",
+          "var": "local:ResultAlong"
+        }
+      ],
+      "links": [
+        [
+          "entry.Length",
+          "positive.A"
+        ],
+        [
+          "positive.ReturnValue",
+          "length.Condition"
+        ],
+        [
+          "entry.Origin",
+          "axis.Origin"
+        ],
+        [
+          "entry.Direction",
+          "axis.Direction"
+        ],
+        [
+          "entry.Center",
+          "axis.Center"
+        ],
+        [
+          "entry.Axis",
+          "axis.Axis"
+        ],
+        [
+          "axis.Valid",
+          "valid.Condition"
+        ],
+        [
+          "axis.Distance",
+          "clamp.Value"
+        ],
+        [
+          "entry.Length",
+          "clamp.Max"
+        ],
+        [
+          "entry.Axis",
+          "a.A"
+        ],
+        [
+          "entry.Direction",
+          "d.A"
+        ],
+        [
+          "a.ReturnValue",
+          "qa.A"
+        ],
+        [
+          "clamp.ReturnValue",
+          "qa.B"
+        ],
+        [
+          "entry.Center",
+          "q.A"
+        ],
+        [
+          "qa.ReturnValue",
+          "q.B"
+        ],
+        [
+          "q.ReturnValue",
+          "w.A"
+        ],
+        [
+          "entry.Origin",
+          "w.B"
+        ],
+        [
+          "w.ReturnValue",
+          "dot.A"
+        ],
+        [
+          "d.ReturnValue",
+          "dot.B"
+        ],
+        [
+          "dot.ReturnValue",
+          "t.A"
+        ],
+        [
+          "d.ReturnValue",
+          "td.A"
+        ],
+        [
+          "t.ReturnValue",
+          "td.B"
+        ],
+        [
+          "entry.Origin",
+          "nearest.A"
+        ],
+        [
+          "td.ReturnValue",
+          "nearest.B"
+        ],
+        [
+          "q.ReturnValue",
+          "offset.A"
+        ],
+        [
+          "nearest.ReturnValue",
+          "offset.B"
+        ],
+        [
+          "offset.ReturnValue",
+          "dist.A"
+        ],
+        [
+          "dist.ReturnValue",
+          "distance.ResultDistance"
+        ],
+        [
+          "clamp.ReturnValue",
+          "along.ResultAlong"
+        ],
+        [
+          "out.OK",
+          "result.Valid"
+        ],
+        [
+          "outDistance.ResultDistance",
+          "result.Distance"
+        ],
+        [
+          "outAlong.ResultAlong",
+          "result.Along"
+        ],
+        [
+          "entry.then",
+          "length.execute"
+        ],
+        [
+          "length.then",
+          "axis.execute"
+        ],
+        [
+          "axis.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "distance.execute"
+        ],
+        [
+          "distance.then",
+          "along.execute"
+        ],
+        [
+          "along.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "length.else",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "RingDistance",
+      "inputs": [
+        {
+          "name": "Origin",
+          "type": "vector"
+        },
+        {
+          "name": "Direction",
+          "type": "vector"
+        },
+        {
+          "name": "Center",
+          "type": "vector"
+        },
+        {
+          "name": "Axis",
+          "type": "vector"
+        },
+        {
+          "name": "Radius",
+          "type": "double"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Valid",
+          "type": "bool"
+        },
+        {
+          "name": "Distance",
+          "type": "double"
+        },
+        {
+          "name": "Degrees",
+          "type": "double"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "ResultDistance",
+          "type": "double"
+        },
+        {
+          "name": "ResultDegrees",
+          "type": "double"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "positive",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_DoubleDouble",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "radius",
+          "kind": "branch"
+        },
+        {
+          "id": "plane",
+          "kind": "call",
+          "function": "self:PlanePoint",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "offset",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "radial",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:VSize",
+          "defaults": {}
+        },
+        {
+          "id": "diff",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "dist",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "distance",
+          "kind": "set",
+          "var": "local:ResultDistance"
+        },
+        {
+          "id": "angle",
+          "kind": "call",
+          "function": "self:Angle",
+          "defaults": {}
+        },
+        {
+          "id": "degrees",
+          "kind": "set",
+          "var": "local:ResultDegrees"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        },
+        {
+          "id": "outDistance",
+          "kind": "get",
+          "var": "local:ResultDistance"
+        },
+        {
+          "id": "outDegrees",
+          "kind": "get",
+          "var": "local:ResultDegrees"
+        }
+      ],
+      "links": [
+        [
+          "entry.Radius",
+          "positive.A"
+        ],
+        [
+          "positive.ReturnValue",
+          "radius.Condition"
+        ],
+        [
+          "entry.Origin",
+          "plane.Origin"
+        ],
+        [
+          "entry.Direction",
+          "plane.Direction"
+        ],
+        [
+          "entry.Center",
+          "plane.Center"
+        ],
+        [
+          "entry.Axis",
+          "plane.Axis"
+        ],
+        [
+          "plane.Valid",
+          "valid.Condition"
+        ],
+        [
+          "plane.Point",
+          "offset.A"
+        ],
+        [
+          "entry.Center",
+          "offset.B"
+        ],
+        [
+          "offset.ReturnValue",
+          "radial.A"
+        ],
+        [
+          "radial.ReturnValue",
+          "diff.A"
+        ],
+        [
+          "entry.Radius",
+          "diff.B"
+        ],
+        [
+          "diff.ReturnValue",
+          "dist.A"
+        ],
+        [
+          "dist.ReturnValue",
+          "distance.ResultDistance"
+        ],
+        [
+          "plane.Point",
+          "angle.Point"
+        ],
+        [
+          "entry.Center",
+          "angle.Center"
+        ],
+        [
+          "entry.Axis",
+          "angle.Axis"
+        ],
+        [
+          "angle.Degrees",
+          "degrees.ResultDegrees"
+        ],
+        [
+          "out.OK",
+          "result.Valid"
+        ],
+        [
+          "outDistance.ResultDistance",
+          "result.Distance"
+        ],
+        [
+          "outDegrees.ResultDegrees",
+          "result.Degrees"
+        ],
+        [
+          "entry.then",
+          "radius.execute"
+        ],
+        [
+          "radius.then",
+          "plane.execute"
+        ],
+        [
+          "plane.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "distance.execute"
+        ],
+        [
+          "distance.then",
+          "angle.execute"
+        ],
+        [
+          "angle.then",
+          "degrees.execute"
+        ],
+        [
+          "degrees.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "radius.else",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "FrameAxes",
+      "inputs": [
+        {
+          "name": "Mode",
+          "type": "int"
+        },
+        {
+          "name": "Rotation",
+          "type": "rotator"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "X",
+          "type": "vector"
+        },
+        {
+          "name": "Y",
+          "type": "vector"
+        },
+        {
+          "name": "Z",
+          "type": "vector"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "scale",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "3"
+          }
+        },
+        {
+          "id": "localX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GetForwardVector",
+          "defaults": {}
+        },
+        {
+          "id": "axisX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectVector",
+          "defaults": {
+            "B": "1,0,0"
+          }
+        },
+        {
+          "id": "localY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GetRightVector",
+          "defaults": {}
+        },
+        {
+          "id": "axisY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectVector",
+          "defaults": {
+            "B": "0,1,0"
+          }
+        },
+        {
+          "id": "localZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GetUpVector",
+          "defaults": {}
+        },
+        {
+          "id": "axisZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectVector",
+          "defaults": {
+            "B": "0,0,1"
+          }
+        }
+      ],
+      "links": [
+        [
+          "entry.Mode",
+          "scale.A"
+        ],
+        [
+          "entry.Rotation",
+          "localX.InRot"
+        ],
+        [
+          "localX.ReturnValue",
+          "axisX.A"
+        ],
+        [
+          "scale.ReturnValue",
+          "axisX.bPickA"
+        ],
+        [
+          "axisX.ReturnValue",
+          "result.X"
+        ],
+        [
+          "entry.Rotation",
+          "localY.InRot"
+        ],
+        [
+          "localY.ReturnValue",
+          "axisY.A"
+        ],
+        [
+          "scale.ReturnValue",
+          "axisY.bPickA"
+        ],
+        [
+          "axisY.ReturnValue",
+          "result.Y"
+        ],
+        [
+          "entry.Rotation",
+          "localZ.InRot"
+        ],
+        [
+          "localZ.ReturnValue",
+          "axisZ.A"
+        ],
+        [
+          "scale.ReturnValue",
+          "axisZ.bPickA"
+        ],
+        [
+          "axisZ.ReturnValue",
+          "result.Z"
+        ],
+        [
+          "entry.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "PickHandle",
+      "inputs": [
+        {
+          "name": "Origin",
+          "type": "vector"
+        },
+        {
+          "name": "Direction",
+          "type": "vector"
+        },
+        {
+          "name": "Center",
+          "type": "vector"
+        },
+        {
+          "name": "Size",
+          "type": "double"
+        },
+        {
+          "name": "Mode",
+          "type": "int"
+        },
+        {
+          "name": "Rotation",
+          "type": "rotator"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Kind",
+          "type": "int"
+        },
+        {
+          "name": "Axis",
+          "type": "int"
+        }
+      ],
+      "locals": [
+        {
+          "name": "ResultKind",
+          "type": "int"
+        },
+        {
+          "name": "ResultAxis",
+          "type": "int"
+        },
+        {
+          "name": "BestDistance",
+          "type": "double",
+          "default": "1e30"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "best",
+          "kind": "get",
+          "var": "local:BestDistance"
+        },
+        {
+          "id": "ray",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Normal",
+          "defaults": {
+            "Tolerance": "1e-12"
+          }
+        },
+        {
+          "id": "positive",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_DoubleDouble",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "bounded",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "raylen",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:VSize",
+          "defaults": {}
+        },
+        {
+          "id": "nonzero",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_DoubleDouble",
+          "defaults": {
+            "B": "0.5"
+          }
+        },
+        {
+          "id": "modeMin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "modeMax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "3"
+          }
+        },
+        {
+          "id": "originbreak",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakVector",
+          "defaults": {}
+        },
+        {
+          "id": "originXmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "-10000000.0"
+          }
+        },
+        {
+          "id": "originXmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "originYmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "-10000000.0"
+          }
+        },
+        {
+          "id": "originYmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "originZmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "-10000000.0"
+          }
+        },
+        {
+          "id": "originZmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "originvalid0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "originvalid1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "originvalid2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "originvalid3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "originvalid4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "centerbreak",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakVector",
+          "defaults": {}
+        },
+        {
+          "id": "centerXmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "-10000000.0"
+          }
+        },
+        {
+          "id": "centerXmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "centerYmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "-10000000.0"
+          }
+        },
+        {
+          "id": "centerYmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "centerZmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "-10000000.0"
+          }
+        },
+        {
+          "id": "centerZmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "centervalid0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "centervalid1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "centervalid2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "centervalid3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "centervalid4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "checks0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "checks1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "checks2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "checks3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "checks4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "checks5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "axes",
+          "kind": "call",
+          "function": "self:FrameAxes",
+          "defaults": {}
+        },
+        {
+          "id": "isrotate",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "rotate",
+          "kind": "branch"
+        },
+        {
+          "id": "grab",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "0.09"
+          }
+        },
+        {
+          "id": "radius",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "0.8"
+          }
+        },
+        {
+          "id": "ring0",
+          "kind": "call",
+          "function": "self:RingDistance",
+          "defaults": {}
+        },
+        {
+          "id": "ring0valid",
+          "kind": "branch"
+        },
+        {
+          "id": "ring0reach",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "ring0closer",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "ring0both0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "ring0choose",
+          "kind": "branch"
+        },
+        {
+          "id": "ring0kind",
+          "kind": "set",
+          "var": "local:ResultKind",
+          "defaults": {
+            "ResultKind": "3"
+          }
+        },
+        {
+          "id": "ring0axis",
+          "kind": "set",
+          "var": "local:ResultAxis",
+          "defaults": {
+            "ResultAxis": "1"
+          }
+        },
+        {
+          "id": "ring0distance",
+          "kind": "set",
+          "var": "local:BestDistance"
+        },
+        {
+          "id": "ring0next",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "ring1",
+          "kind": "call",
+          "function": "self:RingDistance",
+          "defaults": {}
+        },
+        {
+          "id": "ring1valid",
+          "kind": "branch"
+        },
+        {
+          "id": "ring1reach",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "ring1closer",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "ring1both0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "ring1choose",
+          "kind": "branch"
+        },
+        {
+          "id": "ring1kind",
+          "kind": "set",
+          "var": "local:ResultKind",
+          "defaults": {
+            "ResultKind": "3"
+          }
+        },
+        {
+          "id": "ring1axis",
+          "kind": "set",
+          "var": "local:ResultAxis",
+          "defaults": {
+            "ResultAxis": "2"
+          }
+        },
+        {
+          "id": "ring1distance",
+          "kind": "set",
+          "var": "local:BestDistance"
+        },
+        {
+          "id": "ring1next",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "ring2",
+          "kind": "call",
+          "function": "self:RingDistance",
+          "defaults": {}
+        },
+        {
+          "id": "ring2valid",
+          "kind": "branch"
+        },
+        {
+          "id": "ring2reach",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "ring2closer",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "ring2both0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "ring2choose",
+          "kind": "branch"
+        },
+        {
+          "id": "ring2kind",
+          "kind": "set",
+          "var": "local:ResultKind",
+          "defaults": {
+            "ResultKind": "3"
+          }
+        },
+        {
+          "id": "ring2axis",
+          "kind": "set",
+          "var": "local:ResultAxis",
+          "defaults": {
+            "ResultAxis": "3"
+          }
+        },
+        {
+          "id": "ring2distance",
+          "kind": "set",
+          "var": "local:BestDistance"
+        },
+        {
+          "id": "ring2next",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "shaft0",
+          "kind": "call",
+          "function": "self:SegmentDistance",
+          "defaults": {}
+        },
+        {
+          "id": "shaft0valid",
+          "kind": "branch"
+        },
+        {
+          "id": "shaft0reach",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "shaft0closer",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "shaft0both0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "shaft0choose",
+          "kind": "branch"
+        },
+        {
+          "id": "shaft0kind",
+          "kind": "set",
+          "var": "local:ResultKind",
+          "defaults": {
+            "ResultKind": "1"
+          }
+        },
+        {
+          "id": "shaft0axis",
+          "kind": "set",
+          "var": "local:ResultAxis",
+          "defaults": {
+            "ResultAxis": "1"
+          }
+        },
+        {
+          "id": "shaft0distance",
+          "kind": "set",
+          "var": "local:BestDistance"
+        },
+        {
+          "id": "shaft0next",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "shaft1",
+          "kind": "call",
+          "function": "self:SegmentDistance",
+          "defaults": {}
+        },
+        {
+          "id": "shaft1valid",
+          "kind": "branch"
+        },
+        {
+          "id": "shaft1reach",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "shaft1closer",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "shaft1both0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "shaft1choose",
+          "kind": "branch"
+        },
+        {
+          "id": "shaft1kind",
+          "kind": "set",
+          "var": "local:ResultKind",
+          "defaults": {
+            "ResultKind": "1"
+          }
+        },
+        {
+          "id": "shaft1axis",
+          "kind": "set",
+          "var": "local:ResultAxis",
+          "defaults": {
+            "ResultAxis": "2"
+          }
+        },
+        {
+          "id": "shaft1distance",
+          "kind": "set",
+          "var": "local:BestDistance"
+        },
+        {
+          "id": "shaft1next",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "shaft2",
+          "kind": "call",
+          "function": "self:SegmentDistance",
+          "defaults": {}
+        },
+        {
+          "id": "shaft2valid",
+          "kind": "branch"
+        },
+        {
+          "id": "shaft2reach",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "shaft2closer",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "shaft2both0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "shaft2choose",
+          "kind": "branch"
+        },
+        {
+          "id": "shaft2kind",
+          "kind": "set",
+          "var": "local:ResultKind",
+          "defaults": {
+            "ResultKind": "1"
+          }
+        },
+        {
+          "id": "shaft2axis",
+          "kind": "set",
+          "var": "local:ResultAxis",
+          "defaults": {
+            "ResultAxis": "3"
+          }
+        },
+        {
+          "id": "shaft2distance",
+          "kind": "set",
+          "var": "local:BestDistance"
+        },
+        {
+          "id": "shaft2next",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "plane0",
+          "kind": "call",
+          "function": "self:PlanePoint",
+          "defaults": {}
+        },
+        {
+          "id": "plane0valid",
+          "kind": "branch"
+        },
+        {
+          "id": "plane0offset",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "plane0Ydot",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "plane0Yunit",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Divide_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "plane0Ymin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "0.25"
+          }
+        },
+        {
+          "id": "plane0Ymax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "0.45"
+          }
+        },
+        {
+          "id": "plane0Zdot",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "plane0Zunit",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Divide_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "plane0Zmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "0.25"
+          }
+        },
+        {
+          "id": "plane0Zmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "0.45"
+          }
+        },
+        {
+          "id": "plane0square0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "plane0square1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "plane0square2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "plane0inside",
+          "kind": "branch"
+        },
+        {
+          "id": "plane0kind",
+          "kind": "set",
+          "var": "local:ResultKind",
+          "defaults": {
+            "ResultKind": "2"
+          }
+        },
+        {
+          "id": "plane0axis",
+          "kind": "set",
+          "var": "local:ResultAxis",
+          "defaults": {
+            "ResultAxis": "1"
+          }
+        },
+        {
+          "id": "plane0distance",
+          "kind": "set",
+          "var": "local:BestDistance",
+          "defaults": {
+            "BestDistance": "0"
+          }
+        },
+        {
+          "id": "plane0next",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "plane1",
+          "kind": "call",
+          "function": "self:PlanePoint",
+          "defaults": {}
+        },
+        {
+          "id": "plane1valid",
+          "kind": "branch"
+        },
+        {
+          "id": "plane1offset",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "plane1Zdot",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "plane1Zunit",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Divide_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "plane1Zmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "0.25"
+          }
+        },
+        {
+          "id": "plane1Zmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "0.45"
+          }
+        },
+        {
+          "id": "plane1Xdot",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "plane1Xunit",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Divide_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "plane1Xmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "0.25"
+          }
+        },
+        {
+          "id": "plane1Xmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "0.45"
+          }
+        },
+        {
+          "id": "plane1square0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "plane1square1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "plane1square2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "plane1inside",
+          "kind": "branch"
+        },
+        {
+          "id": "plane1kind",
+          "kind": "set",
+          "var": "local:ResultKind",
+          "defaults": {
+            "ResultKind": "2"
+          }
+        },
+        {
+          "id": "plane1axis",
+          "kind": "set",
+          "var": "local:ResultAxis",
+          "defaults": {
+            "ResultAxis": "2"
+          }
+        },
+        {
+          "id": "plane1distance",
+          "kind": "set",
+          "var": "local:BestDistance",
+          "defaults": {
+            "BestDistance": "0"
+          }
+        },
+        {
+          "id": "plane1next",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "plane2",
+          "kind": "call",
+          "function": "self:PlanePoint",
+          "defaults": {}
+        },
+        {
+          "id": "plane2valid",
+          "kind": "branch"
+        },
+        {
+          "id": "plane2offset",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "plane2Xdot",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "plane2Xunit",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Divide_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "plane2Xmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "0.25"
+          }
+        },
+        {
+          "id": "plane2Xmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "0.45"
+          }
+        },
+        {
+          "id": "plane2Ydot",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "plane2Yunit",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Divide_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "plane2Ymin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {
+            "B": "0.25"
+          }
+        },
+        {
+          "id": "plane2Ymax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "0.45"
+          }
+        },
+        {
+          "id": "plane2square0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "plane2square1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "plane2square2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "plane2inside",
+          "kind": "branch"
+        },
+        {
+          "id": "plane2kind",
+          "kind": "set",
+          "var": "local:ResultKind",
+          "defaults": {
+            "ResultKind": "2"
+          }
+        },
+        {
+          "id": "plane2axis",
+          "kind": "set",
+          "var": "local:ResultAxis",
+          "defaults": {
+            "ResultAxis": "3"
+          }
+        },
+        {
+          "id": "plane2distance",
+          "kind": "set",
+          "var": "local:BestDistance",
+          "defaults": {
+            "BestDistance": "0"
+          }
+        },
+        {
+          "id": "plane2next",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "isscale",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "3"
+          }
+        },
+        {
+          "id": "scale",
+          "kind": "branch"
+        },
+        {
+          "id": "sum2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "sum3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "diagonal",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Normal",
+          "defaults": {
+            "Tolerance": "1e-12"
+          }
+        },
+        {
+          "id": "diagpoint",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {}
+        },
+        {
+          "id": "uniformpoint",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "uniformoffset",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "uniformdot",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "uniformt",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "uniformalong",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {}
+        },
+        {
+          "id": "uniformnearest",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "uniformdiff",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "uniformdist",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:VSize",
+          "defaults": {}
+        },
+        {
+          "id": "cubegrab",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "0.12"
+          }
+        },
+        {
+          "id": "uniformreach",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "uniformhit",
+          "kind": "branch"
+        },
+        {
+          "id": "uniformkind",
+          "kind": "set",
+          "var": "local:ResultKind",
+          "defaults": {
+            "ResultKind": "4"
+          }
+        },
+        {
+          "id": "uniformaxis",
+          "kind": "set",
+          "var": "local:ResultAxis",
+          "defaults": {
+            "ResultAxis": "0"
+          }
+        },
+        {
+          "id": "uniformdistance",
+          "kind": "set",
+          "var": "local:BestDistance",
+          "defaults": {
+            "BestDistance": "0"
+          }
+        },
+        {
+          "id": "outKind",
+          "kind": "get",
+          "var": "local:ResultKind"
+        },
+        {
+          "id": "outAxis",
+          "kind": "get",
+          "var": "local:ResultAxis"
+        }
+      ],
+      "links": [
+        [
+          "entry.Direction",
+          "ray.A"
+        ],
+        [
+          "entry.Size",
+          "positive.A"
+        ],
+        [
+          "entry.Size",
+          "bounded.A"
+        ],
+        [
+          "ray.ReturnValue",
+          "raylen.A"
+        ],
+        [
+          "raylen.ReturnValue",
+          "nonzero.A"
+        ],
+        [
+          "entry.Mode",
+          "modeMin.A"
+        ],
+        [
+          "entry.Mode",
+          "modeMax.A"
+        ],
+        [
+          "entry.Origin",
+          "originbreak.InVec"
+        ],
+        [
+          "originbreak.X",
+          "originXmin.A"
+        ],
+        [
+          "originbreak.X",
+          "originXmax.A"
+        ],
+        [
+          "originbreak.Y",
+          "originYmin.A"
+        ],
+        [
+          "originbreak.Y",
+          "originYmax.A"
+        ],
+        [
+          "originbreak.Z",
+          "originZmin.A"
+        ],
+        [
+          "originbreak.Z",
+          "originZmax.A"
+        ],
+        [
+          "originXmin.ReturnValue",
+          "originvalid0.A"
+        ],
+        [
+          "originXmax.ReturnValue",
+          "originvalid0.B"
+        ],
+        [
+          "originvalid0.ReturnValue",
+          "originvalid1.A"
+        ],
+        [
+          "originYmin.ReturnValue",
+          "originvalid1.B"
+        ],
+        [
+          "originvalid1.ReturnValue",
+          "originvalid2.A"
+        ],
+        [
+          "originYmax.ReturnValue",
+          "originvalid2.B"
+        ],
+        [
+          "originvalid2.ReturnValue",
+          "originvalid3.A"
+        ],
+        [
+          "originZmin.ReturnValue",
+          "originvalid3.B"
+        ],
+        [
+          "originvalid3.ReturnValue",
+          "originvalid4.A"
+        ],
+        [
+          "originZmax.ReturnValue",
+          "originvalid4.B"
+        ],
+        [
+          "entry.Center",
+          "centerbreak.InVec"
+        ],
+        [
+          "centerbreak.X",
+          "centerXmin.A"
+        ],
+        [
+          "centerbreak.X",
+          "centerXmax.A"
+        ],
+        [
+          "centerbreak.Y",
+          "centerYmin.A"
+        ],
+        [
+          "centerbreak.Y",
+          "centerYmax.A"
+        ],
+        [
+          "centerbreak.Z",
+          "centerZmin.A"
+        ],
+        [
+          "centerbreak.Z",
+          "centerZmax.A"
+        ],
+        [
+          "centerXmin.ReturnValue",
+          "centervalid0.A"
+        ],
+        [
+          "centerXmax.ReturnValue",
+          "centervalid0.B"
+        ],
+        [
+          "centervalid0.ReturnValue",
+          "centervalid1.A"
+        ],
+        [
+          "centerYmin.ReturnValue",
+          "centervalid1.B"
+        ],
+        [
+          "centervalid1.ReturnValue",
+          "centervalid2.A"
+        ],
+        [
+          "centerYmax.ReturnValue",
+          "centervalid2.B"
+        ],
+        [
+          "centervalid2.ReturnValue",
+          "centervalid3.A"
+        ],
+        [
+          "centerZmin.ReturnValue",
+          "centervalid3.B"
+        ],
+        [
+          "centervalid3.ReturnValue",
+          "centervalid4.A"
+        ],
+        [
+          "centerZmax.ReturnValue",
+          "centervalid4.B"
+        ],
+        [
+          "positive.ReturnValue",
+          "checks0.A"
+        ],
+        [
+          "bounded.ReturnValue",
+          "checks0.B"
+        ],
+        [
+          "checks0.ReturnValue",
+          "checks1.A"
+        ],
+        [
+          "nonzero.ReturnValue",
+          "checks1.B"
+        ],
+        [
+          "checks1.ReturnValue",
+          "checks2.A"
+        ],
+        [
+          "modeMin.ReturnValue",
+          "checks2.B"
+        ],
+        [
+          "checks2.ReturnValue",
+          "checks3.A"
+        ],
+        [
+          "modeMax.ReturnValue",
+          "checks3.B"
+        ],
+        [
+          "checks3.ReturnValue",
+          "checks4.A"
+        ],
+        [
+          "originvalid4.ReturnValue",
+          "checks4.B"
+        ],
+        [
+          "checks4.ReturnValue",
+          "checks5.A"
+        ],
+        [
+          "centervalid4.ReturnValue",
+          "checks5.B"
+        ],
+        [
+          "checks5.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.Mode",
+          "axes.Mode"
+        ],
+        [
+          "entry.Rotation",
+          "axes.Rotation"
+        ],
+        [
+          "entry.Mode",
+          "isrotate.A"
+        ],
+        [
+          "isrotate.ReturnValue",
+          "rotate.Condition"
+        ],
+        [
+          "entry.Size",
+          "grab.A"
+        ],
+        [
+          "entry.Size",
+          "radius.A"
+        ],
+        [
+          "entry.Origin",
+          "ring0.Origin"
+        ],
+        [
+          "ray.ReturnValue",
+          "ring0.Direction"
+        ],
+        [
+          "entry.Center",
+          "ring0.Center"
+        ],
+        [
+          "axes.X",
+          "ring0.Axis"
+        ],
+        [
+          "radius.ReturnValue",
+          "ring0.Radius"
+        ],
+        [
+          "ring0.Valid",
+          "ring0valid.Condition"
+        ],
+        [
+          "ring0.Distance",
+          "ring0reach.A"
+        ],
+        [
+          "grab.ReturnValue",
+          "ring0reach.B"
+        ],
+        [
+          "ring0.Distance",
+          "ring0closer.A"
+        ],
+        [
+          "best.BestDistance",
+          "ring0closer.B"
+        ],
+        [
+          "ring0reach.ReturnValue",
+          "ring0both0.A"
+        ],
+        [
+          "ring0closer.ReturnValue",
+          "ring0both0.B"
+        ],
+        [
+          "ring0both0.ReturnValue",
+          "ring0choose.Condition"
+        ],
+        [
+          "ring0.Distance",
+          "ring0distance.BestDistance"
+        ],
+        [
+          "ring0kind.then",
+          "ring0axis.execute"
+        ],
+        [
+          "ring0axis.then",
+          "ring0distance.execute"
+        ],
+        [
+          "rotate.then",
+          "ring0.execute"
+        ],
+        [
+          "ring0.then",
+          "ring0valid.execute"
+        ],
+        [
+          "ring0valid.then",
+          "ring0choose.execute"
+        ],
+        [
+          "ring0choose.then",
+          "ring0kind.execute"
+        ],
+        [
+          "ring0distance.then",
+          "ring0next.execute"
+        ],
+        [
+          "ring0valid.else",
+          "ring0next.execute"
+        ],
+        [
+          "ring0choose.else",
+          "ring0next.execute"
+        ],
+        [
+          "entry.Origin",
+          "ring1.Origin"
+        ],
+        [
+          "ray.ReturnValue",
+          "ring1.Direction"
+        ],
+        [
+          "entry.Center",
+          "ring1.Center"
+        ],
+        [
+          "axes.Y",
+          "ring1.Axis"
+        ],
+        [
+          "radius.ReturnValue",
+          "ring1.Radius"
+        ],
+        [
+          "ring1.Valid",
+          "ring1valid.Condition"
+        ],
+        [
+          "ring1.Distance",
+          "ring1reach.A"
+        ],
+        [
+          "grab.ReturnValue",
+          "ring1reach.B"
+        ],
+        [
+          "ring1.Distance",
+          "ring1closer.A"
+        ],
+        [
+          "best.BestDistance",
+          "ring1closer.B"
+        ],
+        [
+          "ring1reach.ReturnValue",
+          "ring1both0.A"
+        ],
+        [
+          "ring1closer.ReturnValue",
+          "ring1both0.B"
+        ],
+        [
+          "ring1both0.ReturnValue",
+          "ring1choose.Condition"
+        ],
+        [
+          "ring1.Distance",
+          "ring1distance.BestDistance"
+        ],
+        [
+          "ring1kind.then",
+          "ring1axis.execute"
+        ],
+        [
+          "ring1axis.then",
+          "ring1distance.execute"
+        ],
+        [
+          "ring0next.then_0",
+          "ring1.execute"
+        ],
+        [
+          "ring1.then",
+          "ring1valid.execute"
+        ],
+        [
+          "ring1valid.then",
+          "ring1choose.execute"
+        ],
+        [
+          "ring1choose.then",
+          "ring1kind.execute"
+        ],
+        [
+          "ring1distance.then",
+          "ring1next.execute"
+        ],
+        [
+          "ring1valid.else",
+          "ring1next.execute"
+        ],
+        [
+          "ring1choose.else",
+          "ring1next.execute"
+        ],
+        [
+          "entry.Origin",
+          "ring2.Origin"
+        ],
+        [
+          "ray.ReturnValue",
+          "ring2.Direction"
+        ],
+        [
+          "entry.Center",
+          "ring2.Center"
+        ],
+        [
+          "axes.Z",
+          "ring2.Axis"
+        ],
+        [
+          "radius.ReturnValue",
+          "ring2.Radius"
+        ],
+        [
+          "ring2.Valid",
+          "ring2valid.Condition"
+        ],
+        [
+          "ring2.Distance",
+          "ring2reach.A"
+        ],
+        [
+          "grab.ReturnValue",
+          "ring2reach.B"
+        ],
+        [
+          "ring2.Distance",
+          "ring2closer.A"
+        ],
+        [
+          "best.BestDistance",
+          "ring2closer.B"
+        ],
+        [
+          "ring2reach.ReturnValue",
+          "ring2both0.A"
+        ],
+        [
+          "ring2closer.ReturnValue",
+          "ring2both0.B"
+        ],
+        [
+          "ring2both0.ReturnValue",
+          "ring2choose.Condition"
+        ],
+        [
+          "ring2.Distance",
+          "ring2distance.BestDistance"
+        ],
+        [
+          "ring2kind.then",
+          "ring2axis.execute"
+        ],
+        [
+          "ring2axis.then",
+          "ring2distance.execute"
+        ],
+        [
+          "ring1next.then_0",
+          "ring2.execute"
+        ],
+        [
+          "ring2.then",
+          "ring2valid.execute"
+        ],
+        [
+          "ring2valid.then",
+          "ring2choose.execute"
+        ],
+        [
+          "ring2choose.then",
+          "ring2kind.execute"
+        ],
+        [
+          "ring2distance.then",
+          "ring2next.execute"
+        ],
+        [
+          "ring2valid.else",
+          "ring2next.execute"
+        ],
+        [
+          "ring2choose.else",
+          "ring2next.execute"
+        ],
+        [
+          "ring2next.then_0",
+          "result.execute"
+        ],
+        [
+          "entry.Origin",
+          "shaft0.Origin"
+        ],
+        [
+          "ray.ReturnValue",
+          "shaft0.Direction"
+        ],
+        [
+          "entry.Center",
+          "shaft0.Center"
+        ],
+        [
+          "axes.X",
+          "shaft0.Axis"
+        ],
+        [
+          "entry.Size",
+          "shaft0.Length"
+        ],
+        [
+          "shaft0.Valid",
+          "shaft0valid.Condition"
+        ],
+        [
+          "shaft0.Distance",
+          "shaft0reach.A"
+        ],
+        [
+          "grab.ReturnValue",
+          "shaft0reach.B"
+        ],
+        [
+          "shaft0.Distance",
+          "shaft0closer.A"
+        ],
+        [
+          "best.BestDistance",
+          "shaft0closer.B"
+        ],
+        [
+          "shaft0reach.ReturnValue",
+          "shaft0both0.A"
+        ],
+        [
+          "shaft0closer.ReturnValue",
+          "shaft0both0.B"
+        ],
+        [
+          "shaft0both0.ReturnValue",
+          "shaft0choose.Condition"
+        ],
+        [
+          "shaft0.Distance",
+          "shaft0distance.BestDistance"
+        ],
+        [
+          "shaft0kind.then",
+          "shaft0axis.execute"
+        ],
+        [
+          "shaft0axis.then",
+          "shaft0distance.execute"
+        ],
+        [
+          "rotate.else",
+          "shaft0.execute"
+        ],
+        [
+          "shaft0.then",
+          "shaft0valid.execute"
+        ],
+        [
+          "shaft0valid.then",
+          "shaft0choose.execute"
+        ],
+        [
+          "shaft0choose.then",
+          "shaft0kind.execute"
+        ],
+        [
+          "shaft0distance.then",
+          "shaft0next.execute"
+        ],
+        [
+          "shaft0valid.else",
+          "shaft0next.execute"
+        ],
+        [
+          "shaft0choose.else",
+          "shaft0next.execute"
+        ],
+        [
+          "entry.Origin",
+          "shaft1.Origin"
+        ],
+        [
+          "ray.ReturnValue",
+          "shaft1.Direction"
+        ],
+        [
+          "entry.Center",
+          "shaft1.Center"
+        ],
+        [
+          "axes.Y",
+          "shaft1.Axis"
+        ],
+        [
+          "entry.Size",
+          "shaft1.Length"
+        ],
+        [
+          "shaft1.Valid",
+          "shaft1valid.Condition"
+        ],
+        [
+          "shaft1.Distance",
+          "shaft1reach.A"
+        ],
+        [
+          "grab.ReturnValue",
+          "shaft1reach.B"
+        ],
+        [
+          "shaft1.Distance",
+          "shaft1closer.A"
+        ],
+        [
+          "best.BestDistance",
+          "shaft1closer.B"
+        ],
+        [
+          "shaft1reach.ReturnValue",
+          "shaft1both0.A"
+        ],
+        [
+          "shaft1closer.ReturnValue",
+          "shaft1both0.B"
+        ],
+        [
+          "shaft1both0.ReturnValue",
+          "shaft1choose.Condition"
+        ],
+        [
+          "shaft1.Distance",
+          "shaft1distance.BestDistance"
+        ],
+        [
+          "shaft1kind.then",
+          "shaft1axis.execute"
+        ],
+        [
+          "shaft1axis.then",
+          "shaft1distance.execute"
+        ],
+        [
+          "shaft0next.then_0",
+          "shaft1.execute"
+        ],
+        [
+          "shaft1.then",
+          "shaft1valid.execute"
+        ],
+        [
+          "shaft1valid.then",
+          "shaft1choose.execute"
+        ],
+        [
+          "shaft1choose.then",
+          "shaft1kind.execute"
+        ],
+        [
+          "shaft1distance.then",
+          "shaft1next.execute"
+        ],
+        [
+          "shaft1valid.else",
+          "shaft1next.execute"
+        ],
+        [
+          "shaft1choose.else",
+          "shaft1next.execute"
+        ],
+        [
+          "entry.Origin",
+          "shaft2.Origin"
+        ],
+        [
+          "ray.ReturnValue",
+          "shaft2.Direction"
+        ],
+        [
+          "entry.Center",
+          "shaft2.Center"
+        ],
+        [
+          "axes.Z",
+          "shaft2.Axis"
+        ],
+        [
+          "entry.Size",
+          "shaft2.Length"
+        ],
+        [
+          "shaft2.Valid",
+          "shaft2valid.Condition"
+        ],
+        [
+          "shaft2.Distance",
+          "shaft2reach.A"
+        ],
+        [
+          "grab.ReturnValue",
+          "shaft2reach.B"
+        ],
+        [
+          "shaft2.Distance",
+          "shaft2closer.A"
+        ],
+        [
+          "best.BestDistance",
+          "shaft2closer.B"
+        ],
+        [
+          "shaft2reach.ReturnValue",
+          "shaft2both0.A"
+        ],
+        [
+          "shaft2closer.ReturnValue",
+          "shaft2both0.B"
+        ],
+        [
+          "shaft2both0.ReturnValue",
+          "shaft2choose.Condition"
+        ],
+        [
+          "shaft2.Distance",
+          "shaft2distance.BestDistance"
+        ],
+        [
+          "shaft2kind.then",
+          "shaft2axis.execute"
+        ],
+        [
+          "shaft2axis.then",
+          "shaft2distance.execute"
+        ],
+        [
+          "shaft1next.then_0",
+          "shaft2.execute"
+        ],
+        [
+          "shaft2.then",
+          "shaft2valid.execute"
+        ],
+        [
+          "shaft2valid.then",
+          "shaft2choose.execute"
+        ],
+        [
+          "shaft2choose.then",
+          "shaft2kind.execute"
+        ],
+        [
+          "shaft2distance.then",
+          "shaft2next.execute"
+        ],
+        [
+          "shaft2valid.else",
+          "shaft2next.execute"
+        ],
+        [
+          "shaft2choose.else",
+          "shaft2next.execute"
+        ],
+        [
+          "entry.Origin",
+          "plane0.Origin"
+        ],
+        [
+          "ray.ReturnValue",
+          "plane0.Direction"
+        ],
+        [
+          "entry.Center",
+          "plane0.Center"
+        ],
+        [
+          "axes.X",
+          "plane0.Axis"
+        ],
+        [
+          "plane0.Valid",
+          "plane0valid.Condition"
+        ],
+        [
+          "plane0.Point",
+          "plane0offset.A"
+        ],
+        [
+          "entry.Center",
+          "plane0offset.B"
+        ],
+        [
+          "plane0offset.ReturnValue",
+          "plane0Ydot.A"
+        ],
+        [
+          "axes.Y",
+          "plane0Ydot.B"
+        ],
+        [
+          "plane0Ydot.ReturnValue",
+          "plane0Yunit.A"
+        ],
+        [
+          "entry.Size",
+          "plane0Yunit.B"
+        ],
+        [
+          "plane0Yunit.ReturnValue",
+          "plane0Ymin.A"
+        ],
+        [
+          "plane0Yunit.ReturnValue",
+          "plane0Ymax.A"
+        ],
+        [
+          "plane0offset.ReturnValue",
+          "plane0Zdot.A"
+        ],
+        [
+          "axes.Z",
+          "plane0Zdot.B"
+        ],
+        [
+          "plane0Zdot.ReturnValue",
+          "plane0Zunit.A"
+        ],
+        [
+          "entry.Size",
+          "plane0Zunit.B"
+        ],
+        [
+          "plane0Zunit.ReturnValue",
+          "plane0Zmin.A"
+        ],
+        [
+          "plane0Zunit.ReturnValue",
+          "plane0Zmax.A"
+        ],
+        [
+          "plane0Ymin.ReturnValue",
+          "plane0square0.A"
+        ],
+        [
+          "plane0Ymax.ReturnValue",
+          "plane0square0.B"
+        ],
+        [
+          "plane0square0.ReturnValue",
+          "plane0square1.A"
+        ],
+        [
+          "plane0Zmin.ReturnValue",
+          "plane0square1.B"
+        ],
+        [
+          "plane0square1.ReturnValue",
+          "plane0square2.A"
+        ],
+        [
+          "plane0Zmax.ReturnValue",
+          "plane0square2.B"
+        ],
+        [
+          "plane0square2.ReturnValue",
+          "plane0inside.Condition"
+        ],
+        [
+          "plane0kind.then",
+          "plane0axis.execute"
+        ],
+        [
+          "plane0axis.then",
+          "plane0distance.execute"
+        ],
+        [
+          "shaft2next.then_0",
+          "plane0.execute"
+        ],
+        [
+          "plane0.then",
+          "plane0valid.execute"
+        ],
+        [
+          "plane0valid.then",
+          "plane0inside.execute"
+        ],
+        [
+          "plane0inside.then",
+          "plane0kind.execute"
+        ],
+        [
+          "plane0distance.then",
+          "plane0next.execute"
+        ],
+        [
+          "plane0valid.else",
+          "plane0next.execute"
+        ],
+        [
+          "plane0inside.else",
+          "plane0next.execute"
+        ],
+        [
+          "entry.Origin",
+          "plane1.Origin"
+        ],
+        [
+          "ray.ReturnValue",
+          "plane1.Direction"
+        ],
+        [
+          "entry.Center",
+          "plane1.Center"
+        ],
+        [
+          "axes.Y",
+          "plane1.Axis"
+        ],
+        [
+          "plane1.Valid",
+          "plane1valid.Condition"
+        ],
+        [
+          "plane1.Point",
+          "plane1offset.A"
+        ],
+        [
+          "entry.Center",
+          "plane1offset.B"
+        ],
+        [
+          "plane1offset.ReturnValue",
+          "plane1Zdot.A"
+        ],
+        [
+          "axes.Z",
+          "plane1Zdot.B"
+        ],
+        [
+          "plane1Zdot.ReturnValue",
+          "plane1Zunit.A"
+        ],
+        [
+          "entry.Size",
+          "plane1Zunit.B"
+        ],
+        [
+          "plane1Zunit.ReturnValue",
+          "plane1Zmin.A"
+        ],
+        [
+          "plane1Zunit.ReturnValue",
+          "plane1Zmax.A"
+        ],
+        [
+          "plane1offset.ReturnValue",
+          "plane1Xdot.A"
+        ],
+        [
+          "axes.X",
+          "plane1Xdot.B"
+        ],
+        [
+          "plane1Xdot.ReturnValue",
+          "plane1Xunit.A"
+        ],
+        [
+          "entry.Size",
+          "plane1Xunit.B"
+        ],
+        [
+          "plane1Xunit.ReturnValue",
+          "plane1Xmin.A"
+        ],
+        [
+          "plane1Xunit.ReturnValue",
+          "plane1Xmax.A"
+        ],
+        [
+          "plane1Zmin.ReturnValue",
+          "plane1square0.A"
+        ],
+        [
+          "plane1Zmax.ReturnValue",
+          "plane1square0.B"
+        ],
+        [
+          "plane1square0.ReturnValue",
+          "plane1square1.A"
+        ],
+        [
+          "plane1Xmin.ReturnValue",
+          "plane1square1.B"
+        ],
+        [
+          "plane1square1.ReturnValue",
+          "plane1square2.A"
+        ],
+        [
+          "plane1Xmax.ReturnValue",
+          "plane1square2.B"
+        ],
+        [
+          "plane1square2.ReturnValue",
+          "plane1inside.Condition"
+        ],
+        [
+          "plane1kind.then",
+          "plane1axis.execute"
+        ],
+        [
+          "plane1axis.then",
+          "plane1distance.execute"
+        ],
+        [
+          "plane0next.then_0",
+          "plane1.execute"
+        ],
+        [
+          "plane1.then",
+          "plane1valid.execute"
+        ],
+        [
+          "plane1valid.then",
+          "plane1inside.execute"
+        ],
+        [
+          "plane1inside.then",
+          "plane1kind.execute"
+        ],
+        [
+          "plane1distance.then",
+          "plane1next.execute"
+        ],
+        [
+          "plane1valid.else",
+          "plane1next.execute"
+        ],
+        [
+          "plane1inside.else",
+          "plane1next.execute"
+        ],
+        [
+          "entry.Origin",
+          "plane2.Origin"
+        ],
+        [
+          "ray.ReturnValue",
+          "plane2.Direction"
+        ],
+        [
+          "entry.Center",
+          "plane2.Center"
+        ],
+        [
+          "axes.Z",
+          "plane2.Axis"
+        ],
+        [
+          "plane2.Valid",
+          "plane2valid.Condition"
+        ],
+        [
+          "plane2.Point",
+          "plane2offset.A"
+        ],
+        [
+          "entry.Center",
+          "plane2offset.B"
+        ],
+        [
+          "plane2offset.ReturnValue",
+          "plane2Xdot.A"
+        ],
+        [
+          "axes.X",
+          "plane2Xdot.B"
+        ],
+        [
+          "plane2Xdot.ReturnValue",
+          "plane2Xunit.A"
+        ],
+        [
+          "entry.Size",
+          "plane2Xunit.B"
+        ],
+        [
+          "plane2Xunit.ReturnValue",
+          "plane2Xmin.A"
+        ],
+        [
+          "plane2Xunit.ReturnValue",
+          "plane2Xmax.A"
+        ],
+        [
+          "plane2offset.ReturnValue",
+          "plane2Ydot.A"
+        ],
+        [
+          "axes.Y",
+          "plane2Ydot.B"
+        ],
+        [
+          "plane2Ydot.ReturnValue",
+          "plane2Yunit.A"
+        ],
+        [
+          "entry.Size",
+          "plane2Yunit.B"
+        ],
+        [
+          "plane2Yunit.ReturnValue",
+          "plane2Ymin.A"
+        ],
+        [
+          "plane2Yunit.ReturnValue",
+          "plane2Ymax.A"
+        ],
+        [
+          "plane2Xmin.ReturnValue",
+          "plane2square0.A"
+        ],
+        [
+          "plane2Xmax.ReturnValue",
+          "plane2square0.B"
+        ],
+        [
+          "plane2square0.ReturnValue",
+          "plane2square1.A"
+        ],
+        [
+          "plane2Ymin.ReturnValue",
+          "plane2square1.B"
+        ],
+        [
+          "plane2square1.ReturnValue",
+          "plane2square2.A"
+        ],
+        [
+          "plane2Ymax.ReturnValue",
+          "plane2square2.B"
+        ],
+        [
+          "plane2square2.ReturnValue",
+          "plane2inside.Condition"
+        ],
+        [
+          "plane2kind.then",
+          "plane2axis.execute"
+        ],
+        [
+          "plane2axis.then",
+          "plane2distance.execute"
+        ],
+        [
+          "plane1next.then_0",
+          "plane2.execute"
+        ],
+        [
+          "plane2.then",
+          "plane2valid.execute"
+        ],
+        [
+          "plane2valid.then",
+          "plane2inside.execute"
+        ],
+        [
+          "plane2inside.then",
+          "plane2kind.execute"
+        ],
+        [
+          "plane2distance.then",
+          "plane2next.execute"
+        ],
+        [
+          "plane2valid.else",
+          "plane2next.execute"
+        ],
+        [
+          "plane2inside.else",
+          "plane2next.execute"
+        ],
+        [
+          "entry.Mode",
+          "isscale.A"
+        ],
+        [
+          "isscale.ReturnValue",
+          "scale.Condition"
+        ],
+        [
+          "axes.X",
+          "sum2.A"
+        ],
+        [
+          "axes.Y",
+          "sum2.B"
+        ],
+        [
+          "sum2.ReturnValue",
+          "sum3.A"
+        ],
+        [
+          "axes.Z",
+          "sum3.B"
+        ],
+        [
+          "sum3.ReturnValue",
+          "diagonal.A"
+        ],
+        [
+          "diagonal.ReturnValue",
+          "diagpoint.A"
+        ],
+        [
+          "entry.Size",
+          "diagpoint.B"
+        ],
+        [
+          "entry.Center",
+          "uniformpoint.A"
+        ],
+        [
+          "diagpoint.ReturnValue",
+          "uniformpoint.B"
+        ],
+        [
+          "uniformpoint.ReturnValue",
+          "uniformoffset.A"
+        ],
+        [
+          "entry.Origin",
+          "uniformoffset.B"
+        ],
+        [
+          "uniformoffset.ReturnValue",
+          "uniformdot.A"
+        ],
+        [
+          "ray.ReturnValue",
+          "uniformdot.B"
+        ],
+        [
+          "uniformdot.ReturnValue",
+          "uniformt.A"
+        ],
+        [
+          "ray.ReturnValue",
+          "uniformalong.A"
+        ],
+        [
+          "uniformt.ReturnValue",
+          "uniformalong.B"
+        ],
+        [
+          "entry.Origin",
+          "uniformnearest.A"
+        ],
+        [
+          "uniformalong.ReturnValue",
+          "uniformnearest.B"
+        ],
+        [
+          "uniformpoint.ReturnValue",
+          "uniformdiff.A"
+        ],
+        [
+          "uniformnearest.ReturnValue",
+          "uniformdiff.B"
+        ],
+        [
+          "uniformdiff.ReturnValue",
+          "uniformdist.A"
+        ],
+        [
+          "entry.Size",
+          "cubegrab.A"
+        ],
+        [
+          "uniformdist.ReturnValue",
+          "uniformreach.A"
+        ],
+        [
+          "cubegrab.ReturnValue",
+          "uniformreach.B"
+        ],
+        [
+          "uniformreach.ReturnValue",
+          "uniformhit.Condition"
+        ],
+        [
+          "uniformkind.then",
+          "uniformaxis.execute"
+        ],
+        [
+          "uniformaxis.then",
+          "uniformdistance.execute"
+        ],
+        [
+          "plane2next.then_0",
+          "scale.execute"
+        ],
+        [
+          "scale.then",
+          "uniformhit.execute"
+        ],
+        [
+          "uniformhit.then",
+          "uniformkind.execute"
+        ],
+        [
+          "uniformdistance.then",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ],
+        [
+          "scale.else",
+          "result.execute"
+        ],
+        [
+          "uniformhit.else",
+          "result.execute"
+        ],
+        [
+          "outKind.ResultKind",
+          "result.Kind"
+        ],
+        [
+          "outAxis.ResultAxis",
+          "result.Axis"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "axes.execute"
+        ],
+        [
+          "axes.then",
+          "rotate.execute"
+        ]
+      ]
+    },
+    {
+      "name": "SizeFor",
+      "inputs": [
+        {
+          "name": "Distance",
+          "type": "double"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Size",
+          "type": "double"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "distance",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "0.16"
+          }
+        },
+        {
+          "id": "size",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {
+            "B": "1"
+          }
+        }
+      ],
+      "links": [
+        [
+          "entry.Distance",
+          "distance.A"
+        ],
+        [
+          "distance.ReturnValue",
+          "size.A"
+        ],
+        [
+          "size.ReturnValue",
+          "result.Size"
+        ],
+        [
+          "entry.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "SnapValue",
+      "inputs": [
+        {
+          "name": "Value",
+          "type": "double"
+        },
+        {
+          "name": "Step",
+          "type": "double"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Snapped",
+          "type": "double"
+        }
+      ],
+      "locals": [
+        {
+          "name": "ResultSnapped",
+          "type": "double"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "original",
+          "kind": "set",
+          "var": "local:ResultSnapped"
+        },
+        {
+          "id": "positive",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_DoubleDouble",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "enabled",
+          "kind": "branch"
+        },
+        {
+          "id": "div",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Divide_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "half",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {
+            "B": "0.5"
+          }
+        },
+        {
+          "id": "floor",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FFloor",
+          "defaults": {}
+        },
+        {
+          "id": "snap",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "rounded",
+          "kind": "set",
+          "var": "local:ResultSnapped"
+        },
+        {
+          "id": "outSnapped",
+          "kind": "get",
+          "var": "local:ResultSnapped"
+        }
+      ],
+      "links": [
+        [
+          "entry.Value",
+          "original.ResultSnapped"
+        ],
+        [
+          "entry.Step",
+          "positive.A"
+        ],
+        [
+          "positive.ReturnValue",
+          "enabled.Condition"
+        ],
+        [
+          "entry.Value",
+          "div.A"
+        ],
+        [
+          "entry.Step",
+          "div.B"
+        ],
+        [
+          "div.ReturnValue",
+          "half.A"
+        ],
+        [
+          "half.ReturnValue",
+          "floor.A"
+        ],
+        [
+          "floor.ReturnValue",
+          "snap.A"
+        ],
+        [
+          "entry.Step",
+          "snap.B"
+        ],
+        [
+          "snap.ReturnValue",
+          "rounded.ResultSnapped"
+        ],
+        [
+          "outSnapped.ResultSnapped",
+          "result.Snapped"
+        ],
+        [
+          "entry.then",
+          "original.execute"
+        ],
+        [
+          "original.then",
+          "enabled.execute"
+        ],
+        [
+          "enabled.then",
+          "rounded.execute"
+        ],
+        [
+          "rounded.then",
+          "result.execute"
+        ],
+        [
+          "enabled.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "WrapAngle",
+      "inputs": [
+        {
+          "name": "Degrees",
+          "type": "double"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Wrapped",
+          "type": "double"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "plus",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {
+            "B": "180"
+          }
+        },
+        {
+          "id": "div",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Divide_DoubleDouble",
+          "defaults": {
+            "B": "360"
+          }
+        },
+        {
+          "id": "floor",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FFloor",
+          "defaults": {}
+        },
+        {
+          "id": "turns",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "360"
+          }
+        },
+        {
+          "id": "wrap",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "entry.Degrees",
+          "plus.A"
+        ],
+        [
+          "plus.ReturnValue",
+          "div.A"
+        ],
+        [
+          "div.ReturnValue",
+          "floor.A"
+        ],
+        [
+          "floor.ReturnValue",
+          "turns.A"
+        ],
+        [
+          "entry.Degrees",
+          "wrap.A"
+        ],
+        [
+          "turns.ReturnValue",
+          "wrap.B"
+        ],
+        [
+          "wrap.ReturnValue",
+          "result.Wrapped"
+        ],
+        [
+          "entry.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "AxisDelta",
+      "inputs": [
+        {
+          "name": "StartOrigin",
+          "type": "vector"
+        },
+        {
+          "name": "StartDirection",
+          "type": "vector"
+        },
+        {
+          "name": "CurrentOrigin",
+          "type": "vector"
+        },
+        {
+          "name": "CurrentDirection",
+          "type": "vector"
+        },
+        {
+          "name": "Center",
+          "type": "vector"
+        },
+        {
+          "name": "Axis",
+          "type": "vector"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Valid",
+          "type": "bool"
+        },
+        {
+          "name": "Distance",
+          "type": "double"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "ResultDistance",
+          "type": "double"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "start",
+          "kind": "call",
+          "function": "self:AxisParam",
+          "defaults": {}
+        },
+        {
+          "id": "startvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "current",
+          "kind": "call",
+          "function": "self:AxisParam",
+          "defaults": {}
+        },
+        {
+          "id": "currentvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "difference",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "value",
+          "kind": "set",
+          "var": "local:ResultDistance"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        },
+        {
+          "id": "outDistance",
+          "kind": "get",
+          "var": "local:ResultDistance"
+        }
+      ],
+      "links": [
+        [
+          "entry.StartOrigin",
+          "start.Origin"
+        ],
+        [
+          "entry.StartDirection",
+          "start.Direction"
+        ],
+        [
+          "entry.Center",
+          "start.Center"
+        ],
+        [
+          "entry.Axis",
+          "start.Axis"
+        ],
+        [
+          "start.Valid",
+          "startvalid.Condition"
+        ],
+        [
+          "entry.CurrentOrigin",
+          "current.Origin"
+        ],
+        [
+          "entry.CurrentDirection",
+          "current.Direction"
+        ],
+        [
+          "entry.Center",
+          "current.Center"
+        ],
+        [
+          "entry.Axis",
+          "current.Axis"
+        ],
+        [
+          "current.Valid",
+          "currentvalid.Condition"
+        ],
+        [
+          "current.Distance",
+          "difference.A"
+        ],
+        [
+          "start.Distance",
+          "difference.B"
+        ],
+        [
+          "difference.ReturnValue",
+          "value.ResultDistance"
+        ],
+        [
+          "out.OK",
+          "result.Valid"
+        ],
+        [
+          "outDistance.ResultDistance",
+          "result.Distance"
+        ],
+        [
+          "entry.then",
+          "start.execute"
+        ],
+        [
+          "start.then",
+          "startvalid.execute"
+        ],
+        [
+          "startvalid.then",
+          "current.execute"
+        ],
+        [
+          "current.then",
+          "currentvalid.execute"
+        ],
+        [
+          "currentvalid.then",
+          "value.execute"
+        ],
+        [
+          "value.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "startvalid.else",
+          "result.execute"
+        ],
+        [
+          "currentvalid.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "PlaneDelta",
+      "inputs": [
+        {
+          "name": "StartOrigin",
+          "type": "vector"
+        },
+        {
+          "name": "StartDirection",
+          "type": "vector"
+        },
+        {
+          "name": "CurrentOrigin",
+          "type": "vector"
+        },
+        {
+          "name": "CurrentDirection",
+          "type": "vector"
+        },
+        {
+          "name": "Center",
+          "type": "vector"
+        },
+        {
+          "name": "Axis",
+          "type": "vector"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Valid",
+          "type": "bool"
+        },
+        {
+          "name": "Offset",
+          "type": "vector"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "ResultOffset",
+          "type": "vector"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "start",
+          "kind": "call",
+          "function": "self:PlanePoint",
+          "defaults": {}
+        },
+        {
+          "id": "startvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "current",
+          "kind": "call",
+          "function": "self:PlanePoint",
+          "defaults": {}
+        },
+        {
+          "id": "currentvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "difference",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "value",
+          "kind": "set",
+          "var": "local:ResultOffset"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        },
+        {
+          "id": "outOffset",
+          "kind": "get",
+          "var": "local:ResultOffset"
+        }
+      ],
+      "links": [
+        [
+          "entry.StartOrigin",
+          "start.Origin"
+        ],
+        [
+          "entry.StartDirection",
+          "start.Direction"
+        ],
+        [
+          "entry.Center",
+          "start.Center"
+        ],
+        [
+          "entry.Axis",
+          "start.Axis"
+        ],
+        [
+          "start.Valid",
+          "startvalid.Condition"
+        ],
+        [
+          "entry.CurrentOrigin",
+          "current.Origin"
+        ],
+        [
+          "entry.CurrentDirection",
+          "current.Direction"
+        ],
+        [
+          "entry.Center",
+          "current.Center"
+        ],
+        [
+          "entry.Axis",
+          "current.Axis"
+        ],
+        [
+          "current.Valid",
+          "currentvalid.Condition"
+        ],
+        [
+          "current.Point",
+          "difference.A"
+        ],
+        [
+          "start.Point",
+          "difference.B"
+        ],
+        [
+          "difference.ReturnValue",
+          "value.ResultOffset"
+        ],
+        [
+          "out.OK",
+          "result.Valid"
+        ],
+        [
+          "outOffset.ResultOffset",
+          "result.Offset"
+        ],
+        [
+          "entry.then",
+          "start.execute"
+        ],
+        [
+          "start.then",
+          "startvalid.execute"
+        ],
+        [
+          "startvalid.then",
+          "current.execute"
+        ],
+        [
+          "current.then",
+          "currentvalid.execute"
+        ],
+        [
+          "currentvalid.then",
+          "value.execute"
+        ],
+        [
+          "value.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "startvalid.else",
+          "result.execute"
+        ],
+        [
+          "currentvalid.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "RingDelta",
+      "inputs": [
+        {
+          "name": "StartOrigin",
+          "type": "vector"
+        },
+        {
+          "name": "StartDirection",
+          "type": "vector"
+        },
+        {
+          "name": "CurrentOrigin",
+          "type": "vector"
+        },
+        {
+          "name": "CurrentDirection",
+          "type": "vector"
+        },
+        {
+          "name": "Center",
+          "type": "vector"
+        },
+        {
+          "name": "Axis",
+          "type": "vector"
+        },
+        {
+          "name": "Step",
+          "type": "double"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Valid",
+          "type": "bool"
+        },
+        {
+          "name": "Degrees",
+          "type": "double"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "ResultDegrees",
+          "type": "double"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "start",
+          "kind": "call",
+          "function": "self:PlanePoint",
+          "defaults": {}
+        },
+        {
+          "id": "startvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "current",
+          "kind": "call",
+          "function": "self:PlanePoint",
+          "defaults": {}
+        },
+        {
+          "id": "currentvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "startangle",
+          "kind": "call",
+          "function": "self:Angle",
+          "defaults": {}
+        },
+        {
+          "id": "currentangle",
+          "kind": "call",
+          "function": "self:Angle",
+          "defaults": {}
+        },
+        {
+          "id": "difference",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "wrap",
+          "kind": "call",
+          "function": "self:WrapAngle",
+          "defaults": {}
+        },
+        {
+          "id": "snap",
+          "kind": "call",
+          "function": "self:SnapValue",
+          "defaults": {}
+        },
+        {
+          "id": "value",
+          "kind": "set",
+          "var": "local:ResultDegrees"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        },
+        {
+          "id": "outDegrees",
+          "kind": "get",
+          "var": "local:ResultDegrees"
+        }
+      ],
+      "links": [
+        [
+          "entry.StartOrigin",
+          "start.Origin"
+        ],
+        [
+          "entry.StartDirection",
+          "start.Direction"
+        ],
+        [
+          "entry.Center",
+          "start.Center"
+        ],
+        [
+          "entry.Axis",
+          "start.Axis"
+        ],
+        [
+          "start.Valid",
+          "startvalid.Condition"
+        ],
+        [
+          "entry.CurrentOrigin",
+          "current.Origin"
+        ],
+        [
+          "entry.CurrentDirection",
+          "current.Direction"
+        ],
+        [
+          "entry.Center",
+          "current.Center"
+        ],
+        [
+          "entry.Axis",
+          "current.Axis"
+        ],
+        [
+          "current.Valid",
+          "currentvalid.Condition"
+        ],
+        [
+          "start.Point",
+          "startangle.Point"
+        ],
+        [
+          "entry.Center",
+          "startangle.Center"
+        ],
+        [
+          "entry.Axis",
+          "startangle.Axis"
+        ],
+        [
+          "current.Point",
+          "currentangle.Point"
+        ],
+        [
+          "entry.Center",
+          "currentangle.Center"
+        ],
+        [
+          "entry.Axis",
+          "currentangle.Axis"
+        ],
+        [
+          "currentangle.Degrees",
+          "difference.A"
+        ],
+        [
+          "startangle.Degrees",
+          "difference.B"
+        ],
+        [
+          "difference.ReturnValue",
+          "wrap.Degrees"
+        ],
+        [
+          "wrap.Wrapped",
+          "snap.Value"
+        ],
+        [
+          "entry.Step",
+          "snap.Step"
+        ],
+        [
+          "currentvalid.then",
+          "startangle.execute"
+        ],
+        [
+          "startangle.then",
+          "currentangle.execute"
+        ],
+        [
+          "currentangle.then",
+          "wrap.execute"
+        ],
+        [
+          "wrap.then",
+          "snap.execute"
+        ],
+        [
+          "snap.Snapped",
+          "value.ResultDegrees"
+        ],
+        [
+          "out.OK",
+          "result.Valid"
+        ],
+        [
+          "outDegrees.ResultDegrees",
+          "result.Degrees"
+        ],
+        [
+          "entry.then",
+          "start.execute"
+        ],
+        [
+          "start.then",
+          "startvalid.execute"
+        ],
+        [
+          "startvalid.then",
+          "current.execute"
+        ],
+        [
+          "current.then",
+          "currentvalid.execute"
+        ],
+        [
+          "snap.then",
+          "value.execute"
+        ],
+        [
+          "value.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "startvalid.else",
+          "result.execute"
+        ],
+        [
+          "currentvalid.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ScaleFromDrag",
+      "inputs": [
+        {
+          "name": "Scale",
+          "type": "vector"
+        },
+        {
+          "name": "Kind",
+          "type": "int"
+        },
+        {
+          "name": "Axis",
+          "type": "int"
+        },
+        {
+          "name": "Along",
+          "type": "double"
+        },
+        {
+          "name": "Size",
+          "type": "double"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Valid",
+          "type": "bool"
+        },
+        {
+          "name": "Scaled",
+          "type": "vector"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "ResultScaled",
+          "type": "vector"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "size",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_DoubleDouble",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "scalebreak",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakVector",
+          "defaults": {}
+        },
+        {
+          "id": "scaleXmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_DoubleDouble",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "scaleXmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "scaleYmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_DoubleDouble",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "scaleYmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "scaleZmin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_DoubleDouble",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "scaleZmax",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {
+            "B": "10000000.0"
+          }
+        },
+        {
+          "id": "scalevalid0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "scalevalid1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "scalevalid2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "scalevalid3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "scalevalid4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "uniform",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "4"
+          }
+        },
+        {
+          "id": "axis",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "plane",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "lo",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "hi",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "3"
+          }
+        },
+        {
+          "id": "axisrange0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "axisorplane0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "directional0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "handle0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "checks0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "checks1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "divide",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Divide_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "ratio",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "factor",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {
+            "B": "0.05"
+          }
+        },
+        {
+          "id": "parts",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakVector",
+          "defaults": {}
+        },
+        {
+          "id": "sameX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "differentX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:NotEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "axisX0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "planeX0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "changeX0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "changeX1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "productX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "clampX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FClamp",
+          "defaults": {
+            "Min": "0.05",
+            "Max": "20"
+          }
+        },
+        {
+          "id": "chooseX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectFloat",
+          "defaults": {}
+        },
+        {
+          "id": "sameY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "differentY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:NotEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "axisY0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "planeY0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "changeY0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "changeY1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "productY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "clampY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FClamp",
+          "defaults": {
+            "Min": "0.05",
+            "Max": "20"
+          }
+        },
+        {
+          "id": "chooseY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectFloat",
+          "defaults": {}
+        },
+        {
+          "id": "sameZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "3"
+          }
+        },
+        {
+          "id": "differentZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:NotEqual_IntInt",
+          "defaults": {
+            "B": "3"
+          }
+        },
+        {
+          "id": "axisZ0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "planeZ0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "changeZ0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "changeZ1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "productZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "clampZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FClamp",
+          "defaults": {
+            "Min": "0.05",
+            "Max": "20"
+          }
+        },
+        {
+          "id": "chooseZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectFloat",
+          "defaults": {}
+        },
+        {
+          "id": "make",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {}
+        },
+        {
+          "id": "value",
+          "kind": "set",
+          "var": "local:ResultScaled"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        },
+        {
+          "id": "outScaled",
+          "kind": "get",
+          "var": "local:ResultScaled"
+        }
+      ],
+      "links": [
+        [
+          "entry.Size",
+          "size.A"
+        ],
+        [
+          "entry.Scale",
+          "scalebreak.InVec"
+        ],
+        [
+          "scalebreak.X",
+          "scaleXmin.A"
+        ],
+        [
+          "scalebreak.X",
+          "scaleXmax.A"
+        ],
+        [
+          "scalebreak.Y",
+          "scaleYmin.A"
+        ],
+        [
+          "scalebreak.Y",
+          "scaleYmax.A"
+        ],
+        [
+          "scalebreak.Z",
+          "scaleZmin.A"
+        ],
+        [
+          "scalebreak.Z",
+          "scaleZmax.A"
+        ],
+        [
+          "scaleXmin.ReturnValue",
+          "scalevalid0.A"
+        ],
+        [
+          "scaleXmax.ReturnValue",
+          "scalevalid0.B"
+        ],
+        [
+          "scalevalid0.ReturnValue",
+          "scalevalid1.A"
+        ],
+        [
+          "scaleYmin.ReturnValue",
+          "scalevalid1.B"
+        ],
+        [
+          "scalevalid1.ReturnValue",
+          "scalevalid2.A"
+        ],
+        [
+          "scaleYmax.ReturnValue",
+          "scalevalid2.B"
+        ],
+        [
+          "scalevalid2.ReturnValue",
+          "scalevalid3.A"
+        ],
+        [
+          "scaleZmin.ReturnValue",
+          "scalevalid3.B"
+        ],
+        [
+          "scalevalid3.ReturnValue",
+          "scalevalid4.A"
+        ],
+        [
+          "scaleZmax.ReturnValue",
+          "scalevalid4.B"
+        ],
+        [
+          "entry.Kind",
+          "uniform.A"
+        ],
+        [
+          "entry.Kind",
+          "axis.A"
+        ],
+        [
+          "entry.Kind",
+          "plane.A"
+        ],
+        [
+          "entry.Axis",
+          "lo.A"
+        ],
+        [
+          "entry.Axis",
+          "hi.A"
+        ],
+        [
+          "lo.ReturnValue",
+          "axisrange0.A"
+        ],
+        [
+          "hi.ReturnValue",
+          "axisrange0.B"
+        ],
+        [
+          "axis.ReturnValue",
+          "axisorplane0.A"
+        ],
+        [
+          "plane.ReturnValue",
+          "axisorplane0.B"
+        ],
+        [
+          "axisrange0.ReturnValue",
+          "directional0.A"
+        ],
+        [
+          "axisorplane0.ReturnValue",
+          "directional0.B"
+        ],
+        [
+          "uniform.ReturnValue",
+          "handle0.A"
+        ],
+        [
+          "directional0.ReturnValue",
+          "handle0.B"
+        ],
+        [
+          "size.ReturnValue",
+          "checks0.A"
+        ],
+        [
+          "scalevalid4.ReturnValue",
+          "checks0.B"
+        ],
+        [
+          "checks0.ReturnValue",
+          "checks1.A"
+        ],
+        [
+          "handle0.ReturnValue",
+          "checks1.B"
+        ],
+        [
+          "checks1.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.Along",
+          "divide.A"
+        ],
+        [
+          "entry.Size",
+          "divide.B"
+        ],
+        [
+          "divide.ReturnValue",
+          "ratio.A"
+        ],
+        [
+          "ratio.ReturnValue",
+          "factor.A"
+        ],
+        [
+          "entry.Scale",
+          "parts.InVec"
+        ],
+        [
+          "entry.Axis",
+          "sameX.A"
+        ],
+        [
+          "entry.Axis",
+          "differentX.A"
+        ],
+        [
+          "axis.ReturnValue",
+          "axisX0.A"
+        ],
+        [
+          "sameX.ReturnValue",
+          "axisX0.B"
+        ],
+        [
+          "plane.ReturnValue",
+          "planeX0.A"
+        ],
+        [
+          "differentX.ReturnValue",
+          "planeX0.B"
+        ],
+        [
+          "uniform.ReturnValue",
+          "changeX0.A"
+        ],
+        [
+          "axisX0.ReturnValue",
+          "changeX0.B"
+        ],
+        [
+          "changeX0.ReturnValue",
+          "changeX1.A"
+        ],
+        [
+          "planeX0.ReturnValue",
+          "changeX1.B"
+        ],
+        [
+          "parts.X",
+          "productX.A"
+        ],
+        [
+          "factor.ReturnValue",
+          "productX.B"
+        ],
+        [
+          "productX.ReturnValue",
+          "clampX.Value"
+        ],
+        [
+          "clampX.ReturnValue",
+          "chooseX.A"
+        ],
+        [
+          "parts.X",
+          "chooseX.B"
+        ],
+        [
+          "changeX1.ReturnValue",
+          "chooseX.bPickA"
+        ],
+        [
+          "entry.Axis",
+          "sameY.A"
+        ],
+        [
+          "entry.Axis",
+          "differentY.A"
+        ],
+        [
+          "axis.ReturnValue",
+          "axisY0.A"
+        ],
+        [
+          "sameY.ReturnValue",
+          "axisY0.B"
+        ],
+        [
+          "plane.ReturnValue",
+          "planeY0.A"
+        ],
+        [
+          "differentY.ReturnValue",
+          "planeY0.B"
+        ],
+        [
+          "uniform.ReturnValue",
+          "changeY0.A"
+        ],
+        [
+          "axisY0.ReturnValue",
+          "changeY0.B"
+        ],
+        [
+          "changeY0.ReturnValue",
+          "changeY1.A"
+        ],
+        [
+          "planeY0.ReturnValue",
+          "changeY1.B"
+        ],
+        [
+          "parts.Y",
+          "productY.A"
+        ],
+        [
+          "factor.ReturnValue",
+          "productY.B"
+        ],
+        [
+          "productY.ReturnValue",
+          "clampY.Value"
+        ],
+        [
+          "clampY.ReturnValue",
+          "chooseY.A"
+        ],
+        [
+          "parts.Y",
+          "chooseY.B"
+        ],
+        [
+          "changeY1.ReturnValue",
+          "chooseY.bPickA"
+        ],
+        [
+          "entry.Axis",
+          "sameZ.A"
+        ],
+        [
+          "entry.Axis",
+          "differentZ.A"
+        ],
+        [
+          "axis.ReturnValue",
+          "axisZ0.A"
+        ],
+        [
+          "sameZ.ReturnValue",
+          "axisZ0.B"
+        ],
+        [
+          "plane.ReturnValue",
+          "planeZ0.A"
+        ],
+        [
+          "differentZ.ReturnValue",
+          "planeZ0.B"
+        ],
+        [
+          "uniform.ReturnValue",
+          "changeZ0.A"
+        ],
+        [
+          "axisZ0.ReturnValue",
+          "changeZ0.B"
+        ],
+        [
+          "changeZ0.ReturnValue",
+          "changeZ1.A"
+        ],
+        [
+          "planeZ0.ReturnValue",
+          "changeZ1.B"
+        ],
+        [
+          "parts.Z",
+          "productZ.A"
+        ],
+        [
+          "factor.ReturnValue",
+          "productZ.B"
+        ],
+        [
+          "productZ.ReturnValue",
+          "clampZ.Value"
+        ],
+        [
+          "clampZ.ReturnValue",
+          "chooseZ.A"
+        ],
+        [
+          "parts.Z",
+          "chooseZ.B"
+        ],
+        [
+          "changeZ1.ReturnValue",
+          "chooseZ.bPickA"
+        ],
+        [
+          "chooseX.ReturnValue",
+          "make.X"
+        ],
+        [
+          "chooseY.ReturnValue",
+          "make.Y"
+        ],
+        [
+          "chooseZ.ReturnValue",
+          "make.Z"
+        ],
+        [
+          "make.ReturnValue",
+          "value.ResultScaled"
+        ],
+        [
+          "out.OK",
+          "result.Valid"
+        ],
+        [
+          "outScaled.ResultScaled",
+          "result.Scaled"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "value.execute"
+        ],
+        [
+          "value.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "RotateFromDrag",
+      "inputs": [
+        {
+          "name": "Rotation",
+          "type": "rotator"
+        },
+        {
+          "name": "Axis",
+          "type": "vector"
+        },
+        {
+          "name": "Degrees",
+          "type": "double"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Rotated",
+          "type": "rotator"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "turn",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:RotatorFromAxisAndAngle",
+          "defaults": {}
+        },
+        {
+          "id": "compose",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:ComposeRotators",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "entry.Axis",
+          "turn.Axis"
+        ],
+        [
+          "entry.Degrees",
+          "turn.Angle"
+        ],
+        [
+          "entry.Rotation",
+          "compose.A"
+        ],
+        [
+          "turn.ReturnValue",
+          "compose.B"
+        ],
+        [
+          "compose.ReturnValue",
+          "result.Rotated"
+        ],
+        [
+          "entry.then",
+          "result.execute"
+        ]
+      ]
+    }
+  ]
+}

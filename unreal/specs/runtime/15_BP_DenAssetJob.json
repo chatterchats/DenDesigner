@@ -1,0 +1,592 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenAssetJob",
+  "parent": "/Script/Engine.Actor",
+  "defaults": {
+    "PrimaryActorTick.bCanEverTick": "true",
+    "PrimaryActorTick.bStartWithTickEnabled": "true"
+  },
+  "variables": [
+    {
+      "name": "RequestedPath",
+      "type": "string"
+    },
+    {
+      "name": "HasRequest",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "Started",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "Done",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "Failed",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "Result",
+      "type": "object:/Script/CoreUObject.Object"
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "tick",
+        "kind": "event",
+        "name": "ReceiveTick"
+      },
+      {
+        "id": "requested",
+        "kind": "get",
+        "var": "HasRequest"
+      },
+      {
+        "id": "started",
+        "kind": "get",
+        "var": "Started"
+      },
+      {
+        "id": "notstarted",
+        "kind": "call",
+        "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+        "defaults": {}
+      },
+      {
+        "id": "start0",
+        "kind": "call",
+        "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+        "defaults": {}
+      },
+      {
+        "id": "ready",
+        "kind": "branch"
+      },
+      {
+        "id": "mark",
+        "kind": "set",
+        "var": "Started",
+        "defaults": {
+          "Started": "true"
+        }
+      },
+      {
+        "id": "path",
+        "kind": "get",
+        "var": "RequestedPath"
+      },
+      {
+        "id": "softpath",
+        "kind": "call",
+        "function": "/Script/Engine.KismetSystemLibrary:MakeSoftObjectPath",
+        "defaults": {}
+      },
+      {
+        "id": "reference",
+        "kind": "call",
+        "function": "/Script/Engine.KismetSystemLibrary:Conv_SoftObjPathToSoftObjRef",
+        "defaults": {}
+      },
+      {
+        "id": "load",
+        "kind": "load_asset"
+      },
+      {
+        "id": "finish",
+        "kind": "call",
+        "function": "self:FinishRequest",
+        "defaults": {}
+      }
+    ],
+    "links": [
+      [
+        "started.Started",
+        "notstarted.A"
+      ],
+      [
+        "requested.HasRequest",
+        "start0.A"
+      ],
+      [
+        "notstarted.ReturnValue",
+        "start0.B"
+      ],
+      [
+        "start0.ReturnValue",
+        "ready.Condition"
+      ],
+      [
+        "path.RequestedPath",
+        "softpath.PathString"
+      ],
+      [
+        "softpath.ReturnValue",
+        "reference.SoftObjectPath"
+      ],
+      [
+        "reference.ReturnValue",
+        "load.Asset"
+      ],
+      [
+        "load.Object",
+        "finish.LoadedObject"
+      ],
+      [
+        "tick.then",
+        "ready.execute"
+      ],
+      [
+        "ready.then",
+        "mark.execute"
+      ],
+      [
+        "mark.then",
+        "load.execute"
+      ],
+      [
+        "load.Completed",
+        "finish.execute"
+      ]
+    ]
+  },
+  "functions": [
+    {
+      "name": "ValidAssetPath",
+      "inputs": [
+        {
+          "name": "Path",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Valid",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "length",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Len",
+          "defaults": {}
+        },
+        {
+          "id": "minimum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "3"
+          }
+        },
+        {
+          "id": "maximum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "1023"
+          }
+        },
+        {
+          "id": "starts",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:StartsWith",
+          "defaults": {
+            "InPrefix": "/"
+          }
+        },
+        {
+          "id": "subobject",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": ":",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "assetonly",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "dot",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": ".",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "validpath0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "validpath1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "validpath2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "validpath3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "entry.Path",
+          "length.S"
+        ],
+        [
+          "length.ReturnValue",
+          "minimum.A"
+        ],
+        [
+          "length.ReturnValue",
+          "maximum.A"
+        ],
+        [
+          "entry.Path",
+          "starts.SourceString"
+        ],
+        [
+          "entry.Path",
+          "subobject.SearchIn"
+        ],
+        [
+          "subobject.ReturnValue",
+          "assetonly.A"
+        ],
+        [
+          "entry.Path",
+          "dot.SearchIn"
+        ],
+        [
+          "minimum.ReturnValue",
+          "validpath0.A"
+        ],
+        [
+          "maximum.ReturnValue",
+          "validpath0.B"
+        ],
+        [
+          "validpath0.ReturnValue",
+          "validpath1.A"
+        ],
+        [
+          "starts.ReturnValue",
+          "validpath1.B"
+        ],
+        [
+          "validpath1.ReturnValue",
+          "validpath2.A"
+        ],
+        [
+          "assetonly.ReturnValue",
+          "validpath2.B"
+        ],
+        [
+          "validpath2.ReturnValue",
+          "validpath3.A"
+        ],
+        [
+          "dot.ReturnValue",
+          "validpath3.B"
+        ],
+        [
+          "validpath3.ReturnValue",
+          "result.Valid"
+        ],
+        [
+          "entry.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Request",
+      "inputs": [
+        {
+          "name": "Path",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "has",
+          "kind": "get",
+          "var": "HasRequest"
+        },
+        {
+          "id": "unused",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "pathvalid",
+          "kind": "call",
+          "function": "self:ValidAssetPath",
+          "defaults": {}
+        },
+        {
+          "id": "validrequest0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "path",
+          "kind": "set",
+          "var": "RequestedPath"
+        },
+        {
+          "id": "hasflag",
+          "kind": "set",
+          "var": "HasRequest",
+          "defaults": {
+            "HasRequest": "true"
+          }
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "ok",
+          "kind": "get",
+          "var": "local:OK"
+        }
+      ],
+      "links": [
+        [
+          "has.HasRequest",
+          "unused.A"
+        ],
+        [
+          "entry.Path",
+          "pathvalid.Path"
+        ],
+        [
+          "unused.ReturnValue",
+          "validrequest0.A"
+        ],
+        [
+          "pathvalid.Valid",
+          "validrequest0.B"
+        ],
+        [
+          "validrequest0.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.Path",
+          "path.RequestedPath"
+        ],
+        [
+          "ok.OK",
+          "result.Accepted"
+        ],
+        [
+          "entry.then",
+          "pathvalid.execute"
+        ],
+        [
+          "pathvalid.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "path.execute"
+        ],
+        [
+          "path.then",
+          "hasflag.execute"
+        ],
+        [
+          "hasflag.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "FinishRequest",
+      "inputs": [
+        {
+          "name": "LoadedObject",
+          "type": "object:/Script/CoreUObject.Object"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "started",
+          "kind": "get",
+          "var": "Started"
+        },
+        {
+          "id": "done",
+          "kind": "get",
+          "var": "Done"
+        },
+        {
+          "id": "notdone",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "pending0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "store",
+          "kind": "set",
+          "var": "Result"
+        },
+        {
+          "id": "loaded",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "failed",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "error",
+          "kind": "set",
+          "var": "Failed"
+        },
+        {
+          "id": "doneflag",
+          "kind": "set",
+          "var": "Done",
+          "defaults": {
+            "Done": "true"
+          }
+        },
+        {
+          "id": "stop",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:SetActorTickEnabled",
+          "defaults": {
+            "bEnabled": "false"
+          }
+        }
+      ],
+      "links": [
+        [
+          "done.Done",
+          "notdone.A"
+        ],
+        [
+          "started.Started",
+          "pending0.A"
+        ],
+        [
+          "notdone.ReturnValue",
+          "pending0.B"
+        ],
+        [
+          "pending0.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.LoadedObject",
+          "store.Result"
+        ],
+        [
+          "entry.LoadedObject",
+          "loaded.Object"
+        ],
+        [
+          "loaded.ReturnValue",
+          "failed.A"
+        ],
+        [
+          "failed.ReturnValue",
+          "error.Failed"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "store.execute"
+        ],
+        [
+          "store.then",
+          "error.execute"
+        ],
+        [
+          "error.then",
+          "doneflag.execute"
+        ],
+        [
+          "doneflag.then",
+          "stop.execute"
+        ]
+      ]
+    }
+  ]
+}

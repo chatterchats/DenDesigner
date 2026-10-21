@@ -1,0 +1,459 @@
+{
+  "kind": "widget",
+  "path": "/DenDesignerGF/Editor/WBP_DenCatalogShelf",
+  "interfaces": [
+    "/Script/UMG.UserObjectListEntry"
+  ],
+  "variables": [
+    {
+      "name": "Chosen",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "Hovered",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "EditorBus",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenEditorBus"
+    }
+  ],
+  "functions": [
+    {
+      "name": "RefreshAppearance",
+      "nodes": [
+        {
+          "id": "selected",
+          "kind": "get",
+          "var": "Chosen"
+        },
+        {
+          "id": "hovered",
+          "kind": "get",
+          "var": "Hovered"
+        },
+        {
+          "id": "frame",
+          "kind": "get",
+          "var": "Frame"
+        },
+        {
+          "id": "chosen",
+          "kind": "branch"
+        },
+        {
+          "id": "hover",
+          "kind": "branch"
+        },
+        {
+          "id": "gold",
+          "kind": "call",
+          "function": "/Script/UMG.Border:SetBrushColor",
+          "defaults": {
+            "InBrushColor": "(R=0.24,G=0.17,B=0.065,A=1)"
+          }
+        },
+        {
+          "id": "over",
+          "kind": "call",
+          "function": "/Script/UMG.Border:SetBrushColor",
+          "defaults": {
+            "InBrushColor": "(R=0.10,G=0.13,B=0.18,A=1)"
+          }
+        },
+        {
+          "id": "idle",
+          "kind": "call",
+          "function": "/Script/UMG.Border:SetBrushColor",
+          "defaults": {
+            "InBrushColor": "(R=0.018,G=0.024,B=0.034,A=1)"
+          }
+        }
+      ],
+      "links": [
+        [
+          "entry.then",
+          "chosen.execute"
+        ],
+        [
+          "selected.Chosen",
+          "chosen.Condition"
+        ],
+        [
+          "chosen.else",
+          "hover.execute"
+        ],
+        [
+          "hovered.Hovered",
+          "hover.Condition"
+        ],
+        [
+          "chosen.then",
+          "gold.execute"
+        ],
+        [
+          "frame.Frame",
+          "gold.self"
+        ],
+        [
+          "hover.then",
+          "over.execute"
+        ],
+        [
+          "frame.Frame",
+          "over.self"
+        ],
+        [
+          "hover.else",
+          "idle.execute"
+        ],
+        [
+          "frame.Frame",
+          "idle.self"
+        ]
+      ]
+    },
+    {
+      "name": "ApplyNativeStyle",
+      "nodes": [
+        {
+          "id": "bus",
+          "kind": "get",
+          "var": "EditorBus"
+        },
+        {
+          "id": "check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font0",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+        },
+        {
+          "id": "font0check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font0valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font0info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Medium",
+            "Size": "13"
+          }
+        },
+        {
+          "id": "font0widget",
+          "kind": "get",
+          "var": "Label"
+        },
+        {
+          "id": "font0set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "bus.EditorBus",
+          "check.Object"
+        ],
+        [
+          "check.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font0.self"
+        ],
+        [
+          "font0.PrimaryFont",
+          "font0check.Object"
+        ],
+        [
+          "font0check.ReturnValue",
+          "font0valid.Condition"
+        ],
+        [
+          "font0.PrimaryFont",
+          "font0info.FontObject"
+        ],
+        [
+          "font0widget.Label",
+          "font0set.self"
+        ],
+        [
+          "font0info.SlateFontInfo",
+          "font0set.InFontInfo"
+        ],
+        [
+          "valid.then",
+          "font0valid.execute"
+        ],
+        [
+          "font0valid.then",
+          "font0set.execute"
+        ]
+      ]
+    }
+  ],
+  "tree": {
+    "class": "/Script/UMG.Border",
+    "name": "Frame",
+    "props": {
+      "BrushColor": "(R=0,G=0,B=0,A=0)",
+      "Padding": "(Left=10,Top=8,Right=10,Bottom=8)"
+    },
+    "children": [
+      {
+        "class": "/Script/UMG.TextBlock",
+        "name": "Label",
+        "props": {
+          "Text": "",
+          "Font.Size": 13,
+          "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+          "AutoWrapText": "true"
+        },
+        "variable": true
+      }
+    ],
+    "variable": true
+  },
+  "graph": {
+    "nodes": [
+      {
+        "id": "set",
+        "kind": "event",
+        "name": "OnListItemObjectSet"
+      },
+      {
+        "id": "cast",
+        "kind": "cast",
+        "class": "/DenDesignerGF/Editor/BP_DenCatalogItem"
+      },
+      {
+        "id": "get0",
+        "kind": "get",
+        "var": "/DenDesignerGF/Editor/BP_DenCatalogItem:Title"
+      },
+      {
+        "id": "w0",
+        "kind": "get",
+        "var": "Label"
+      },
+      {
+        "id": "text0",
+        "kind": "call",
+        "function": "/Script/UMG.TextBlock:SetText"
+      },
+      {
+        "id": "tooltip",
+        "kind": "call",
+        "function": "/Script/UMG.Widget:SetToolTipText"
+      },
+      {
+        "id": "selected",
+        "kind": "event",
+        "name": "BP_OnItemSelectionChanged"
+      },
+      {
+        "id": "selectedset",
+        "kind": "set",
+        "var": "Chosen",
+        "defaults": {}
+      },
+      {
+        "id": "selectedrefresh",
+        "kind": "call",
+        "function": "self:RefreshAppearance"
+      },
+      {
+        "id": "enter",
+        "kind": "event",
+        "name": "OnMouseEnter"
+      },
+      {
+        "id": "enterset",
+        "kind": "set",
+        "var": "Hovered",
+        "defaults": {
+          "Hovered": "true"
+        }
+      },
+      {
+        "id": "enterrefresh",
+        "kind": "call",
+        "function": "self:RefreshAppearance"
+      },
+      {
+        "id": "leave",
+        "kind": "event",
+        "name": "OnMouseLeave"
+      },
+      {
+        "id": "leaveset",
+        "kind": "set",
+        "var": "Hovered",
+        "defaults": {
+          "Hovered": "false"
+        }
+      },
+      {
+        "id": "leaverefresh",
+        "kind": "call",
+        "function": "self:RefreshAppearance"
+      },
+      {
+        "id": "released",
+        "kind": "event",
+        "name": "BP_OnEntryReleased"
+      },
+      {
+        "id": "releasechosen",
+        "kind": "set",
+        "var": "Chosen",
+        "defaults": {
+          "Chosen": "false"
+        }
+      },
+      {
+        "id": "releasehover",
+        "kind": "set",
+        "var": "Hovered",
+        "defaults": {
+          "Hovered": "false"
+        }
+      },
+      {
+        "id": "releaserefresh",
+        "kind": "call",
+        "function": "self:RefreshAppearance"
+      },
+      {
+        "id": "itembus",
+        "kind": "get",
+        "var": "/DenDesignerGF/Editor/BP_DenCatalogItem:EditorBus"
+      },
+      {
+        "id": "rememberbus",
+        "kind": "set",
+        "var": "EditorBus"
+      },
+      {
+        "id": "style",
+        "kind": "call",
+        "function": "self:ApplyNativeStyle"
+      }
+    ],
+    "links": [
+      [
+        "set.then",
+        "cast.execute"
+      ],
+      [
+        "set.ListItemObject",
+        "cast.Object"
+      ],
+      [
+        "tooltip.then",
+        "text0.execute"
+      ],
+      [
+        "cast.AsBP Den Catalog Item",
+        "get0.self"
+      ],
+      [
+        "get0.Title",
+        "text0.InText"
+      ],
+      [
+        "w0.Label",
+        "text0.self"
+      ],
+      [
+        "get0.Title",
+        "tooltip.InToolTipText"
+      ],
+      [
+        "selected.then",
+        "selectedset.execute"
+      ],
+      [
+        "selectedset.then",
+        "selectedrefresh.execute"
+      ],
+      [
+        "selected.bIsSelected",
+        "selectedset.Chosen"
+      ],
+      [
+        "enter.then",
+        "enterset.execute"
+      ],
+      [
+        "enterset.then",
+        "enterrefresh.execute"
+      ],
+      [
+        "leave.then",
+        "leaveset.execute"
+      ],
+      [
+        "leaveset.then",
+        "leaverefresh.execute"
+      ],
+      [
+        "released.then",
+        "releasechosen.execute"
+      ],
+      [
+        "releasechosen.then",
+        "releasehover.execute"
+      ],
+      [
+        "releasehover.then",
+        "releaserefresh.execute"
+      ],
+      [
+        "cast.AsBP Den Catalog Item",
+        "itembus.self"
+      ],
+      [
+        "itembus.EditorBus",
+        "rememberbus.EditorBus"
+      ],
+      [
+        "cast.then",
+        "rememberbus.execute"
+      ],
+      [
+        "rememberbus.then",
+        "style.execute"
+      ],
+      [
+        "style.then",
+        "tooltip.execute"
+      ]
+    ]
+  }
+}

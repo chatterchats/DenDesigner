@@ -1,0 +1,37 @@
+{
+  "kind": "struct",
+  "path": "/DenDesignerGF/Runtime/ST_DenStep",
+  "guid": "1f0e01eb-b24c-524b-b576-38cc2c30ccb1",
+  "fields": [
+    {
+      "name": "Label",
+      "type": "string",
+      "guid": "80dd3164-7308-5afc-b7c8-e825e3b00ad8"
+    },
+    {
+      "name": "MergeKey",
+      "type": "string",
+      "guid": "64100640-124e-5ae9-a079-83bc8ce25396"
+    },
+    {
+      "name": "Time",
+      "type": "double",
+      "guid": "dbd0518d-4e52-5ed7-b7a6-e2d050383916"
+    },
+    {
+      "name": "BeforeVersion",
+      "type": "int",
+      "guid": "ecff88c7-bfb0-5a86-ae83-ff61e9c64f0a"
+    },
+    {
+      "name": "AfterVersion",
+      "type": "int",
+      "guid": "a86a1ea7-16be-5459-9b61-8d025c5a3651"
+    },
+    {
+      "name": "Changes",
+      "type": "struct:/DenDesignerGF/Runtime/ST_DenChange[]",
+      "guid": "71606615-7ba6-5d69-8084-4f91e39c4233"
+    }
+  ]
+}

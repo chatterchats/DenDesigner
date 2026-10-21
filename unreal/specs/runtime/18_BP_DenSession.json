@@ -1,0 +1,5104 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenSession",
+  "parent": "/DenDesignerGF/Runtime/BP_DenApply",
+  "graph": {
+    "nodes": [
+      {
+        "id": "tick",
+        "kind": "event",
+        "name": "ReceiveTick"
+      },
+      {
+        "id": "pump",
+        "kind": "call",
+        "function": "self:Pump",
+        "defaults": {}
+      },
+      {
+        "id": "draft",
+        "kind": "call",
+        "function": "self:PollDraft",
+        "defaults": {}
+      },
+      {
+        "id": "end",
+        "kind": "event",
+        "name": "ReceiveEndPlay"
+      },
+      {
+        "id": "flush",
+        "kind": "call",
+        "function": "self:FlushDraft",
+        "defaults": {}
+      },
+      {
+        "id": "close",
+        "kind": "set",
+        "var": "Editing",
+        "defaults": {
+          "Editing": "false"
+        }
+      },
+      {
+        "id": "cancel",
+        "kind": "call",
+        "function": "self:CancelWork",
+        "defaults": {}
+      },
+      {
+        "id": "forget",
+        "kind": "call",
+        "function": "self:Forget",
+        "defaults": {}
+      }
+    ],
+    "links": [
+      [
+        "tick.then",
+        "pump.execute"
+      ],
+      [
+        "pump.then",
+        "draft.execute"
+      ],
+      [
+        "end.then",
+        "flush.execute"
+      ],
+      [
+        "flush.then",
+        "close.execute"
+      ],
+      [
+        "close.then",
+        "cancel.execute"
+      ],
+      [
+        "cancel.then",
+        "forget.execute"
+      ]
+    ]
+  },
+  "variables": [
+    {
+      "name": "Storage",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenLayouts"
+    },
+    {
+      "name": "History",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenHistory"
+    },
+    {
+      "name": "WorkingDocument",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+    },
+    {
+      "name": "BaselineDocument",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+    },
+    {
+      "name": "RecoveryDocument",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+    },
+    {
+      "name": "Editing",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "SessionKey",
+      "type": "string"
+    },
+    {
+      "name": "OpenedStatus",
+      "type": "int"
+    },
+    {
+      "name": "LastStatus",
+      "type": "int",
+      "default": "9"
+    },
+    {
+      "name": "LastDraftStatus",
+      "type": "int"
+    },
+    {
+      "name": "DraftEnabled",
+      "type": "bool",
+      "default": "true"
+    },
+    {
+      "name": "RecoveryPending",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "RecoveryMatchesBase",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "DraftPending",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "DraftDue",
+      "type": "double"
+    },
+    {
+      "name": "DraftInterval",
+      "type": "double",
+      "default": "2"
+    },
+    {
+      "name": "DraftRetryInterval",
+      "type": "double",
+      "default": "5"
+    },
+    {
+      "name": "LastDraftVersion",
+      "type": "int",
+      "default": "-1"
+    }
+  ],
+  "functions": [
+    {
+      "name": "EnsureServices",
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "getStorage",
+          "kind": "get",
+          "var": "Storage"
+        },
+        {
+          "id": "storecheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "storevalid",
+          "kind": "branch"
+        },
+        {
+          "id": "storecreate",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:SpawnObject",
+          "defaults": {
+            "ObjectClass": "/DenDesignerGF/Runtime/BP_DenLayouts"
+          }
+        },
+        {
+          "id": "storecast",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenLayouts"
+        },
+        {
+          "id": "storesave",
+          "kind": "set",
+          "var": "Storage"
+        },
+        {
+          "id": "getHistory",
+          "kind": "get",
+          "var": "History"
+        },
+        {
+          "id": "historycheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "historyvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "historycreate",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:SpawnObject",
+          "defaults": {
+            "ObjectClass": "/DenDesignerGF/Runtime/BP_DenHistory"
+          }
+        },
+        {
+          "id": "historycast",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenHistory"
+        },
+        {
+          "id": "historysave",
+          "kind": "set",
+          "var": "History"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        }
+      ],
+      "links": [
+        [
+          "getStorage.Storage",
+          "storecheck.Object"
+        ],
+        [
+          "storecheck.ReturnValue",
+          "storevalid.Condition"
+        ],
+        [
+          "self.self",
+          "storecreate.Outer"
+        ],
+        [
+          "storecreate.ReturnValue",
+          "storecast.Object"
+        ],
+        [
+          "storecast.AsBP Den Layouts",
+          "storesave.Storage"
+        ],
+        [
+          "storevalid.else",
+          "storecreate.execute"
+        ],
+        [
+          "storecreate.then",
+          "storecast.execute"
+        ],
+        [
+          "storecast.then",
+          "storesave.execute"
+        ],
+        [
+          "storecast.CastFailed",
+          "result.execute"
+        ],
+        [
+          "getHistory.History",
+          "historycheck.Object"
+        ],
+        [
+          "historycheck.ReturnValue",
+          "historyvalid.Condition"
+        ],
+        [
+          "self.self",
+          "historycreate.Outer"
+        ],
+        [
+          "historycreate.ReturnValue",
+          "historycast.Object"
+        ],
+        [
+          "historycast.AsBP Den History",
+          "historysave.History"
+        ],
+        [
+          "historyvalid.else",
+          "historycreate.execute"
+        ],
+        [
+          "historycreate.then",
+          "historycast.execute"
+        ],
+        [
+          "historycast.then",
+          "historysave.execute"
+        ],
+        [
+          "historycast.CastFailed",
+          "result.execute"
+        ],
+        [
+          "out.OK",
+          "result.Accepted"
+        ],
+        [
+          "entry.then",
+          "storevalid.execute"
+        ],
+        [
+          "storevalid.then",
+          "historyvalid.execute"
+        ],
+        [
+          "historyvalid.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "storesave.then",
+          "historyvalid.execute"
+        ],
+        [
+          "historysave.then",
+          "yes.execute"
+        ]
+      ]
+    },
+    {
+      "name": "CanEdit",
+      "outputs": [
+        {
+          "name": "Ready",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getBusy",
+          "kind": "get",
+          "var": "Busy"
+        },
+        {
+          "id": "idle",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "getRecoveryPending",
+          "kind": "get",
+          "var": "RecoveryPending"
+        },
+        {
+          "id": "decided",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "getEditing",
+          "kind": "get",
+          "var": "Editing"
+        },
+        {
+          "id": "getWorkingDocument",
+          "kind": "get",
+          "var": "WorkingDocument"
+        },
+        {
+          "id": "docvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "getHistory",
+          "kind": "get",
+          "var": "History"
+        },
+        {
+          "id": "historyvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "getStorage",
+          "kind": "get",
+          "var": "Storage"
+        },
+        {
+          "id": "storevalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "ready0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "ready1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "ready2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "ready3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "ready4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getBusy.Busy",
+          "idle.A"
+        ],
+        [
+          "getRecoveryPending.RecoveryPending",
+          "decided.A"
+        ],
+        [
+          "getWorkingDocument.WorkingDocument",
+          "docvalid.Object"
+        ],
+        [
+          "getHistory.History",
+          "historyvalid.Object"
+        ],
+        [
+          "getStorage.Storage",
+          "storevalid.Object"
+        ],
+        [
+          "getEditing.Editing",
+          "ready0.A"
+        ],
+        [
+          "idle.ReturnValue",
+          "ready0.B"
+        ],
+        [
+          "ready0.ReturnValue",
+          "ready1.A"
+        ],
+        [
+          "decided.ReturnValue",
+          "ready1.B"
+        ],
+        [
+          "ready1.ReturnValue",
+          "ready2.A"
+        ],
+        [
+          "docvalid.ReturnValue",
+          "ready2.B"
+        ],
+        [
+          "ready2.ReturnValue",
+          "ready3.A"
+        ],
+        [
+          "historyvalid.ReturnValue",
+          "ready3.B"
+        ],
+        [
+          "ready3.ReturnValue",
+          "ready4.A"
+        ],
+        [
+          "storevalid.ReturnValue",
+          "ready4.B"
+        ],
+        [
+          "ready4.ReturnValue",
+          "result.Ready"
+        ],
+        [
+          "entry.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "OpenSession",
+      "inputs": [
+        {
+          "name": "Key",
+          "type": "string"
+        },
+        {
+          "name": "Document",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        },
+        {
+          "name": "LoadStatus",
+          "type": "int"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "SourceDocument",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "status",
+          "kind": "set",
+          "var": "LastStatus",
+          "defaults": {
+            "LastStatus": "9"
+          }
+        },
+        {
+          "id": "getBusy",
+          "kind": "get",
+          "var": "Busy"
+        },
+        {
+          "id": "idle",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "getEditing",
+          "kind": "get",
+          "var": "Editing"
+        },
+        {
+          "id": "closed",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "availablecheck0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "available",
+          "kind": "branch"
+        },
+        {
+          "id": "services",
+          "kind": "call",
+          "function": "self:EnsureServices",
+          "defaults": {}
+        },
+        {
+          "id": "serviced",
+          "kind": "branch"
+        },
+        {
+          "id": "getStorage",
+          "kind": "get",
+          "var": "Storage"
+        },
+        {
+          "id": "key",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenLayouts:ValidKey",
+          "defaults": {}
+        },
+        {
+          "id": "keyvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "lo",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "hi",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "readable0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "loadok",
+          "kind": "branch"
+        },
+        {
+          "id": "badload",
+          "kind": "set",
+          "var": "LastStatus"
+        },
+        {
+          "id": "missing",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "absent",
+          "kind": "branch"
+        },
+        {
+          "id": "create",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:CreateSaveGameObject",
+          "defaults": {
+            "SaveGameClass": "/DenDesignerGF/Runtime/BP_DenLayoutSave"
+          }
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        },
+        {
+          "id": "newdoc",
+          "kind": "set",
+          "var": "local:SourceDocument"
+        },
+        {
+          "id": "documentvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "docvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "schema",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:SchemaVersion"
+        },
+        {
+          "id": "enabled",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Enabled"
+        },
+        {
+          "id": "versionok",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "usable0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "supported",
+          "kind": "branch"
+        },
+        {
+          "id": "existing",
+          "kind": "set",
+          "var": "local:SourceDocument"
+        },
+        {
+          "id": "source",
+          "kind": "get",
+          "var": "local:SourceDocument"
+        },
+        {
+          "id": "baseline",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenLayouts:CloneLayout",
+          "defaults": {}
+        },
+        {
+          "id": "working",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenLayouts:CloneLayout",
+          "defaults": {}
+        },
+        {
+          "id": "bvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "wvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "copied0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "copies",
+          "kind": "branch"
+        },
+        {
+          "id": "base",
+          "kind": "set",
+          "var": "BaselineDocument"
+        },
+        {
+          "id": "work",
+          "kind": "set",
+          "var": "WorkingDocument"
+        },
+        {
+          "id": "keycopy",
+          "kind": "set",
+          "var": "SessionKey"
+        },
+        {
+          "id": "loadstatus",
+          "kind": "set",
+          "var": "OpenedStatus"
+        },
+        {
+          "id": "getHistory",
+          "kind": "get",
+          "var": "History"
+        },
+        {
+          "id": "getWorkingDocument",
+          "kind": "get",
+          "var": "WorkingDocument"
+        },
+        {
+          "id": "initialize",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenHistory:Initialize",
+          "defaults": {}
+        },
+        {
+          "id": "editing",
+          "kind": "set",
+          "var": "Editing",
+          "defaults": {
+            "Editing": "true"
+          }
+        },
+        {
+          "id": "pending",
+          "kind": "set",
+          "var": "DraftPending",
+          "defaults": {
+            "DraftPending": "false"
+          }
+        },
+        {
+          "id": "draftversion",
+          "kind": "set",
+          "var": "LastDraftVersion",
+          "defaults": {
+            "LastDraftVersion": "-1"
+          }
+        },
+        {
+          "id": "apply",
+          "kind": "call",
+          "function": "self:BeginLayout",
+          "defaults": {}
+        },
+        {
+          "id": "applied",
+          "kind": "branch"
+        },
+        {
+          "id": "draft",
+          "kind": "call",
+          "function": "self:CheckRecovery",
+          "defaults": {}
+        },
+        {
+          "id": "okstatus",
+          "kind": "set",
+          "var": "LastStatus",
+          "defaults": {
+            "LastStatus": "1"
+          }
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        },
+        {
+          "id": "invalid",
+          "kind": "set",
+          "var": "LastStatus",
+          "defaults": {
+            "LastStatus": "7"
+          }
+        },
+        {
+          "id": "stop",
+          "kind": "set",
+          "var": "Editing",
+          "defaults": {
+            "Editing": "false"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getBusy.Busy",
+          "idle.A"
+        ],
+        [
+          "getEditing.Editing",
+          "closed.A"
+        ],
+        [
+          "idle.ReturnValue",
+          "availablecheck0.A"
+        ],
+        [
+          "closed.ReturnValue",
+          "availablecheck0.B"
+        ],
+        [
+          "availablecheck0.ReturnValue",
+          "available.Condition"
+        ],
+        [
+          "services.Accepted",
+          "serviced.Condition"
+        ],
+        [
+          "getStorage.Storage",
+          "key.self"
+        ],
+        [
+          "entry.Key",
+          "key.Key"
+        ],
+        [
+          "key.Valid",
+          "keyvalid.Condition"
+        ],
+        [
+          "entry.LoadStatus",
+          "lo.A"
+        ],
+        [
+          "entry.LoadStatus",
+          "hi.A"
+        ],
+        [
+          "lo.ReturnValue",
+          "readable0.A"
+        ],
+        [
+          "hi.ReturnValue",
+          "readable0.B"
+        ],
+        [
+          "readable0.ReturnValue",
+          "loadok.Condition"
+        ],
+        [
+          "entry.LoadStatus",
+          "badload.LastStatus"
+        ],
+        [
+          "entry.LoadStatus",
+          "missing.A"
+        ],
+        [
+          "missing.ReturnValue",
+          "absent.Condition"
+        ],
+        [
+          "create.ReturnValue",
+          "cast.Object"
+        ],
+        [
+          "cast.AsBP Den Layout Save",
+          "newdoc.SourceDocument"
+        ],
+        [
+          "entry.Document",
+          "documentvalid.Object"
+        ],
+        [
+          "documentvalid.ReturnValue",
+          "docvalid.Condition"
+        ],
+        [
+          "entry.Document",
+          "schema.self"
+        ],
+        [
+          "entry.Document",
+          "enabled.self"
+        ],
+        [
+          "schema.SchemaVersion",
+          "versionok.A"
+        ],
+        [
+          "versionok.ReturnValue",
+          "usable0.A"
+        ],
+        [
+          "enabled.Enabled",
+          "usable0.B"
+        ],
+        [
+          "usable0.ReturnValue",
+          "supported.Condition"
+        ],
+        [
+          "entry.Document",
+          "existing.SourceDocument"
+        ],
+        [
+          "getStorage.Storage",
+          "baseline.self"
+        ],
+        [
+          "source.SourceDocument",
+          "baseline.Document"
+        ],
+        [
+          "getStorage.Storage",
+          "working.self"
+        ],
+        [
+          "source.SourceDocument",
+          "working.Document"
+        ],
+        [
+          "baseline.DocumentCopy",
+          "bvalid.Object"
+        ],
+        [
+          "working.DocumentCopy",
+          "wvalid.Object"
+        ],
+        [
+          "bvalid.ReturnValue",
+          "copied0.A"
+        ],
+        [
+          "wvalid.ReturnValue",
+          "copied0.B"
+        ],
+        [
+          "copied0.ReturnValue",
+          "copies.Condition"
+        ],
+        [
+          "baseline.DocumentCopy",
+          "base.BaselineDocument"
+        ],
+        [
+          "working.DocumentCopy",
+          "work.WorkingDocument"
+        ],
+        [
+          "entry.Key",
+          "keycopy.SessionKey"
+        ],
+        [
+          "entry.LoadStatus",
+          "loadstatus.OpenedStatus"
+        ],
+        [
+          "getHistory.History",
+          "initialize.self"
+        ],
+        [
+          "getWorkingDocument.WorkingDocument",
+          "initialize.Document"
+        ],
+        [
+          "getWorkingDocument.WorkingDocument",
+          "apply.Document"
+        ],
+        [
+          "apply.Accepted",
+          "applied.Condition"
+        ],
+        [
+          "out.OK",
+          "result.Accepted"
+        ],
+        [
+          "entry.then",
+          "status.execute"
+        ],
+        [
+          "status.then",
+          "available.execute"
+        ],
+        [
+          "available.then",
+          "services.execute"
+        ],
+        [
+          "services.then",
+          "serviced.execute"
+        ],
+        [
+          "serviced.then",
+          "key.execute"
+        ],
+        [
+          "key.then",
+          "keyvalid.execute"
+        ],
+        [
+          "keyvalid.then",
+          "loadok.execute"
+        ],
+        [
+          "loadok.then",
+          "absent.execute"
+        ],
+        [
+          "absent.then",
+          "create.execute"
+        ],
+        [
+          "create.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "newdoc.execute"
+        ],
+        [
+          "newdoc.then",
+          "baseline.execute"
+        ],
+        [
+          "baseline.then",
+          "working.execute"
+        ],
+        [
+          "working.then",
+          "copies.execute"
+        ],
+        [
+          "copies.then",
+          "base.execute"
+        ],
+        [
+          "base.then",
+          "work.execute"
+        ],
+        [
+          "work.then",
+          "keycopy.execute"
+        ],
+        [
+          "keycopy.then",
+          "loadstatus.execute"
+        ],
+        [
+          "loadstatus.then",
+          "initialize.execute"
+        ],
+        [
+          "initialize.then",
+          "editing.execute"
+        ],
+        [
+          "editing.then",
+          "pending.execute"
+        ],
+        [
+          "pending.then",
+          "draftversion.execute"
+        ],
+        [
+          "draftversion.then",
+          "apply.execute"
+        ],
+        [
+          "apply.then",
+          "applied.execute"
+        ],
+        [
+          "applied.then",
+          "draft.execute"
+        ],
+        [
+          "draft.then",
+          "okstatus.execute"
+        ],
+        [
+          "okstatus.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "absent.else",
+          "docvalid.execute"
+        ],
+        [
+          "docvalid.then",
+          "supported.execute"
+        ],
+        [
+          "supported.then",
+          "existing.execute"
+        ],
+        [
+          "existing.then",
+          "baseline.execute"
+        ],
+        [
+          "loadok.else",
+          "badload.execute"
+        ],
+        [
+          "badload.then",
+          "result.execute"
+        ],
+        [
+          "available.else",
+          "result.execute"
+        ],
+        [
+          "serviced.else",
+          "result.execute"
+        ],
+        [
+          "keyvalid.else",
+          "invalid.execute"
+        ],
+        [
+          "invalid.then",
+          "result.execute"
+        ],
+        [
+          "docvalid.else",
+          "invalid.execute"
+        ],
+        [
+          "invalid.then",
+          "result.execute"
+        ],
+        [
+          "supported.else",
+          "invalid.execute"
+        ],
+        [
+          "invalid.then",
+          "result.execute"
+        ],
+        [
+          "cast.CastFailed",
+          "invalid.execute"
+        ],
+        [
+          "invalid.then",
+          "result.execute"
+        ],
+        [
+          "copies.else",
+          "invalid.execute"
+        ],
+        [
+          "invalid.then",
+          "result.execute"
+        ],
+        [
+          "applied.else",
+          "stop.execute"
+        ],
+        [
+          "stop.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ScheduleDraft",
+      "nodes": [
+        {
+          "id": "getDraftEnabled",
+          "kind": "get",
+          "var": "DraftEnabled"
+        },
+        {
+          "id": "enabled",
+          "kind": "branch"
+        },
+        {
+          "id": "getDraftPending",
+          "kind": "get",
+          "var": "DraftPending"
+        },
+        {
+          "id": "pending",
+          "kind": "branch"
+        },
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "nowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getDraftInterval",
+          "kind": "get",
+          "var": "DraftInterval"
+        },
+        {
+          "id": "due",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "time",
+          "kind": "set",
+          "var": "DraftDue"
+        },
+        {
+          "id": "mark",
+          "kind": "set",
+          "var": "DraftPending",
+          "defaults": {
+            "DraftPending": "true"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getDraftEnabled.DraftEnabled",
+          "enabled.Condition"
+        ],
+        [
+          "getDraftPending.DraftPending",
+          "pending.Condition"
+        ],
+        [
+          "now.Seconds",
+          "nowsum.A"
+        ],
+        [
+          "now.PartialSeconds",
+          "nowsum.B"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "due.A"
+        ],
+        [
+          "getDraftInterval.DraftInterval",
+          "due.B"
+        ],
+        [
+          "due.ReturnValue",
+          "time.DraftDue"
+        ],
+        [
+          "entry.then",
+          "enabled.execute"
+        ],
+        [
+          "enabled.then",
+          "pending.execute"
+        ],
+        [
+          "pending.else",
+          "time.execute"
+        ],
+        [
+          "time.then",
+          "mark.execute"
+        ]
+      ]
+    },
+    {
+      "name": "CommitEdit",
+      "inputs": [
+        {
+          "name": "Mutations",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenMutation[]"
+        },
+        {
+          "name": "Label",
+          "type": "string"
+        },
+        {
+          "name": "MergeKey",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "status",
+          "kind": "set",
+          "var": "LastStatus",
+          "defaults": {
+            "LastStatus": "9"
+          }
+        },
+        {
+          "id": "ready",
+          "kind": "call",
+          "function": "self:CanEdit",
+          "defaults": {}
+        },
+        {
+          "id": "allowed",
+          "kind": "branch"
+        },
+        {
+          "id": "queue",
+          "kind": "call",
+          "function": "self:BeginBatch",
+          "defaults": {
+            "ReplaceAll": "false"
+          }
+        },
+        {
+          "id": "queued",
+          "kind": "branch"
+        },
+        {
+          "id": "getHistory",
+          "kind": "get",
+          "var": "History"
+        },
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "nowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "commit",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenHistory:Commit",
+          "defaults": {}
+        },
+        {
+          "id": "committed",
+          "kind": "branch"
+        },
+        {
+          "id": "schedule",
+          "kind": "call",
+          "function": "self:ScheduleDraft",
+          "defaults": {}
+        },
+        {
+          "id": "okstatus",
+          "kind": "set",
+          "var": "LastStatus",
+          "defaults": {
+            "LastStatus": "1"
+          }
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        },
+        {
+          "id": "cancel",
+          "kind": "call",
+          "function": "self:CancelWork",
+          "defaults": {}
+        },
+        {
+          "id": "invalid",
+          "kind": "set",
+          "var": "LastStatus",
+          "defaults": {
+            "LastStatus": "7"
+          }
+        }
+      ],
+      "links": [
+        [
+          "ready.Ready",
+          "allowed.Condition"
+        ],
+        [
+          "entry.Mutations",
+          "queue.Mutations"
+        ],
+        [
+          "queue.Accepted",
+          "queued.Condition"
+        ],
+        [
+          "now.Seconds",
+          "nowsum.A"
+        ],
+        [
+          "now.PartialSeconds",
+          "nowsum.B"
+        ],
+        [
+          "getHistory.History",
+          "commit.self"
+        ],
+        [
+          "entry.Mutations",
+          "commit.Mutations"
+        ],
+        [
+          "entry.Label",
+          "commit.Label"
+        ],
+        [
+          "entry.MergeKey",
+          "commit.MergeKey"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "commit.Time"
+        ],
+        [
+          "commit.Accepted",
+          "committed.Condition"
+        ],
+        [
+          "out.OK",
+          "result.Accepted"
+        ],
+        [
+          "entry.then",
+          "status.execute"
+        ],
+        [
+          "status.then",
+          "ready.execute"
+        ],
+        [
+          "ready.then",
+          "allowed.execute"
+        ],
+        [
+          "allowed.then",
+          "queue.execute"
+        ],
+        [
+          "queue.then",
+          "queued.execute"
+        ],
+        [
+          "queued.then",
+          "commit.execute"
+        ],
+        [
+          "commit.then",
+          "committed.execute"
+        ],
+        [
+          "committed.then",
+          "schedule.execute"
+        ],
+        [
+          "schedule.then",
+          "okstatus.execute"
+        ],
+        [
+          "okstatus.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "allowed.else",
+          "result.execute"
+        ],
+        [
+          "queued.else",
+          "result.execute"
+        ],
+        [
+          "committed.else",
+          "cancel.execute"
+        ],
+        [
+          "cancel.then",
+          "invalid.execute"
+        ],
+        [
+          "invalid.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "UndoMutations",
+      "inputs": [
+        {
+          "name": "Step",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenStep"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Mutations",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenMutation[]"
+        }
+      ],
+      "locals": [
+        {
+          "name": "ChangeIndex",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "Edits",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenMutation[]"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "step",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenStep"
+        },
+        {
+          "id": "len",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:ChangeIndex"
+        },
+        {
+          "id": "edits",
+          "kind": "get",
+          "var": "local:Edits"
+        },
+        {
+          "id": "last",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "start",
+          "kind": "set",
+          "var": "local:ChangeIndex"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "change",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenChange"
+        },
+        {
+          "id": "mutation",
+          "kind": "make_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenMutation"
+        },
+        {
+          "id": "add",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:ChangeIndex"
+        }
+      ],
+      "links": [
+        [
+          "entry.Step",
+          "step.ST_DenStep"
+        ],
+        [
+          "step.Changes",
+          "len.TargetArray"
+        ],
+        [
+          "len.ReturnValue",
+          "last.A"
+        ],
+        [
+          "last.ReturnValue",
+          "start.ChangeIndex"
+        ],
+        [
+          "i.ChangeIndex",
+          "within.A"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "step.Changes",
+          "item.TargetArray"
+        ],
+        [
+          "i.ChangeIndex",
+          "item.Index"
+        ],
+        [
+          "item.Item",
+          "change.ST_DenChange"
+        ],
+        [
+          "change.Before",
+          "mutation.Value"
+        ],
+        [
+          "change.BeforeExists",
+          "mutation.Present"
+        ],
+        [
+          "edits.Edits",
+          "add.TargetArray"
+        ],
+        [
+          "mutation.ST_DenMutation",
+          "add.NewItem"
+        ],
+        [
+          "i.ChangeIndex",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.ChangeIndex"
+        ],
+        [
+          "edits.Edits",
+          "result.Mutations"
+        ],
+        [
+          "entry.then",
+          "start.execute"
+        ],
+        [
+          "start.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "add.execute"
+        ],
+        [
+          "add.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "loop.execute"
+        ],
+        [
+          "loop.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "RedoMutations",
+      "inputs": [
+        {
+          "name": "Step",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenStep"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Mutations",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenMutation[]"
+        }
+      ],
+      "locals": [
+        {
+          "name": "ChangeIndex",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "Edits",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenMutation[]"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "step",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenStep"
+        },
+        {
+          "id": "len",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:ChangeIndex"
+        },
+        {
+          "id": "edits",
+          "kind": "get",
+          "var": "local:Edits"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "change",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenChange"
+        },
+        {
+          "id": "mutation",
+          "kind": "make_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenMutation"
+        },
+        {
+          "id": "add",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:ChangeIndex"
+        }
+      ],
+      "links": [
+        [
+          "entry.Step",
+          "step.ST_DenStep"
+        ],
+        [
+          "step.Changes",
+          "len.TargetArray"
+        ],
+        [
+          "i.ChangeIndex",
+          "within.A"
+        ],
+        [
+          "len.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "step.Changes",
+          "item.TargetArray"
+        ],
+        [
+          "i.ChangeIndex",
+          "item.Index"
+        ],
+        [
+          "item.Item",
+          "change.ST_DenChange"
+        ],
+        [
+          "change.After",
+          "mutation.Value"
+        ],
+        [
+          "change.AfterExists",
+          "mutation.Present"
+        ],
+        [
+          "edits.Edits",
+          "add.TargetArray"
+        ],
+        [
+          "mutation.ST_DenMutation",
+          "add.NewItem"
+        ],
+        [
+          "i.ChangeIndex",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.ChangeIndex"
+        ],
+        [
+          "edits.Edits",
+          "result.Mutations"
+        ],
+        [
+          "entry.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "add.execute"
+        ],
+        [
+          "add.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "loop.execute"
+        ],
+        [
+          "loop.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "UndoEdit",
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "status",
+          "kind": "set",
+          "var": "LastStatus",
+          "defaults": {
+            "LastStatus": "9"
+          }
+        },
+        {
+          "id": "ready",
+          "kind": "call",
+          "function": "self:CanEdit",
+          "defaults": {}
+        },
+        {
+          "id": "allowed",
+          "kind": "branch"
+        },
+        {
+          "id": "getHistory",
+          "kind": "get",
+          "var": "History"
+        },
+        {
+          "id": "steps",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenHistory:UndoSteps"
+        },
+        {
+          "id": "len",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "nonempty",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "has",
+          "kind": "branch"
+        },
+        {
+          "id": "last",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "edits",
+          "kind": "call",
+          "function": "self:UndoMutations",
+          "defaults": {}
+        },
+        {
+          "id": "queue",
+          "kind": "call",
+          "function": "self:BeginBatch",
+          "defaults": {
+            "ReplaceAll": "false"
+          }
+        },
+        {
+          "id": "queued",
+          "kind": "branch"
+        },
+        {
+          "id": "travel",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenHistory:Undo",
+          "defaults": {}
+        },
+        {
+          "id": "travelled",
+          "kind": "branch"
+        },
+        {
+          "id": "schedule",
+          "kind": "call",
+          "function": "self:ScheduleDraft",
+          "defaults": {}
+        },
+        {
+          "id": "okstatus",
+          "kind": "set",
+          "var": "LastStatus",
+          "defaults": {
+            "LastStatus": "1"
+          }
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        },
+        {
+          "id": "cancel",
+          "kind": "call",
+          "function": "self:CancelWork",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "ready.Ready",
+          "allowed.Condition"
+        ],
+        [
+          "getHistory.History",
+          "steps.self"
+        ],
+        [
+          "steps.UndoSteps",
+          "len.TargetArray"
+        ],
+        [
+          "len.ReturnValue",
+          "nonempty.A"
+        ],
+        [
+          "nonempty.ReturnValue",
+          "has.Condition"
+        ],
+        [
+          "len.ReturnValue",
+          "last.A"
+        ],
+        [
+          "steps.UndoSteps",
+          "item.TargetArray"
+        ],
+        [
+          "last.ReturnValue",
+          "item.Index"
+        ],
+        [
+          "item.Item",
+          "edits.Step"
+        ],
+        [
+          "edits.Mutations",
+          "queue.Mutations"
+        ],
+        [
+          "queue.Accepted",
+          "queued.Condition"
+        ],
+        [
+          "getHistory.History",
+          "travel.self"
+        ],
+        [
+          "travel.Succeeded",
+          "travelled.Condition"
+        ],
+        [
+          "out.OK",
+          "result.Accepted"
+        ],
+        [
+          "entry.then",
+          "status.execute"
+        ],
+        [
+          "status.then",
+          "ready.execute"
+        ],
+        [
+          "ready.then",
+          "allowed.execute"
+        ],
+        [
+          "allowed.then",
+          "has.execute"
+        ],
+        [
+          "has.then",
+          "edits.execute"
+        ],
+        [
+          "edits.then",
+          "queue.execute"
+        ],
+        [
+          "queue.then",
+          "queued.execute"
+        ],
+        [
+          "queued.then",
+          "travel.execute"
+        ],
+        [
+          "travel.then",
+          "travelled.execute"
+        ],
+        [
+          "travelled.then",
+          "schedule.execute"
+        ],
+        [
+          "schedule.then",
+          "okstatus.execute"
+        ],
+        [
+          "okstatus.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "allowed.else",
+          "result.execute"
+        ],
+        [
+          "has.else",
+          "result.execute"
+        ],
+        [
+          "queued.else",
+          "result.execute"
+        ],
+        [
+          "travelled.else",
+          "cancel.execute"
+        ],
+        [
+          "cancel.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "RedoEdit",
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "status",
+          "kind": "set",
+          "var": "LastStatus",
+          "defaults": {
+            "LastStatus": "9"
+          }
+        },
+        {
+          "id": "ready",
+          "kind": "call",
+          "function": "self:CanEdit",
+          "defaults": {}
+        },
+        {
+          "id": "allowed",
+          "kind": "branch"
+        },
+        {
+          "id": "getHistory",
+          "kind": "get",
+          "var": "History"
+        },
+        {
+          "id": "steps",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenHistory:RedoSteps"
+        },
+        {
+          "id": "len",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "nonempty",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "has",
+          "kind": "branch"
+        },
+        {
+          "id": "last",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "edits",
+          "kind": "call",
+          "function": "self:RedoMutations",
+          "defaults": {}
+        },
+        {
+          "id": "queue",
+          "kind": "call",
+          "function": "self:BeginBatch",
+          "defaults": {
+            "ReplaceAll": "false"
+          }
+        },
+        {
+          "id": "queued",
+          "kind": "branch"
+        },
+        {
+          "id": "travel",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenHistory:Redo",
+          "defaults": {}
+        },
+        {
+          "id": "travelled",
+          "kind": "branch"
+        },
+        {
+          "id": "schedule",
+          "kind": "call",
+          "function": "self:ScheduleDraft",
+          "defaults": {}
+        },
+        {
+          "id": "okstatus",
+          "kind": "set",
+          "var": "LastStatus",
+          "defaults": {
+            "LastStatus": "1"
+          }
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        },
+        {
+          "id": "cancel",
+          "kind": "call",
+          "function": "self:CancelWork",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "ready.Ready",
+          "allowed.Condition"
+        ],
+        [
+          "getHistory.History",
+          "steps.self"
+        ],
+        [
+          "steps.RedoSteps",
+          "len.TargetArray"
+        ],
+        [
+          "len.ReturnValue",
+          "nonempty.A"
+        ],
+        [
+          "nonempty.ReturnValue",
+          "has.Condition"
+        ],
+        [
+          "len.ReturnValue",
+          "last.A"
+        ],
+        [
+          "steps.RedoSteps",
+          "item.TargetArray"
+        ],
+        [
+          "last.ReturnValue",
+          "item.Index"
+        ],
+        [
+          "item.Item",
+          "edits.Step"
+        ],
+        [
+          "edits.Mutations",
+          "queue.Mutations"
+        ],
+        [
+          "queue.Accepted",
+          "queued.Condition"
+        ],
+        [
+          "getHistory.History",
+          "travel.self"
+        ],
+        [
+          "travel.Succeeded",
+          "travelled.Condition"
+        ],
+        [
+          "out.OK",
+          "result.Accepted"
+        ],
+        [
+          "entry.then",
+          "status.execute"
+        ],
+        [
+          "status.then",
+          "ready.execute"
+        ],
+        [
+          "ready.then",
+          "allowed.execute"
+        ],
+        [
+          "allowed.then",
+          "has.execute"
+        ],
+        [
+          "has.then",
+          "edits.execute"
+        ],
+        [
+          "edits.then",
+          "queue.execute"
+        ],
+        [
+          "queue.then",
+          "queued.execute"
+        ],
+        [
+          "queued.then",
+          "travel.execute"
+        ],
+        [
+          "travel.then",
+          "travelled.execute"
+        ],
+        [
+          "travelled.then",
+          "schedule.execute"
+        ],
+        [
+          "schedule.then",
+          "okstatus.execute"
+        ],
+        [
+          "okstatus.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "allowed.else",
+          "result.execute"
+        ],
+        [
+          "has.else",
+          "result.execute"
+        ],
+        [
+          "queued.else",
+          "result.execute"
+        ],
+        [
+          "travelled.else",
+          "cancel.execute"
+        ],
+        [
+          "cancel.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "BaselineCurrent",
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getStorage",
+          "kind": "get",
+          "var": "Storage"
+        },
+        {
+          "id": "getSessionKey",
+          "kind": "get",
+          "var": "SessionKey"
+        },
+        {
+          "id": "load",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenLayouts:LoadLayout",
+          "defaults": {
+            "Draft": "false",
+            "BeforeRevision": "0"
+          }
+        },
+        {
+          "id": "status",
+          "kind": "set",
+          "var": "LastStatus"
+        },
+        {
+          "id": "missing",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "absent",
+          "kind": "branch"
+        },
+        {
+          "id": "getBaselineDocument",
+          "kind": "get",
+          "var": "BaselineDocument"
+        },
+        {
+          "id": "base",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Revision"
+        },
+        {
+          "id": "zero",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_Int64Int64",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "new",
+          "kind": "set",
+          "var": "local:OK"
+        },
+        {
+          "id": "readable",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "healthy",
+          "kind": "branch"
+        },
+        {
+          "id": "diskrev",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Revision"
+        },
+        {
+          "id": "diskid",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:ContentID"
+        },
+        {
+          "id": "baseid",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:ContentID"
+        },
+        {
+          "id": "samerevision",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_Int64Int64",
+          "defaults": {}
+        },
+        {
+          "id": "sameid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "same0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "equal",
+          "kind": "set",
+          "var": "local:OK"
+        },
+        {
+          "id": "ok",
+          "kind": "get",
+          "var": "local:OK"
+        },
+        {
+          "id": "matched",
+          "kind": "branch"
+        },
+        {
+          "id": "conflict",
+          "kind": "set",
+          "var": "LastStatus",
+          "defaults": {
+            "LastStatus": "8"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        }
+      ],
+      "links": [
+        [
+          "getStorage.Storage",
+          "load.self"
+        ],
+        [
+          "getSessionKey.SessionKey",
+          "load.Key"
+        ],
+        [
+          "load.Status",
+          "status.LastStatus"
+        ],
+        [
+          "load.Status",
+          "missing.A"
+        ],
+        [
+          "missing.ReturnValue",
+          "absent.Condition"
+        ],
+        [
+          "getBaselineDocument.BaselineDocument",
+          "base.self"
+        ],
+        [
+          "base.Revision",
+          "zero.A"
+        ],
+        [
+          "zero.ReturnValue",
+          "new.OK"
+        ],
+        [
+          "load.Status",
+          "readable.A"
+        ],
+        [
+          "readable.ReturnValue",
+          "healthy.Condition"
+        ],
+        [
+          "load.Document",
+          "diskrev.self"
+        ],
+        [
+          "load.Document",
+          "diskid.self"
+        ],
+        [
+          "getBaselineDocument.BaselineDocument",
+          "baseid.self"
+        ],
+        [
+          "base.Revision",
+          "samerevision.A"
+        ],
+        [
+          "diskrev.Revision",
+          "samerevision.B"
+        ],
+        [
+          "baseid.ContentID",
+          "sameid.A"
+        ],
+        [
+          "diskid.ContentID",
+          "sameid.B"
+        ],
+        [
+          "samerevision.ReturnValue",
+          "same0.A"
+        ],
+        [
+          "sameid.ReturnValue",
+          "same0.B"
+        ],
+        [
+          "same0.ReturnValue",
+          "equal.OK"
+        ],
+        [
+          "ok.OK",
+          "matched.Condition"
+        ],
+        [
+          "out.OK",
+          "result.Accepted"
+        ],
+        [
+          "entry.then",
+          "load.execute"
+        ],
+        [
+          "load.then",
+          "status.execute"
+        ],
+        [
+          "status.then",
+          "absent.execute"
+        ],
+        [
+          "absent.then",
+          "new.execute"
+        ],
+        [
+          "new.then",
+          "matched.execute"
+        ],
+        [
+          "matched.then",
+          "result.execute"
+        ],
+        [
+          "matched.else",
+          "conflict.execute"
+        ],
+        [
+          "conflict.then",
+          "result.execute"
+        ],
+        [
+          "absent.else",
+          "healthy.execute"
+        ],
+        [
+          "healthy.then",
+          "equal.execute"
+        ],
+        [
+          "equal.then",
+          "matched.execute"
+        ],
+        [
+          "healthy.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "SaveCurrent",
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "status",
+          "kind": "set",
+          "var": "LastStatus",
+          "defaults": {
+            "LastStatus": "9"
+          }
+        },
+        {
+          "id": "ready",
+          "kind": "call",
+          "function": "self:CanEdit",
+          "defaults": {}
+        },
+        {
+          "id": "allowed",
+          "kind": "branch"
+        },
+        {
+          "id": "current",
+          "kind": "call",
+          "function": "self:BaselineCurrent",
+          "defaults": {}
+        },
+        {
+          "id": "unchanged",
+          "kind": "branch"
+        },
+        {
+          "id": "getStorage",
+          "kind": "get",
+          "var": "Storage"
+        },
+        {
+          "id": "getSessionKey",
+          "kind": "get",
+          "var": "SessionKey"
+        },
+        {
+          "id": "getWorkingDocument",
+          "kind": "get",
+          "var": "WorkingDocument"
+        },
+        {
+          "id": "save",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenLayouts:SaveLayout",
+          "defaults": {
+            "Draft": "false",
+            "BaseRevision": "0",
+            "BaseID": ""
+          }
+        },
+        {
+          "id": "savedstatus",
+          "kind": "set",
+          "var": "LastStatus"
+        },
+        {
+          "id": "success",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "saved",
+          "kind": "branch"
+        },
+        {
+          "id": "baseline",
+          "kind": "set",
+          "var": "BaselineDocument"
+        },
+        {
+          "id": "getHistory",
+          "kind": "get",
+          "var": "History"
+        },
+        {
+          "id": "mark",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenHistory:MarkSaved",
+          "defaults": {}
+        },
+        {
+          "id": "pending",
+          "kind": "set",
+          "var": "DraftPending",
+          "defaults": {
+            "DraftPending": "false"
+          }
+        },
+        {
+          "id": "clear",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenLayouts:ClearDraft",
+          "defaults": {}
+        },
+        {
+          "id": "cleared",
+          "kind": "branch"
+        },
+        {
+          "id": "draftok",
+          "kind": "set",
+          "var": "LastDraftStatus",
+          "defaults": {
+            "LastDraftStatus": "1"
+          }
+        },
+        {
+          "id": "draftfail",
+          "kind": "set",
+          "var": "LastDraftStatus",
+          "defaults": {
+            "LastDraftStatus": "6"
+          }
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        }
+      ],
+      "links": [
+        [
+          "ready.Ready",
+          "allowed.Condition"
+        ],
+        [
+          "current.Accepted",
+          "unchanged.Condition"
+        ],
+        [
+          "getStorage.Storage",
+          "save.self"
+        ],
+        [
+          "getSessionKey.SessionKey",
+          "save.Key"
+        ],
+        [
+          "getWorkingDocument.WorkingDocument",
+          "save.Document"
+        ],
+        [
+          "save.Status",
+          "savedstatus.LastStatus"
+        ],
+        [
+          "save.Status",
+          "success.A"
+        ],
+        [
+          "success.ReturnValue",
+          "saved.Condition"
+        ],
+        [
+          "save.SavedDocument",
+          "baseline.BaselineDocument"
+        ],
+        [
+          "getHistory.History",
+          "mark.self"
+        ],
+        [
+          "getStorage.Storage",
+          "clear.self"
+        ],
+        [
+          "getSessionKey.SessionKey",
+          "clear.Key"
+        ],
+        [
+          "clear.Cleared",
+          "cleared.Condition"
+        ],
+        [
+          "out.OK",
+          "result.Accepted"
+        ],
+        [
+          "entry.then",
+          "status.execute"
+        ],
+        [
+          "status.then",
+          "ready.execute"
+        ],
+        [
+          "ready.then",
+          "allowed.execute"
+        ],
+        [
+          "allowed.then",
+          "current.execute"
+        ],
+        [
+          "current.then",
+          "unchanged.execute"
+        ],
+        [
+          "unchanged.then",
+          "save.execute"
+        ],
+        [
+          "save.then",
+          "savedstatus.execute"
+        ],
+        [
+          "savedstatus.then",
+          "saved.execute"
+        ],
+        [
+          "saved.then",
+          "baseline.execute"
+        ],
+        [
+          "baseline.then",
+          "mark.execute"
+        ],
+        [
+          "mark.then",
+          "pending.execute"
+        ],
+        [
+          "pending.then",
+          "clear.execute"
+        ],
+        [
+          "clear.then",
+          "cleared.execute"
+        ],
+        [
+          "cleared.then",
+          "draftok.execute"
+        ],
+        [
+          "draftok.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "cleared.else",
+          "draftfail.execute"
+        ],
+        [
+          "draftfail.then",
+          "yes.execute"
+        ],
+        [
+          "allowed.else",
+          "result.execute"
+        ],
+        [
+          "unchanged.else",
+          "result.execute"
+        ],
+        [
+          "saved.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "DiscardCurrent",
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "status",
+          "kind": "set",
+          "var": "LastStatus",
+          "defaults": {
+            "LastStatus": "9"
+          }
+        },
+        {
+          "id": "getEditing",
+          "kind": "get",
+          "var": "Editing"
+        },
+        {
+          "id": "editing",
+          "kind": "branch"
+        },
+        {
+          "id": "getRecoveryPending",
+          "kind": "get",
+          "var": "RecoveryPending"
+        },
+        {
+          "id": "decided",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "norecovery",
+          "kind": "branch"
+        },
+        {
+          "id": "getStorage",
+          "kind": "get",
+          "var": "Storage"
+        },
+        {
+          "id": "getBaselineDocument",
+          "kind": "get",
+          "var": "BaselineDocument"
+        },
+        {
+          "id": "clone",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenLayouts:CloneLayout",
+          "defaults": {}
+        },
+        {
+          "id": "copyvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "apply",
+          "kind": "call",
+          "function": "self:BeginLayout",
+          "defaults": {}
+        },
+        {
+          "id": "applied",
+          "kind": "branch"
+        },
+        {
+          "id": "working",
+          "kind": "set",
+          "var": "WorkingDocument"
+        },
+        {
+          "id": "getHistory",
+          "kind": "get",
+          "var": "History"
+        },
+        {
+          "id": "getWorkingDocument",
+          "kind": "get",
+          "var": "WorkingDocument"
+        },
+        {
+          "id": "initialize",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenHistory:Initialize",
+          "defaults": {}
+        },
+        {
+          "id": "pending",
+          "kind": "set",
+          "var": "DraftPending",
+          "defaults": {
+            "DraftPending": "false"
+          }
+        },
+        {
+          "id": "getSessionKey",
+          "kind": "get",
+          "var": "SessionKey"
+        },
+        {
+          "id": "clear",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenLayouts:ClearDraft",
+          "defaults": {}
+        },
+        {
+          "id": "cleared",
+          "kind": "branch"
+        },
+        {
+          "id": "draftok",
+          "kind": "set",
+          "var": "LastDraftStatus",
+          "defaults": {
+            "LastDraftStatus": "1"
+          }
+        },
+        {
+          "id": "draftfail",
+          "kind": "set",
+          "var": "LastDraftStatus",
+          "defaults": {
+            "LastDraftStatus": "6"
+          }
+        },
+        {
+          "id": "okstatus",
+          "kind": "set",
+          "var": "LastStatus",
+          "defaults": {
+            "LastStatus": "1"
+          }
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        }
+      ],
+      "links": [
+        [
+          "getEditing.Editing",
+          "editing.Condition"
+        ],
+        [
+          "getRecoveryPending.RecoveryPending",
+          "decided.A"
+        ],
+        [
+          "decided.ReturnValue",
+          "norecovery.Condition"
+        ],
+        [
+          "getStorage.Storage",
+          "clone.self"
+        ],
+        [
+          "getBaselineDocument.BaselineDocument",
+          "clone.Document"
+        ],
+        [
+          "clone.DocumentCopy",
+          "copyvalid.Object"
+        ],
+        [
+          "copyvalid.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "clone.DocumentCopy",
+          "apply.Document"
+        ],
+        [
+          "apply.Accepted",
+          "applied.Condition"
+        ],
+        [
+          "clone.DocumentCopy",
+          "working.WorkingDocument"
+        ],
+        [
+          "getHistory.History",
+          "initialize.self"
+        ],
+        [
+          "getWorkingDocument.WorkingDocument",
+          "initialize.Document"
+        ],
+        [
+          "getStorage.Storage",
+          "clear.self"
+        ],
+        [
+          "getSessionKey.SessionKey",
+          "clear.Key"
+        ],
+        [
+          "clear.Cleared",
+          "cleared.Condition"
+        ],
+        [
+          "out.OK",
+          "result.Accepted"
+        ],
+        [
+          "entry.then",
+          "status.execute"
+        ],
+        [
+          "status.then",
+          "editing.execute"
+        ],
+        [
+          "editing.then",
+          "norecovery.execute"
+        ],
+        [
+          "norecovery.then",
+          "clone.execute"
+        ],
+        [
+          "clone.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "apply.execute"
+        ],
+        [
+          "apply.then",
+          "applied.execute"
+        ],
+        [
+          "applied.then",
+          "working.execute"
+        ],
+        [
+          "working.then",
+          "initialize.execute"
+        ],
+        [
+          "initialize.then",
+          "pending.execute"
+        ],
+        [
+          "pending.then",
+          "clear.execute"
+        ],
+        [
+          "clear.then",
+          "cleared.execute"
+        ],
+        [
+          "cleared.then",
+          "draftok.execute"
+        ],
+        [
+          "draftok.then",
+          "okstatus.execute"
+        ],
+        [
+          "okstatus.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "cleared.else",
+          "draftfail.execute"
+        ],
+        [
+          "draftfail.then",
+          "okstatus.execute"
+        ],
+        [
+          "editing.else",
+          "result.execute"
+        ],
+        [
+          "norecovery.else",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ],
+        [
+          "applied.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "CloseSession",
+      "inputs": [
+        {
+          "name": "SaveChanges",
+          "type": "bool"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "save",
+          "kind": "branch"
+        },
+        {
+          "id": "savechanges",
+          "kind": "call",
+          "function": "self:SaveCurrent",
+          "defaults": {}
+        },
+        {
+          "id": "saved",
+          "kind": "branch"
+        },
+        {
+          "id": "discard",
+          "kind": "call",
+          "function": "self:DiscardCurrent",
+          "defaults": {}
+        },
+        {
+          "id": "discarded",
+          "kind": "branch"
+        },
+        {
+          "id": "closed",
+          "kind": "set",
+          "var": "Editing",
+          "defaults": {
+            "Editing": "false"
+          }
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        }
+      ],
+      "links": [
+        [
+          "entry.SaveChanges",
+          "save.Condition"
+        ],
+        [
+          "savechanges.Accepted",
+          "saved.Condition"
+        ],
+        [
+          "discard.Accepted",
+          "discarded.Condition"
+        ],
+        [
+          "out.OK",
+          "result.Accepted"
+        ],
+        [
+          "entry.then",
+          "save.execute"
+        ],
+        [
+          "save.then",
+          "savechanges.execute"
+        ],
+        [
+          "savechanges.then",
+          "saved.execute"
+        ],
+        [
+          "saved.then",
+          "closed.execute"
+        ],
+        [
+          "closed.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "save.else",
+          "discard.execute"
+        ],
+        [
+          "discard.then",
+          "discarded.execute"
+        ],
+        [
+          "discarded.then",
+          "closed.execute"
+        ],
+        [
+          "saved.else",
+          "result.execute"
+        ],
+        [
+          "discarded.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "CheckRecovery",
+      "nodes": [
+        {
+          "id": "getStorage",
+          "kind": "get",
+          "var": "Storage"
+        },
+        {
+          "id": "getSessionKey",
+          "kind": "get",
+          "var": "SessionKey"
+        },
+        {
+          "id": "load",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenLayouts:LoadLayout",
+          "defaults": {
+            "Draft": "true",
+            "BeforeRevision": "0"
+          }
+        },
+        {
+          "id": "status",
+          "kind": "set",
+          "var": "LastDraftStatus"
+        },
+        {
+          "id": "document",
+          "kind": "set",
+          "var": "RecoveryDocument"
+        },
+        {
+          "id": "pending",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:NotEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "mark",
+          "kind": "set",
+          "var": "RecoveryPending"
+        },
+        {
+          "id": "reset",
+          "kind": "set",
+          "var": "RecoveryMatchesBase",
+          "defaults": {
+            "RecoveryMatchesBase": "false"
+          }
+        },
+        {
+          "id": "validdoc",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "getBaselineDocument",
+          "kind": "get",
+          "var": "BaselineDocument"
+        },
+        {
+          "id": "base",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Revision"
+        },
+        {
+          "id": "baseid",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:ContentID"
+        },
+        {
+          "id": "rev",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:DraftBaseRevision"
+        },
+        {
+          "id": "identity",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:DraftBaseID"
+        },
+        {
+          "id": "known",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_Int64Int64",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "samerev",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_Int64Int64",
+          "defaults": {}
+        },
+        {
+          "id": "sameid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "exactbase0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "exactbase1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "match",
+          "kind": "set",
+          "var": "RecoveryMatchesBase"
+        }
+      ],
+      "links": [
+        [
+          "getStorage.Storage",
+          "load.self"
+        ],
+        [
+          "getSessionKey.SessionKey",
+          "load.Key"
+        ],
+        [
+          "load.Status",
+          "status.LastDraftStatus"
+        ],
+        [
+          "load.Document",
+          "document.RecoveryDocument"
+        ],
+        [
+          "load.Status",
+          "pending.A"
+        ],
+        [
+          "pending.ReturnValue",
+          "mark.RecoveryPending"
+        ],
+        [
+          "load.Document",
+          "validdoc.Object"
+        ],
+        [
+          "validdoc.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "getBaselineDocument.BaselineDocument",
+          "base.self"
+        ],
+        [
+          "getBaselineDocument.BaselineDocument",
+          "baseid.self"
+        ],
+        [
+          "load.Document",
+          "rev.self"
+        ],
+        [
+          "load.Document",
+          "identity.self"
+        ],
+        [
+          "rev.DraftBaseRevision",
+          "known.A"
+        ],
+        [
+          "base.Revision",
+          "samerev.A"
+        ],
+        [
+          "rev.DraftBaseRevision",
+          "samerev.B"
+        ],
+        [
+          "baseid.ContentID",
+          "sameid.A"
+        ],
+        [
+          "identity.DraftBaseID",
+          "sameid.B"
+        ],
+        [
+          "known.ReturnValue",
+          "exactbase0.A"
+        ],
+        [
+          "samerev.ReturnValue",
+          "exactbase0.B"
+        ],
+        [
+          "exactbase0.ReturnValue",
+          "exactbase1.A"
+        ],
+        [
+          "sameid.ReturnValue",
+          "exactbase1.B"
+        ],
+        [
+          "exactbase1.ReturnValue",
+          "match.RecoveryMatchesBase"
+        ],
+        [
+          "entry.then",
+          "load.execute"
+        ],
+        [
+          "load.then",
+          "status.execute"
+        ],
+        [
+          "status.then",
+          "document.execute"
+        ],
+        [
+          "document.then",
+          "mark.execute"
+        ],
+        [
+          "mark.then",
+          "reset.execute"
+        ],
+        [
+          "reset.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "match.execute"
+        ]
+      ]
+    },
+    {
+      "name": "RecoverDraft",
+      "inputs": [
+        {
+          "name": "AcceptMismatchedBase",
+          "type": "bool"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "status",
+          "kind": "set",
+          "var": "LastStatus",
+          "defaults": {
+            "LastStatus": "9"
+          }
+        },
+        {
+          "id": "getBusy",
+          "kind": "get",
+          "var": "Busy"
+        },
+        {
+          "id": "idle",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "getEditing",
+          "kind": "get",
+          "var": "Editing"
+        },
+        {
+          "id": "getRecoveryPending",
+          "kind": "get",
+          "var": "RecoveryPending"
+        },
+        {
+          "id": "getRecoveryDocument",
+          "kind": "get",
+          "var": "RecoveryDocument"
+        },
+        {
+          "id": "validdoc",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "canrecover0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "canrecover1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "canrecover2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "allowed",
+          "kind": "branch"
+        },
+        {
+          "id": "getRecoveryMatchesBase",
+          "kind": "get",
+          "var": "RecoveryMatchesBase"
+        },
+        {
+          "id": "consent0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "confirmed",
+          "kind": "branch"
+        },
+        {
+          "id": "mismatch",
+          "kind": "set",
+          "var": "LastStatus",
+          "defaults": {
+            "LastStatus": "10"
+          }
+        },
+        {
+          "id": "getStorage",
+          "kind": "get",
+          "var": "Storage"
+        },
+        {
+          "id": "clone",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenLayouts:CloneLayout",
+          "defaults": {}
+        },
+        {
+          "id": "copyvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "apply",
+          "kind": "call",
+          "function": "self:BeginLayout",
+          "defaults": {}
+        },
+        {
+          "id": "applied",
+          "kind": "branch"
+        },
+        {
+          "id": "working",
+          "kind": "set",
+          "var": "WorkingDocument"
+        },
+        {
+          "id": "getHistory",
+          "kind": "get",
+          "var": "History"
+        },
+        {
+          "id": "getWorkingDocument",
+          "kind": "get",
+          "var": "WorkingDocument"
+        },
+        {
+          "id": "initialize",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenHistory:Initialize",
+          "defaults": {}
+        },
+        {
+          "id": "dirty",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenHistory:SavedVersion",
+          "defaults": {
+            "SavedVersion": "-1"
+          }
+        },
+        {
+          "id": "pending",
+          "kind": "set",
+          "var": "RecoveryPending",
+          "defaults": {
+            "RecoveryPending": "false"
+          }
+        },
+        {
+          "id": "release",
+          "kind": "set",
+          "var": "RecoveryDocument"
+        },
+        {
+          "id": "version",
+          "kind": "set",
+          "var": "LastDraftVersion",
+          "defaults": {
+            "LastDraftVersion": "-1"
+          }
+        },
+        {
+          "id": "schedule",
+          "kind": "call",
+          "function": "self:ScheduleDraft",
+          "defaults": {}
+        },
+        {
+          "id": "okstatus",
+          "kind": "set",
+          "var": "LastStatus",
+          "defaults": {
+            "LastStatus": "1"
+          }
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        }
+      ],
+      "links": [
+        [
+          "getBusy.Busy",
+          "idle.A"
+        ],
+        [
+          "getRecoveryDocument.RecoveryDocument",
+          "validdoc.Object"
+        ],
+        [
+          "getEditing.Editing",
+          "canrecover0.A"
+        ],
+        [
+          "getRecoveryPending.RecoveryPending",
+          "canrecover0.B"
+        ],
+        [
+          "canrecover0.ReturnValue",
+          "canrecover1.A"
+        ],
+        [
+          "idle.ReturnValue",
+          "canrecover1.B"
+        ],
+        [
+          "canrecover1.ReturnValue",
+          "canrecover2.A"
+        ],
+        [
+          "validdoc.ReturnValue",
+          "canrecover2.B"
+        ],
+        [
+          "canrecover2.ReturnValue",
+          "allowed.Condition"
+        ],
+        [
+          "getRecoveryMatchesBase.RecoveryMatchesBase",
+          "consent0.A"
+        ],
+        [
+          "entry.AcceptMismatchedBase",
+          "consent0.B"
+        ],
+        [
+          "consent0.ReturnValue",
+          "confirmed.Condition"
+        ],
+        [
+          "getStorage.Storage",
+          "clone.self"
+        ],
+        [
+          "getRecoveryDocument.RecoveryDocument",
+          "clone.Document"
+        ],
+        [
+          "clone.DocumentCopy",
+          "copyvalid.Object"
+        ],
+        [
+          "copyvalid.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "clone.DocumentCopy",
+          "apply.Document"
+        ],
+        [
+          "apply.Accepted",
+          "applied.Condition"
+        ],
+        [
+          "clone.DocumentCopy",
+          "working.WorkingDocument"
+        ],
+        [
+          "getHistory.History",
+          "initialize.self"
+        ],
+        [
+          "getWorkingDocument.WorkingDocument",
+          "initialize.Document"
+        ],
+        [
+          "getHistory.History",
+          "dirty.self"
+        ],
+        [
+          "out.OK",
+          "result.Accepted"
+        ],
+        [
+          "entry.then",
+          "status.execute"
+        ],
+        [
+          "status.then",
+          "allowed.execute"
+        ],
+        [
+          "allowed.then",
+          "confirmed.execute"
+        ],
+        [
+          "confirmed.then",
+          "clone.execute"
+        ],
+        [
+          "clone.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "apply.execute"
+        ],
+        [
+          "apply.then",
+          "applied.execute"
+        ],
+        [
+          "applied.then",
+          "working.execute"
+        ],
+        [
+          "working.then",
+          "initialize.execute"
+        ],
+        [
+          "initialize.then",
+          "dirty.execute"
+        ],
+        [
+          "dirty.then",
+          "pending.execute"
+        ],
+        [
+          "pending.then",
+          "release.execute"
+        ],
+        [
+          "release.then",
+          "version.execute"
+        ],
+        [
+          "version.then",
+          "schedule.execute"
+        ],
+        [
+          "schedule.then",
+          "okstatus.execute"
+        ],
+        [
+          "okstatus.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "confirmed.else",
+          "mismatch.execute"
+        ],
+        [
+          "mismatch.then",
+          "result.execute"
+        ],
+        [
+          "allowed.else",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ],
+        [
+          "applied.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "DiscardRecovery",
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "status",
+          "kind": "set",
+          "var": "LastStatus",
+          "defaults": {
+            "LastStatus": "9"
+          }
+        },
+        {
+          "id": "getEditing",
+          "kind": "get",
+          "var": "Editing"
+        },
+        {
+          "id": "getRecoveryPending",
+          "kind": "get",
+          "var": "RecoveryPending"
+        },
+        {
+          "id": "recoverychoice0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "editing",
+          "kind": "branch"
+        },
+        {
+          "id": "getStorage",
+          "kind": "get",
+          "var": "Storage"
+        },
+        {
+          "id": "getSessionKey",
+          "kind": "get",
+          "var": "SessionKey"
+        },
+        {
+          "id": "clear",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenLayouts:ClearDraft",
+          "defaults": {}
+        },
+        {
+          "id": "cleared",
+          "kind": "branch"
+        },
+        {
+          "id": "pending",
+          "kind": "set",
+          "var": "RecoveryPending",
+          "defaults": {
+            "RecoveryPending": "false"
+          }
+        },
+        {
+          "id": "release",
+          "kind": "set",
+          "var": "RecoveryDocument"
+        },
+        {
+          "id": "draft",
+          "kind": "set",
+          "var": "LastDraftStatus",
+          "defaults": {
+            "LastDraftStatus": "1"
+          }
+        },
+        {
+          "id": "okstatus",
+          "kind": "set",
+          "var": "LastStatus",
+          "defaults": {
+            "LastStatus": "1"
+          }
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        },
+        {
+          "id": "failed",
+          "kind": "set",
+          "var": "LastDraftStatus",
+          "defaults": {
+            "LastDraftStatus": "6"
+          }
+        },
+        {
+          "id": "failstatus",
+          "kind": "set",
+          "var": "LastStatus",
+          "defaults": {
+            "LastStatus": "6"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getEditing.Editing",
+          "recoverychoice0.A"
+        ],
+        [
+          "getRecoveryPending.RecoveryPending",
+          "recoverychoice0.B"
+        ],
+        [
+          "recoverychoice0.ReturnValue",
+          "editing.Condition"
+        ],
+        [
+          "getStorage.Storage",
+          "clear.self"
+        ],
+        [
+          "getSessionKey.SessionKey",
+          "clear.Key"
+        ],
+        [
+          "clear.Cleared",
+          "cleared.Condition"
+        ],
+        [
+          "out.OK",
+          "result.Accepted"
+        ],
+        [
+          "entry.then",
+          "status.execute"
+        ],
+        [
+          "status.then",
+          "editing.execute"
+        ],
+        [
+          "editing.then",
+          "clear.execute"
+        ],
+        [
+          "clear.then",
+          "cleared.execute"
+        ],
+        [
+          "cleared.then",
+          "pending.execute"
+        ],
+        [
+          "pending.then",
+          "release.execute"
+        ],
+        [
+          "release.then",
+          "draft.execute"
+        ],
+        [
+          "draft.then",
+          "okstatus.execute"
+        ],
+        [
+          "okstatus.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "editing.else",
+          "result.execute"
+        ],
+        [
+          "cleared.else",
+          "failed.execute"
+        ],
+        [
+          "failed.then",
+          "failstatus.execute"
+        ],
+        [
+          "failstatus.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "FlushDraft",
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getRecoveryPending",
+          "kind": "get",
+          "var": "RecoveryPending"
+        },
+        {
+          "id": "decided",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "getEditing",
+          "kind": "get",
+          "var": "Editing"
+        },
+        {
+          "id": "getDraftEnabled",
+          "kind": "get",
+          "var": "DraftEnabled"
+        },
+        {
+          "id": "getHistory",
+          "kind": "get",
+          "var": "History"
+        },
+        {
+          "id": "historyvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "getStorage",
+          "kind": "get",
+          "var": "Storage"
+        },
+        {
+          "id": "storevalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "getWorkingDocument",
+          "kind": "get",
+          "var": "WorkingDocument"
+        },
+        {
+          "id": "docvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "canflush0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "canflush1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "canflush2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "canflush3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "canflush4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "allowed",
+          "kind": "branch"
+        },
+        {
+          "id": "dirty",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenHistory:IsDirty",
+          "defaults": {}
+        },
+        {
+          "id": "changed",
+          "kind": "branch"
+        },
+        {
+          "id": "version",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenHistory:Version"
+        },
+        {
+          "id": "getLastDraftVersion",
+          "kind": "get",
+          "var": "LastDraftVersion"
+        },
+        {
+          "id": "same",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "getLastDraftStatus",
+          "kind": "get",
+          "var": "LastDraftStatus"
+        },
+        {
+          "id": "previousok",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "alreadywritten0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "already",
+          "kind": "branch"
+        },
+        {
+          "id": "getBaselineDocument",
+          "kind": "get",
+          "var": "BaselineDocument"
+        },
+        {
+          "id": "revision",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Revision"
+        },
+        {
+          "id": "baseid",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:ContentID"
+        },
+        {
+          "id": "getSessionKey",
+          "kind": "get",
+          "var": "SessionKey"
+        },
+        {
+          "id": "save",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenLayouts:SaveLayout",
+          "defaults": {
+            "Draft": "true"
+          }
+        },
+        {
+          "id": "status",
+          "kind": "set",
+          "var": "LastDraftStatus"
+        },
+        {
+          "id": "savedok",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "saved",
+          "kind": "branch"
+        },
+        {
+          "id": "clear",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenLayouts:ClearDraft",
+          "defaults": {}
+        },
+        {
+          "id": "cleared",
+          "kind": "branch"
+        },
+        {
+          "id": "clearok",
+          "kind": "set",
+          "var": "LastDraftStatus",
+          "defaults": {
+            "LastDraftStatus": "1"
+          }
+        },
+        {
+          "id": "clearfail",
+          "kind": "set",
+          "var": "LastDraftStatus",
+          "defaults": {
+            "LastDraftStatus": "6"
+          }
+        },
+        {
+          "id": "remember",
+          "kind": "set",
+          "var": "LastDraftVersion"
+        },
+        {
+          "id": "pending",
+          "kind": "set",
+          "var": "DraftPending",
+          "defaults": {
+            "DraftPending": "false"
+          }
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        },
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "nowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getDraftRetryInterval",
+          "kind": "get",
+          "var": "DraftRetryInterval"
+        },
+        {
+          "id": "retry",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "time",
+          "kind": "set",
+          "var": "DraftDue"
+        },
+        {
+          "id": "again",
+          "kind": "set",
+          "var": "DraftPending",
+          "defaults": {
+            "DraftPending": "true"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getRecoveryPending.RecoveryPending",
+          "decided.A"
+        ],
+        [
+          "getHistory.History",
+          "historyvalid.Object"
+        ],
+        [
+          "getStorage.Storage",
+          "storevalid.Object"
+        ],
+        [
+          "getWorkingDocument.WorkingDocument",
+          "docvalid.Object"
+        ],
+        [
+          "getEditing.Editing",
+          "canflush0.A"
+        ],
+        [
+          "getDraftEnabled.DraftEnabled",
+          "canflush0.B"
+        ],
+        [
+          "canflush0.ReturnValue",
+          "canflush1.A"
+        ],
+        [
+          "decided.ReturnValue",
+          "canflush1.B"
+        ],
+        [
+          "canflush1.ReturnValue",
+          "canflush2.A"
+        ],
+        [
+          "historyvalid.ReturnValue",
+          "canflush2.B"
+        ],
+        [
+          "canflush2.ReturnValue",
+          "canflush3.A"
+        ],
+        [
+          "storevalid.ReturnValue",
+          "canflush3.B"
+        ],
+        [
+          "canflush3.ReturnValue",
+          "canflush4.A"
+        ],
+        [
+          "docvalid.ReturnValue",
+          "canflush4.B"
+        ],
+        [
+          "canflush4.ReturnValue",
+          "allowed.Condition"
+        ],
+        [
+          "getHistory.History",
+          "dirty.self"
+        ],
+        [
+          "dirty.Dirty",
+          "changed.Condition"
+        ],
+        [
+          "getHistory.History",
+          "version.self"
+        ],
+        [
+          "version.Version",
+          "same.A"
+        ],
+        [
+          "getLastDraftVersion.LastDraftVersion",
+          "same.B"
+        ],
+        [
+          "getLastDraftStatus.LastDraftStatus",
+          "previousok.A"
+        ],
+        [
+          "same.ReturnValue",
+          "alreadywritten0.A"
+        ],
+        [
+          "previousok.ReturnValue",
+          "alreadywritten0.B"
+        ],
+        [
+          "alreadywritten0.ReturnValue",
+          "already.Condition"
+        ],
+        [
+          "getBaselineDocument.BaselineDocument",
+          "revision.self"
+        ],
+        [
+          "getBaselineDocument.BaselineDocument",
+          "baseid.self"
+        ],
+        [
+          "getStorage.Storage",
+          "save.self"
+        ],
+        [
+          "getSessionKey.SessionKey",
+          "save.Key"
+        ],
+        [
+          "getWorkingDocument.WorkingDocument",
+          "save.Document"
+        ],
+        [
+          "revision.Revision",
+          "save.BaseRevision"
+        ],
+        [
+          "baseid.ContentID",
+          "save.BaseID"
+        ],
+        [
+          "save.Status",
+          "status.LastDraftStatus"
+        ],
+        [
+          "save.Status",
+          "savedok.A"
+        ],
+        [
+          "savedok.ReturnValue",
+          "saved.Condition"
+        ],
+        [
+          "getStorage.Storage",
+          "clear.self"
+        ],
+        [
+          "getSessionKey.SessionKey",
+          "clear.Key"
+        ],
+        [
+          "clear.Cleared",
+          "cleared.Condition"
+        ],
+        [
+          "version.Version",
+          "remember.LastDraftVersion"
+        ],
+        [
+          "out.OK",
+          "result.Accepted"
+        ],
+        [
+          "now.Seconds",
+          "nowsum.A"
+        ],
+        [
+          "now.PartialSeconds",
+          "nowsum.B"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "retry.A"
+        ],
+        [
+          "getDraftRetryInterval.DraftRetryInterval",
+          "retry.B"
+        ],
+        [
+          "retry.ReturnValue",
+          "time.DraftDue"
+        ],
+        [
+          "entry.then",
+          "allowed.execute"
+        ],
+        [
+          "allowed.then",
+          "dirty.execute"
+        ],
+        [
+          "dirty.then",
+          "changed.execute"
+        ],
+        [
+          "changed.then",
+          "already.execute"
+        ],
+        [
+          "already.then",
+          "pending.execute"
+        ],
+        [
+          "pending.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "already.else",
+          "save.execute"
+        ],
+        [
+          "save.then",
+          "status.execute"
+        ],
+        [
+          "status.then",
+          "saved.execute"
+        ],
+        [
+          "saved.then",
+          "remember.execute"
+        ],
+        [
+          "remember.then",
+          "pending.execute"
+        ],
+        [
+          "saved.else",
+          "time.execute"
+        ],
+        [
+          "time.then",
+          "again.execute"
+        ],
+        [
+          "again.then",
+          "result.execute"
+        ],
+        [
+          "changed.else",
+          "clear.execute"
+        ],
+        [
+          "clear.then",
+          "cleared.execute"
+        ],
+        [
+          "cleared.then",
+          "clearok.execute"
+        ],
+        [
+          "clearok.then",
+          "remember.execute"
+        ],
+        [
+          "cleared.else",
+          "clearfail.execute"
+        ],
+        [
+          "clearfail.then",
+          "time.execute"
+        ],
+        [
+          "allowed.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "PollDraft",
+      "nodes": [
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "nowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getDraftDue",
+          "kind": "get",
+          "var": "DraftDue"
+        },
+        {
+          "id": "due",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getEditing",
+          "kind": "get",
+          "var": "Editing"
+        },
+        {
+          "id": "getDraftEnabled",
+          "kind": "get",
+          "var": "DraftEnabled"
+        },
+        {
+          "id": "getDraftPending",
+          "kind": "get",
+          "var": "DraftPending"
+        },
+        {
+          "id": "pollready0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "pollready1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "pollready2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "ready",
+          "kind": "branch"
+        },
+        {
+          "id": "flush",
+          "kind": "call",
+          "function": "self:FlushDraft",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "now.Seconds",
+          "nowsum.A"
+        ],
+        [
+          "now.PartialSeconds",
+          "nowsum.B"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "due.A"
+        ],
+        [
+          "getDraftDue.DraftDue",
+          "due.B"
+        ],
+        [
+          "getEditing.Editing",
+          "pollready0.A"
+        ],
+        [
+          "getDraftEnabled.DraftEnabled",
+          "pollready0.B"
+        ],
+        [
+          "pollready0.ReturnValue",
+          "pollready1.A"
+        ],
+        [
+          "getDraftPending.DraftPending",
+          "pollready1.B"
+        ],
+        [
+          "pollready1.ReturnValue",
+          "pollready2.A"
+        ],
+        [
+          "due.ReturnValue",
+          "pollready2.B"
+        ],
+        [
+          "pollready2.ReturnValue",
+          "ready.Condition"
+        ],
+        [
+          "entry.then",
+          "ready.execute"
+        ],
+        [
+          "ready.then",
+          "flush.execute"
+        ]
+      ]
+    }
+  ]
+}

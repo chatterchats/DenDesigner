@@ -1,0 +1,2321 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenRuntimeCoordinator",
+  "parent": "/Script/Engine.ActorComponent",
+  "defaults": {
+    "PrimaryComponentTick.bCanEverTick": "true",
+    "PrimaryComponentTick.bStartWithTickEnabled": "true"
+  },
+  "variables": [
+    {
+      "name": "Host",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenEditorHost"
+    },
+    {
+      "name": "Player",
+      "type": "object:/Script/Engine.PlayerController"
+    },
+    {
+      "name": "Shortcut",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenShortcut"
+    },
+    {
+      "name": "ShortcutDocument",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenPreferencesSave"
+    },
+    {
+      "name": "CampaignID",
+      "type": "string"
+    },
+    {
+      "name": "ResolvedKey",
+      "type": "string"
+    },
+    {
+      "name": "LayoutStatus",
+      "type": "int"
+    },
+    {
+      "name": "Initialized",
+      "type": "bool"
+    },
+    {
+      "name": "OpenRequested",
+      "type": "bool"
+    },
+    {
+      "name": "NextWorldCheck",
+      "type": "double"
+    },
+    {
+      "name": "Notice",
+      "type": "object:/DenDesignerGF/Runtime/WBP_DenStartupNotice"
+    },
+    {
+      "name": "NoticeUntil",
+      "type": "double"
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "tick",
+        "kind": "event",
+        "name": "ReceiveTick"
+      },
+      {
+        "id": "poll",
+        "kind": "call",
+        "function": "self:Poll",
+        "defaults": {}
+      },
+      {
+        "id": "end",
+        "kind": "event",
+        "name": "ReceiveEndPlay"
+      },
+      {
+        "id": "shutdown",
+        "kind": "call",
+        "function": "self:Shutdown",
+        "defaults": {}
+      }
+    ],
+    "links": [
+      [
+        "tick.then",
+        "poll.execute"
+      ],
+      [
+        "end.then",
+        "shutdown.execute"
+      ]
+    ]
+  },
+  "functions": [
+    {
+      "name": "CampaignText",
+      "inputs": [
+        {
+          "name": "ID",
+          "type": "struct:/Script/CoreUObject.Guid"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CampaignID",
+          "type": "string"
+        },
+        {
+          "name": "Known",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Value",
+          "type": "string"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "valid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetGuidLibrary:IsValid_Guid",
+          "defaults": {}
+        },
+        {
+          "id": "known",
+          "kind": "branch"
+        },
+        {
+          "id": "text",
+          "kind": "call",
+          "function": "/Script/Engine.KismetGuidLibrary:Conv_GuidToString",
+          "defaults": {}
+        },
+        {
+          "id": "canonical",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Replace",
+          "defaults": {
+            "From": "-",
+            "To": "",
+            "SearchCase": "CaseSensitive"
+          }
+        },
+        {
+          "id": "save",
+          "kind": "set",
+          "var": "local:Value"
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:Value"
+        }
+      ],
+      "links": [
+        [
+          "entry.ID",
+          "valid.InGuid"
+        ],
+        [
+          "valid.ReturnValue",
+          "known.Condition"
+        ],
+        [
+          "entry.ID",
+          "text.InGuid"
+        ],
+        [
+          "text.ReturnValue",
+          "canonical.SourceString"
+        ],
+        [
+          "canonical.ReturnValue",
+          "save.Value"
+        ],
+        [
+          "out.Value",
+          "result.CampaignID"
+        ],
+        [
+          "valid.ReturnValue",
+          "result.Known"
+        ],
+        [
+          "entry.then",
+          "known.execute"
+        ],
+        [
+          "known.then",
+          "save.execute"
+        ],
+        [
+          "save.then",
+          "result.execute"
+        ],
+        [
+          "known.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ReadActiveCampaign",
+      "outputs": [
+        {
+          "name": "CampaignID",
+          "type": "string"
+        },
+        {
+          "name": "Known",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "instance",
+          "kind": "call",
+          "function": "/Script/Bruno.BrunoGameInstance:GetBrunoGameInstance",
+          "defaults": {}
+        },
+        {
+          "id": "exists",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "data",
+          "kind": "get",
+          "var": "/Script/Bruno.BrunoGameInstance:StrategyData"
+        },
+        {
+          "id": "strategy",
+          "kind": "break_struct",
+          "struct": "/Script/Bruno.BrunoStrategyData"
+        },
+        {
+          "id": "format",
+          "kind": "call",
+          "function": "self:CampaignText",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "self.self",
+          "instance.WorldContext"
+        ],
+        [
+          "instance.ReturnValue",
+          "exists.Object"
+        ],
+        [
+          "exists.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "instance.ReturnValue",
+          "data.self"
+        ],
+        [
+          "data.StrategyData",
+          "strategy.BrunoStrategyData"
+        ],
+        [
+          "strategy.CampaignTelemetryID",
+          "format.ID"
+        ],
+        [
+          "format.CampaignID",
+          "result.CampaignID"
+        ],
+        [
+          "format.Known",
+          "result.Known"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "format.execute"
+        ],
+        [
+          "format.then",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "EnsureHost",
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "getHost",
+          "kind": "get",
+          "var": "Host"
+        },
+        {
+          "id": "host",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "exists",
+          "kind": "branch"
+        },
+        {
+          "id": "owner",
+          "kind": "call",
+          "function": "/Script/Engine.ActorComponent:GetOwner",
+          "defaults": {}
+        },
+        {
+          "id": "transform",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeTransform",
+          "defaults": {
+            "Scale": "1,1,1"
+          }
+        },
+        {
+          "id": "spawn",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:BeginDeferredActorSpawnFromClass",
+          "defaults": {
+            "ActorClass": "/DenDesignerGF/Runtime/BP_DenEditorHost",
+            "CollisionHandlingOverride": "AlwaysSpawn"
+          }
+        },
+        {
+          "id": "finish",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:FinishSpawningActor",
+          "defaults": {}
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenEditorHost"
+        },
+        {
+          "id": "remember",
+          "kind": "set",
+          "var": "Host"
+        },
+        {
+          "id": "services",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenEditorHost:EnsureServices",
+          "defaults": {}
+        },
+        {
+          "id": "ready",
+          "kind": "branch"
+        },
+        {
+          "id": "preferences",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenEditorHost:ReadEditorPreferences",
+          "defaults": {}
+        },
+        {
+          "id": "applypreferences",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenEditorHost:ApplyEditorPreferences",
+          "defaults": {}
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        }
+      ],
+      "links": [
+        [
+          "getHost.Host",
+          "host.Object"
+        ],
+        [
+          "host.ReturnValue",
+          "exists.Condition"
+        ],
+        [
+          "self.self",
+          "owner.self"
+        ],
+        [
+          "self.self",
+          "spawn.WorldContextObject"
+        ],
+        [
+          "owner.ReturnValue",
+          "spawn.Owner"
+        ],
+        [
+          "transform.ReturnValue",
+          "spawn.SpawnTransform"
+        ],
+        [
+          "spawn.ReturnValue",
+          "finish.Actor"
+        ],
+        [
+          "transform.ReturnValue",
+          "finish.SpawnTransform"
+        ],
+        [
+          "finish.ReturnValue",
+          "cast.Object"
+        ],
+        [
+          "cast.AsBP Den Editor Host",
+          "remember.Host"
+        ],
+        [
+          "getHost.Host",
+          "services.self"
+        ],
+        [
+          "services.Accepted",
+          "ready.Condition"
+        ],
+        [
+          "getHost.Host",
+          "preferences.self"
+        ],
+        [
+          "getHost.Host",
+          "applypreferences.self"
+        ],
+        [
+          "out.OK",
+          "result.Accepted"
+        ],
+        [
+          "entry.then",
+          "exists.execute"
+        ],
+        [
+          "exists.then",
+          "services.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "exists.else",
+          "spawn.execute"
+        ],
+        [
+          "spawn.then",
+          "finish.execute"
+        ],
+        [
+          "finish.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "remember.execute"
+        ],
+        [
+          "remember.then",
+          "services.execute"
+        ],
+        [
+          "services.then",
+          "ready.execute"
+        ],
+        [
+          "ready.then",
+          "preferences.execute"
+        ],
+        [
+          "preferences.then",
+          "applypreferences.execute"
+        ],
+        [
+          "applypreferences.then",
+          "yes.execute"
+        ],
+        [
+          "cast.CastFailed",
+          "result.execute"
+        ],
+        [
+          "ready.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "PrepareLayout",
+      "inputs": [
+        {
+          "name": "CampaignID",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "ensure",
+          "kind": "call",
+          "function": "self:EnsureHost",
+          "defaults": {}
+        },
+        {
+          "id": "ready",
+          "kind": "branch"
+        },
+        {
+          "id": "getHost",
+          "kind": "get",
+          "var": "Host"
+        },
+        {
+          "id": "flush",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenEditorHost:FlushDraft",
+          "defaults": {}
+        },
+        {
+          "id": "detach",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenEditorHost:DetachEditor",
+          "defaults": {
+            "RestoreView": "true"
+          }
+        },
+        {
+          "id": "cancel",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenEditorHost:CancelWork",
+          "defaults": {}
+        },
+        {
+          "id": "closed",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorHost:Editing",
+          "defaults": {
+            "Editing": "false"
+          }
+        },
+        {
+          "id": "campaign",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorHost:ActiveCampaignID"
+        },
+        {
+          "id": "storage",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorHost:Storage"
+        },
+        {
+          "id": "resolve",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenLayouts:ResolveLayout",
+          "defaults": {}
+        },
+        {
+          "id": "status",
+          "kind": "set",
+          "var": "LayoutStatus"
+        },
+        {
+          "id": "key",
+          "kind": "set",
+          "var": "ResolvedKey"
+        },
+        {
+          "id": "open",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenEditorHost:OpenSession",
+          "defaults": {}
+        },
+        {
+          "id": "background",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorHost:Editing",
+          "defaults": {
+            "Editing": "false"
+          }
+        },
+        {
+          "id": "applied",
+          "kind": "branch"
+        },
+        {
+          "id": "clearold",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenEditorHost:BeginBatch",
+          "defaults": {
+            "ReplaceAll": "true"
+          }
+        },
+        {
+          "id": "cached",
+          "kind": "set",
+          "var": "CampaignID"
+        },
+        {
+          "id": "initialized",
+          "kind": "set",
+          "var": "Initialized",
+          "defaults": {
+            "Initialized": "true"
+          }
+        }
+      ],
+      "links": [
+        [
+          "ensure.Accepted",
+          "ready.Condition"
+        ],
+        [
+          "getHost.Host",
+          "flush.self"
+        ],
+        [
+          "getHost.Host",
+          "detach.self"
+        ],
+        [
+          "getHost.Host",
+          "cancel.self"
+        ],
+        [
+          "getHost.Host",
+          "closed.self"
+        ],
+        [
+          "entry.CampaignID",
+          "campaign.ActiveCampaignID"
+        ],
+        [
+          "getHost.Host",
+          "campaign.self"
+        ],
+        [
+          "getHost.Host",
+          "storage.self"
+        ],
+        [
+          "storage.Storage",
+          "resolve.self"
+        ],
+        [
+          "entry.CampaignID",
+          "resolve.CampaignID"
+        ],
+        [
+          "resolve.Status",
+          "status.LayoutStatus"
+        ],
+        [
+          "resolve.Key",
+          "key.ResolvedKey"
+        ],
+        [
+          "getHost.Host",
+          "open.self"
+        ],
+        [
+          "resolve.Key",
+          "open.Key"
+        ],
+        [
+          "resolve.Document",
+          "open.Document"
+        ],
+        [
+          "resolve.Status",
+          "open.LoadStatus"
+        ],
+        [
+          "getHost.Host",
+          "background.self"
+        ],
+        [
+          "open.Accepted",
+          "applied.Condition"
+        ],
+        [
+          "getHost.Host",
+          "clearold.self"
+        ],
+        [
+          "open.Accepted",
+          "result.Accepted"
+        ],
+        [
+          "entry.CampaignID",
+          "cached.CampaignID"
+        ],
+        [
+          "entry.then",
+          "ensure.execute"
+        ],
+        [
+          "ensure.then",
+          "ready.execute"
+        ],
+        [
+          "ready.then",
+          "flush.execute"
+        ],
+        [
+          "flush.then",
+          "detach.execute"
+        ],
+        [
+          "detach.then",
+          "cancel.execute"
+        ],
+        [
+          "cancel.then",
+          "closed.execute"
+        ],
+        [
+          "closed.then",
+          "campaign.execute"
+        ],
+        [
+          "campaign.then",
+          "resolve.execute"
+        ],
+        [
+          "resolve.then",
+          "status.execute"
+        ],
+        [
+          "status.then",
+          "key.execute"
+        ],
+        [
+          "key.then",
+          "open.execute"
+        ],
+        [
+          "open.then",
+          "background.execute"
+        ],
+        [
+          "background.then",
+          "applied.execute"
+        ],
+        [
+          "applied.then",
+          "cached.execute"
+        ],
+        [
+          "cached.then",
+          "initialized.execute"
+        ],
+        [
+          "initialized.then",
+          "result.execute"
+        ],
+        [
+          "ready.else",
+          "result.execute"
+        ],
+        [
+          "applied.else",
+          "clearold.execute"
+        ],
+        [
+          "clearold.then",
+          "cached.execute"
+        ]
+      ]
+    },
+    {
+      "name": "UpdateShortcut",
+      "nodes": [
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "getShortcut",
+          "kind": "get",
+          "var": "Shortcut"
+        },
+        {
+          "id": "shortcut",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "exists",
+          "kind": "branch"
+        },
+        {
+          "id": "create",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:SpawnObject",
+          "defaults": {
+            "ObjectClass": "/DenDesignerGF/Runtime/BP_DenShortcut"
+          }
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenShortcut"
+        },
+        {
+          "id": "save",
+          "kind": "set",
+          "var": "Shortcut"
+        },
+        {
+          "id": "getHost",
+          "kind": "get",
+          "var": "Host"
+        },
+        {
+          "id": "doc",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorHost:PreferencesDocument"
+        },
+        {
+          "id": "getShortcutDocument",
+          "kind": "get",
+          "var": "ShortcutDocument"
+        },
+        {
+          "id": "different",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:NotEqual_ObjectObject",
+          "defaults": {}
+        },
+        {
+          "id": "changed",
+          "kind": "branch"
+        },
+        {
+          "id": "configure",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenShortcut:Configure",
+          "defaults": {}
+        },
+        {
+          "id": "cached",
+          "kind": "set",
+          "var": "ShortcutDocument"
+        }
+      ],
+      "links": [
+        [
+          "getShortcut.Shortcut",
+          "shortcut.Object"
+        ],
+        [
+          "shortcut.ReturnValue",
+          "exists.Condition"
+        ],
+        [
+          "self.self",
+          "create.Outer"
+        ],
+        [
+          "create.ReturnValue",
+          "cast.Object"
+        ],
+        [
+          "cast.AsBP Den Shortcut",
+          "save.Shortcut"
+        ],
+        [
+          "getHost.Host",
+          "doc.self"
+        ],
+        [
+          "doc.PreferencesDocument",
+          "different.A"
+        ],
+        [
+          "getShortcutDocument.ShortcutDocument",
+          "different.B"
+        ],
+        [
+          "different.ReturnValue",
+          "changed.Condition"
+        ],
+        [
+          "getShortcut.Shortcut",
+          "configure.self"
+        ],
+        [
+          "doc.PreferencesDocument",
+          "configure.Document"
+        ],
+        [
+          "doc.PreferencesDocument",
+          "cached.ShortcutDocument"
+        ],
+        [
+          "entry.then",
+          "exists.execute"
+        ],
+        [
+          "exists.then",
+          "changed.execute"
+        ],
+        [
+          "changed.then",
+          "configure.execute"
+        ],
+        [
+          "configure.then",
+          "cached.execute"
+        ],
+        [
+          "exists.else",
+          "create.execute"
+        ],
+        [
+          "create.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "save.execute"
+        ],
+        [
+          "save.then",
+          "configure.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ClearNotice",
+      "nodes": [
+        {
+          "id": "getNotice",
+          "kind": "get",
+          "var": "Notice"
+        },
+        {
+          "id": "notice",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "exists",
+          "kind": "branch"
+        },
+        {
+          "id": "remove",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:RemoveFromParent",
+          "defaults": {}
+        },
+        {
+          "id": "clear",
+          "kind": "set",
+          "var": "Notice"
+        }
+      ],
+      "links": [
+        [
+          "getNotice.Notice",
+          "notice.Object"
+        ],
+        [
+          "notice.ReturnValue",
+          "exists.Condition"
+        ],
+        [
+          "getNotice.Notice",
+          "remove.self"
+        ],
+        [
+          "entry.then",
+          "exists.execute"
+        ],
+        [
+          "exists.then",
+          "remove.execute"
+        ],
+        [
+          "remove.then",
+          "clear.execute"
+        ],
+        [
+          "exists.else",
+          "clear.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ShowNotice",
+      "inputs": [
+        {
+          "name": "Message",
+          "type": "string"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "clear",
+          "kind": "call",
+          "function": "self:ClearNotice",
+          "defaults": {}
+        },
+        {
+          "id": "getPlayer",
+          "kind": "get",
+          "var": "Player"
+        },
+        {
+          "id": "create",
+          "kind": "call",
+          "function": "/Script/UMG.WidgetBlueprintLibrary:Create",
+          "defaults": {
+            "WidgetType": "/DenDesignerGF/Runtime/WBP_DenStartupNotice"
+          }
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/WBP_DenStartupNotice"
+        },
+        {
+          "id": "save",
+          "kind": "set",
+          "var": "Notice"
+        },
+        {
+          "id": "getNotice",
+          "kind": "get",
+          "var": "Notice"
+        },
+        {
+          "id": "text",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/WBP_DenStartupNotice:Message"
+        },
+        {
+          "id": "message",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {}
+        },
+        {
+          "id": "show",
+          "kind": "call",
+          "function": "/Script/UMG.UserWidget:AddToViewport",
+          "defaults": {
+            "ZOrder": "100"
+          }
+        },
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "nowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "due",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {
+            "B": "8"
+          }
+        },
+        {
+          "id": "expires",
+          "kind": "set",
+          "var": "NoticeUntil"
+        }
+      ],
+      "links": [
+        [
+          "self.self",
+          "create.WorldContextObject"
+        ],
+        [
+          "getPlayer.Player",
+          "create.OwningPlayer"
+        ],
+        [
+          "create.ReturnValue",
+          "cast.Object"
+        ],
+        [
+          "cast.AsWBP Den Startup Notice",
+          "save.Notice"
+        ],
+        [
+          "getNotice.Notice",
+          "text.self"
+        ],
+        [
+          "text.Message",
+          "message.self"
+        ],
+        [
+          "entry.Message",
+          "message.InText"
+        ],
+        [
+          "getNotice.Notice",
+          "show.self"
+        ],
+        [
+          "now.Seconds",
+          "nowsum.A"
+        ],
+        [
+          "now.PartialSeconds",
+          "nowsum.B"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "due.A"
+        ],
+        [
+          "due.ReturnValue",
+          "expires.NoticeUntil"
+        ],
+        [
+          "entry.then",
+          "clear.execute"
+        ],
+        [
+          "clear.then",
+          "create.execute"
+        ],
+        [
+          "create.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "save.execute"
+        ],
+        [
+          "save.then",
+          "message.execute"
+        ],
+        [
+          "message.then",
+          "show.execute"
+        ],
+        [
+          "show.then",
+          "expires.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ToggleEditor",
+      "nodes": [
+        {
+          "id": "getInitialized",
+          "kind": "get",
+          "var": "Initialized"
+        },
+        {
+          "id": "getHost",
+          "kind": "get",
+          "var": "Host"
+        },
+        {
+          "id": "host",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "getPlayer",
+          "kind": "get",
+          "var": "Player"
+        },
+        {
+          "id": "player",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "available0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "available1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "ready",
+          "kind": "branch"
+        },
+        {
+          "id": "ui",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorHost:UIOpen"
+        },
+        {
+          "id": "open",
+          "kind": "branch"
+        },
+        {
+          "id": "bus",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorHost:InputBus"
+        },
+        {
+          "id": "typing",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenEditorBus:IsTyping",
+          "defaults": {}
+        },
+        {
+          "id": "focused",
+          "kind": "branch"
+        },
+        {
+          "id": "close",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenEditorHost:RequestEditorExit",
+          "defaults": {}
+        },
+        {
+          "id": "request",
+          "kind": "set",
+          "var": "OpenRequested",
+          "defaults": {
+            "OpenRequested": "true"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getHost.Host",
+          "host.Object"
+        ],
+        [
+          "getPlayer.Player",
+          "player.Object"
+        ],
+        [
+          "getInitialized.Initialized",
+          "available0.A"
+        ],
+        [
+          "host.ReturnValue",
+          "available0.B"
+        ],
+        [
+          "available0.ReturnValue",
+          "available1.A"
+        ],
+        [
+          "player.ReturnValue",
+          "available1.B"
+        ],
+        [
+          "available1.ReturnValue",
+          "ready.Condition"
+        ],
+        [
+          "getHost.Host",
+          "ui.self"
+        ],
+        [
+          "ui.UIOpen",
+          "open.Condition"
+        ],
+        [
+          "getHost.Host",
+          "bus.self"
+        ],
+        [
+          "bus.InputBus",
+          "typing.self"
+        ],
+        [
+          "typing.Typing",
+          "focused.Condition"
+        ],
+        [
+          "getHost.Host",
+          "close.self"
+        ],
+        [
+          "entry.then",
+          "ready.execute"
+        ],
+        [
+          "ready.then",
+          "open.execute"
+        ],
+        [
+          "open.then",
+          "typing.execute"
+        ],
+        [
+          "typing.then",
+          "focused.execute"
+        ],
+        [
+          "focused.else",
+          "close.execute"
+        ],
+        [
+          "open.else",
+          "request.execute"
+        ]
+      ]
+    },
+    {
+      "name": "OpenRequestedEditor",
+      "nodes": [
+        {
+          "id": "getOpenRequested",
+          "kind": "get",
+          "var": "OpenRequested"
+        },
+        {
+          "id": "requested",
+          "kind": "branch"
+        },
+        {
+          "id": "getHost",
+          "kind": "get",
+          "var": "Host"
+        },
+        {
+          "id": "busyvalue",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorHost:Busy"
+        },
+        {
+          "id": "busy",
+          "kind": "branch"
+        },
+        {
+          "id": "clear",
+          "kind": "set",
+          "var": "OpenRequested",
+          "defaults": {
+            "OpenRequested": "false"
+          }
+        },
+        {
+          "id": "prepare",
+          "kind": "call",
+          "function": "self:PrepareLayout",
+          "defaults": {}
+        },
+        {
+          "id": "getCampaignID",
+          "kind": "get",
+          "var": "CampaignID"
+        },
+        {
+          "id": "prepared",
+          "kind": "branch"
+        },
+        {
+          "id": "editing",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorHost:Editing",
+          "defaults": {
+            "Editing": "true"
+          }
+        },
+        {
+          "id": "getPlayer",
+          "kind": "get",
+          "var": "Player"
+        },
+        {
+          "id": "mount",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenEditorHost:MountEditor",
+          "defaults": {}
+        },
+        {
+          "id": "mounted",
+          "kind": "branch"
+        },
+        {
+          "id": "noticeclear",
+          "kind": "call",
+          "function": "self:ClearNotice",
+          "defaults": {}
+        },
+        {
+          "id": "closed",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorHost:Editing",
+          "defaults": {
+            "Editing": "false"
+          }
+        },
+        {
+          "id": "layoutfailed",
+          "kind": "call",
+          "function": "self:ShowNotice",
+          "defaults": {
+            "Message": "Den Designer could not load this layout. Existing files are preserved. Check your mod layout files, then use the opening shortcut to retry."
+          }
+        },
+        {
+          "id": "mountfailed",
+          "kind": "call",
+          "function": "self:ShowNotice",
+          "defaults": {
+            "Message": "Den Designer could not open the editor. Your layout is preserved. Try again once the Den has finished loading."
+          }
+        }
+      ],
+      "links": [
+        [
+          "getOpenRequested.OpenRequested",
+          "requested.Condition"
+        ],
+        [
+          "getHost.Host",
+          "busyvalue.self"
+        ],
+        [
+          "busyvalue.Busy",
+          "busy.Condition"
+        ],
+        [
+          "getCampaignID.CampaignID",
+          "prepare.CampaignID"
+        ],
+        [
+          "prepare.Accepted",
+          "prepared.Condition"
+        ],
+        [
+          "getHost.Host",
+          "editing.self"
+        ],
+        [
+          "getHost.Host",
+          "mount.self"
+        ],
+        [
+          "getPlayer.Player",
+          "mount.Player"
+        ],
+        [
+          "mount.Accepted",
+          "mounted.Condition"
+        ],
+        [
+          "getHost.Host",
+          "closed.self"
+        ],
+        [
+          "entry.then",
+          "requested.execute"
+        ],
+        [
+          "requested.then",
+          "busy.execute"
+        ],
+        [
+          "busy.else",
+          "clear.execute"
+        ],
+        [
+          "clear.then",
+          "prepare.execute"
+        ],
+        [
+          "prepare.then",
+          "prepared.execute"
+        ],
+        [
+          "prepared.then",
+          "editing.execute"
+        ],
+        [
+          "editing.then",
+          "mount.execute"
+        ],
+        [
+          "mount.then",
+          "mounted.execute"
+        ],
+        [
+          "mounted.then",
+          "noticeclear.execute"
+        ],
+        [
+          "prepared.else",
+          "layoutfailed.execute"
+        ],
+        [
+          "mounted.else",
+          "closed.execute"
+        ],
+        [
+          "closed.then",
+          "mountfailed.execute"
+        ]
+      ]
+    },
+    {
+      "name": "PollWorld",
+      "nodes": [
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "nowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getNextWorldCheck",
+          "kind": "get",
+          "var": "NextWorldCheck"
+        },
+        {
+          "id": "time",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "due",
+          "kind": "branch"
+        },
+        {
+          "id": "later",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {
+            "B": "0.5"
+          }
+        },
+        {
+          "id": "next",
+          "kind": "set",
+          "var": "NextWorldCheck"
+        },
+        {
+          "id": "level",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetCurrentLevelName",
+          "defaults": {
+            "bRemovePrefixString": "true"
+          }
+        },
+        {
+          "id": "inDen",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "HUB_Root"
+          }
+        },
+        {
+          "id": "den",
+          "kind": "branch"
+        },
+        {
+          "id": "player",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetPlayerController",
+          "defaults": {
+            "PlayerIndex": "0"
+          }
+        },
+        {
+          "id": "exists",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "save",
+          "kind": "set",
+          "var": "Player"
+        },
+        {
+          "id": "pawn",
+          "kind": "call",
+          "function": "/Script/Engine.PlayerController:K2_GetPawn",
+          "defaults": {}
+        },
+        {
+          "id": "pawnexists",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "pawnvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "campaign",
+          "kind": "call",
+          "function": "self:ReadActiveCampaign",
+          "defaults": {}
+        },
+        {
+          "id": "known",
+          "kind": "branch"
+        },
+        {
+          "id": "getCampaignID",
+          "kind": "get",
+          "var": "CampaignID"
+        },
+        {
+          "id": "changed",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:NotEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "getInitialized",
+          "kind": "get",
+          "var": "Initialized"
+        },
+        {
+          "id": "first",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "getHost",
+          "kind": "get",
+          "var": "Host"
+        },
+        {
+          "id": "hostvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "hostgone",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "needsinit0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "needsinit1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "initialize",
+          "kind": "branch"
+        },
+        {
+          "id": "prepare",
+          "kind": "call",
+          "function": "self:PrepareLayout",
+          "defaults": {}
+        },
+        {
+          "id": "leave",
+          "kind": "call",
+          "function": "self:Shutdown",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "now.Seconds",
+          "nowsum.A"
+        ],
+        [
+          "now.PartialSeconds",
+          "nowsum.B"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "time.A"
+        ],
+        [
+          "getNextWorldCheck.NextWorldCheck",
+          "time.B"
+        ],
+        [
+          "time.ReturnValue",
+          "due.Condition"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "later.A"
+        ],
+        [
+          "later.ReturnValue",
+          "next.NextWorldCheck"
+        ],
+        [
+          "self.self",
+          "level.WorldContextObject"
+        ],
+        [
+          "level.ReturnValue",
+          "inDen.A"
+        ],
+        [
+          "inDen.ReturnValue",
+          "den.Condition"
+        ],
+        [
+          "self.self",
+          "player.WorldContextObject"
+        ],
+        [
+          "player.ReturnValue",
+          "exists.Object"
+        ],
+        [
+          "exists.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "player.ReturnValue",
+          "save.Player"
+        ],
+        [
+          "player.ReturnValue",
+          "pawn.self"
+        ],
+        [
+          "pawn.ReturnValue",
+          "pawnexists.Object"
+        ],
+        [
+          "pawnexists.ReturnValue",
+          "pawnvalid.Condition"
+        ],
+        [
+          "campaign.Known",
+          "known.Condition"
+        ],
+        [
+          "campaign.CampaignID",
+          "changed.A"
+        ],
+        [
+          "getCampaignID.CampaignID",
+          "changed.B"
+        ],
+        [
+          "getInitialized.Initialized",
+          "first.A"
+        ],
+        [
+          "getHost.Host",
+          "hostvalid.Object"
+        ],
+        [
+          "hostvalid.ReturnValue",
+          "hostgone.A"
+        ],
+        [
+          "changed.ReturnValue",
+          "needsinit0.A"
+        ],
+        [
+          "first.ReturnValue",
+          "needsinit0.B"
+        ],
+        [
+          "needsinit0.ReturnValue",
+          "needsinit1.A"
+        ],
+        [
+          "hostgone.ReturnValue",
+          "needsinit1.B"
+        ],
+        [
+          "needsinit1.ReturnValue",
+          "initialize.Condition"
+        ],
+        [
+          "campaign.CampaignID",
+          "prepare.CampaignID"
+        ],
+        [
+          "entry.then",
+          "due.execute"
+        ],
+        [
+          "due.then",
+          "next.execute"
+        ],
+        [
+          "next.then",
+          "level.execute"
+        ],
+        [
+          "level.then",
+          "den.execute"
+        ],
+        [
+          "den.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "save.execute"
+        ],
+        [
+          "save.then",
+          "pawnvalid.execute"
+        ],
+        [
+          "pawnvalid.then",
+          "campaign.execute"
+        ],
+        [
+          "campaign.then",
+          "known.execute"
+        ],
+        [
+          "known.then",
+          "initialize.execute"
+        ],
+        [
+          "initialize.then",
+          "prepare.execute"
+        ],
+        [
+          "den.else",
+          "leave.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Poll",
+      "nodes": [
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "world",
+          "kind": "call",
+          "function": "self:PollWorld",
+          "defaults": {}
+        },
+        {
+          "id": "getInitialized",
+          "kind": "get",
+          "var": "Initialized"
+        },
+        {
+          "id": "getHost",
+          "kind": "get",
+          "var": "Host"
+        },
+        {
+          "id": "host",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "getPlayer",
+          "kind": "get",
+          "var": "Player"
+        },
+        {
+          "id": "player",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "available0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "available1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "ready",
+          "kind": "branch"
+        },
+        {
+          "id": "paused",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:IsGamePaused",
+          "defaults": {}
+        },
+        {
+          "id": "pause",
+          "kind": "branch"
+        },
+        {
+          "id": "shortcut",
+          "kind": "call",
+          "function": "self:UpdateShortcut",
+          "defaults": {}
+        },
+        {
+          "id": "getShortcut",
+          "kind": "get",
+          "var": "Shortcut"
+        },
+        {
+          "id": "pressed",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenShortcut:Pressed",
+          "defaults": {}
+        },
+        {
+          "id": "key",
+          "kind": "branch"
+        },
+        {
+          "id": "toggle",
+          "kind": "call",
+          "function": "self:ToggleEditor",
+          "defaults": {}
+        },
+        {
+          "id": "open",
+          "kind": "call",
+          "function": "self:OpenRequestedEditor",
+          "defaults": {}
+        },
+        {
+          "id": "getNotice",
+          "kind": "get",
+          "var": "Notice"
+        },
+        {
+          "id": "noticevalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "notice",
+          "kind": "branch"
+        },
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "nowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getNoticeUntil",
+          "kind": "get",
+          "var": "NoticeUntil"
+        },
+        {
+          "id": "time",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "expired",
+          "kind": "branch"
+        },
+        {
+          "id": "clear",
+          "kind": "call",
+          "function": "self:ClearNotice",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getHost.Host",
+          "host.Object"
+        ],
+        [
+          "getPlayer.Player",
+          "player.Object"
+        ],
+        [
+          "getInitialized.Initialized",
+          "available0.A"
+        ],
+        [
+          "host.ReturnValue",
+          "available0.B"
+        ],
+        [
+          "available0.ReturnValue",
+          "available1.A"
+        ],
+        [
+          "player.ReturnValue",
+          "available1.B"
+        ],
+        [
+          "available1.ReturnValue",
+          "ready.Condition"
+        ],
+        [
+          "self.self",
+          "paused.WorldContextObject"
+        ],
+        [
+          "paused.ReturnValue",
+          "pause.Condition"
+        ],
+        [
+          "getShortcut.Shortcut",
+          "pressed.self"
+        ],
+        [
+          "getPlayer.Player",
+          "pressed.Player"
+        ],
+        [
+          "pressed.Pressed",
+          "key.Condition"
+        ],
+        [
+          "getNotice.Notice",
+          "noticevalid.Object"
+        ],
+        [
+          "noticevalid.ReturnValue",
+          "notice.Condition"
+        ],
+        [
+          "now.Seconds",
+          "nowsum.A"
+        ],
+        [
+          "now.PartialSeconds",
+          "nowsum.B"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "time.A"
+        ],
+        [
+          "getNoticeUntil.NoticeUntil",
+          "time.B"
+        ],
+        [
+          "time.ReturnValue",
+          "expired.Condition"
+        ],
+        [
+          "entry.then",
+          "world.execute"
+        ],
+        [
+          "world.then",
+          "ready.execute"
+        ],
+        [
+          "ready.then",
+          "pause.execute"
+        ],
+        [
+          "pause.else",
+          "shortcut.execute"
+        ],
+        [
+          "shortcut.then",
+          "pressed.execute"
+        ],
+        [
+          "pressed.then",
+          "key.execute"
+        ],
+        [
+          "key.then",
+          "toggle.execute"
+        ],
+        [
+          "toggle.then",
+          "open.execute"
+        ],
+        [
+          "open.then",
+          "notice.execute"
+        ],
+        [
+          "notice.then",
+          "expired.execute"
+        ],
+        [
+          "expired.then",
+          "clear.execute"
+        ],
+        [
+          "key.else",
+          "open.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Shutdown",
+      "nodes": [
+        {
+          "id": "pending",
+          "kind": "set",
+          "var": "OpenRequested",
+          "defaults": {
+            "OpenRequested": "false"
+          }
+        },
+        {
+          "id": "stop",
+          "kind": "set",
+          "var": "Initialized",
+          "defaults": {
+            "Initialized": "false"
+          }
+        },
+        {
+          "id": "notice",
+          "kind": "call",
+          "function": "self:ClearNotice",
+          "defaults": {}
+        },
+        {
+          "id": "getHost",
+          "kind": "get",
+          "var": "Host"
+        },
+        {
+          "id": "valid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "host",
+          "kind": "branch"
+        },
+        {
+          "id": "destroy",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:K2_DestroyActor",
+          "defaults": {}
+        },
+        {
+          "id": "clear",
+          "kind": "set",
+          "var": "Host"
+        },
+        {
+          "id": "player",
+          "kind": "set",
+          "var": "Player"
+        },
+        {
+          "id": "shortcut",
+          "kind": "set",
+          "var": "Shortcut"
+        },
+        {
+          "id": "document",
+          "kind": "set",
+          "var": "ShortcutDocument"
+        }
+      ],
+      "links": [
+        [
+          "getHost.Host",
+          "valid.Object"
+        ],
+        [
+          "valid.ReturnValue",
+          "host.Condition"
+        ],
+        [
+          "getHost.Host",
+          "destroy.self"
+        ],
+        [
+          "entry.then",
+          "pending.execute"
+        ],
+        [
+          "pending.then",
+          "stop.execute"
+        ],
+        [
+          "stop.then",
+          "notice.execute"
+        ],
+        [
+          "notice.then",
+          "host.execute"
+        ],
+        [
+          "host.then",
+          "destroy.execute"
+        ],
+        [
+          "destroy.then",
+          "clear.execute"
+        ],
+        [
+          "clear.then",
+          "player.execute"
+        ],
+        [
+          "player.then",
+          "shortcut.execute"
+        ],
+        [
+          "shortcut.then",
+          "document.execute"
+        ],
+        [
+          "host.else",
+          "clear.execute"
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,5154 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenThumbnailStudio",
+  "parent": "/Script/Engine.Actor",
+  "components": [
+    {
+      "name": "Root",
+      "class": "/Script/Engine.SceneComponent",
+      "props": {
+        "Mobility": "Movable"
+      }
+    },
+    {
+      "name": "Mesh",
+      "class": "/Script/Engine.StaticMeshComponent",
+      "attach": "Root",
+      "props": {
+        "Mobility": "Movable",
+        "BodyInstance.CollisionEnabled": "NoCollision",
+        "CastShadow": "false",
+        "LightingChannels": "(bChannel0=False,bChannel1=True,bChannel2=False)"
+      }
+    },
+    {
+      "name": "KeyLight",
+      "class": "/Script/Engine.PointLightComponent",
+      "attach": "Root",
+      "props": {
+        "Mobility": "Movable",
+        "CastShadows": "false",
+        "LightingChannels": "(bChannel0=False,bChannel1=True,bChannel2=False)"
+      }
+    },
+    {
+      "name": "FillLight",
+      "class": "/Script/Engine.PointLightComponent",
+      "attach": "Root",
+      "props": {
+        "Mobility": "Movable",
+        "CastShadows": "false",
+        "LightingChannels": "(bChannel0=False,bChannel1=True,bChannel2=False)"
+      }
+    },
+    {
+      "name": "Capture",
+      "class": "/Script/Engine.SceneCaptureComponent2D",
+      "attach": "Root",
+      "props": {
+        "FOVAngle": "30",
+        "bCaptureEveryFrame": "false",
+        "bCaptureOnMovement": "false",
+        "PrimitiveRenderMode": "PRM_UseShowOnlyList",
+        "CaptureSource": "SCS_FinalColorLDR"
+      }
+    }
+  ],
+  "variables": [
+    {
+      "name": "CompositionCenter",
+      "type": "vector"
+    },
+    {
+      "name": "CompositionExtent",
+      "type": "vector"
+    },
+    {
+      "name": "Target",
+      "type": "object:/Script/Engine.TextureRenderTarget2D"
+    },
+    {
+      "name": "MeshPath",
+      "type": "string"
+    },
+    {
+      "name": "Prepared",
+      "type": "bool"
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "end",
+        "kind": "event",
+        "name": "ReceiveEndPlay"
+      },
+      {
+        "id": "release",
+        "kind": "call",
+        "function": "self:ReleaseStudio",
+        "defaults": {}
+      }
+    ],
+    "links": [
+      [
+        "end.then",
+        "release.execute"
+      ]
+    ]
+  },
+  "functions": [
+    {
+      "name": "ValidAssetPath",
+      "inputs": [
+        {
+          "name": "Path",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Valid",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "length",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Len",
+          "defaults": {}
+        },
+        {
+          "id": "minimum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "3"
+          }
+        },
+        {
+          "id": "maximum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "1023"
+          }
+        },
+        {
+          "id": "starts",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:StartsWith",
+          "defaults": {
+            "InPrefix": "/"
+          }
+        },
+        {
+          "id": "subobject",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": ":",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "assetonly",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "dot",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": ".",
+            "bUseCase": "true",
+            "bSearchFromEnd": "false"
+          }
+        },
+        {
+          "id": "validpath0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "validpath1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "validpath2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "validpath3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "entry.Path",
+          "length.S"
+        ],
+        [
+          "length.ReturnValue",
+          "minimum.A"
+        ],
+        [
+          "length.ReturnValue",
+          "maximum.A"
+        ],
+        [
+          "entry.Path",
+          "starts.SourceString"
+        ],
+        [
+          "entry.Path",
+          "subobject.SearchIn"
+        ],
+        [
+          "subobject.ReturnValue",
+          "assetonly.A"
+        ],
+        [
+          "entry.Path",
+          "dot.SearchIn"
+        ],
+        [
+          "minimum.ReturnValue",
+          "validpath0.A"
+        ],
+        [
+          "maximum.ReturnValue",
+          "validpath0.B"
+        ],
+        [
+          "validpath0.ReturnValue",
+          "validpath1.A"
+        ],
+        [
+          "starts.ReturnValue",
+          "validpath1.B"
+        ],
+        [
+          "validpath1.ReturnValue",
+          "validpath2.A"
+        ],
+        [
+          "assetonly.ReturnValue",
+          "validpath2.B"
+        ],
+        [
+          "validpath2.ReturnValue",
+          "validpath3.A"
+        ],
+        [
+          "dot.ReturnValue",
+          "validpath3.B"
+        ],
+        [
+          "validpath3.ReturnValue",
+          "result.Valid"
+        ],
+        [
+          "entry.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "FrameDistance",
+      "inputs": [
+        {
+          "name": "Extent",
+          "type": "vector"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Distance",
+          "type": "double"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "parts",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner0X",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "corner0Y",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "corner0Z",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "corner0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner0rightaxis",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "-0.5913636636275174",
+            "Y": "-0.8064049958557055",
+            "Z": "0.0"
+          }
+        },
+        {
+          "id": "corner0right",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner0absR",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "corner0upaxis",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "0.3512220565851566",
+            "Y": "-0.2575628414957815",
+            "Z": "-0.9001691228034384"
+          }
+        },
+        {
+          "id": "corner0up",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner0absU",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "corner0side",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {}
+        },
+        {
+          "id": "corner0tan",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Divide_DoubleDouble",
+          "defaults": {
+            "B": "0.2679491924311227"
+          }
+        },
+        {
+          "id": "corner0forwardaxis",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "-0.7259008777437409",
+            "Y": "0.53232731034541",
+            "Z": "-0.43554052664624454"
+          }
+        },
+        {
+          "id": "corner0forward",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner0need",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "corner0max",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "corner1X",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "corner1Y",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "corner1Z",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "corner1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner1rightaxis",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "-0.5913636636275174",
+            "Y": "-0.8064049958557055",
+            "Z": "0.0"
+          }
+        },
+        {
+          "id": "corner1right",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner1absR",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "corner1upaxis",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "0.3512220565851566",
+            "Y": "-0.2575628414957815",
+            "Z": "-0.9001691228034384"
+          }
+        },
+        {
+          "id": "corner1up",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner1absU",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "corner1side",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {}
+        },
+        {
+          "id": "corner1tan",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Divide_DoubleDouble",
+          "defaults": {
+            "B": "0.2679491924311227"
+          }
+        },
+        {
+          "id": "corner1forwardaxis",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "-0.7259008777437409",
+            "Y": "0.53232731034541",
+            "Z": "-0.43554052664624454"
+          }
+        },
+        {
+          "id": "corner1forward",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner1need",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "corner1max",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {}
+        },
+        {
+          "id": "corner2X",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "corner2Y",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "corner2Z",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "corner2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner2rightaxis",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "-0.5913636636275174",
+            "Y": "-0.8064049958557055",
+            "Z": "0.0"
+          }
+        },
+        {
+          "id": "corner2right",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner2absR",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "corner2upaxis",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "0.3512220565851566",
+            "Y": "-0.2575628414957815",
+            "Z": "-0.9001691228034384"
+          }
+        },
+        {
+          "id": "corner2up",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner2absU",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "corner2side",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {}
+        },
+        {
+          "id": "corner2tan",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Divide_DoubleDouble",
+          "defaults": {
+            "B": "0.2679491924311227"
+          }
+        },
+        {
+          "id": "corner2forwardaxis",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "-0.7259008777437409",
+            "Y": "0.53232731034541",
+            "Z": "-0.43554052664624454"
+          }
+        },
+        {
+          "id": "corner2forward",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner2need",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "corner2max",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {}
+        },
+        {
+          "id": "corner3X",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "corner3Y",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "corner3Z",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "corner3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner3rightaxis",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "-0.5913636636275174",
+            "Y": "-0.8064049958557055",
+            "Z": "0.0"
+          }
+        },
+        {
+          "id": "corner3right",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner3absR",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "corner3upaxis",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "0.3512220565851566",
+            "Y": "-0.2575628414957815",
+            "Z": "-0.9001691228034384"
+          }
+        },
+        {
+          "id": "corner3up",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner3absU",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "corner3side",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {}
+        },
+        {
+          "id": "corner3tan",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Divide_DoubleDouble",
+          "defaults": {
+            "B": "0.2679491924311227"
+          }
+        },
+        {
+          "id": "corner3forwardaxis",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "-0.7259008777437409",
+            "Y": "0.53232731034541",
+            "Z": "-0.43554052664624454"
+          }
+        },
+        {
+          "id": "corner3forward",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner3need",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "corner3max",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {}
+        },
+        {
+          "id": "corner4X",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "corner4Y",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "corner4Z",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "corner4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner4rightaxis",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "-0.5913636636275174",
+            "Y": "-0.8064049958557055",
+            "Z": "0.0"
+          }
+        },
+        {
+          "id": "corner4right",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner4absR",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "corner4upaxis",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "0.3512220565851566",
+            "Y": "-0.2575628414957815",
+            "Z": "-0.9001691228034384"
+          }
+        },
+        {
+          "id": "corner4up",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner4absU",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "corner4side",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {}
+        },
+        {
+          "id": "corner4tan",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Divide_DoubleDouble",
+          "defaults": {
+            "B": "0.2679491924311227"
+          }
+        },
+        {
+          "id": "corner4forwardaxis",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "-0.7259008777437409",
+            "Y": "0.53232731034541",
+            "Z": "-0.43554052664624454"
+          }
+        },
+        {
+          "id": "corner4forward",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner4need",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "corner4max",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {}
+        },
+        {
+          "id": "corner5X",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "corner5Y",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "corner5Z",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "corner5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner5rightaxis",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "-0.5913636636275174",
+            "Y": "-0.8064049958557055",
+            "Z": "0.0"
+          }
+        },
+        {
+          "id": "corner5right",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner5absR",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "corner5upaxis",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "0.3512220565851566",
+            "Y": "-0.2575628414957815",
+            "Z": "-0.9001691228034384"
+          }
+        },
+        {
+          "id": "corner5up",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner5absU",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "corner5side",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {}
+        },
+        {
+          "id": "corner5tan",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Divide_DoubleDouble",
+          "defaults": {
+            "B": "0.2679491924311227"
+          }
+        },
+        {
+          "id": "corner5forwardaxis",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "-0.7259008777437409",
+            "Y": "0.53232731034541",
+            "Z": "-0.43554052664624454"
+          }
+        },
+        {
+          "id": "corner5forward",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner5need",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "corner5max",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {}
+        },
+        {
+          "id": "corner6X",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "corner6Y",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "corner6Z",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "corner6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner6rightaxis",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "-0.5913636636275174",
+            "Y": "-0.8064049958557055",
+            "Z": "0.0"
+          }
+        },
+        {
+          "id": "corner6right",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner6absR",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "corner6upaxis",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "0.3512220565851566",
+            "Y": "-0.2575628414957815",
+            "Z": "-0.9001691228034384"
+          }
+        },
+        {
+          "id": "corner6up",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner6absU",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "corner6side",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {}
+        },
+        {
+          "id": "corner6tan",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Divide_DoubleDouble",
+          "defaults": {
+            "B": "0.2679491924311227"
+          }
+        },
+        {
+          "id": "corner6forwardaxis",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "-0.7259008777437409",
+            "Y": "0.53232731034541",
+            "Z": "-0.43554052664624454"
+          }
+        },
+        {
+          "id": "corner6forward",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner6need",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "corner6max",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {}
+        },
+        {
+          "id": "corner7X",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "corner7Y",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "corner7Z",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "corner7",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner7rightaxis",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "-0.5913636636275174",
+            "Y": "-0.8064049958557055",
+            "Z": "0.0"
+          }
+        },
+        {
+          "id": "corner7right",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner7absR",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "corner7upaxis",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "0.3512220565851566",
+            "Y": "-0.2575628414957815",
+            "Z": "-0.9001691228034384"
+          }
+        },
+        {
+          "id": "corner7up",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner7absU",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "corner7side",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {}
+        },
+        {
+          "id": "corner7tan",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Divide_DoubleDouble",
+          "defaults": {
+            "B": "0.2679491924311227"
+          }
+        },
+        {
+          "id": "corner7forwardaxis",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "-0.7259008777437409",
+            "Y": "0.53232731034541",
+            "Z": "-0.43554052664624454"
+          }
+        },
+        {
+          "id": "corner7forward",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Dot_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "corner7need",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "corner7max",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {}
+        },
+        {
+          "id": "margin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "1.08"
+          }
+        }
+      ],
+      "links": [
+        [
+          "entry.Extent",
+          "parts.InVec"
+        ],
+        [
+          "parts.X",
+          "corner0X.A"
+        ],
+        [
+          "parts.Y",
+          "corner0Y.A"
+        ],
+        [
+          "parts.Z",
+          "corner0Z.A"
+        ],
+        [
+          "corner0X.ReturnValue",
+          "corner0.X"
+        ],
+        [
+          "corner0Y.ReturnValue",
+          "corner0.Y"
+        ],
+        [
+          "corner0Z.ReturnValue",
+          "corner0.Z"
+        ],
+        [
+          "corner0.ReturnValue",
+          "corner0right.A"
+        ],
+        [
+          "corner0rightaxis.ReturnValue",
+          "corner0right.B"
+        ],
+        [
+          "corner0right.ReturnValue",
+          "corner0absR.A"
+        ],
+        [
+          "corner0.ReturnValue",
+          "corner0up.A"
+        ],
+        [
+          "corner0upaxis.ReturnValue",
+          "corner0up.B"
+        ],
+        [
+          "corner0up.ReturnValue",
+          "corner0absU.A"
+        ],
+        [
+          "corner0absR.ReturnValue",
+          "corner0side.A"
+        ],
+        [
+          "corner0absU.ReturnValue",
+          "corner0side.B"
+        ],
+        [
+          "corner0side.ReturnValue",
+          "corner0tan.A"
+        ],
+        [
+          "corner0.ReturnValue",
+          "corner0forward.A"
+        ],
+        [
+          "corner0forwardaxis.ReturnValue",
+          "corner0forward.B"
+        ],
+        [
+          "corner0tan.ReturnValue",
+          "corner0need.A"
+        ],
+        [
+          "corner0forward.ReturnValue",
+          "corner0need.B"
+        ],
+        [
+          "corner0need.ReturnValue",
+          "corner0max.A"
+        ],
+        [
+          "parts.X",
+          "corner1X.A"
+        ],
+        [
+          "parts.Y",
+          "corner1Y.A"
+        ],
+        [
+          "parts.Z",
+          "corner1Z.A"
+        ],
+        [
+          "corner1X.ReturnValue",
+          "corner1.X"
+        ],
+        [
+          "corner1Y.ReturnValue",
+          "corner1.Y"
+        ],
+        [
+          "corner1Z.ReturnValue",
+          "corner1.Z"
+        ],
+        [
+          "corner1.ReturnValue",
+          "corner1right.A"
+        ],
+        [
+          "corner1rightaxis.ReturnValue",
+          "corner1right.B"
+        ],
+        [
+          "corner1right.ReturnValue",
+          "corner1absR.A"
+        ],
+        [
+          "corner1.ReturnValue",
+          "corner1up.A"
+        ],
+        [
+          "corner1upaxis.ReturnValue",
+          "corner1up.B"
+        ],
+        [
+          "corner1up.ReturnValue",
+          "corner1absU.A"
+        ],
+        [
+          "corner1absR.ReturnValue",
+          "corner1side.A"
+        ],
+        [
+          "corner1absU.ReturnValue",
+          "corner1side.B"
+        ],
+        [
+          "corner1side.ReturnValue",
+          "corner1tan.A"
+        ],
+        [
+          "corner1.ReturnValue",
+          "corner1forward.A"
+        ],
+        [
+          "corner1forwardaxis.ReturnValue",
+          "corner1forward.B"
+        ],
+        [
+          "corner1tan.ReturnValue",
+          "corner1need.A"
+        ],
+        [
+          "corner1forward.ReturnValue",
+          "corner1need.B"
+        ],
+        [
+          "corner1need.ReturnValue",
+          "corner1max.A"
+        ],
+        [
+          "corner0max.ReturnValue",
+          "corner1max.B"
+        ],
+        [
+          "parts.X",
+          "corner2X.A"
+        ],
+        [
+          "parts.Y",
+          "corner2Y.A"
+        ],
+        [
+          "parts.Z",
+          "corner2Z.A"
+        ],
+        [
+          "corner2X.ReturnValue",
+          "corner2.X"
+        ],
+        [
+          "corner2Y.ReturnValue",
+          "corner2.Y"
+        ],
+        [
+          "corner2Z.ReturnValue",
+          "corner2.Z"
+        ],
+        [
+          "corner2.ReturnValue",
+          "corner2right.A"
+        ],
+        [
+          "corner2rightaxis.ReturnValue",
+          "corner2right.B"
+        ],
+        [
+          "corner2right.ReturnValue",
+          "corner2absR.A"
+        ],
+        [
+          "corner2.ReturnValue",
+          "corner2up.A"
+        ],
+        [
+          "corner2upaxis.ReturnValue",
+          "corner2up.B"
+        ],
+        [
+          "corner2up.ReturnValue",
+          "corner2absU.A"
+        ],
+        [
+          "corner2absR.ReturnValue",
+          "corner2side.A"
+        ],
+        [
+          "corner2absU.ReturnValue",
+          "corner2side.B"
+        ],
+        [
+          "corner2side.ReturnValue",
+          "corner2tan.A"
+        ],
+        [
+          "corner2.ReturnValue",
+          "corner2forward.A"
+        ],
+        [
+          "corner2forwardaxis.ReturnValue",
+          "corner2forward.B"
+        ],
+        [
+          "corner2tan.ReturnValue",
+          "corner2need.A"
+        ],
+        [
+          "corner2forward.ReturnValue",
+          "corner2need.B"
+        ],
+        [
+          "corner2need.ReturnValue",
+          "corner2max.A"
+        ],
+        [
+          "corner1max.ReturnValue",
+          "corner2max.B"
+        ],
+        [
+          "parts.X",
+          "corner3X.A"
+        ],
+        [
+          "parts.Y",
+          "corner3Y.A"
+        ],
+        [
+          "parts.Z",
+          "corner3Z.A"
+        ],
+        [
+          "corner3X.ReturnValue",
+          "corner3.X"
+        ],
+        [
+          "corner3Y.ReturnValue",
+          "corner3.Y"
+        ],
+        [
+          "corner3Z.ReturnValue",
+          "corner3.Z"
+        ],
+        [
+          "corner3.ReturnValue",
+          "corner3right.A"
+        ],
+        [
+          "corner3rightaxis.ReturnValue",
+          "corner3right.B"
+        ],
+        [
+          "corner3right.ReturnValue",
+          "corner3absR.A"
+        ],
+        [
+          "corner3.ReturnValue",
+          "corner3up.A"
+        ],
+        [
+          "corner3upaxis.ReturnValue",
+          "corner3up.B"
+        ],
+        [
+          "corner3up.ReturnValue",
+          "corner3absU.A"
+        ],
+        [
+          "corner3absR.ReturnValue",
+          "corner3side.A"
+        ],
+        [
+          "corner3absU.ReturnValue",
+          "corner3side.B"
+        ],
+        [
+          "corner3side.ReturnValue",
+          "corner3tan.A"
+        ],
+        [
+          "corner3.ReturnValue",
+          "corner3forward.A"
+        ],
+        [
+          "corner3forwardaxis.ReturnValue",
+          "corner3forward.B"
+        ],
+        [
+          "corner3tan.ReturnValue",
+          "corner3need.A"
+        ],
+        [
+          "corner3forward.ReturnValue",
+          "corner3need.B"
+        ],
+        [
+          "corner3need.ReturnValue",
+          "corner3max.A"
+        ],
+        [
+          "corner2max.ReturnValue",
+          "corner3max.B"
+        ],
+        [
+          "parts.X",
+          "corner4X.A"
+        ],
+        [
+          "parts.Y",
+          "corner4Y.A"
+        ],
+        [
+          "parts.Z",
+          "corner4Z.A"
+        ],
+        [
+          "corner4X.ReturnValue",
+          "corner4.X"
+        ],
+        [
+          "corner4Y.ReturnValue",
+          "corner4.Y"
+        ],
+        [
+          "corner4Z.ReturnValue",
+          "corner4.Z"
+        ],
+        [
+          "corner4.ReturnValue",
+          "corner4right.A"
+        ],
+        [
+          "corner4rightaxis.ReturnValue",
+          "corner4right.B"
+        ],
+        [
+          "corner4right.ReturnValue",
+          "corner4absR.A"
+        ],
+        [
+          "corner4.ReturnValue",
+          "corner4up.A"
+        ],
+        [
+          "corner4upaxis.ReturnValue",
+          "corner4up.B"
+        ],
+        [
+          "corner4up.ReturnValue",
+          "corner4absU.A"
+        ],
+        [
+          "corner4absR.ReturnValue",
+          "corner4side.A"
+        ],
+        [
+          "corner4absU.ReturnValue",
+          "corner4side.B"
+        ],
+        [
+          "corner4side.ReturnValue",
+          "corner4tan.A"
+        ],
+        [
+          "corner4.ReturnValue",
+          "corner4forward.A"
+        ],
+        [
+          "corner4forwardaxis.ReturnValue",
+          "corner4forward.B"
+        ],
+        [
+          "corner4tan.ReturnValue",
+          "corner4need.A"
+        ],
+        [
+          "corner4forward.ReturnValue",
+          "corner4need.B"
+        ],
+        [
+          "corner4need.ReturnValue",
+          "corner4max.A"
+        ],
+        [
+          "corner3max.ReturnValue",
+          "corner4max.B"
+        ],
+        [
+          "parts.X",
+          "corner5X.A"
+        ],
+        [
+          "parts.Y",
+          "corner5Y.A"
+        ],
+        [
+          "parts.Z",
+          "corner5Z.A"
+        ],
+        [
+          "corner5X.ReturnValue",
+          "corner5.X"
+        ],
+        [
+          "corner5Y.ReturnValue",
+          "corner5.Y"
+        ],
+        [
+          "corner5Z.ReturnValue",
+          "corner5.Z"
+        ],
+        [
+          "corner5.ReturnValue",
+          "corner5right.A"
+        ],
+        [
+          "corner5rightaxis.ReturnValue",
+          "corner5right.B"
+        ],
+        [
+          "corner5right.ReturnValue",
+          "corner5absR.A"
+        ],
+        [
+          "corner5.ReturnValue",
+          "corner5up.A"
+        ],
+        [
+          "corner5upaxis.ReturnValue",
+          "corner5up.B"
+        ],
+        [
+          "corner5up.ReturnValue",
+          "corner5absU.A"
+        ],
+        [
+          "corner5absR.ReturnValue",
+          "corner5side.A"
+        ],
+        [
+          "corner5absU.ReturnValue",
+          "corner5side.B"
+        ],
+        [
+          "corner5side.ReturnValue",
+          "corner5tan.A"
+        ],
+        [
+          "corner5.ReturnValue",
+          "corner5forward.A"
+        ],
+        [
+          "corner5forwardaxis.ReturnValue",
+          "corner5forward.B"
+        ],
+        [
+          "corner5tan.ReturnValue",
+          "corner5need.A"
+        ],
+        [
+          "corner5forward.ReturnValue",
+          "corner5need.B"
+        ],
+        [
+          "corner5need.ReturnValue",
+          "corner5max.A"
+        ],
+        [
+          "corner4max.ReturnValue",
+          "corner5max.B"
+        ],
+        [
+          "parts.X",
+          "corner6X.A"
+        ],
+        [
+          "parts.Y",
+          "corner6Y.A"
+        ],
+        [
+          "parts.Z",
+          "corner6Z.A"
+        ],
+        [
+          "corner6X.ReturnValue",
+          "corner6.X"
+        ],
+        [
+          "corner6Y.ReturnValue",
+          "corner6.Y"
+        ],
+        [
+          "corner6Z.ReturnValue",
+          "corner6.Z"
+        ],
+        [
+          "corner6.ReturnValue",
+          "corner6right.A"
+        ],
+        [
+          "corner6rightaxis.ReturnValue",
+          "corner6right.B"
+        ],
+        [
+          "corner6right.ReturnValue",
+          "corner6absR.A"
+        ],
+        [
+          "corner6.ReturnValue",
+          "corner6up.A"
+        ],
+        [
+          "corner6upaxis.ReturnValue",
+          "corner6up.B"
+        ],
+        [
+          "corner6up.ReturnValue",
+          "corner6absU.A"
+        ],
+        [
+          "corner6absR.ReturnValue",
+          "corner6side.A"
+        ],
+        [
+          "corner6absU.ReturnValue",
+          "corner6side.B"
+        ],
+        [
+          "corner6side.ReturnValue",
+          "corner6tan.A"
+        ],
+        [
+          "corner6.ReturnValue",
+          "corner6forward.A"
+        ],
+        [
+          "corner6forwardaxis.ReturnValue",
+          "corner6forward.B"
+        ],
+        [
+          "corner6tan.ReturnValue",
+          "corner6need.A"
+        ],
+        [
+          "corner6forward.ReturnValue",
+          "corner6need.B"
+        ],
+        [
+          "corner6need.ReturnValue",
+          "corner6max.A"
+        ],
+        [
+          "corner5max.ReturnValue",
+          "corner6max.B"
+        ],
+        [
+          "parts.X",
+          "corner7X.A"
+        ],
+        [
+          "parts.Y",
+          "corner7Y.A"
+        ],
+        [
+          "parts.Z",
+          "corner7Z.A"
+        ],
+        [
+          "corner7X.ReturnValue",
+          "corner7.X"
+        ],
+        [
+          "corner7Y.ReturnValue",
+          "corner7.Y"
+        ],
+        [
+          "corner7Z.ReturnValue",
+          "corner7.Z"
+        ],
+        [
+          "corner7.ReturnValue",
+          "corner7right.A"
+        ],
+        [
+          "corner7rightaxis.ReturnValue",
+          "corner7right.B"
+        ],
+        [
+          "corner7right.ReturnValue",
+          "corner7absR.A"
+        ],
+        [
+          "corner7.ReturnValue",
+          "corner7up.A"
+        ],
+        [
+          "corner7upaxis.ReturnValue",
+          "corner7up.B"
+        ],
+        [
+          "corner7up.ReturnValue",
+          "corner7absU.A"
+        ],
+        [
+          "corner7absR.ReturnValue",
+          "corner7side.A"
+        ],
+        [
+          "corner7absU.ReturnValue",
+          "corner7side.B"
+        ],
+        [
+          "corner7side.ReturnValue",
+          "corner7tan.A"
+        ],
+        [
+          "corner7.ReturnValue",
+          "corner7forward.A"
+        ],
+        [
+          "corner7forwardaxis.ReturnValue",
+          "corner7forward.B"
+        ],
+        [
+          "corner7tan.ReturnValue",
+          "corner7need.A"
+        ],
+        [
+          "corner7forward.ReturnValue",
+          "corner7need.B"
+        ],
+        [
+          "corner7need.ReturnValue",
+          "corner7max.A"
+        ],
+        [
+          "corner6max.ReturnValue",
+          "corner7max.B"
+        ],
+        [
+          "corner7max.ReturnValue",
+          "margin.A"
+        ],
+        [
+          "margin.ReturnValue",
+          "result.Distance"
+        ],
+        [
+          "entry.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "CacheFileName",
+      "inputs": [
+        {
+          "name": "Path",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "FileName",
+          "type": "string"
+        }
+      ],
+      "locals": [
+        {
+          "name": "CharacterIndex",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "HashValue",
+          "type": "int64",
+          "default": "5381"
+        },
+        {
+          "name": "SafeName",
+          "type": "string"
+        },
+        {
+          "name": "HexValue",
+          "type": "string"
+        },
+        {
+          "name": "HexDigits",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "CacheName",
+          "type": "string"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "validate",
+          "kind": "call",
+          "function": "self:ValidAssetPath",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "cursor",
+          "kind": "get",
+          "var": "local:CharacterIndex"
+        },
+        {
+          "id": "hash",
+          "kind": "get",
+          "var": "local:HashValue"
+        },
+        {
+          "id": "length",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Len",
+          "defaults": {}
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "more",
+          "kind": "branch"
+        },
+        {
+          "id": "character",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:GetCharacterAsNumber",
+          "defaults": {}
+        },
+        {
+          "id": "hashmultiply",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_Int64Int64",
+          "defaults": {
+            "B": "33"
+          }
+        },
+        {
+          "id": "hashadd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_Int64Int64",
+          "defaults": {}
+        },
+        {
+          "id": "hashmod",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Percent_Int64Int64",
+          "defaults": {
+            "B": "4294967296"
+          }
+        },
+        {
+          "id": "updatehash",
+          "kind": "set",
+          "var": "local:HashValue"
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "nextchar",
+          "kind": "set",
+          "var": "local:CharacterIndex"
+        },
+        {
+          "id": "split",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Split",
+          "defaults": {
+            "InStr": ".",
+            "SearchCase": "CaseSensitive",
+            "SearchDir": "FromEnd"
+          }
+        },
+        {
+          "id": "reset",
+          "kind": "set",
+          "var": "local:CharacterIndex",
+          "defaults": {
+            "CharacterIndex": "0"
+          }
+        },
+        {
+          "id": "name",
+          "kind": "get",
+          "var": "local:SafeName"
+        },
+        {
+          "id": "namelength",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Len",
+          "defaults": {}
+        },
+        {
+          "id": "namewithin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "namemore",
+          "kind": "branch"
+        },
+        {
+          "id": "namechar",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:GetCharacterAsNumber",
+          "defaults": {}
+        },
+        {
+          "id": "lo0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "48"
+          }
+        },
+        {
+          "id": "hi0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "57"
+          }
+        },
+        {
+          "id": "range00",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "lo1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "65"
+          }
+        },
+        {
+          "id": "hi1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "90"
+          }
+        },
+        {
+          "id": "range10",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "lo2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "97"
+          }
+        },
+        {
+          "id": "hi2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "122"
+          }
+        },
+        {
+          "id": "range20",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "underscore",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "95"
+          }
+        },
+        {
+          "id": "dash",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "45"
+          }
+        },
+        {
+          "id": "allowed0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "allowed1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "allowed2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "allowed3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "substring",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:GetSubstring",
+          "defaults": {
+            "Length": "1"
+          }
+        },
+        {
+          "id": "sanitize",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectString",
+          "defaults": {
+            "B": "_"
+          }
+        },
+        {
+          "id": "appendname",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "savename",
+          "kind": "set",
+          "var": "local:SafeName"
+        },
+        {
+          "id": "nameincrement",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "namenext",
+          "kind": "set",
+          "var": "local:CharacterIndex"
+        },
+        {
+          "id": "hex",
+          "kind": "get",
+          "var": "local:HexValue"
+        },
+        {
+          "id": "digits",
+          "kind": "get",
+          "var": "local:HexDigits"
+        },
+        {
+          "id": "hexwithin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {
+            "B": "8"
+          }
+        },
+        {
+          "id": "hexmore",
+          "kind": "branch"
+        },
+        {
+          "id": "mod",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Percent_Int64Int64",
+          "defaults": {
+            "B": "16"
+          }
+        },
+        {
+          "id": "symbol",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:GetSubstring",
+          "defaults": {
+            "SourceString": "0123456789abcdef",
+            "Length": "1"
+          }
+        },
+        {
+          "id": "appendhex",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "savehex",
+          "kind": "set",
+          "var": "local:HexValue"
+        },
+        {
+          "id": "quotient",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Divide_Int64Int64",
+          "defaults": {
+            "B": "16"
+          }
+        },
+        {
+          "id": "divide",
+          "kind": "set",
+          "var": "local:HashValue"
+        },
+        {
+          "id": "nextdigit",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "digitnext",
+          "kind": "set",
+          "var": "local:HexDigits"
+        },
+        {
+          "id": "prefix",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "B": "_"
+          }
+        },
+        {
+          "id": "body",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "suffix",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "B": ".png"
+          }
+        },
+        {
+          "id": "output",
+          "kind": "set",
+          "var": "local:CacheName"
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:CacheName"
+        }
+      ],
+      "links": [
+        [
+          "entry.Path",
+          "validate.Path"
+        ],
+        [
+          "validate.Valid",
+          "valid.Condition"
+        ],
+        [
+          "entry.Path",
+          "length.S"
+        ],
+        [
+          "cursor.CharacterIndex",
+          "within.A"
+        ],
+        [
+          "length.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "more.Condition"
+        ],
+        [
+          "entry.Path",
+          "character.SourceString"
+        ],
+        [
+          "cursor.CharacterIndex",
+          "character.Index"
+        ],
+        [
+          "hash.HashValue",
+          "hashmultiply.A"
+        ],
+        [
+          "hashmultiply.ReturnValue",
+          "hashadd.A"
+        ],
+        [
+          "character.ReturnValue",
+          "hashadd.B"
+        ],
+        [
+          "hashadd.ReturnValue",
+          "hashmod.A"
+        ],
+        [
+          "hashmod.ReturnValue",
+          "updatehash.HashValue"
+        ],
+        [
+          "cursor.CharacterIndex",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "nextchar.CharacterIndex"
+        ],
+        [
+          "entry.Path",
+          "split.SourceString"
+        ],
+        [
+          "split.RightS",
+          "namelength.S"
+        ],
+        [
+          "cursor.CharacterIndex",
+          "namewithin.A"
+        ],
+        [
+          "namelength.ReturnValue",
+          "namewithin.B"
+        ],
+        [
+          "namewithin.ReturnValue",
+          "namemore.Condition"
+        ],
+        [
+          "split.RightS",
+          "namechar.SourceString"
+        ],
+        [
+          "cursor.CharacterIndex",
+          "namechar.Index"
+        ],
+        [
+          "namechar.ReturnValue",
+          "lo0.A"
+        ],
+        [
+          "namechar.ReturnValue",
+          "hi0.A"
+        ],
+        [
+          "lo0.ReturnValue",
+          "range00.A"
+        ],
+        [
+          "hi0.ReturnValue",
+          "range00.B"
+        ],
+        [
+          "namechar.ReturnValue",
+          "lo1.A"
+        ],
+        [
+          "namechar.ReturnValue",
+          "hi1.A"
+        ],
+        [
+          "lo1.ReturnValue",
+          "range10.A"
+        ],
+        [
+          "hi1.ReturnValue",
+          "range10.B"
+        ],
+        [
+          "namechar.ReturnValue",
+          "lo2.A"
+        ],
+        [
+          "namechar.ReturnValue",
+          "hi2.A"
+        ],
+        [
+          "lo2.ReturnValue",
+          "range20.A"
+        ],
+        [
+          "hi2.ReturnValue",
+          "range20.B"
+        ],
+        [
+          "namechar.ReturnValue",
+          "underscore.A"
+        ],
+        [
+          "namechar.ReturnValue",
+          "dash.A"
+        ],
+        [
+          "range00.ReturnValue",
+          "allowed0.A"
+        ],
+        [
+          "range10.ReturnValue",
+          "allowed0.B"
+        ],
+        [
+          "allowed0.ReturnValue",
+          "allowed1.A"
+        ],
+        [
+          "range20.ReturnValue",
+          "allowed1.B"
+        ],
+        [
+          "allowed1.ReturnValue",
+          "allowed2.A"
+        ],
+        [
+          "underscore.ReturnValue",
+          "allowed2.B"
+        ],
+        [
+          "allowed2.ReturnValue",
+          "allowed3.A"
+        ],
+        [
+          "dash.ReturnValue",
+          "allowed3.B"
+        ],
+        [
+          "split.RightS",
+          "substring.SourceString"
+        ],
+        [
+          "cursor.CharacterIndex",
+          "substring.StartIndex"
+        ],
+        [
+          "substring.ReturnValue",
+          "sanitize.A"
+        ],
+        [
+          "allowed3.ReturnValue",
+          "sanitize.bPickA"
+        ],
+        [
+          "name.SafeName",
+          "appendname.A"
+        ],
+        [
+          "sanitize.ReturnValue",
+          "appendname.B"
+        ],
+        [
+          "appendname.ReturnValue",
+          "savename.SafeName"
+        ],
+        [
+          "cursor.CharacterIndex",
+          "nameincrement.A"
+        ],
+        [
+          "nameincrement.ReturnValue",
+          "namenext.CharacterIndex"
+        ],
+        [
+          "digits.HexDigits",
+          "hexwithin.A"
+        ],
+        [
+          "hexwithin.ReturnValue",
+          "hexmore.Condition"
+        ],
+        [
+          "hash.HashValue",
+          "mod.A"
+        ],
+        [
+          "mod.ReturnValue",
+          "symbol.StartIndex"
+        ],
+        [
+          "symbol.ReturnValue",
+          "appendhex.A"
+        ],
+        [
+          "hex.HexValue",
+          "appendhex.B"
+        ],
+        [
+          "appendhex.ReturnValue",
+          "savehex.HexValue"
+        ],
+        [
+          "hash.HashValue",
+          "quotient.A"
+        ],
+        [
+          "quotient.ReturnValue",
+          "divide.HashValue"
+        ],
+        [
+          "digits.HexDigits",
+          "nextdigit.A"
+        ],
+        [
+          "nextdigit.ReturnValue",
+          "digitnext.HexDigits"
+        ],
+        [
+          "name.SafeName",
+          "prefix.A"
+        ],
+        [
+          "prefix.ReturnValue",
+          "body.A"
+        ],
+        [
+          "hex.HexValue",
+          "body.B"
+        ],
+        [
+          "body.ReturnValue",
+          "suffix.A"
+        ],
+        [
+          "suffix.ReturnValue",
+          "output.CacheName"
+        ],
+        [
+          "out.CacheName",
+          "result.FileName"
+        ],
+        [
+          "entry.then",
+          "validate.execute"
+        ],
+        [
+          "validate.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "more.execute"
+        ],
+        [
+          "more.then",
+          "updatehash.execute"
+        ],
+        [
+          "updatehash.then",
+          "nextchar.execute"
+        ],
+        [
+          "nextchar.then",
+          "more.execute"
+        ],
+        [
+          "more.else",
+          "reset.execute"
+        ],
+        [
+          "reset.then",
+          "namemore.execute"
+        ],
+        [
+          "namemore.then",
+          "savename.execute"
+        ],
+        [
+          "savename.then",
+          "namenext.execute"
+        ],
+        [
+          "namenext.then",
+          "namemore.execute"
+        ],
+        [
+          "namemore.else",
+          "hexmore.execute"
+        ],
+        [
+          "hexmore.then",
+          "savehex.execute"
+        ],
+        [
+          "savehex.then",
+          "divide.execute"
+        ],
+        [
+          "divide.then",
+          "digitnext.execute"
+        ],
+        [
+          "digitnext.then",
+          "hexmore.execute"
+        ],
+        [
+          "hexmore.else",
+          "output.execute"
+        ],
+        [
+          "output.then",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "CachePath",
+      "inputs": [
+        {
+          "name": "Path",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Directory",
+          "type": "string"
+        },
+        {
+          "name": "Name",
+          "type": "string"
+        },
+        {
+          "name": "FullPath",
+          "type": "string"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "saved",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:GetProjectSavedDirectory",
+          "defaults": {}
+        },
+        {
+          "id": "directory",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "B": "ZComDen/thumbs/"
+          }
+        },
+        {
+          "id": "file",
+          "kind": "call",
+          "function": "self:CacheFileName",
+          "defaults": {}
+        },
+        {
+          "id": "full",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "saved.ReturnValue",
+          "directory.A"
+        ],
+        [
+          "entry.Path",
+          "file.Path"
+        ],
+        [
+          "directory.ReturnValue",
+          "full.A"
+        ],
+        [
+          "file.FileName",
+          "full.B"
+        ],
+        [
+          "directory.ReturnValue",
+          "result.Directory"
+        ],
+        [
+          "file.FileName",
+          "result.Name"
+        ],
+        [
+          "full.ReturnValue",
+          "result.FullPath"
+        ],
+        [
+          "entry.then",
+          "file.execute"
+        ],
+        [
+          "file.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ReadCached",
+      "inputs": [
+        {
+          "name": "Path",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Texture",
+          "type": "object:/Script/Engine.Texture2D"
+        }
+      ],
+      "locals": [
+        {
+          "name": "CachedTexture",
+          "type": "object:/Script/Engine.Texture2D"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "path",
+          "kind": "call",
+          "function": "self:CachePath",
+          "defaults": {}
+        },
+        {
+          "id": "nonempty",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:NotEqual_StrStr",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "exists",
+          "kind": "call",
+          "function": "/Script/Engine.BlueprintPathsLibrary:FileExists",
+          "defaults": {}
+        },
+        {
+          "id": "available",
+          "kind": "branch"
+        },
+        {
+          "id": "import",
+          "kind": "call",
+          "function": "/Script/Engine.KismetRenderingLibrary:ImportFileAsTexture2D",
+          "defaults": {}
+        },
+        {
+          "id": "save",
+          "kind": "set",
+          "var": "local:CachedTexture"
+        },
+        {
+          "id": "texture",
+          "kind": "get",
+          "var": "local:CachedTexture"
+        }
+      ],
+      "links": [
+        [
+          "entry.Path",
+          "path.Path"
+        ],
+        [
+          "path.Name",
+          "nonempty.A"
+        ],
+        [
+          "nonempty.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "path.FullPath",
+          "exists.InPath"
+        ],
+        [
+          "exists.ReturnValue",
+          "available.Condition"
+        ],
+        [
+          "self.self",
+          "import.WorldContextObject"
+        ],
+        [
+          "path.FullPath",
+          "import.Filename"
+        ],
+        [
+          "import.ReturnValue",
+          "save.CachedTexture"
+        ],
+        [
+          "texture.CachedTexture",
+          "result.Texture"
+        ],
+        [
+          "entry.then",
+          "path.execute"
+        ],
+        [
+          "path.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "available.execute"
+        ],
+        [
+          "available.then",
+          "import.execute"
+        ],
+        [
+          "import.then",
+          "save.execute"
+        ],
+        [
+          "save.then",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ],
+        [
+          "available.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "Prepare",
+      "inputs": [
+        {
+          "name": "Mesh",
+          "type": "object:/Script/Engine.StaticMesh"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Ready",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "reset",
+          "kind": "set",
+          "var": "Prepared",
+          "defaults": {
+            "Prepared": "false"
+          }
+        },
+        {
+          "id": "valid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "mesh",
+          "kind": "branch"
+        },
+        {
+          "id": "bounds",
+          "kind": "call",
+          "function": "/Script/Engine.StaticMesh:GetBounds",
+          "defaults": {}
+        },
+        {
+          "id": "box",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakBoxSphereBounds",
+          "defaults": {}
+        },
+        {
+          "id": "getMesh",
+          "kind": "get",
+          "var": "Mesh"
+        },
+        {
+          "id": "meshset",
+          "kind": "call",
+          "function": "/Script/Engine.StaticMeshComponent:SetStaticMesh",
+          "defaults": {}
+        },
+        {
+          "id": "offset",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "center",
+          "kind": "call",
+          "function": "/Script/Engine.SceneComponent:K2_SetRelativeLocation",
+          "defaults": {
+            "bSweep": "false",
+            "bTeleport": "true"
+          }
+        },
+        {
+          "id": "getCapture",
+          "kind": "get",
+          "var": "Capture"
+        },
+        {
+          "id": "clearshow",
+          "kind": "call",
+          "function": "/Script/Engine.SceneCaptureComponent:ClearShowOnlyComponents",
+          "defaults": {}
+        },
+        {
+          "id": "showonly",
+          "kind": "call",
+          "function": "/Script/Engine.SceneCaptureComponent:ShowOnlyComponent",
+          "defaults": {}
+        },
+        {
+          "id": "meshpath",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:GetPathName",
+          "defaults": {}
+        },
+        {
+          "id": "path",
+          "kind": "set",
+          "var": "MeshPath"
+        },
+        {
+          "id": "frame",
+          "kind": "call",
+          "function": "self:ConfigureFrame",
+          "defaults": {
+            "Center": "0,0,0"
+          }
+        }
+      ],
+      "links": [
+        [
+          "entry.Mesh",
+          "valid.Object"
+        ],
+        [
+          "valid.ReturnValue",
+          "mesh.Condition"
+        ],
+        [
+          "entry.Mesh",
+          "bounds.self"
+        ],
+        [
+          "bounds.ReturnValue",
+          "box.InBoxSphereBounds"
+        ],
+        [
+          "getMesh.Mesh",
+          "meshset.self"
+        ],
+        [
+          "entry.Mesh",
+          "meshset.NewMesh"
+        ],
+        [
+          "box.Origin",
+          "offset.A"
+        ],
+        [
+          "getMesh.Mesh",
+          "center.self"
+        ],
+        [
+          "offset.ReturnValue",
+          "center.NewLocation"
+        ],
+        [
+          "getCapture.Capture",
+          "clearshow.self"
+        ],
+        [
+          "getCapture.Capture",
+          "showonly.self"
+        ],
+        [
+          "getMesh.Mesh",
+          "showonly.InComponent"
+        ],
+        [
+          "entry.Mesh",
+          "meshpath.Object"
+        ],
+        [
+          "meshpath.ReturnValue",
+          "path.MeshPath"
+        ],
+        [
+          "box.BoxExtent",
+          "frame.Extent"
+        ],
+        [
+          "box.SphereRadius",
+          "frame.Radius"
+        ],
+        [
+          "frame.Ready",
+          "result.Ready"
+        ],
+        [
+          "entry.then",
+          "reset.execute"
+        ],
+        [
+          "reset.then",
+          "mesh.execute"
+        ],
+        [
+          "mesh.then",
+          "meshset.execute"
+        ],
+        [
+          "meshset.then",
+          "center.execute"
+        ],
+        [
+          "center.then",
+          "clearshow.execute"
+        ],
+        [
+          "clearshow.then",
+          "showonly.execute"
+        ],
+        [
+          "showonly.then",
+          "path.execute"
+        ],
+        [
+          "path.then",
+          "frame.execute"
+        ],
+        [
+          "frame.then",
+          "result.execute"
+        ],
+        [
+          "mesh.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "StageComposition",
+      "inputs": [
+        {
+          "name": "Actors",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenPlacedProp[]"
+        },
+        {
+          "name": "Path",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Ready",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "MinX",
+          "type": "double",
+          "default": "1e20"
+        },
+        {
+          "name": "MinY",
+          "type": "double",
+          "default": "1e20"
+        },
+        {
+          "name": "MinZ",
+          "type": "double",
+          "default": "1e20"
+        },
+        {
+          "name": "MaxX",
+          "type": "double",
+          "default": "-1e20"
+        },
+        {
+          "name": "MaxY",
+          "type": "double",
+          "default": "-1e20"
+        },
+        {
+          "name": "MaxZ",
+          "type": "double",
+          "default": "-1e20"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "reset",
+          "kind": "set",
+          "var": "Prepared",
+          "defaults": {
+            "Prepared": "false"
+          }
+        },
+        {
+          "id": "getCapture",
+          "kind": "get",
+          "var": "Capture"
+        },
+        {
+          "id": "clearshow",
+          "kind": "call",
+          "function": "/Script/Engine.SceneCaptureComponent:ClearShowOnlyComponents",
+          "defaults": {}
+        },
+        {
+          "id": "getMesh",
+          "kind": "get",
+          "var": "Mesh"
+        },
+        {
+          "id": "clearmesh",
+          "kind": "call",
+          "function": "/Script/Engine.StaticMeshComponent:SetStaticMesh",
+          "defaults": {}
+        },
+        {
+          "id": "count",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "nonempty",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "limit",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "128"
+          }
+        },
+        {
+          "id": "size0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "bounded",
+          "kind": "branch"
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "more",
+          "kind": "branch"
+        },
+        {
+          "id": "actor",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "actorvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "alive",
+          "kind": "branch"
+        },
+        {
+          "id": "current",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPlacedProp:Current"
+        },
+        {
+          "id": "value",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "origin",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:K2_GetActorLocation",
+          "defaults": {}
+        },
+        {
+          "id": "position",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "shiftedbase",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "shifted",
+          "kind": "make_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry",
+          "defaults": {}
+        },
+        {
+          "id": "move",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPlacedProp:PreviewTransform",
+          "defaults": {}
+        },
+        {
+          "id": "moved",
+          "kind": "branch"
+        },
+        {
+          "id": "mesh",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPlacedProp:Mesh"
+        },
+        {
+          "id": "channels",
+          "kind": "call",
+          "function": "/Script/Engine.PrimitiveComponent:SetLightingChannels",
+          "defaults": {
+            "bChannel0": "false",
+            "bChannel1": "true",
+            "bChannel2": "false"
+          }
+        },
+        {
+          "id": "outline",
+          "kind": "call",
+          "function": "/Script/Engine.PrimitiveComponent:SetRenderCustomDepth",
+          "defaults": {
+            "bValue": "false"
+          }
+        },
+        {
+          "id": "show",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:SetActorHiddenInGame",
+          "defaults": {
+            "bNewHidden": "false"
+          }
+        },
+        {
+          "id": "showonly",
+          "kind": "call",
+          "function": "/Script/Engine.SceneCaptureComponent:ShowOnlyComponent",
+          "defaults": {}
+        },
+        {
+          "id": "bounds",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:GetComponentBounds",
+          "defaults": {}
+        },
+        {
+          "id": "relative",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "low",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "high",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "lowparts",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakVector",
+          "defaults": {}
+        },
+        {
+          "id": "highparts",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakVector",
+          "defaults": {}
+        },
+        {
+          "id": "minX",
+          "kind": "get",
+          "var": "local:MinX"
+        },
+        {
+          "id": "maxX",
+          "kind": "get",
+          "var": "local:MaxX"
+        },
+        {
+          "id": "minvalueX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMin",
+          "defaults": {}
+        },
+        {
+          "id": "setminX",
+          "kind": "set",
+          "var": "local:MinX"
+        },
+        {
+          "id": "maxvalueX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {}
+        },
+        {
+          "id": "setmaxX",
+          "kind": "set",
+          "var": "local:MaxX"
+        },
+        {
+          "id": "minY",
+          "kind": "get",
+          "var": "local:MinY"
+        },
+        {
+          "id": "maxY",
+          "kind": "get",
+          "var": "local:MaxY"
+        },
+        {
+          "id": "minvalueY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMin",
+          "defaults": {}
+        },
+        {
+          "id": "setminY",
+          "kind": "set",
+          "var": "local:MinY"
+        },
+        {
+          "id": "maxvalueY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {}
+        },
+        {
+          "id": "setmaxY",
+          "kind": "set",
+          "var": "local:MaxY"
+        },
+        {
+          "id": "minZ",
+          "kind": "get",
+          "var": "local:MinZ"
+        },
+        {
+          "id": "maxZ",
+          "kind": "get",
+          "var": "local:MaxZ"
+        },
+        {
+          "id": "minvalueZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMin",
+          "defaults": {}
+        },
+        {
+          "id": "setminZ",
+          "kind": "set",
+          "var": "local:MinZ"
+        },
+        {
+          "id": "maxvalueZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {}
+        },
+        {
+          "id": "setmaxZ",
+          "kind": "set",
+          "var": "local:MaxZ"
+        },
+        {
+          "id": "advance",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "next",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "sumX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "halfX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "0.5"
+          }
+        },
+        {
+          "id": "sumY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "halfY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "0.5"
+          }
+        },
+        {
+          "id": "sumZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "halfZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "0.5"
+          }
+        },
+        {
+          "id": "midpoint",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {}
+        },
+        {
+          "id": "diffX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "extentX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "0.5"
+          }
+        },
+        {
+          "id": "diffY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "extentY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "0.5"
+          }
+        },
+        {
+          "id": "diffZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "extentZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "0.5"
+          }
+        },
+        {
+          "id": "extent",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {}
+        },
+        {
+          "id": "center",
+          "kind": "set",
+          "var": "CompositionCenter"
+        },
+        {
+          "id": "extentout",
+          "kind": "set",
+          "var": "CompositionExtent"
+        },
+        {
+          "id": "path",
+          "kind": "set",
+          "var": "MeshPath"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        }
+      ],
+      "links": [
+        [
+          "getCapture.Capture",
+          "clearshow.self"
+        ],
+        [
+          "getMesh.Mesh",
+          "clearmesh.self"
+        ],
+        [
+          "entry.Actors",
+          "count.TargetArray"
+        ],
+        [
+          "count.ReturnValue",
+          "nonempty.A"
+        ],
+        [
+          "count.ReturnValue",
+          "limit.A"
+        ],
+        [
+          "nonempty.ReturnValue",
+          "size0.A"
+        ],
+        [
+          "limit.ReturnValue",
+          "size0.B"
+        ],
+        [
+          "size0.ReturnValue",
+          "bounded.Condition"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "count.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "more.Condition"
+        ],
+        [
+          "entry.Actors",
+          "actor.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "actor.Index"
+        ],
+        [
+          "actor.Item",
+          "actorvalid.Object"
+        ],
+        [
+          "actorvalid.ReturnValue",
+          "alive.Condition"
+        ],
+        [
+          "actor.Item",
+          "current.self"
+        ],
+        [
+          "current.Current",
+          "value.ST_DenEntry"
+        ],
+        [
+          "self.self",
+          "origin.self"
+        ],
+        [
+          "value.Position",
+          "position.A"
+        ],
+        [
+          "origin.ReturnValue",
+          "position.B"
+        ],
+        [
+          "current.Current",
+          "shiftedbase.ST_DenEntry"
+        ],
+        [
+          "shiftedbase.Kind",
+          "shifted.Kind"
+        ],
+        [
+          "shiftedbase.Key",
+          "shifted.Key"
+        ],
+        [
+          "shiftedbase.Mesh",
+          "shifted.Mesh"
+        ],
+        [
+          "position.ReturnValue",
+          "shifted.Position"
+        ],
+        [
+          "shiftedbase.Rotation",
+          "shifted.Rotation"
+        ],
+        [
+          "shiftedbase.Scale",
+          "shifted.Scale"
+        ],
+        [
+          "shiftedbase.HasPosition",
+          "shifted.HasPosition"
+        ],
+        [
+          "shiftedbase.HasRotation",
+          "shifted.HasRotation"
+        ],
+        [
+          "shiftedbase.HasScale",
+          "shifted.HasScale"
+        ],
+        [
+          "shiftedbase.Hidden",
+          "shifted.Hidden"
+        ],
+        [
+          "shiftedbase.CollisionMode",
+          "shifted.CollisionMode"
+        ],
+        [
+          "shiftedbase.Materials",
+          "shifted.Materials"
+        ],
+        [
+          "shiftedbase.Source",
+          "shifted.Source"
+        ],
+        [
+          "shiftedbase.HasFingerprint",
+          "shifted.HasFingerprint"
+        ],
+        [
+          "shiftedbase.FingerprintMesh",
+          "shifted.FingerprintMesh"
+        ],
+        [
+          "shiftedbase.FingerprintPosition",
+          "shifted.FingerprintPosition"
+        ],
+        [
+          "actor.Item",
+          "move.self"
+        ],
+        [
+          "shifted.ST_DenEntry",
+          "move.Value"
+        ],
+        [
+          "move.Accepted",
+          "moved.Condition"
+        ],
+        [
+          "actor.Item",
+          "mesh.self"
+        ],
+        [
+          "mesh.Mesh",
+          "channels.self"
+        ],
+        [
+          "mesh.Mesh",
+          "outline.self"
+        ],
+        [
+          "actor.Item",
+          "show.self"
+        ],
+        [
+          "getCapture.Capture",
+          "showonly.self"
+        ],
+        [
+          "mesh.Mesh",
+          "showonly.InComponent"
+        ],
+        [
+          "mesh.Mesh",
+          "bounds.Component"
+        ],
+        [
+          "bounds.Origin",
+          "relative.A"
+        ],
+        [
+          "origin.ReturnValue",
+          "relative.B"
+        ],
+        [
+          "relative.ReturnValue",
+          "low.A"
+        ],
+        [
+          "bounds.BoxExtent",
+          "low.B"
+        ],
+        [
+          "relative.ReturnValue",
+          "high.A"
+        ],
+        [
+          "bounds.BoxExtent",
+          "high.B"
+        ],
+        [
+          "low.ReturnValue",
+          "lowparts.InVec"
+        ],
+        [
+          "high.ReturnValue",
+          "highparts.InVec"
+        ],
+        [
+          "minX.MinX",
+          "minvalueX.A"
+        ],
+        [
+          "lowparts.X",
+          "minvalueX.B"
+        ],
+        [
+          "minvalueX.ReturnValue",
+          "setminX.MinX"
+        ],
+        [
+          "maxX.MaxX",
+          "maxvalueX.A"
+        ],
+        [
+          "highparts.X",
+          "maxvalueX.B"
+        ],
+        [
+          "maxvalueX.ReturnValue",
+          "setmaxX.MaxX"
+        ],
+        [
+          "showonly.then",
+          "setminX.execute"
+        ],
+        [
+          "setminX.then",
+          "setmaxX.execute"
+        ],
+        [
+          "minY.MinY",
+          "minvalueY.A"
+        ],
+        [
+          "lowparts.Y",
+          "minvalueY.B"
+        ],
+        [
+          "minvalueY.ReturnValue",
+          "setminY.MinY"
+        ],
+        [
+          "maxY.MaxY",
+          "maxvalueY.A"
+        ],
+        [
+          "highparts.Y",
+          "maxvalueY.B"
+        ],
+        [
+          "maxvalueY.ReturnValue",
+          "setmaxY.MaxY"
+        ],
+        [
+          "setmaxX.then",
+          "setminY.execute"
+        ],
+        [
+          "setminY.then",
+          "setmaxY.execute"
+        ],
+        [
+          "minZ.MinZ",
+          "minvalueZ.A"
+        ],
+        [
+          "lowparts.Z",
+          "minvalueZ.B"
+        ],
+        [
+          "minvalueZ.ReturnValue",
+          "setminZ.MinZ"
+        ],
+        [
+          "maxZ.MaxZ",
+          "maxvalueZ.A"
+        ],
+        [
+          "highparts.Z",
+          "maxvalueZ.B"
+        ],
+        [
+          "maxvalueZ.ReturnValue",
+          "setmaxZ.MaxZ"
+        ],
+        [
+          "setmaxY.then",
+          "setminZ.execute"
+        ],
+        [
+          "setminZ.then",
+          "setmaxZ.execute"
+        ],
+        [
+          "i.Cursor",
+          "advance.A"
+        ],
+        [
+          "advance.ReturnValue",
+          "next.Cursor"
+        ],
+        [
+          "setmaxZ.then",
+          "next.execute"
+        ],
+        [
+          "next.then",
+          "more.execute"
+        ],
+        [
+          "minX.MinX",
+          "sumX.A"
+        ],
+        [
+          "maxX.MaxX",
+          "sumX.B"
+        ],
+        [
+          "sumX.ReturnValue",
+          "halfX.A"
+        ],
+        [
+          "minY.MinY",
+          "sumY.A"
+        ],
+        [
+          "maxY.MaxY",
+          "sumY.B"
+        ],
+        [
+          "sumY.ReturnValue",
+          "halfY.A"
+        ],
+        [
+          "minZ.MinZ",
+          "sumZ.A"
+        ],
+        [
+          "maxZ.MaxZ",
+          "sumZ.B"
+        ],
+        [
+          "sumZ.ReturnValue",
+          "halfZ.A"
+        ],
+        [
+          "halfX.ReturnValue",
+          "midpoint.X"
+        ],
+        [
+          "halfY.ReturnValue",
+          "midpoint.Y"
+        ],
+        [
+          "halfZ.ReturnValue",
+          "midpoint.Z"
+        ],
+        [
+          "maxX.MaxX",
+          "diffX.A"
+        ],
+        [
+          "minX.MinX",
+          "diffX.B"
+        ],
+        [
+          "diffX.ReturnValue",
+          "extentX.A"
+        ],
+        [
+          "maxY.MaxY",
+          "diffY.A"
+        ],
+        [
+          "minY.MinY",
+          "diffY.B"
+        ],
+        [
+          "diffY.ReturnValue",
+          "extentY.A"
+        ],
+        [
+          "maxZ.MaxZ",
+          "diffZ.A"
+        ],
+        [
+          "minZ.MinZ",
+          "diffZ.B"
+        ],
+        [
+          "diffZ.ReturnValue",
+          "extentZ.A"
+        ],
+        [
+          "extentX.ReturnValue",
+          "extent.X"
+        ],
+        [
+          "extentY.ReturnValue",
+          "extent.Y"
+        ],
+        [
+          "extentZ.ReturnValue",
+          "extent.Z"
+        ],
+        [
+          "midpoint.ReturnValue",
+          "center.CompositionCenter"
+        ],
+        [
+          "extent.ReturnValue",
+          "extentout.CompositionExtent"
+        ],
+        [
+          "entry.Path",
+          "path.MeshPath"
+        ],
+        [
+          "out.OK",
+          "result.Ready"
+        ],
+        [
+          "entry.then",
+          "reset.execute"
+        ],
+        [
+          "reset.then",
+          "clearshow.execute"
+        ],
+        [
+          "clearshow.then",
+          "clearmesh.execute"
+        ],
+        [
+          "clearmesh.then",
+          "bounded.execute"
+        ],
+        [
+          "bounded.then",
+          "more.execute"
+        ],
+        [
+          "more.then",
+          "alive.execute"
+        ],
+        [
+          "alive.then",
+          "move.execute"
+        ],
+        [
+          "move.then",
+          "moved.execute"
+        ],
+        [
+          "moved.then",
+          "channels.execute"
+        ],
+        [
+          "channels.then",
+          "outline.execute"
+        ],
+        [
+          "outline.then",
+          "show.execute"
+        ],
+        [
+          "show.then",
+          "showonly.execute"
+        ],
+        [
+          "more.else",
+          "center.execute"
+        ],
+        [
+          "center.then",
+          "extentout.execute"
+        ],
+        [
+          "extentout.then",
+          "path.execute"
+        ],
+        [
+          "path.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "bounded.else",
+          "result.execute"
+        ],
+        [
+          "alive.else",
+          "result.execute"
+        ],
+        [
+          "moved.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "PrepareComposition",
+      "inputs": [
+        {
+          "name": "Actors",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenPlacedProp[]"
+        },
+        {
+          "name": "Path",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Ready",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "stage",
+          "kind": "call",
+          "function": "self:StageComposition",
+          "defaults": {}
+        },
+        {
+          "id": "ready",
+          "kind": "branch"
+        },
+        {
+          "id": "frame",
+          "kind": "call",
+          "function": "self:ConfigureFrame",
+          "defaults": {}
+        },
+        {
+          "id": "getCompositionCenter",
+          "kind": "get",
+          "var": "CompositionCenter"
+        },
+        {
+          "id": "getCompositionExtent",
+          "kind": "get",
+          "var": "CompositionExtent"
+        },
+        {
+          "id": "radius",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:VSize",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "entry.Actors",
+          "stage.Actors"
+        ],
+        [
+          "entry.Path",
+          "stage.Path"
+        ],
+        [
+          "stage.Ready",
+          "ready.Condition"
+        ],
+        [
+          "getCompositionExtent.CompositionExtent",
+          "radius.A"
+        ],
+        [
+          "getCompositionCenter.CompositionCenter",
+          "frame.Center"
+        ],
+        [
+          "getCompositionExtent.CompositionExtent",
+          "frame.Extent"
+        ],
+        [
+          "radius.ReturnValue",
+          "frame.Radius"
+        ],
+        [
+          "frame.Ready",
+          "result.Ready"
+        ],
+        [
+          "entry.then",
+          "stage.execute"
+        ],
+        [
+          "stage.then",
+          "ready.execute"
+        ],
+        [
+          "ready.then",
+          "frame.execute"
+        ],
+        [
+          "frame.then",
+          "result.execute"
+        ],
+        [
+          "ready.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ConfigureFrame",
+      "inputs": [
+        {
+          "name": "Center",
+          "type": "vector"
+        },
+        {
+          "name": "Extent",
+          "type": "vector"
+        },
+        {
+          "name": "Radius",
+          "type": "double"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Ready",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "reset",
+          "kind": "set",
+          "var": "Prepared",
+          "defaults": {
+            "Prepared": "false"
+          }
+        },
+        {
+          "id": "radius",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "KeyLightvector",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "2.5",
+            "Y": "-1.5",
+            "Z": "2.5"
+          }
+        },
+        {
+          "id": "KeyLightoffset",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {}
+        },
+        {
+          "id": "KeyLightat",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "getKeyLight",
+          "kind": "get",
+          "var": "KeyLight"
+        },
+        {
+          "id": "KeyLightmove",
+          "kind": "call",
+          "function": "/Script/Engine.SceneComponent:K2_SetRelativeLocation",
+          "defaults": {
+            "bSweep": "false",
+            "bTeleport": "true"
+          }
+        },
+        {
+          "id": "KeyLightrange",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "12"
+          }
+        },
+        {
+          "id": "KeyLightradius",
+          "kind": "call",
+          "function": "/Script/Engine.PointLightComponent:SetAttenuationRadius",
+          "defaults": {}
+        },
+        {
+          "id": "KeyLightsquare",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "KeyLightpower",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "14"
+          }
+        },
+        {
+          "id": "KeyLightintensity",
+          "kind": "call",
+          "function": "/Script/Engine.LightComponent:SetIntensity",
+          "defaults": {}
+        },
+        {
+          "id": "FillLightvector",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "-2",
+            "Y": "2.5",
+            "Z": "1"
+          }
+        },
+        {
+          "id": "FillLightoffset",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {}
+        },
+        {
+          "id": "FillLightat",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "getFillLight",
+          "kind": "get",
+          "var": "FillLight"
+        },
+        {
+          "id": "FillLightmove",
+          "kind": "call",
+          "function": "/Script/Engine.SceneComponent:K2_SetRelativeLocation",
+          "defaults": {
+            "bSweep": "false",
+            "bTeleport": "true"
+          }
+        },
+        {
+          "id": "FillLightrange",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "12"
+          }
+        },
+        {
+          "id": "FillLightradius",
+          "kind": "call",
+          "function": "/Script/Engine.PointLightComponent:SetAttenuationRadius",
+          "defaults": {}
+        },
+        {
+          "id": "FillLightsquare",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "FillLightpower",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "5"
+          }
+        },
+        {
+          "id": "FillLightintensity",
+          "kind": "call",
+          "function": "/Script/Engine.LightComponent:SetIntensity",
+          "defaults": {}
+        },
+        {
+          "id": "distance",
+          "kind": "call",
+          "function": "self:FrameDistance",
+          "defaults": {}
+        },
+        {
+          "id": "view",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {
+            "X": "0.75",
+            "Y": "-0.55",
+            "Z": "0.45"
+          }
+        },
+        {
+          "id": "unit",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Normal",
+          "defaults": {
+            "Tolerance": "1e-12"
+          }
+        },
+        {
+          "id": "offset",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {}
+        },
+        {
+          "id": "camera",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "look",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FindLookAtRotation",
+          "defaults": {}
+        },
+        {
+          "id": "getCapture",
+          "kind": "get",
+          "var": "Capture"
+        },
+        {
+          "id": "cameraat",
+          "kind": "call",
+          "function": "/Script/Engine.SceneComponent:K2_SetRelativeLocationAndRotation",
+          "defaults": {
+            "bSweep": "false",
+            "bTeleport": "true"
+          }
+        },
+        {
+          "id": "getTarget",
+          "kind": "get",
+          "var": "Target"
+        },
+        {
+          "id": "targetvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "target",
+          "kind": "branch"
+        },
+        {
+          "id": "create",
+          "kind": "call",
+          "function": "/Script/Engine.KismetRenderingLibrary:CreateRenderTarget2D",
+          "defaults": {
+            "Width": "128",
+            "Height": "128",
+            "Format": "RTF_RGBA8",
+            "ClearColor": "(R=0,G=0,B=0,A=1)",
+            "bAutoGenerateMipMaps": "false",
+            "bSupportUAVs": "false"
+          }
+        },
+        {
+          "id": "save",
+          "kind": "set",
+          "var": "Target"
+        },
+        {
+          "id": "assign",
+          "kind": "set",
+          "var": "/Script/Engine.SceneCaptureComponent2D:TextureTarget"
+        },
+        {
+          "id": "ready",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "prepared",
+          "kind": "set",
+          "var": "Prepared"
+        },
+        {
+          "id": "getPrepared",
+          "kind": "get",
+          "var": "Prepared"
+        }
+      ],
+      "links": [
+        [
+          "entry.Radius",
+          "radius.A"
+        ],
+        [
+          "KeyLightvector.ReturnValue",
+          "KeyLightoffset.A"
+        ],
+        [
+          "radius.ReturnValue",
+          "KeyLightoffset.B"
+        ],
+        [
+          "KeyLightoffset.ReturnValue",
+          "KeyLightat.A"
+        ],
+        [
+          "entry.Center",
+          "KeyLightat.B"
+        ],
+        [
+          "getKeyLight.KeyLight",
+          "KeyLightmove.self"
+        ],
+        [
+          "KeyLightat.ReturnValue",
+          "KeyLightmove.NewLocation"
+        ],
+        [
+          "radius.ReturnValue",
+          "KeyLightrange.A"
+        ],
+        [
+          "getKeyLight.KeyLight",
+          "KeyLightradius.self"
+        ],
+        [
+          "KeyLightrange.ReturnValue",
+          "KeyLightradius.NewRadius"
+        ],
+        [
+          "radius.ReturnValue",
+          "KeyLightsquare.A"
+        ],
+        [
+          "radius.ReturnValue",
+          "KeyLightsquare.B"
+        ],
+        [
+          "KeyLightsquare.ReturnValue",
+          "KeyLightpower.A"
+        ],
+        [
+          "getKeyLight.KeyLight",
+          "KeyLightintensity.self"
+        ],
+        [
+          "KeyLightpower.ReturnValue",
+          "KeyLightintensity.NewIntensity"
+        ],
+        [
+          "reset.then",
+          "KeyLightmove.execute"
+        ],
+        [
+          "KeyLightmove.then",
+          "KeyLightradius.execute"
+        ],
+        [
+          "KeyLightradius.then",
+          "KeyLightintensity.execute"
+        ],
+        [
+          "FillLightvector.ReturnValue",
+          "FillLightoffset.A"
+        ],
+        [
+          "radius.ReturnValue",
+          "FillLightoffset.B"
+        ],
+        [
+          "FillLightoffset.ReturnValue",
+          "FillLightat.A"
+        ],
+        [
+          "entry.Center",
+          "FillLightat.B"
+        ],
+        [
+          "getFillLight.FillLight",
+          "FillLightmove.self"
+        ],
+        [
+          "FillLightat.ReturnValue",
+          "FillLightmove.NewLocation"
+        ],
+        [
+          "radius.ReturnValue",
+          "FillLightrange.A"
+        ],
+        [
+          "getFillLight.FillLight",
+          "FillLightradius.self"
+        ],
+        [
+          "FillLightrange.ReturnValue",
+          "FillLightradius.NewRadius"
+        ],
+        [
+          "radius.ReturnValue",
+          "FillLightsquare.A"
+        ],
+        [
+          "radius.ReturnValue",
+          "FillLightsquare.B"
+        ],
+        [
+          "FillLightsquare.ReturnValue",
+          "FillLightpower.A"
+        ],
+        [
+          "getFillLight.FillLight",
+          "FillLightintensity.self"
+        ],
+        [
+          "FillLightpower.ReturnValue",
+          "FillLightintensity.NewIntensity"
+        ],
+        [
+          "KeyLightintensity.then",
+          "FillLightmove.execute"
+        ],
+        [
+          "FillLightmove.then",
+          "FillLightradius.execute"
+        ],
+        [
+          "FillLightradius.then",
+          "FillLightintensity.execute"
+        ],
+        [
+          "entry.Extent",
+          "distance.Extent"
+        ],
+        [
+          "view.ReturnValue",
+          "unit.A"
+        ],
+        [
+          "unit.ReturnValue",
+          "offset.A"
+        ],
+        [
+          "distance.Distance",
+          "offset.B"
+        ],
+        [
+          "entry.Center",
+          "camera.A"
+        ],
+        [
+          "offset.ReturnValue",
+          "camera.B"
+        ],
+        [
+          "camera.ReturnValue",
+          "look.Start"
+        ],
+        [
+          "entry.Center",
+          "look.Target"
+        ],
+        [
+          "getCapture.Capture",
+          "cameraat.self"
+        ],
+        [
+          "camera.ReturnValue",
+          "cameraat.NewLocation"
+        ],
+        [
+          "look.ReturnValue",
+          "cameraat.NewRotation"
+        ],
+        [
+          "getTarget.Target",
+          "targetvalid.Object"
+        ],
+        [
+          "targetvalid.ReturnValue",
+          "target.Condition"
+        ],
+        [
+          "self.self",
+          "create.WorldContextObject"
+        ],
+        [
+          "create.ReturnValue",
+          "save.Target"
+        ],
+        [
+          "getTarget.Target",
+          "assign.TextureTarget"
+        ],
+        [
+          "getCapture.Capture",
+          "assign.self"
+        ],
+        [
+          "getTarget.Target",
+          "ready.Object"
+        ],
+        [
+          "ready.ReturnValue",
+          "prepared.Prepared"
+        ],
+        [
+          "getPrepared.Prepared",
+          "result.Ready"
+        ],
+        [
+          "entry.then",
+          "reset.execute"
+        ],
+        [
+          "FillLightintensity.then",
+          "distance.execute"
+        ],
+        [
+          "distance.then",
+          "cameraat.execute"
+        ],
+        [
+          "cameraat.then",
+          "target.execute"
+        ],
+        [
+          "target.then",
+          "assign.execute"
+        ],
+        [
+          "assign.then",
+          "prepared.execute"
+        ],
+        [
+          "prepared.then",
+          "result.execute"
+        ],
+        [
+          "target.else",
+          "create.execute"
+        ],
+        [
+          "create.then",
+          "save.execute"
+        ],
+        [
+          "save.then",
+          "assign.execute"
+        ]
+      ]
+    },
+    {
+      "name": "CaptureFrame",
+      "nodes": [
+        {
+          "id": "getPrepared",
+          "kind": "get",
+          "var": "Prepared"
+        },
+        {
+          "id": "ready",
+          "kind": "branch"
+        },
+        {
+          "id": "getCapture",
+          "kind": "get",
+          "var": "Capture"
+        },
+        {
+          "id": "capture",
+          "kind": "call",
+          "function": "/Script/Engine.SceneCaptureComponent2D:CaptureScene",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getPrepared.Prepared",
+          "ready.Condition"
+        ],
+        [
+          "getCapture.Capture",
+          "capture.self"
+        ],
+        [
+          "entry.then",
+          "ready.execute"
+        ],
+        [
+          "ready.then",
+          "capture.execute"
+        ]
+      ]
+    },
+    {
+      "name": "WriteCache",
+      "outputs": [
+        {
+          "name": "Texture",
+          "type": "object:/Script/Engine.Texture2D"
+        }
+      ],
+      "locals": [
+        {
+          "name": "ResultTexture",
+          "type": "object:/Script/Engine.Texture2D"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "getPrepared",
+          "kind": "get",
+          "var": "Prepared"
+        },
+        {
+          "id": "ready",
+          "kind": "branch"
+        },
+        {
+          "id": "path",
+          "kind": "call",
+          "function": "self:CachePath",
+          "defaults": {}
+        },
+        {
+          "id": "getMeshPath",
+          "kind": "get",
+          "var": "MeshPath"
+        },
+        {
+          "id": "getTarget",
+          "kind": "get",
+          "var": "Target"
+        },
+        {
+          "id": "export",
+          "kind": "call",
+          "function": "/Script/Engine.KismetRenderingLibrary:ExportRenderTarget",
+          "defaults": {}
+        },
+        {
+          "id": "read",
+          "kind": "call",
+          "function": "self:ReadCached",
+          "defaults": {}
+        },
+        {
+          "id": "cache",
+          "kind": "set",
+          "var": "local:ResultTexture"
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:ResultTexture"
+        }
+      ],
+      "links": [
+        [
+          "getPrepared.Prepared",
+          "ready.Condition"
+        ],
+        [
+          "getMeshPath.MeshPath",
+          "path.Path"
+        ],
+        [
+          "self.self",
+          "export.WorldContextObject"
+        ],
+        [
+          "getTarget.Target",
+          "export.TextureRenderTarget"
+        ],
+        [
+          "path.Directory",
+          "export.FilePath"
+        ],
+        [
+          "path.Name",
+          "export.FileName"
+        ],
+        [
+          "getMeshPath.MeshPath",
+          "read.Path"
+        ],
+        [
+          "read.Texture",
+          "cache.ResultTexture"
+        ],
+        [
+          "out.ResultTexture",
+          "result.Texture"
+        ],
+        [
+          "entry.then",
+          "ready.execute"
+        ],
+        [
+          "ready.then",
+          "path.execute"
+        ],
+        [
+          "path.then",
+          "export.execute"
+        ],
+        [
+          "export.then",
+          "read.execute"
+        ],
+        [
+          "read.then",
+          "cache.execute"
+        ],
+        [
+          "cache.then",
+          "result.execute"
+        ],
+        [
+          "ready.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ReleaseStudio",
+      "nodes": [
+        {
+          "id": "prepared",
+          "kind": "set",
+          "var": "Prepared",
+          "defaults": {
+            "Prepared": "false"
+          }
+        },
+        {
+          "id": "path",
+          "kind": "set",
+          "var": "MeshPath",
+          "defaults": {
+            "MeshPath": ""
+          }
+        },
+        {
+          "id": "capturetarget",
+          "kind": "set",
+          "var": "/Script/Engine.SceneCaptureComponent2D:TextureTarget"
+        },
+        {
+          "id": "getCapture",
+          "kind": "get",
+          "var": "Capture"
+        },
+        {
+          "id": "getTarget",
+          "kind": "get",
+          "var": "Target"
+        },
+        {
+          "id": "validtarget",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "release",
+          "kind": "call",
+          "function": "/Script/Engine.KismetRenderingLibrary:ReleaseRenderTarget2D",
+          "defaults": {}
+        },
+        {
+          "id": "clear",
+          "kind": "set",
+          "var": "Target"
+        },
+        {
+          "id": "getMesh",
+          "kind": "get",
+          "var": "Mesh"
+        },
+        {
+          "id": "mesh",
+          "kind": "call",
+          "function": "/Script/Engine.StaticMeshComponent:SetStaticMesh",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getCapture.Capture",
+          "capturetarget.self"
+        ],
+        [
+          "getTarget.Target",
+          "validtarget.Object"
+        ],
+        [
+          "validtarget.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "getTarget.Target",
+          "release.TextureRenderTarget"
+        ],
+        [
+          "getMesh.Mesh",
+          "mesh.self"
+        ],
+        [
+          "entry.then",
+          "prepared.execute"
+        ],
+        [
+          "prepared.then",
+          "path.execute"
+        ],
+        [
+          "path.then",
+          "capturetarget.execute"
+        ],
+        [
+          "capturetarget.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "release.execute"
+        ],
+        [
+          "release.then",
+          "clear.execute"
+        ],
+        [
+          "clear.then",
+          "mesh.execute"
+        ],
+        [
+          "valid.else",
+          "clear.execute"
+        ]
+      ]
+    }
+  ]
+}

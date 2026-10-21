@@ -1,0 +1,17 @@
+{
+  "kind": "struct",
+  "path": "/DenDesignerGF/Runtime/ST_DenPreference",
+  "guid": "b1ebe409-3c32-5b75-ad99-7f4833d6a5ac",
+  "fields": [
+    {
+      "name": "Key",
+      "type": "string",
+      "guid": "49814317-0de5-573b-8321-f42ed8e76fe6"
+    },
+    {
+      "name": "Value",
+      "type": "string",
+      "guid": "c04e7708-3bde-5565-927c-120207429134"
+    }
+  ]
+}

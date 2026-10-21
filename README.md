@@ -1,58 +1,64 @@
-# Den Designer (ZComDenDesigner)
+# Den Designer
 
-An FFXIV-housing-style Den editor for Star Wars: Zero Company. Player-facing description and controls:
-[src/ZComDen/README.md](src/ZComDen/README.md).
+An in-game Den editor for **Star Wars: Zero Company**. Place props, rearrange existing scenery,
+and save your decorations separately from campaign saves. This repository contains the **pak-only
+edition**: cooked Blueprint assets, with no UE4SS, Lua, MXM or additional DLL required to play.
 
-Two halves:
+Current development version: **0.9.0-preview.2**. The preview includes compositions and independent
+prop packs. Focused in-game checks have passed; it is not a new full release-acceptance certificate.
 
-- a **UE4SS Lua mod** (`src/ZComDen`) that keeps layouts outside the game's saves, applies them whenever the Den
-  loads, and runs the editor;
-- **kit assets** (`ZComDen_P` pak): the flying camera rig, the input actions and mapping context, and every panel.
-  They're built headlessly from JSON specs by the SWZC Merged Kit's `ZComAuthoring` plugin; nothing is made by hand
-  in the editor GUI.
+## Start here
 
-## Layout
+- [Player guide](distribution/pak/README.md): installation, controls, layouts, recovery and uninstall.
+- [Build and development](docs/development.md): prerequisites, commands and repository structure.
+- [Architecture](docs/architecture.md): runtime services, asset identities and persistence boundaries.
+- [Verification](docs/verification.md): automated checks, in-game testing and release requirements.
+- [Create a prop pack](authoring/prop-packs/README.md): public SDK/base-modkit workflow and standalone creator tools.
+- [Import old JSON layouts](distribution/migration/README.md): optional one-time migration utility.
+- [Changelog](CHANGELOG.md) and [credits](CREDITS.md).
 
-| Path | |
-|---|---|
-| `src/ZComDen/Scripts/` | `main` (composition), `den_watch` (Den arrival, reapply, file watch), `apply` (layout -> Den, single-object ops), `resolve` (bulk object lookup), `store` / `layout` / `json` (files, presets, drafts, backups), `editor` (edit mode), `history` (undo), `pick` (what's editable), `highlight` (stencil outlines), `catalog` + generated `catalog_data`, `thumbs` (picture studio), `keys` (rebinding); `hook_registry` / `actions` / `logging` as in the other mods; `MXM.lua` (MXM's client, unmodified). |
-| `src/ZComDen/MXM/settings.lua` | The MXM settings schema. `values.lua` next to it is written by the menu and gitignored. |
-| `unreal/specs/editor.py` | Generates `unreal/specs/editor/*.json` (committed for review): 21 input actions, the mapping context, `BP_DenEditorRig`, `WBP_DenToolbar`, the catalog item and list entries, `WBP_DenCatalog`, `WBP_DenLayouts`, `WBP_DenStoreroom`, `WBP_DenTransform`. |
-| `unreal/specs/probe/` | The Phase 0 probe set (`--set probe`); `probes/kit_open.lua` needs it installed. |
-| `unreal/ZComDen/` | The plugin the kit cooks (`RemapPluginContentToGame=True`). `Content/` is a build product. |
-| `tools/build_plugin.sh` | Generate + author + cook + pak + checks; `--install` copies the pak into the main install's `~mods` (game closed!). |
-| `tools/build_catalog.py` | Rebuilds `catalog_data.lua` from the ZCRE dump (mesh JSON cached in `ZCRE/out/static_meshes`). Rerun after a patch. |
-| `tools/package.py` | The release zip (`dist/ZComDenDesigner-<version>.zip`), checked file by file. |
-| `tools/dd.py` | Dev driver for the main install: `restart` (kill, Lutris launch, ZC Sandbox loads the sandbox Den), `con "zcomden ..."`, `lua`, `shot`, `log`. |
-| `tools/run-tests.sh` | Offline tests (LuaJIT): store/layout/json, apply over a UE4SS mock, history, pick, catalog, thumbs framing, keys. |
+## Features
 
-## Build and test
+- Searchable catalog with thumbnails, collections, recent props and independent prop packs.
+- Surface dragging, numeric transforms, move/rotate/scale gizmos, duplication and undo/redo.
+- Separate Floors, Walls and Structure selection switches, grid snapping and selection range.
+- Storeroom for stored props and unavailable entries.
+- Shared Home layout, per-campaign copies, named presets, draft recovery and rotating backups.
+- Saved compositions with group placement and generated thumbnail cards.
+- In-game settings and rebindable controls.
+
+Layouts live under `Saved/SaveGames/ZComDen/Native/v1`; thumbnails use `Saved/ZComDen/thumbs`.
+These existing namespaces are intentionally stable. The mod does not write decorations into the
+campaign save.
+
+## Source and builds
+
+Players need the runtime ZIP, not this source checkout. Build archives are kept out of Git;
+see the [player guide](distribution/pak/README.md) for installation.
+
+Prop-pack creators can use the public **SWZC SDK or base Unreal Modkit** with the included
+[authoring reference and helper source](authoring/prop-packs/README.md). To build the creator ZIP
+from this checkout, run `python3 tools/package_prop_authoring.py`; no private kit is needed.
+That workflow is verified on Linux UE 5.6.1. Windows authoring is not yet verified.
+
+The full Den Designer runtime is currently built in Chats’ **private Merged Kit**. It is not a
+publicly supplied prerequisite or a supported clean-checkout build for other creators. Maintainer
+commands, after configuring that environment:
 
 ```sh
-tools/run-tests.sh                      # offline, ~1 s
-tools/build_plugin.sh                   # kit assets -> dist/plugin (~40 s); game must be closed for --install
-python3 tools/dd.py restart             # game up in the sandbox campaign's Den
-python3 tools/dd.py con "zcomden open"  # then: zcomden do <command> [arg] | select <id> | state | eval <lua> | reload
-python3 tools/dd.py shot                # dist/screen.jpg, UI included
-python3 tools/package.py
+bash tools/build_gf.sh
+bash tools/test_native.sh --existing
+python3 -m unittest discover -s tests -p '*_test.py'
+python3 tools/package_gf.py
 ```
 
-`zcomden reload` re-reads every script through `io.open` + `load`: UE4SS serves `require`, `dofile` and `loadfile`
-cached copies, so anything else keeps running old code.
+Builds go to `dist/`. The runtime archive contains all three `DenDesignerGF_P` containers.
+Migration tools and the development prop pack are separate. Close the game before installing
+or replacing containers. See the development guide for environment paths and release packaging.
 
-## Things learned the hard way
+## License and sample assets
 
-- Load kit assets by their **plugin** names (`/ZComDen/ZComDen/...`). The pak also remaps them to `/Game/ZComDen/...`,
-  but loading that name makes a second copy of each class, and the assets' own references (casts, entry classes)
-  point at the first.
-- Never do a blocking asset load inside a hook on a Blueprint function (a widget click): it deadlocked the game.
-  Kit events run one tick later (`later()`), from the game thread's tick.
-- Hooks live only while the editor is open, and every panel exists (hidden) for that time: a kit class nothing
-  references gets garbage collected with its functions, leaving hooks pointing at nothing.
-- `editor.lua` has a local `select()` (the selection), so Lua's `select("#", ...)` is `nargs(...)` there (a test
-  guards it).
-- Outlines use the Den's own custom-depth post-process (stencil 32 gold, 15 blue); overlay materials don't draw on
-  Nanite meshes.
-- Alt never reaches the game's input under Proton: no Alt chords.
-- Under Proton, ZC Sandbox sees every write to `cmd.txt` as a replaced file and reruns all of it: write one command
-  per file (`dd.py send` does).
+Den Designer code is MIT licensed; see [LICENSE](LICENSE). Game/engine assets and third-party
+art retain their original ownership and licenses. The development sample manifest, importer and
+[credits](authoring/prop-packs/example/CREDITS.md) are included, but its local artwork is excluded
+from Git pending complete cabinet provenance. Public pack creators should use their own assets.

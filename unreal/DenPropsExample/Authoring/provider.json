@@ -1,0 +1,18 @@
+{
+  "kind": "blueprint",
+  "path": "/DenPropsExample/BP_PropPack",
+  "parent": "/DenDesignerGF/Runtime/BP_DenPropPack",
+  "defaults": {
+    "SchemaVersion": "1",
+    "PackID": "den-example-props",
+    "Title": "Arcade & Halloween",
+    "Author": "Chats; see CREDITS",
+    "Version": "1.0.0",
+    "Paths": "(\"/DenPropsExample/Props/SM_ArcadeCabinet.SM_ArcadeCabinet\",\"/DenPropsExample/Props/SM_Pumpkin.SM_Pumpkin\",\"/DenPropsExample/Props/SM_JackOLantern.SM_JackOLantern\")",
+    "Labels": "(\"Arcade cabinet\",\"Pumpkin\",\"Jack-o’-lantern\")",
+    "Details": "(\"82.54 × 73.98 × 180 cm\",\"35.7 × 35.5 × 29.33 cm\",\"38.42 × 39.84 × 37.71 cm\")",
+    "Dimensions": "((X=82.54,Y=73.98,Z=180),(X=35.7,Y=35.5,Z=29.33),(X=38.42,Y=39.84,Z=37.71))",
+    "Solid": "(True,True,True)",
+    "SearchTexts": "(\"arcade games cabinet furniture\",\"halloween pumpkin ornament decoration\",\"halloween pumpkin ornament decoration\")"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "plugin": "DenPropsExample",
+  "id": "den-example-props",
+  "title": "Arcade & Halloween",
+  "author": "Chats; see CREDITS",
+  "version": "1.0.0",
+  "props": [
+    {
+      "name": "Arcade cabinet",
+      "mesh": "/DenPropsExample/Props/SM_ArcadeCabinet.SM_ArcadeCabinet",
+      "size": [
+        82.54,
+        73.98,
+        180
+      ],
+      "collision": true,
+      "tags": "arcade games cabinet furniture"
+    },
+    {
+      "name": "Pumpkin",
+      "mesh": "/DenPropsExample/Props/SM_Pumpkin.SM_Pumpkin",
+      "size": [
+        35.7,
+        35.5,
+        29.33
+      ],
+      "collision": true,
+      "tags": "halloween pumpkin ornament decoration"
+    },
+    {
+      "name": "Jack-o’-lantern",
+      "mesh": "/DenPropsExample/Props/SM_JackOLantern.SM_JackOLantern",
+      "size": [
+        38.42,
+        39.84,
+        37.71
+      ],
+      "collision": true,
+      "tags": "halloween pumpkin ornament decoration"
+    }
+  ]
+}

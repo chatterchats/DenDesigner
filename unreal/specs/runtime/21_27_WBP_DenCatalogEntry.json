@@ -1,0 +1,1019 @@
+{
+  "kind": "widget",
+  "path": "/DenDesignerGF/Editor/WBP_DenCatalogEntry",
+  "interfaces": [
+    "/Script/UMG.UserObjectListEntry"
+  ],
+  "variables": [
+    {
+      "name": "Chosen",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "Hovered",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "EditorBus",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenEditorBus"
+    },
+    {
+      "name": "NativeItem",
+      "type": "object:/DenDesignerGF/Editor/BP_DenCatalogItem"
+    }
+  ],
+  "functions": [
+    {
+      "name": "RefreshAppearance",
+      "nodes": [
+        {
+          "id": "selected",
+          "kind": "get",
+          "var": "Chosen"
+        },
+        {
+          "id": "hovered",
+          "kind": "get",
+          "var": "Hovered"
+        },
+        {
+          "id": "frame",
+          "kind": "get",
+          "var": "Frame"
+        },
+        {
+          "id": "chosen",
+          "kind": "branch"
+        },
+        {
+          "id": "hover",
+          "kind": "branch"
+        },
+        {
+          "id": "gold",
+          "kind": "call",
+          "function": "/Script/UMG.Border:SetBrushColor",
+          "defaults": {
+            "InBrushColor": "(R=0.24,G=0.17,B=0.065,A=1)"
+          }
+        },
+        {
+          "id": "over",
+          "kind": "call",
+          "function": "/Script/UMG.Border:SetBrushColor",
+          "defaults": {
+            "InBrushColor": "(R=0.10,G=0.13,B=0.18,A=1)"
+          }
+        },
+        {
+          "id": "idle",
+          "kind": "call",
+          "function": "/Script/UMG.Border:SetBrushColor",
+          "defaults": {
+            "InBrushColor": "(R=0.018,G=0.024,B=0.034,A=1)"
+          }
+        }
+      ],
+      "links": [
+        [
+          "entry.then",
+          "chosen.execute"
+        ],
+        [
+          "selected.Chosen",
+          "chosen.Condition"
+        ],
+        [
+          "chosen.else",
+          "hover.execute"
+        ],
+        [
+          "hovered.Hovered",
+          "hover.Condition"
+        ],
+        [
+          "chosen.then",
+          "gold.execute"
+        ],
+        [
+          "frame.Frame",
+          "gold.self"
+        ],
+        [
+          "hover.then",
+          "over.execute"
+        ],
+        [
+          "frame.Frame",
+          "over.self"
+        ],
+        [
+          "hover.else",
+          "idle.execute"
+        ],
+        [
+          "frame.Frame",
+          "idle.self"
+        ]
+      ]
+    },
+    {
+      "name": "ApplyNativeStyle",
+      "nodes": [
+        {
+          "id": "bus",
+          "kind": "get",
+          "var": "EditorBus"
+        },
+        {
+          "id": "check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font0",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+        },
+        {
+          "id": "font0check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font0valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font0info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Regular",
+            "Size": "12"
+          }
+        },
+        {
+          "id": "font0widget",
+          "kind": "get",
+          "var": "Placeholder"
+        },
+        {
+          "id": "font0set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font1",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+        },
+        {
+          "id": "font1check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font1valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font1info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Medium",
+            "Size": "13"
+          }
+        },
+        {
+          "id": "font1widget",
+          "kind": "get",
+          "var": "Name"
+        },
+        {
+          "id": "font1set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font2",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+        },
+        {
+          "id": "font2check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font2valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font2info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Regular",
+            "Size": "11"
+          }
+        },
+        {
+          "id": "font2widget",
+          "kind": "get",
+          "var": "Size"
+        },
+        {
+          "id": "font2set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "bus.EditorBus",
+          "check.Object"
+        ],
+        [
+          "check.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font0.self"
+        ],
+        [
+          "font0.PrimaryFont",
+          "font0check.Object"
+        ],
+        [
+          "font0check.ReturnValue",
+          "font0valid.Condition"
+        ],
+        [
+          "font0.PrimaryFont",
+          "font0info.FontObject"
+        ],
+        [
+          "font0widget.Placeholder",
+          "font0set.self"
+        ],
+        [
+          "font0info.SlateFontInfo",
+          "font0set.InFontInfo"
+        ],
+        [
+          "valid.then",
+          "font0valid.execute"
+        ],
+        [
+          "font0valid.then",
+          "font0set.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font1.self"
+        ],
+        [
+          "font1.PrimaryFont",
+          "font1check.Object"
+        ],
+        [
+          "font1check.ReturnValue",
+          "font1valid.Condition"
+        ],
+        [
+          "font1.PrimaryFont",
+          "font1info.FontObject"
+        ],
+        [
+          "font1widget.Name",
+          "font1set.self"
+        ],
+        [
+          "font1info.SlateFontInfo",
+          "font1set.InFontInfo"
+        ],
+        [
+          "font0set.then",
+          "font1valid.execute"
+        ],
+        [
+          "font1valid.then",
+          "font1set.execute"
+        ],
+        [
+          "font0valid.else",
+          "font1valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font2.self"
+        ],
+        [
+          "font2.PrimaryFont",
+          "font2check.Object"
+        ],
+        [
+          "font2check.ReturnValue",
+          "font2valid.Condition"
+        ],
+        [
+          "font2.PrimaryFont",
+          "font2info.FontObject"
+        ],
+        [
+          "font2widget.Size",
+          "font2set.self"
+        ],
+        [
+          "font2info.SlateFontInfo",
+          "font2set.InFontInfo"
+        ],
+        [
+          "font1set.then",
+          "font2valid.execute"
+        ],
+        [
+          "font2valid.then",
+          "font2set.execute"
+        ],
+        [
+          "font1valid.else",
+          "font2valid.execute"
+        ]
+      ]
+    },
+    {
+      "name": "RefreshNativeThumbnail",
+      "nodes": [
+        {
+          "id": "getNativeItem",
+          "kind": "get",
+          "var": "NativeItem"
+        },
+        {
+          "id": "itemvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "item",
+          "kind": "branch"
+        },
+        {
+          "id": "texture",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/BP_DenCatalogItem:Thumb"
+        },
+        {
+          "id": "texturevalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "getPicture",
+          "kind": "get",
+          "var": "Picture"
+        },
+        {
+          "id": "brush",
+          "kind": "call",
+          "function": "/Script/UMG.Image:SetBrushFromTexture",
+          "defaults": {
+            "bMatchSize": "false"
+          }
+        },
+        {
+          "id": "show",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetVisibility",
+          "defaults": {
+            "InVisibility": "Visible"
+          }
+        },
+        {
+          "id": "getPlaceholder",
+          "kind": "get",
+          "var": "Placeholder"
+        },
+        {
+          "id": "hide",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetVisibility",
+          "defaults": {
+            "InVisibility": "Hidden"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getNativeItem.NativeItem",
+          "itemvalid.Object"
+        ],
+        [
+          "itemvalid.ReturnValue",
+          "item.Condition"
+        ],
+        [
+          "getNativeItem.NativeItem",
+          "texture.self"
+        ],
+        [
+          "texture.Thumb",
+          "texturevalid.Object"
+        ],
+        [
+          "texturevalid.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "getPicture.Picture",
+          "brush.self"
+        ],
+        [
+          "texture.Thumb",
+          "brush.Texture"
+        ],
+        [
+          "getPicture.Picture",
+          "show.self"
+        ],
+        [
+          "getPlaceholder.Placeholder",
+          "hide.self"
+        ],
+        [
+          "entry.then",
+          "item.execute"
+        ],
+        [
+          "item.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "brush.execute"
+        ],
+        [
+          "brush.then",
+          "show.execute"
+        ],
+        [
+          "show.then",
+          "hide.execute"
+        ]
+      ]
+    }
+  ],
+  "tree": {
+    "class": "/Script/UMG.Border",
+    "name": "CardMargin",
+    "props": {
+      "BrushColor": "(R=0,G=0,B=0,A=0)",
+      "Padding": "(Left=3,Top=3,Right=3,Bottom=3)"
+    },
+    "children": [
+      {
+        "class": "/Script/UMG.Border",
+        "name": "Frame",
+        "props": {
+          "BrushColor": "(R=0.018,G=0.024,B=0.034,A=1)",
+          "Padding": "(Left=6,Top=6,Right=6,Bottom=6)"
+        },
+        "children": [
+          {
+            "class": "/Script/UMG.VerticalBox",
+            "name": "Lines",
+            "children": [
+              {
+                "class": "/Script/UMG.SizeBox",
+                "name": "PictureBox",
+                "props": {
+                  "WidthOverride": 136,
+                  "bOverride_WidthOverride": "true",
+                  "HeightOverride": 136,
+                  "bOverride_HeightOverride": "true"
+                },
+                "slot": {
+                  "HorizontalAlignment": "HAlign_Center",
+                  "Padding": "(Left=0,Top=0,Right=0,Bottom=4)"
+                },
+                "children": [
+                  {
+                    "class": "/Script/UMG.Overlay",
+                    "name": "PreviewLayers",
+                    "children": [
+                      {
+                        "class": "/Script/UMG.TextBlock",
+                        "name": "Placeholder",
+                        "props": {
+                          "Text": "Loading preview\u2026",
+                          "Font.Size": 12,
+                          "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)",
+                          "AutoWrapText": "true"
+                        },
+                        "variable": true,
+                        "slot": {
+                          "HorizontalAlignment": "HAlign_Center",
+                          "VerticalAlignment": "VAlign_Center"
+                        }
+                      },
+                      {
+                        "class": "/Script/UMG.Image",
+                        "name": "Picture",
+                        "variable": true,
+                        "slot": {
+                          "HorizontalAlignment": "HAlign_Fill",
+                          "VerticalAlignment": "VAlign_Fill"
+                        },
+                        "props": {
+                          "Visibility": "Hidden"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "class": "/Script/UMG.SizeBox",
+                "name": "NameBox",
+                "props": {
+                  "HeightOverride": 44,
+                  "bOverride_HeightOverride": "true",
+                  "Clipping": "ClipToBounds"
+                },
+                "children": [
+                  {
+                    "class": "/Script/UMG.TextBlock",
+                    "name": "Name",
+                    "props": {
+                      "Text": "",
+                      "Font.Size": 13,
+                      "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                      "AutoWrapText": "true"
+                    },
+                    "variable": true
+                  }
+                ]
+              },
+              {
+                "class": "/Script/UMG.TextBlock",
+                "name": "Size",
+                "props": {
+                  "Text": "",
+                  "Font.Size": 11,
+                  "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)",
+                  "AutoWrapText": "true"
+                },
+                "variable": true
+              }
+            ]
+          }
+        ],
+        "variable": true
+      }
+    ],
+    "variable": true
+  },
+  "graph": {
+    "nodes": [
+      {
+        "id": "set",
+        "kind": "event",
+        "name": "OnListItemObjectSet"
+      },
+      {
+        "id": "cast",
+        "kind": "cast",
+        "class": "/DenDesignerGF/Editor/BP_DenCatalogItem"
+      },
+      {
+        "id": "get0",
+        "kind": "get",
+        "var": "/DenDesignerGF/Editor/BP_DenCatalogItem:Title"
+      },
+      {
+        "id": "w0",
+        "kind": "get",
+        "var": "Name"
+      },
+      {
+        "id": "text0",
+        "kind": "call",
+        "function": "/Script/UMG.TextBlock:SetText"
+      },
+      {
+        "id": "get1",
+        "kind": "get",
+        "var": "/DenDesignerGF/Editor/BP_DenCatalogItem:Detail"
+      },
+      {
+        "id": "w1",
+        "kind": "get",
+        "var": "Size"
+      },
+      {
+        "id": "text1",
+        "kind": "call",
+        "function": "/Script/UMG.TextBlock:SetText"
+      },
+      {
+        "id": "get2",
+        "kind": "get",
+        "var": "/DenDesignerGF/Editor/BP_DenCatalogItem:Preview"
+      },
+      {
+        "id": "w2",
+        "kind": "get",
+        "var": "Placeholder"
+      },
+      {
+        "id": "text2",
+        "kind": "call",
+        "function": "/Script/UMG.TextBlock:SetText"
+      },
+      {
+        "id": "thumb",
+        "kind": "get",
+        "var": "/DenDesignerGF/Editor/BP_DenCatalogItem:Thumb"
+      },
+      {
+        "id": "has",
+        "kind": "call",
+        "function": "/Script/Engine.KismetSystemLibrary:IsValid"
+      },
+      {
+        "id": "if",
+        "kind": "branch"
+      },
+      {
+        "id": "pic",
+        "kind": "get",
+        "var": "Picture"
+      },
+      {
+        "id": "brush",
+        "kind": "call",
+        "function": "/Script/UMG.Image:SetBrushFromTexture",
+        "defaults": {
+          "bMatchSize": "false"
+        }
+      },
+      {
+        "id": "show",
+        "kind": "call",
+        "function": "/Script/UMG.Widget:SetVisibility",
+        "defaults": {
+          "InVisibility": "Visible"
+        }
+      },
+      {
+        "id": "hide",
+        "kind": "call",
+        "function": "/Script/UMG.Widget:SetVisibility",
+        "defaults": {
+          "InVisibility": "Hidden"
+        }
+      },
+      {
+        "id": "placeholder",
+        "kind": "get",
+        "var": "Placeholder"
+      },
+      {
+        "id": "placeholderhide",
+        "kind": "call",
+        "function": "/Script/UMG.Widget:SetVisibility",
+        "defaults": {
+          "InVisibility": "Hidden"
+        }
+      },
+      {
+        "id": "placeholdershow",
+        "kind": "call",
+        "function": "/Script/UMG.Widget:SetVisibility",
+        "defaults": {
+          "InVisibility": "Visible"
+        }
+      },
+      {
+        "id": "tooltip",
+        "kind": "call",
+        "function": "/Script/UMG.Widget:SetToolTipText"
+      },
+      {
+        "id": "selected",
+        "kind": "event",
+        "name": "BP_OnItemSelectionChanged"
+      },
+      {
+        "id": "selectedset",
+        "kind": "set",
+        "var": "Chosen",
+        "defaults": {}
+      },
+      {
+        "id": "selectedrefresh",
+        "kind": "call",
+        "function": "self:RefreshAppearance"
+      },
+      {
+        "id": "enter",
+        "kind": "event",
+        "name": "OnMouseEnter"
+      },
+      {
+        "id": "enterset",
+        "kind": "set",
+        "var": "Hovered",
+        "defaults": {
+          "Hovered": "true"
+        }
+      },
+      {
+        "id": "enterrefresh",
+        "kind": "call",
+        "function": "self:RefreshAppearance"
+      },
+      {
+        "id": "leave",
+        "kind": "event",
+        "name": "OnMouseLeave"
+      },
+      {
+        "id": "leaveset",
+        "kind": "set",
+        "var": "Hovered",
+        "defaults": {
+          "Hovered": "false"
+        }
+      },
+      {
+        "id": "leaverefresh",
+        "kind": "call",
+        "function": "self:RefreshAppearance"
+      },
+      {
+        "id": "released",
+        "kind": "event",
+        "name": "BP_OnEntryReleased"
+      },
+      {
+        "id": "releasechosen",
+        "kind": "set",
+        "var": "Chosen",
+        "defaults": {
+          "Chosen": "false"
+        }
+      },
+      {
+        "id": "releasehover",
+        "kind": "set",
+        "var": "Hovered",
+        "defaults": {
+          "Hovered": "false"
+        }
+      },
+      {
+        "id": "releaserefresh",
+        "kind": "call",
+        "function": "self:RefreshAppearance"
+      },
+      {
+        "id": "itembus",
+        "kind": "get",
+        "var": "/DenDesignerGF/Editor/BP_DenCatalogItem:EditorBus"
+      },
+      {
+        "id": "rememberbus",
+        "kind": "set",
+        "var": "EditorBus"
+      },
+      {
+        "id": "style",
+        "kind": "call",
+        "function": "self:ApplyNativeStyle"
+      },
+      {
+        "id": "rememberitem",
+        "kind": "set",
+        "var": "NativeItem"
+      }
+    ],
+    "links": [
+      [
+        "set.then",
+        "cast.execute"
+      ],
+      [
+        "set.ListItemObject",
+        "cast.Object"
+      ],
+      [
+        "tooltip.then",
+        "text0.execute"
+      ],
+      [
+        "cast.AsBP Den Catalog Item",
+        "get0.self"
+      ],
+      [
+        "get0.Title",
+        "text0.InText"
+      ],
+      [
+        "w0.Name",
+        "text0.self"
+      ],
+      [
+        "text0.then",
+        "text1.execute"
+      ],
+      [
+        "cast.AsBP Den Catalog Item",
+        "get1.self"
+      ],
+      [
+        "get1.Detail",
+        "text1.InText"
+      ],
+      [
+        "w1.Size",
+        "text1.self"
+      ],
+      [
+        "text1.then",
+        "text2.execute"
+      ],
+      [
+        "cast.AsBP Den Catalog Item",
+        "get2.self"
+      ],
+      [
+        "get2.Preview",
+        "text2.InText"
+      ],
+      [
+        "w2.Placeholder",
+        "text2.self"
+      ],
+      [
+        "cast.AsBP Den Catalog Item",
+        "thumb.self"
+      ],
+      [
+        "thumb.Thumb",
+        "has.Object"
+      ],
+      [
+        "text2.then",
+        "if.execute"
+      ],
+      [
+        "has.ReturnValue",
+        "if.Condition"
+      ],
+      [
+        "if.then",
+        "brush.execute"
+      ],
+      [
+        "thumb.Thumb",
+        "brush.Texture"
+      ],
+      [
+        "pic.Picture",
+        "brush.self"
+      ],
+      [
+        "brush.then",
+        "show.execute"
+      ],
+      [
+        "pic.Picture",
+        "show.self"
+      ],
+      [
+        "if.else",
+        "hide.execute"
+      ],
+      [
+        "pic.Picture",
+        "hide.self"
+      ],
+      [
+        "show.then",
+        "placeholderhide.execute"
+      ],
+      [
+        "hide.then",
+        "placeholdershow.execute"
+      ],
+      [
+        "placeholder.Placeholder",
+        "placeholderhide.self"
+      ],
+      [
+        "placeholder.Placeholder",
+        "placeholdershow.self"
+      ],
+      [
+        "get0.Title",
+        "tooltip.InToolTipText"
+      ],
+      [
+        "selected.then",
+        "selectedset.execute"
+      ],
+      [
+        "selectedset.then",
+        "selectedrefresh.execute"
+      ],
+      [
+        "selected.bIsSelected",
+        "selectedset.Chosen"
+      ],
+      [
+        "enter.then",
+        "enterset.execute"
+      ],
+      [
+        "enterset.then",
+        "enterrefresh.execute"
+      ],
+      [
+        "leave.then",
+        "leaveset.execute"
+      ],
+      [
+        "leaveset.then",
+        "leaverefresh.execute"
+      ],
+      [
+        "released.then",
+        "releasechosen.execute"
+      ],
+      [
+        "releasechosen.then",
+        "releasehover.execute"
+      ],
+      [
+        "releasehover.then",
+        "releaserefresh.execute"
+      ],
+      [
+        "cast.AsBP Den Catalog Item",
+        "itembus.self"
+      ],
+      [
+        "itembus.EditorBus",
+        "rememberbus.EditorBus"
+      ],
+      [
+        "rememberbus.then",
+        "style.execute"
+      ],
+      [
+        "style.then",
+        "tooltip.execute"
+      ],
+      [
+        "cast.AsBP Den Catalog Item",
+        "rememberitem.NativeItem"
+      ],
+      [
+        "cast.then",
+        "rememberitem.execute"
+      ],
+      [
+        "rememberitem.then",
+        "rememberbus.execute"
+      ]
+    ]
+  }
+}
