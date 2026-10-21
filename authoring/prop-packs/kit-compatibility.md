@@ -10,7 +10,7 @@ This is **authoring/cook/package verification**, not a new in-game or Windows-ed
 The previous in-game sample check used a different development build. Arbitrary custom Windows material
 shaders remain a separate requirement; the tested sample uses existing engine material parents.
 
-## Results
+## Scripted workflow results
 
 | Check | SWZC SDK | Base SWZC Unreal Modkit |
 |---|---|---|
@@ -25,6 +25,42 @@ Both public kits need the supplied creator dependencies and a suitable cook base
 `BitReactorGameState`, but lacks the mod-editor auto-mount route and the trimmed DLC baseline.
 The base modkit lacks that class, but can preserve its **soft class path** in the component action.
 No replacement native GameState class was added. Registration resolves the real class in game.
+
+## Widget/Python editor workflow (recommended)
+
+The **[Prop Pack Editor](EDITOR-GUIDE.md)** `0.2.0-preview.1` replaces the provisional native module
+with a stock Editor Utility Widget and bundled Python. Creators use the Tools menu, with no manual
+scripts, external Python installation or custom C++ compilation. It uses Unreal's own Python and
+Editor Scripting Utilities plugins, the minimal provider reference and the same cook baseline.
+
+On **2026-10-21**, both prepared public kits passed the real UMG Save callback and asynchronous
+Build path using an engine cube: metadata, provider/GameFeature authoring, cooking, namespace audit
+and three-container export. A separate editor process in each kit verified saved registration,
+including the unresolved game-class soft path in the base modkit. ZComAuthoring and the old native
+editor module were disabled. The SDK check also created and mounted a new pack in the same session.
+
+The single content/Python ZIP has no custom native binary or engine BuildId requirement. This does
+not repair underlying kit binaries. A relocated SDK test copy needed its engine/project/plugin
+binary paths on `LD_LIBRARY_PATH`. Windows editor execution remains unverified.
+Python does not provide Windows shader cooking on Linux. A separate graphical check in the base
+kit verified the rendered panel and tab-reopen/build-completion lifecycle.
+
+Evidence for this edition is under `dist/python-editor/`: `modkit-build.log`, `sdk-build.log`,
+`modkit-verify.log`, `sdk-verify.log` and `python-tests.log`. The earlier native-plugin tests under
+`dist/kit-verification/` are historical, not evidence for this implementation.
+
+A subsequent fresh-ZIP check on 2026-10-21 used a new base-kit copy, reusing only its engine-matched
+base modules. The real panel callbacks created, validated and exported a two-prop pack after stock
+FBX/PNG import, including the restart/mount path for a project directory containing spaces. That
+exact export passed discovery, catalog thumbnails, textured placement, saving and a full restart
+in the shipping game under Proton. Cached thumbnails retained their hashes and modification times.
+ZC Sandbox supplied test control; this does not certify standalone operation or Windows authoring.
+Original game data/mods were restored with matching hashes. Evidence and limits are recorded in
+[the fresh creator acceptance report](../../docs/verification.md#fresh-creator-zip-and-exported-pack-acceptance--2026-10-21)
+and local `dist/creator-acceptance/`. No custom native authoring helper was used.
+
+The remaining instructions describe the retained scripted automation route. Its custom helper is
+not needed by the recommended widget/Python workflow.
 
 ## Prepare either kit
 
@@ -54,7 +90,7 @@ No game INI changes are needed.
 4. Generate your source pack as an ordinary editor-mounted plugin:
 
    ```sh
-   python3 tools/prop_pack.py path/to/pack.json \
+   python3 tools/prop_packs/prop_pack.py path/to/pack.json \
      --output "/path/to/kit/Plugins/YourPack" --editor-mounted
    ```
 
@@ -76,7 +112,7 @@ From the extracted creator bundle, select either project and its engine explicit
 ```sh
 SWZC_KIT="/path/to/kit" SWZC_ENGINE="/path/to/UnrealEngine/Engine" \
 DEN_PROP_PACK_BUILD_ROOT="$PWD/dist/prop-packs/YourPack-sdk" \
-bash tools/build_prop_pack.sh "/path/to/kit/Plugins/YourPack"
+bash tools/prop_packs/build_prop_pack.sh "/path/to/kit/Plugins/YourPack"
 ```
 
 For maintainers with the local sample artwork, use `DenPropsExample` and append `--sample-art`. Use separate output roots

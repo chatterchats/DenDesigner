@@ -7,17 +7,6 @@
   "version": "1.0.0",
   "props": [
     {
-      "name": "Arcade cabinet",
-      "mesh": "/DenPropsExample/Props/SM_ArcadeCabinet.SM_ArcadeCabinet",
-      "size": [
-        82.54,
-        73.98,
-        180
-      ],
-      "collision": true,
-      "tags": "arcade games cabinet furniture"
-    },
-    {
       "name": "Pumpkin",
       "mesh": "/DenPropsExample/Props/SM_Pumpkin.SM_Pumpkin",
       "size": [

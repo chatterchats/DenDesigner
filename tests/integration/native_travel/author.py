@@ -118,7 +118,7 @@ def panel():
          'slot':{'LayoutData':'(Offsets=(Left=500,Top=100,Right=1250,Bottom=190))'},
          'children':[{'class':'/Script/UMG.TextBlock','name':'Message','variable':True,'props':{'Text':'QA ONLY | Sandbox mission | F7 completes mission','Font.Size':18,'AutoWrapText':'true','Justification':'Left'}}]}]})
 
-specdir=REPO/'dist/travel-qa/specs';specdir.mkdir(parents=True,exist_ok=True)
+specdir=REPO/'dist/verification/travel-qa/specs';specdir.mkdir(parents=True,exist_ok=True)
 paths=[]
 for i,spec in enumerate([panel(),probe()]):
     path=specdir/f'{i:02}.json';path.write_text(json.dumps(spec));paths.append(path)

@@ -2,7 +2,7 @@
 
 Den Designer is a content-only Unreal Game Feature in the `/DenDesignerGF/` namespace.
 ZComAuthoring constructs Blueprint classes and graphs in the development editor; only cooked assets
-ship. The runtime does not call Python, Lua, an injected DLL or the editor-only authoring plugin.
+ship in the player runtime archive. The runtime does not call Python, Lua, an injected DLL or the editor-only authoring plugin.
 
 ## Lifecycle and editing
 
@@ -49,8 +49,28 @@ mesh paths. Registration never loads every mesh upfront. The catalog validates p
 conflicting IDs and adds accepted rows under **Prop packs**. Stable full asset paths allow the usual
 placement, storage, composition and persistence services to work with pack content.
 
-The editor archive includes the provider base, not the sample pack's meshes or artwork. Creator
-limits, materials/cooking constraints and update behavior are in the prop-pack guide.
+The creator archives include a minimal provider base, not the sample pack's meshes or artwork.
+Creator limits, materials/cooking constraints and update behavior are in the
+[prop-pack guide](../authoring/prop-packs/README.md).
+
+### Creator tooling
+
+`DenPropPackEditor` is a content-only editor plugin: a stock Editor Utility Widget shell plus bundled
+Python. Its Tools menu creates UMG controls and binds Python callbacks at runtime. No custom native
+class or compiled module is required. `model.py` handles schema/filesystem checks, `service.py` handles
+Unreal asset authoring and export, and `panel.py` manages the form and background job lifecycle.
+
+Editable metadata lives in the source plugin's `Authoring/pack.json`, outside cooked Content.
+Source plugins are enabled in the project descriptor and mount in the editor. New folders can mount
+immediately when their paths have no spaces; otherwise the panel requests a one-time restart.
+Registration uses stock Blueprint/DataAsset factories and reflected soft class paths, including in
+the base modkit where the game class is absent. Export writes a separate shipping manifest.
+
+Unreal objects are accessed only on the editor thread. The worker receives plain data, runs UAT and
+UnrealPak, audits the cooked namespace and publishes a unique export only on success. Slate tick
+callbacks report completion; reopening the tab retains an active job. The panel does not call the
+older Python/Bash helpers or install into the game. The player pack contains no authoring scripts.
+The older scripted route produces the same schema-1 contract and remains available for automation.
 
 ## Boundaries
 

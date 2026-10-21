@@ -1,0 +1,33 @@
+{
+  "FileVersion": 3,
+  "Version": 2,
+  "VersionName": "0.2.0-preview.1",
+  "FriendlyName": "Den Designer Prop Pack Editor",
+  "Description": "Editor Utility Widget and bundled Python authoring. No custom native module; never ship with a pack.",
+  "Category": "Editor",
+  "CreatedBy": "Chats",
+  "EnabledByDefault": true,
+  "CanContainContent": true,
+  "Plugins": [
+    {
+      "Name": "PythonScriptPlugin",
+      "Enabled": true
+    },
+    {
+      "Name": "EditorScriptingUtilities",
+      "Enabled": true
+    },
+    {
+      "Name": "GameFeatures",
+      "Enabled": true
+    },
+    {
+      "Name": "ModularGameplay",
+      "Enabled": true
+    },
+    {
+      "Name": "DenDesignerGF",
+      "Enabled": true
+    }
+  ]
+}

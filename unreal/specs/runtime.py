@@ -291,8 +291,8 @@ def specs():
 
 
 if __name__ == '__main__':
-    target = Path(__file__).with_suffix('')
-    target.mkdir(exist_ok=True)
+    target = Path(__file__).resolve().parents[1] / 'generated/runtime'
+    target.mkdir(parents=True, exist_ok=True)
     for name, spec in specs():
         (target / (name + '.json')).write_text(json.dumps(spec, indent=2) + '\n')
     print(f'Generated native runtime specs in {target}')

@@ -13,7 +13,7 @@ prop packs. Focused in-game checks have passed; it is not a new full release-acc
 - [Build and development](docs/development.md): prerequisites, commands and repository structure.
 - [Architecture](docs/architecture.md): runtime services, asset identities and persistence boundaries.
 - [Verification](docs/verification.md): automated checks, in-game testing and release requirements.
-- [Create a prop pack](authoring/prop-packs/README.md): public SDK/base-modkit workflow and standalone creator tools.
+- [Create a prop pack](authoring/prop-packs/README.md): in-editor creation/export, public SDK/base-modkit setup and automation tools.
 - [Import old JSON layouts](distribution/migration/README.md): optional one-time migration utility.
 - [Changelog](CHANGELOG.md) and [credits](CREDITS.md).
 
@@ -36,23 +36,32 @@ campaign save.
 Players need the runtime ZIP, not this source checkout. Build archives are kept out of Git;
 see the [player guide](distribution/pak/README.md) for installation.
 
-Prop-pack creators can use the public **SWZC SDK or base Unreal Modkit** with the included
-[authoring reference and helper source](authoring/prop-packs/README.md). To build the creator ZIP
-from this checkout, run `python3 tools/package_prop_authoring.py`; no private kit is needed.
-That workflow is verified on Linux UE 5.6.1. Windows authoring is not yet verified.
+Prop-pack creators use **Tools → Den Designer Prop Packs** in the public **SWZC SDK or base
+Unreal Modkit**. Follow the [editor guide](authoring/prop-packs/EDITOR-GUIDE.md) to install the
+creator plugin, add meshes, validate and export from Unreal Editor. The panel uses an Editor Utility
+Widget and bundled Python; creators need no terminal commands, external Python installation,
+custom C++ compilation or private Merged Kit.
+
+The creator plugin is **0.2.0-preview.1**, separate from the game runtime version. A single
+content/Python bundle replaces the earlier Source/Linux binary downloads. Linux UE 5.6.1 is tested
+in both prepared kits; Windows execution remains unverified. Windows shader cooking still requires
+a Windows editor. The [scripted route](authoring/prop-packs/SCRIPTED-AUTHORING.md) remains available
+for automation. See the [development guide](docs/development.md#prop-pack-editor) for packaging.
 
 The full Den Designer runtime is currently built in Chats’ **private Merged Kit**. It is not a
 publicly supplied prerequisite or a supported clean-checkout build for other creators. Maintainer
 commands, after configuring that environment:
 
 ```sh
-bash tools/build_gf.sh
-bash tools/test_native.sh --existing
-python3 -m unittest discover -s tests -p '*_test.py'
-python3 tools/package_gf.py
+bash tools/build/build_gf.sh
+bash tools/build/test_native.sh --existing
+python3 -m unittest discover -s tests/python -p '*_test.py'
+python3 tools/build/package_gf.py
 ```
 
-Builds go to `dist/`. The runtime archive contains all three `DenDesignerGF_P` containers.
+Build products and logs go to `dist/build/`; distributable ZIPs go to `dist/packages/`.
+The [repository map](docs/development.md#repository-map) describes the source and tool groups.
+The runtime archive contains all three `DenDesignerGF_P` containers.
 Migration tools and the development prop pack are separate. Close the game before installing
 or replacing containers. See the development guide for environment paths and release packaging.
 

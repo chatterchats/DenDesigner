@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased — prop-pack editor tools
+
+- Added Prop Pack Editor `0.2.0-preview.1`: an Editor Utility Widget with bundled Python for creating, editing, validating and exporting packs inside Unreal.
+- Replaced the provisional C++ module and platform-specific archives with one content/Python bundle; no custom compiler toolchain or external Python installation required.
+- Added asynchronous build progress, per-build logs, isolated exports, dependency checks and saved registration verification.
+- Documented the new workflow, upgrade steps, one-time mounting restart for paths with spaces, and platform cooking limits.
+- Kept schema-1 packs and the current game runtime unchanged; older scripted authoring remains available separately.
+
 ## 0.9.0-preview.2 — pak-only project refresh
 
 - Verified prop-pack authoring, fresh-editor reload, cooking and packaging in both prepared public kits (Linux UE 5.6.1).
