@@ -7,8 +7,7 @@
     tools/dev/dd.py den [--save newest]    wait for the main menu, load the sandbox campaign's Den, wait until settled
     tools/dev/dd.py restart                kill + launch + den
     tools/dev/dd.py send "<sandbox command>"   one ZC Sandbox command (cmd.txt / reply.txt)
-    tools/dev/dd.py lua "<code>" | -f file     Lua in the game (PlagueNightConsole, through ZComPlagueNight/tools/pn.py)
-    tools/dev/dd.py con "<console line>"       an Unreal console command, requires the optional development console
+    tools/dev/dd.py con "<console line>"       an Unreal console command through ZC Sandbox
     tools/dev/dd.py shot [out.jpg]             capture only the game window
     tools/dev/dd.py log [n]                    the last n lines of the game log
 
@@ -24,12 +23,10 @@ import uuid
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-MODS = REPO.parent
 GAME = Path("/run/media/chats/e0057d4a-fe46-43eb-a837-db51979c500f/Games/STAR WARS Zero Company (2026)")
 UE4SS = GAME / "Star Wars Zero Company/SWZeroCompany/Binaries/Win64/ue4ss"
 SANDBOX = UE4SS / "Mods/ZCSandbox"
 LOG = GAME / "prefix/drive_c/users/steamuser/AppData/Local/SWZeroCompany/Saved/Logs/SWZeroCompany.log"
-PN = MODS / "ZComPlagueNight/tools/pn.py"
 LUTRIS_ID = 2
 
 
@@ -175,18 +172,10 @@ def shot(out):
     print(out)
 
 
-def lua(code=None, file=None):
-    args = [sys.executable, str(PN), "--instance", "1", "--timeout", "60"]
-    args += ["-f", file] if file else [code]
-    r = subprocess.run(args, capture_output=True, text=True)
-    sys.stdout.write(r.stdout + r.stderr)
-
-
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("cmd")
     ap.add_argument("rest", nargs="*")
-    ap.add_argument("-f", "--file")
     ap.add_argument("--save", default="newest")
     a = ap.parse_args()
     if a.cmd == "status":
@@ -204,13 +193,8 @@ def main():
         den(a.save)
     elif a.cmd == "send":
         print(send(" ".join(a.rest)))
-    elif a.cmd == "lua":
-        lua(" ".join(a.rest), a.file)
     elif a.cmd == "con":
-        line = " ".join(a.rest).replace("\\", "\\\\").replace("'", "\\'")
-        lua("print(S and S.g and S.g.console(S.g.any_context(), '%s') or "
-            "StaticFindObject('/Script/Engine.Default__KismetSystemLibrary'):ExecuteConsoleCommand("
-            "FindFirstOf('BrunoGameInstance'), '%s', nil))" % (line, line))
+        print(send("console " + " ".join(a.rest)))
     elif a.cmd == "shot":
         shot(a.rest[0] if a.rest else str(REPO / "dist/screen.jpg"))
     elif a.cmd == "log":

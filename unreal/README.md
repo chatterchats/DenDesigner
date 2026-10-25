@@ -7,7 +7,7 @@
 | `specs/` | Python graph generators and widget/input templates. |
 | `generated/runtime/` | Reviewable JSON specifications generated from `specs/runtime.py`. |
 | `data/` | Canonical catalog metadata and procedural gizmo geometry. |
-| `scripts/` | Unreal Editor authoring, importing, schema export and pack verification. |
+| `scripts/` | Unreal Editor asset authoring, importing and pack verification. |
 
 Regenerate JSON with `python3 -I unreal/specs/runtime.py` from the repository root.
 Compiled Blueprint tests live in `tests/unreal/`. The creator plugins and their public guides live

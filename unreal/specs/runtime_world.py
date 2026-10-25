@@ -152,7 +152,7 @@ def configure_prop():
     call(g,'setmaterial',PRIMITIVE+':SetMaterial',{'self':'mesh.Mesh','ElementIndex':'i.Cursor','Material':'override.Override'})
     nxt=call(g,'next',KML+':Add_IntInt',{'A':'i.Cursor'},B=1)
     set_value(g,'advance','local:Cursor',nxt)
-    # Bounds from the asset, not the rotated world AABB: matches Lua's 50 cm rule.
+    # Bounds from the asset, not the rotated world AABB; use a 50 cm threshold.
     bounds=call(g,'bounds',MESH+':GetBounds',{'self':'entry.LoadedMesh'})
     call(g,'box',KML+':BreakBoxSphereBounds',{'InBoxSphereBounds':bounds})
     extent=call(g,'extent',KML+':Vector_GetAbsMax',{'A':'box.BoxExtent'})

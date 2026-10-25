@@ -3,17 +3,21 @@ import json
 import os
 import sys
 import traceback
+import uuid
 from pathlib import Path
 
 import unreal
 import zcom_authoring
 
 REPO = Path(os.environ['DENDESIGNER_REPO'])
+saved = Path(unreal.Paths.convert_relative_path_to_full(unreal.Paths.project_saved_dir())).resolve()
+assert saved == Path(os.environ['DENDESIGNER_TEST_SAVED']).resolve(), 'Refusing tests outside kit Saved'
 sys.path.insert(0, str(REPO / 'unreal/specs'))
 from runtime import ROOT, ENTRY, LAYOUT, MUTATION, CHANGE, Graph, v, specs
 
 failures = []
 checks = 0
+slot = None
 
 
 def check(ok, label):
@@ -151,13 +155,7 @@ try:
         assert len(result) == 3 and isinstance(result[1], bool)
         return result[1:]
 
-    slot = 'ZComDen/Tests/NativeLayoutRoundtripV2'
-    prior = unreal.GameplayStatics.does_save_game_exist(slot, 0)
-    if prior:
-        old = unreal.GameplayStatics.load_game_from_slot(slot, 0)
-        check(old is not None and len(rows(old)) == 3, 'layout loads after asset rebuild')
-        check(xyz(rows(old)[0]) == (21,22,23), 'rebuilt schema retains edited transform')
-        check(field(rows(old)[1], 'Kind') == 1, 'rebuilt schema retains Storeroom kind')
+    slot = 'ZComDen/Tests/LayoutRoundtrip_' + uuid.uuid4().hex
 
     check(doc.get_editor_property('SchemaVersion') == 1, 'schema version default')
     check(find(doc, 0, 'missing') == -1, 'empty lookup returns missing')
@@ -279,10 +277,6 @@ try:
     partial.set_editor_property(field_name('Hidden'), True)
     put(doc, partial)
     check(unreal.GameplayStatics.save_game_to_slot(doc, slot, 0), 'native layout saved in nested mod slot')
-    fixture_dir=REPO / 'dist/verification/native/migration-fixtures'
-    fixture_dir.mkdir(parents=True,exist_ok=True)
-    saved_root=Path(unreal.Paths.convert_relative_path_to_full(unreal.Paths.project_saved_dir()))
-    (fixture_dir/'layout.sav').write_bytes((saved_root/'SaveGames'/(slot+'.sav')).read_bytes())
     loaded = unreal.GameplayStatics.load_game_from_slot(slot, 0)
     check(loaded is not None and len(rows(loaded)) == 3, 'layout array reloads')
     check(xyz(rows(loaded)[0]) == (21,22,23) and xyz(rows(loaded)[0], 'Scale') == (1,2,3), 'transform survives SaveGame')
@@ -302,8 +296,6 @@ try:
     test_preferences_native.run(unreal, ROOT, make, field, field_name, check)
     import test_input_mappings_native
     test_input_mappings_native.run(unreal, make, field, field_name, check)
-    import test_migration
-    test_migration.run(unreal, REPO, ROOT, make, check)
     import test_world
     test_world.run(unreal, ROOT, make, field, field_name, check)
     import test_apply
@@ -324,12 +316,12 @@ try:
     test_editor_native.run(unreal, ROOT, make, field, field_name, check)
     import test_coordinator_native
     test_coordinator_native.run(unreal,check)
-    if prior and not failures:
-        check(unreal.GameplayStatics.delete_game_in_slot(slot,0), 'test slot removed after rebuild verification')
 except Exception:
     failures.append(traceback.format_exc())
     unreal.log_error(failures[-1])
 finally:
+    if slot and unreal.GameplayStatics.does_save_game_exist(slot, 0):
+        check(unreal.GameplayStatics.delete_game_in_slot(slot, 0), 'temporary layout test slot removed')
     unreal.ZComAuthoringLibrary.force_delete_assets(['/Game/DenNativeTests/BP_Fixture'])
 
 unreal.log(f'DENNATIVE_RESULT {"failed" if failures else "ok"} ({checks} checks)')

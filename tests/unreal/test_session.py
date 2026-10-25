@@ -144,10 +144,10 @@ def run(unreal,root,fixture,field,field_name,check):
         canonical,status=write(keys[4],document([entry(pos=(400,0,0))]));assert status==1
         assert write(keys[4],document([entry(pos=(401,0,0))]),True)[1]==1
         mismatch=open_(keys[4])
-        check(get(mismatch,'RecoveryPending') and not get(mismatch,'RecoveryMatchesBase'),'legacy draft with unknown baseline is visibly distinct from a matching draft')
+        check(get(mismatch,'RecoveryPending') and not get(mismatch,'RecoveryMatchesBase'),'draft with unknown baseline is visibly distinct from a matching draft')
         check(not mismatch.call_method('RecoverDraft',(False,)) and get(mismatch,'LastStatus')==10 and worldx(mismatch)==400,'mismatched or unknown draft baseline requires explicit acceptance')
         check(mismatch.call_method('RecoverDraft',(True,)),'explicit mismatch acceptance restores the draft');drain(mismatch)
-        check(worldx(mismatch)==401 and dirty(mismatch),'accepted legacy recovery is unsaved working data')
+        check(worldx(mismatch)==401 and dirty(mismatch),'accepted unmatched recovery is unsaved working data')
         assert mismatch.call_method('FlushDraft');abandon(mismatch)
         mismatch=open_(keys[4]);check(mismatch.call_method('DiscardRecovery') and not get(mismatch,'RecoveryPending') and worldx(mismatch)==400 and load(keys[4],True)[1]==0,'explicitly discarding recovery preserves the canonical layout')
         abandon(mismatch)

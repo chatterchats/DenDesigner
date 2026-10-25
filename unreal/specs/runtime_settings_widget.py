@@ -1,4 +1,4 @@
-"""Native-only preferences panel; the Lua edition's UI is left untouched."""
+"""In-game preferences panel."""
 import ui_templates as editor
 from graph import Graph, variable as v, GS, KML
 from runtime_preferences import DOCUMENT, BINDINGS, NUMBERS, CHOICES

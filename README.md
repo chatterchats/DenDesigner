@@ -2,10 +2,10 @@
 
 An in-game Den editor for **Star Wars: Zero Company**. Place props, rearrange existing scenery,
 and save your decorations separately from campaign saves. This repository contains the **pak-only
-edition**: cooked Blueprint assets, with no UE4SS, Lua, MXM or additional DLL required to play.
+edition**: cooked Blueprint assets, with no UE4SS or additional DLL required to play.
 
-Current development version: **0.9.0-preview.2**. The preview includes compositions and independent
-prop packs. Focused in-game checks have passed; it is not a new full release-acceptance certificate.
+Current version: **1.0.0**, targeting Steam build 25898267. It includes compositions and independent
+prop packs. Full release regression on that build is in progress.
 
 ## Start here
 
@@ -14,7 +14,6 @@ prop packs. Focused in-game checks have passed; it is not a new full release-acc
 - [Architecture](docs/architecture.md): runtime services, asset identities and persistence boundaries.
 - [Verification](docs/verification.md): automated checks, in-game testing and release requirements.
 - [Create a prop pack](authoring/prop-packs/README.md): in-editor creation/export, public SDK/base-modkit setup and automation tools.
-- [Import old JSON layouts](distribution/migration/README.md): optional one-time migration utility.
 - [Changelog](CHANGELOG.md) and [credits](CREDITS.md).
 
 ## Features
@@ -42,7 +41,8 @@ creator plugin, add meshes, validate and export from Unreal Editor. The panel us
 Widget and bundled Python; creators need no terminal commands, external Python installation,
 custom C++ compilation or private Merged Kit.
 
-The creator plugin is **0.2.0-preview.1**, separate from the game runtime version. A single
+The creator plugin is **0.2.0-preview.1**, separate from the game runtime version, and remains
+unreleased: it is not part of Den Designer 1.0.0 until Windows editor testing is complete. A single
 content/Python bundle replaces the earlier Source/Linux binary downloads. Linux UE 5.6.1 is tested
 in both prepared kits; Windows execution remains unverified. Windows shader cooking still requires
 a Windows editor. The [scripted route](authoring/prop-packs/SCRIPTED-AUTHORING.md) remains available
@@ -62,7 +62,9 @@ python3 tools/build/package_gf.py
 Build products and logs go to `dist/build/`; distributable ZIPs go to `dist/packages/`.
 The [repository map](docs/development.md#repository-map) describes the source and tool groups.
 The runtime archive contains all three `DenDesignerGF_P` containers.
-Migration tools and the development prop pack are separate. Close the game before installing
+It mirrors the game folder, with its payload, `modinfo.json`, `zcom-mod.json` and player documentation
+together under `Content/Paks/~mods/DenDesigner/` for manual installs and mod-manager imports.
+Creator tools and the development prop pack are separate. Close the game before installing
 or replacing containers. See the development guide for environment paths and release packaging.
 
 ## License and sample assets

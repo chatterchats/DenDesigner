@@ -1,7 +1,7 @@
 """Pak-only thumbnail studio and stable cache utilities.
 
 The capture actor is isolated from layout data. Existing ASCII game-asset cache
-filenames match the Lua edition; native references own textures/render targets.
+filenames derive from stable mesh paths; native references own textures/render targets.
 """
 import math as pymath
 from graph import Graph, variable as v, KML, KSL, GS

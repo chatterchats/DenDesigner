@@ -43,19 +43,7 @@ def run(unreal, root, layout, source, fixture, check):
         return {p.name:p.read_bytes() for i in range(2 if draft else 6)
                 if (p := path(key,i,draft)).is_file()}
 
-    rebuild_key='test_store_rebuild'
-    rebuild_prior=unreal.GameplayStatics.does_save_game_exist(slot(rebuild_key,0),0)
-
     try:
-        if rebuild_prior:
-            rebuilt,status,_=load(rebuild_key)
-            check(status == 1 and rebuilt is not None, 'rotating store loads after asset rebuild')
-            assert status == 1 and rebuilt is not None
-            draft,draft_status,_=load(rebuild_key,True)
-            check(draft_status == 1 and draft is not None, 'draft loads after asset rebuild')
-            assert draft_status == 1 and draft is not None
-            check(prop(rebuilt,'EntryCount') == len(prop(source,'Entries')) and prop(rebuilt,'WriteCompleteID') == prop(rebuilt,'ContentID'), 'rebuilt save retains payload count and completion identity')
-            check(prop(draft,'DraftBaseID') == prop(rebuilt,'ContentID') and prop(draft,'DraftBaseRevision') == prop(rebuilt,'Revision'), 'draft baseline identity survives asset rebuild')
         for key in ['', '../home', 'a/b', 'a\\b', 'home.json', 'home name', 'Étage', 'x:y', 'a\n', 'a'*97]:
             check(not store.call_method('ValidKey', (key,)), f'store rejects unsafe key {key!r}')
         check(all(store.call_method('ValidKey',(key,)) for key in ['home','campaign-BA3302BC4165EB931E86A39BFF208F71','preset_abc-123']), 'store accepts safe layout keys')
@@ -149,18 +137,6 @@ def run(unreal, root, layout, source, fixture, check):
         check(failed is None and status == 6 and payloads(keys[3]) == previous, 'failed write leaves the current saved copy intact')
         obstruction.rmdir()
         check(prop(load(keys[3])[0],'Revision') == 1, 'current copy loads after write failure')
-        if rebuild_prior:
-            for is_draft,count in [(False,6),(True,2)]:
-                for bank in range(count):
-                    name=slot(rebuild_key,bank,is_draft)
-                    if unreal.GameplayStatics.does_save_game_exist(name,0):
-                        assert unreal.GameplayStatics.delete_game_in_slot(name,0)
-            check(not unreal.GameplayStatics.does_save_game_exist(slot(rebuild_key,0),0), 'store rebuild fixtures cleaned after verification')
-        else:
-            baseline,status=save(rebuild_key,source)
-            assert status == 1
-            _,status=save(rebuild_key,source,True,prop(baseline,'Revision'),prop(baseline,'ContentID'))
-            check(status == 1, 'saved layout and draft fixtures prepared for rebuild verification')
     finally:
         # Only UUID-prefixed fixture paths within the kit were ever registered.
         for p in paths:

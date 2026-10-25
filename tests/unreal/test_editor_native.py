@@ -144,7 +144,7 @@ def run(unreal, root, fixture, field, field_name, check):
         check(name(press) == 'look_hold' and field(press, 'Scalar', EVENT) == 1
               and name(vector) == 'nudge' and field(vector, 'Kind', EVENT) == 1
               and field(vector, 'Direction', EVENT).y == 1,
-              'native rig sends scalar and vector input without Lua hooks')
+              'native rig sends scalar and vector input through the editor bus')
 
         host = spawn(HOST)
         store = unreal.new_object(unreal.EditorAssetLibrary.load_blueprint_class(root+'BP_DenLayouts'))

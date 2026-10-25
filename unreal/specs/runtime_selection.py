@@ -1,4 +1,4 @@
-"""Native editor selection lifecycle; no Lua hooks or runtime loads."""
+"""Native editor selection lifecycle; no blocking loads."""
 from graph import Graph, variable as v, KML, GS
 from runtime import unpack
 from runtime_store import call, branch, combine

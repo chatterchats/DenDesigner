@@ -1,5 +1,5 @@
 #!/bin/bash
-# Pak-only Game Feature, own manifest, no runtime DLLs or Lua.
+# Pak-only Game Feature, own manifest, no runtime DLLs.
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 repo=$(pwd)
@@ -78,29 +78,7 @@ LIST
     -compressionformats=Oodle -compresslevel=4 -compressmethod=Kraken > "$logs/pak.log" 2>&1
 "$engine/Binaries/Linux/UnrealPak" "$out/${name}_P.pak" -List > "$logs/manifest-list.log" 2>&1
 "$engine/Binaries/Linux/UnrealPak" "$out/${name}_P.utoc" -List > "$logs/content-list.log" 2>&1
-grep -q 'mount point "../../../SWZeroCompany/Plugins/"' "$logs/manifest-list.log"
-grep -q "\"$name.upluginmanifest\"" "$logs/manifest-list.log"
-! grep -q '"SWZeroCompany.upluginmanifest"' "$logs/manifest-list.log"
-for asset in DenDesignerGF; do
-    grep -q "/$asset.uasset\"" "$logs/content-list.log" || { echo "Missing asset: $asset"; exit 1; }
-done
-# Check every generated runtime/UI asset, including mapping actions and recycled
-# list widgets. A new editor module must not silently fall out of the package.
-python3 -I - "$repo/unreal/generated/runtime" "$logs/content-list.log" <<'PY'
-import json, pathlib, sys
-specs = sorted(pathlib.Path(sys.argv[1]).glob("*.json"))
-listing = pathlib.Path(sys.argv[2]).read_text()
-assert specs, "No generated native runtime specs"
-missing = []
-for source in specs:
-    path = json.loads(source.read_text())["path"]
-    assert path.startswith("/DenDesignerGF/"), path
-    asset = path.removeprefix("/DenDesignerGF/")
-    if f'/{asset}.uasset"' not in listing:
-        missing.append(path)
-assert not missing, "Missing native assets: " + ", ".join(missing)
-print(f"Verified {len(specs)} native runtime/UI assets in the container")
-PY
+# gf_build_info validates the complete asset and manifest inventories below.
 (cd "$out" && sha256sum "${name}_P".*) > "$repo/dist/build/runtime/SHA256SUMS"
 cat "$repo/dist/build/runtime/SHA256SUMS"
 python3 "$repo/tools/build/gf_build_info.py" --record
@@ -114,7 +92,11 @@ if dd.game_pids():
     sys.exit("Refusing installation: game is running. Close it before installing paks.")
 PY
     game=${SWZC_GAME:-$(cat "$kit/GameInstallDirectory.txt")}
-    target="$game/SWZeroCompany/Content/Paks/~mods"
+    mods="$game/SWZeroCompany/Content/Paks/~mods"
+    for ext in pak ucas utoc; do
+        [ ! -e "$mods/${name}_P.$ext" ] || { echo "Remove the older flat ${name}_P containers before installing into the DenDesigner subfolder; see distribution/pak/README.md." >&2; exit 1; }
+    done
+    target="$mods/DenDesigner"
     mkdir -p "$target"
     cp "$out/${name}_P."{pak,ucas,utoc} "$target/"
     echo "Installed $name Game Feature"

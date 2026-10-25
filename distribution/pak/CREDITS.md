@@ -7,5 +7,3 @@
   run this edition's cooked Blueprint assets.
 - The Merged Kit and ZComAuthoring generate the assets during development. The editor-only
   authoring plugin is not shipped and is not a runtime dependency.
-- The original Lua edition used UE4SS and Mixamoo Mod Config Manager. The pak edition does not
-  include or require either project.

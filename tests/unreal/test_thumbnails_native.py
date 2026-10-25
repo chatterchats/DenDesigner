@@ -10,7 +10,7 @@ def run(unreal,check):
     studio=actors.spawn_actor_from_class(unreal.EditorAssetLibrary.load_blueprint_class(STUDIO),unreal.Vector(0,0,-100000),unreal.Rotator(),transient=True)
     worker=actors.spawn_actor_from_class(unreal.EditorAssetLibrary.load_blueprint_class(QUEUE),unreal.Vector(),unreal.Rotator(),transient=True)
     get=lambda obj,name:obj.get_editor_property(name)
-    def legacy(path):
+    def expected_filename(path):
         h=5381
         for b in path.encode():h=(h*33+b)%2**32
         name=path.rsplit('.',1)[-1]
@@ -20,12 +20,12 @@ def run(unreal,check):
         data=metadata();paths=[data['items'][s['first']-1]['path'] for s in data['shelves']]
         paths+=['/Engine/BasicShapes/Cube.Cube','/Game/Path With Spaces/Asset-Name.Asset-Name','/Game/A/A.Name#bad']
         actual=[studio.call_method('CacheFileName',(p,)) for p in paths]
-        check(actual==[legacy(p) for p in paths],'native filenames reuse the Lua PNG cache across every shelf and sanitized names')
+        check(actual==[expected_filename(p) for p in paths],'native cache filenames remain deterministic across every shelf and sanitized names')
         check(len(set(actual))==len(set(paths)),'sampled thumbnail filenames distinguish full asset paths')
         for bad in ['', '../outside', '/NoObject', '/Game/Mesh.Mesh:Component']:
             check(studio.call_method('CacheFileName',(bad,))=='','invalid thumbnail path cannot become a cache filename: '+bad)
         directory,name,full=studio.call_method('CachePath',(paths[0],))
-        check(directory.replace('\\','/').endswith('/Saved/ZComDen/thumbs/') and name==legacy(paths[0]) and full==directory+name,
+        check(directory.replace('\\','/').endswith('/Saved/ZComDen/thumbs/') and name==expected_filename(paths[0]) and full==directory+name,
               'native thumbnail cache is confined to its separate Saved folder')
         view=(.75,-.55,.45);norm=lambda a:tuple(x/math.sqrt(sum(y*y for y in a)) for x in a)
         f=norm(tuple(-x for x in view));r=norm((-f[1],f[0],0));u=(r[1]*f[2]-r[2]*f[1],r[2]*f[0]-r[0]*f[2],r[0]*f[1]-r[1]*f[0]);dot=lambda a,b:sum(x*y for x,y in zip(a,b))

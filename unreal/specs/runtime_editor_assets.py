@@ -275,5 +275,5 @@ def specs():
     sources=editor.input_actions()+[editor.mapping_context(),editor.rig(),editor.toolbar(),editor.catalog_item(),editor.catalog_entry(),editor.catalog_shelf(),editor.catalog(),editor.layouts(),editor.storeroom(),editor.transform(),settings_spec(),composition_spec()]
     for index,source in enumerate(sources,1):
         spec=convert(source)
-        assert '/ZComDen/' not in json.dumps(spec) and 'Lua_' not in json.dumps(spec)
+        assert spec['path'].startswith('/DenDesignerGF/')
         yield '21_%02d_%s'%(index,spec['path'].rsplit('/',1)[-1]),spec

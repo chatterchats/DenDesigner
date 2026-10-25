@@ -2,7 +2,7 @@
 
 Den Designer is a content-only Unreal Game Feature in the `/DenDesignerGF/` namespace.
 ZComAuthoring constructs Blueprint classes and graphs in the development editor; only cooked assets
-ship in the player runtime archive. The runtime does not call Python, Lua, an injected DLL or the editor-only authoring plugin.
+ship in the player runtime archive. The runtime does not call Python, an injected DLL or the editor-only authoring plugin.
 
 ## Lifecycle and editing
 
@@ -34,8 +34,8 @@ labels can change without changing saved identities.
 Layouts, drafts, presets, compositions and preferences use dedicated Blueprint SaveGame objects in
 `Saved/SaveGames/ZComDen/Native/v1`. Rotating banks and revision identities support recovery. Drafts
 are explicitly recovered; they do not silently replace the saved layout. The game campaign-save
-subsystem is not used to store decoration data. Existing JSON layouts are supported through the
-separate one-time migration utility, not an embedded Lua runtime.
+subsystem is not used to store decoration data. The editor reads and writes its native mod slots
+directly through Unreal's SaveGame APIs.
 
 Thumbnail PNGs remain under `Saved/ZComDen/thumbs`. Catalog/Storeroom previews use mesh paths;
 composition previews use library revision and entry identities and render a snapshot of the whole

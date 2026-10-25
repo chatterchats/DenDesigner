@@ -2,7 +2,7 @@
 
 A prop pack adds your static meshes, textures and materials to Den Designer's catalog. Players
 install its three containers alongside Den Designer 0.9.0 or later. The game pack is content-only:
-players need no Lua, UE4SS, native DLL or authoring tools.
+players need no UE4SS, native DLL or authoring tools.
 
 ## Start in Unreal Editor
 
@@ -23,7 +23,8 @@ asset requirements, export locations and updating an existing pack.
 Choose **DenDesigner-PropPack-Editor-0.2.0-preview.1.zip**. It bundles a stock Editor Utility Widget
 and Python code run by Unreal's built-in interpreter. No custom native module, external Python
 installation or engine BuildId-specific download is needed. The tool is versioned separately from
-the **0.9.0-preview.2** game runtime. Linux UE 5.6.1 is verified; Windows execution remains unverified.
+the game runtime and is still an unreleased preview; packs work with Den Designer 0.9.0 and later,
+including **1.0.0**. Linux UE 5.6.1 is verified; Windows execution remains unverified.
 Python does not remove the need for a Windows editor when cooking custom Windows material shaders.
 
 ## What players see

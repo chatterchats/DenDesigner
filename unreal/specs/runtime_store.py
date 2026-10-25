@@ -1,6 +1,6 @@
 """Pak-only layout storage using separate rotating SaveGame slots.
 
-No filesystem API, campaign subsystem, Lua or runtime native plugin is involved.
+Uses mod SaveGame slots without accessing campaign saves or external filesystem APIs.
 Load status: 0 absent, 1 loaded, 2 recovered with damaged bank(s), 3 damaged with
 no usable copy, 4 newer schema, 5 invalid request. Save status: 1 verified success;
 otherwise the load status, or 6 write/readback failure, 7 invalid document.

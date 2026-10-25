@@ -2,19 +2,36 @@
 
 ## Unreleased — prop-pack editor tools
 
+Not part of 1.0.0; awaiting Windows editor testing.
+
 - Added Prop Pack Editor `0.2.0-preview.1`: an Editor Utility Widget with bundled Python for creating, editing, validating and exporting packs inside Unreal.
 - Replaced the provisional C++ module and platform-specific archives with one content/Python bundle; no custom compiler toolchain or external Python installation required.
 - Added asynchronous build progress, per-build logs, isolated exports, dependency checks and saved registration verification.
 - Documented the new workflow, upgrade steps, one-time mounting restart for paths with spaces, and platform cooking limits.
 - Kept schema-1 packs and the current game runtime unchanged; older scripted authoring remains available separately.
 
+## 1.0.0 — first stable release
+
+- Promoted the 0.9.0 preview runtime to stable: compositions, independent prop-pack support and the mod-manager package layout from 0.9.0-preview.3.
+- Declared Steam build `25898267` in `zcom-mod.json`.
+- Prop-pack creator tools are not part of this release; they stay in preview pending Windows testing.
+
+## 0.9.0-preview.3 — mod-manager packaging
+
+- Simplified verification to a manual release checklist, deterministic native persistence tests and one build-inventory validator; removed the certificate-report framework.
+- Grouped the runtime payload and documentation under `Content/Paks/~mods/DenDesigner/`, following the Off Duty and Squad Six Reforged package layout.
+- Added matching `modinfo.json` and `zcom-mod.json` with a player-facing description, stable mod ID and standalone IoStore requirements.
+- Added metadata/version validation, nested integrity records and instructions for replacing older flat pak installations.
+- Kept runtime asset paths, layout storage and the separate creator downloads intact.
+- Removed the unused prototype-layout converter, its tests and downloads; the project uses native mod saves throughout.
+
 ## 0.9.0-preview.2 — pak-only project refresh
 
 - Verified prop-pack authoring, fresh-editor reload, cooking and packaging in both prepared public kits (Linux UE 5.6.1).
 - Added a standalone creator bundle with the minimal provider reference and editor helper source; no private merged kit required.
 
-- Retired the Lua edition, MXM integration, old override plugin, feasibility prototype and obsolete probes from this repository.
-- Removed Lua build/test dependencies: native UI templates, direct JSON catalog generation, fixed gizmo reference cases and self-contained sample art sources.
+- Retired the old override plugin, feasibility prototype and obsolete probes from this repository.
+- Added native UI templates, direct JSON catalog generation, fixed gizmo reference cases and self-contained sample art sources.
 - Removed the four feasibility assets from the cooked editor; runtime asset and save identities remain stable.
 - Reorganized documentation around players, development, architecture, verification and prop-pack creators.
 - Stable release gates now explicitly include compositions and prop packs. The development sample remains separate.
@@ -39,8 +56,6 @@
 ## 0.7.0 — first pak-only release
 
 - Moved editor runtime, camera/input, persistence, catalog, Storeroom, settings and thumbnail generation into cooked Blueprints.
-- Added optional one-time migration from the original edition's JSON layouts.
 - Passed standalone release regression and exact-build acceptance, including mission-success return.
 
-Earlier development history and retired source are preserved outside the active project during the
-2026-10-20 refresh. The Lua edition is no longer built or packaged here.
+Earlier development history remains available in Git.

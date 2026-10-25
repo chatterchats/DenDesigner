@@ -4,9 +4,8 @@ Run commands from the repository root. Players and in-editor prop-pack creators 
 
 | Folder | Commands and purpose |
 |---|---|
-| `build/` | `build_gf.sh`, `test_native.sh`, `package_gf.py`, build/evidence validation and catalog conversion. |
+| `build/` | `build_gf.sh`, `test_native.sh`, `package_gf.py`, build validation and catalog conversion. |
 | `prop_packs/` | `package_editor_authoring.py` for the recommended creator ZIP; optional scripted pack tools and reference export. |
-| `migration/` | Legacy JSON conversion, safe installation and the restricted native-save codec/schema. |
 | `dev/` | Local Lutris/Sandbox control, guarded input and screenshots. |
 
 Builds/logs use `dist/build/`, ZIPs use `dist/packages/`, and local test records use

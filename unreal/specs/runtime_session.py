@@ -1,7 +1,7 @@
 """Native editor session: storage, history and queued world operations.
 
 A coordinator supplies the resolved storage key/document. No campaign-save IO,
-widget hooks, Lua calls or native extension functions are used here.
+widget hooks or native extension functions are used here.
 """
 from graph import Graph, variable as v, KML, KSL, GS
 from runtime import ROOT, ENTRY, MUTATION, CHANGE, STEP, LAYOUT, arr, unpack

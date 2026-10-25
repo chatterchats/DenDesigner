@@ -28,7 +28,7 @@ def run(unreal, root, check):
     for origin,direction in [((20,30,100),(1,0,0)),((20,30,100),(0,0,1)),((20,30,100),(0,0,0))]:
         check(not invoke('PlanePoint',V(origin),V(direction),zero,z)[0],'gizmo rejects parallel/behind/zero plane rays')
     valid,distance,degrees=invoke('RingDistance',V((80,0,100)),V((0,0,-1)),zero,z,80.)
-    check(valid and distance<1e-6 and abs(degrees-90)<1e-5,'gizmo ring distance and angle use the same orientation as Lua')
+    check(valid and distance<1e-6 and abs(degrees-90)<1e-5,'gizmo ring distance and angle use the reference orientation')
     for distance,expected in [(0,1),(1,1),(100,16),(1000,160)]:
         check(invoke('SizeFor',float(distance))==expected,'gizmo size stays proportional to distance with a one-cm minimum')
     for value,step,expected in [(7.5,15,15),(-7.5,15,0),(14.9,0,14.9),(-23,15,-30)]:

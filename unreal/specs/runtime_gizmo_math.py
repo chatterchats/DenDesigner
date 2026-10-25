@@ -1,4 +1,4 @@
-"""Blueprint gizmo geometry and drag math; no loads, world mutation or Lua.
+"""Blueprint gizmo geometry and drag math; no loads or world mutation.
 
 Modes: 0 off, 1 move, 2 rotate, 3 scale.
 Handles: 0 none, 1 axis, 2 plane, 3 ring, 4 uniform. Axis: 1 X, 2 Y,

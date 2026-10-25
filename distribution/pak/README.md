@@ -1,37 +1,38 @@
 # Den Designer — pak edition
 
 Decorate the Den with the game's props. This edition runs entirely from cooked Blueprint assets:
-no UE4SS, Lua, MXM, Python, or additional DLL is required to play.
+no UE4SS, Python, or additional DLL is required to play.
 
-The archive's `manifest.json` identifies its exact version and files. Stable releases include
-`acceptance.json` with their verification scope and container hashes; preview packages have not
-completed full in-game release acceptance.
+The archive mirrors the game's `SWZeroCompany` folder. Its single component lives under
+`Content/Paks/~mods/DenDesigner/`, with `modinfo.json` and `zcom-mod.json` beside the three containers.
+The metadata identifies **Den Designer** by Chats and declares an IoStore mod with no UE4SS dependency.
+Import the ZIP into your mod manager, or follow the manual installation steps below.
+
+The component's `manifest.json` identifies its exact version, files and hashes. Its verification
+scope covers build and package checks. Release notes describe the in-game testing performed.
 
 ## Install
 
 1. Close the game.
-2. If upgrading from the Lua edition, first keep a copy of
-   `%LOCALAPPDATA%\SWZeroCompany\Saved\ZComDen`. Disable only the old **Den Designer** mod in your
-   mod manager. For a manual installation, move the `ZComDen` folder out of
-   `SWZeroCompany\Binaries\Win64\ue4ss\Mods` to a backup location. Keep its contents intact.
-   UE4SS may remain installed for other mods.
-3. Remove the old `ZComDen_P.pak`, `ZComDen_P.ucas`, and `ZComDen_P.utoc` from the game's
-   `SWZeroCompany\Content\Paks\~mods`, keeping backup copies. Do not change other mods' files.
-4. Copy this archive's `Content` folder into the game's **SWZeroCompany** folder, alongside its
+2. If updating from 0.9.0-preview.2 or older (including 0.7.0), remove the old `DenDesignerGF_P.pak`, `.ucas` and `.utoc`
+   directly inside `Content/Paks/~mods` before installing the new subfolder. Keep a backup outside
+   `~mods`; do not load both sets. If a manager installed them, use its update/replace or uninstall
+   workflow so it does not redeploy the old copy.
+3. Copy this archive's `Content` folder into the game's **SWZeroCompany** folder, alongside its
    existing `Content` and `Binaries` folders. The result must be:
 
    ```text
-   SWZeroCompany/Content/Paks/~mods/DenDesignerGF_P.pak
-   SWZeroCompany/Content/Paks/~mods/DenDesignerGF_P.ucas
-   SWZeroCompany/Content/Paks/~mods/DenDesignerGF_P.utoc
+   SWZeroCompany/Content/Paks/~mods/DenDesigner/DenDesignerGF_P.pak
+   SWZeroCompany/Content/Paks/~mods/DenDesigner/DenDesignerGF_P.ucas
+   SWZeroCompany/Content/Paks/~mods/DenDesigner/DenDesignerGF_P.utoc
+   SWZeroCompany/Content/Paks/~mods/DenDesigner/modinfo.json
+   SWZeroCompany/Content/Paks/~mods/DenDesigner/zcom-mod.json
    ```
 
-5. Load your campaign and enter the Den. Press **Ctrl+Home** to open Den Designer.
+4. Load your campaign and enter the Den. Press **Ctrl+Home** to open Den Designer.
 
 Install all three files from the same version. Close the game before replacing them on an update.
 Keep one copy of each; renamed copies from a mod manager can still be loaded by the game.
-The pak edition and Lua edition should not run together: both use Ctrl+Home by default and can
-apply separate layouts to the same Den.
 
 ## Editing
 
@@ -114,34 +115,22 @@ Draft autosave is enabled by default. After an interrupted editing session, open
 offers recovery. The saved layout remains active until you choose to recover the draft.
 Unavailable objects remain recorded and appear in the Storeroom's unavailable list.
 
-## Bring layouts from the Lua edition
-
-Use the separate **Den Designer Migration** download. It converts Home/campaign JSON layouts,
-their backups, drafts and presets without modifying the originals. Python 3.10+ is needed only
-for this optional one-time conversion; it is not a dependency of the mod.
-
-The pak edition does not directly read JSON layouts. The migration installer previews its writes
-and refuses to replace a different native layout. Legacy drafts require explicit recovery because
-the old format did not record which saved revision they were based on.
-
 ## Uninstall
 
-Close the game and remove the three `DenDesignerGF_P` files. Keep the mod's Saved directories
+Close the game and remove `Content/Paks/~mods/DenDesigner`, or uninstall through the manager that
+deployed it. If you still have an older flat installation, remove its three `DenDesignerGF_P` files
+from `Content/Paks/~mods` too. Keep the mod's Saved directories
 if you might reinstall. No campaign-save repair is needed.
-
-To return to the Lua edition, restore its backed-up mod folder and three `ZComDen_P` files.
-Your original JSON layouts remain available. Edits made in the pak edition are separate and are
-not automatically converted back to JSON.
 
 ## Verification
 
-The 0.7.0 stable release passed full standalone regression. The current 0.9.0 previews add
-compositions and prop packs with focused checks; they have not repeated the entire release matrix.
-Always use the archive manifest and any acceptance certificate to identify its verification scope.
+Den Designer 1.0.0 targets Steam build 25898267, listed in `zcom-mod.json`. It adds compositions
+and prop packs to the 0.7.0 runtime, which passed full standalone regression. Use the archive
+manifest to identify the build and the release notes for its in-game test coverage.
 
 The release regression exercises the editor with UE4SS disabled, including automatic startup,
 selection, placement, numeric transforms, all 16 gizmo handles, surface and height dragging,
-Storeroom, history, preferences, layouts/presets, draft recovery, migration and thumbnails.
+Storeroom, history, preferences, layouts/presets, draft recovery and thumbnails.
 The mission-return check uses a separate test plugin to trigger the game's mission-success
 sequence; that plugin is not included. The unreleased Tidy Bar preset is not included.
 

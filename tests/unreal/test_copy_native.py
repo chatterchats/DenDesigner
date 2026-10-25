@@ -28,7 +28,7 @@ def run(unreal,host,actor,facts,other_facts,get,field,check,settle,command):
         rig.set_actor_rotation(rotation,False)
         rotation=rig.get_actor_rotation()
         origin,extent,radius=unreal.SystemLibrary.get_component_bounds(comp)
-        # Match the Lua edition's box-diagonal framing, not its sphere radius.
+        # Frame the box diagonal rather than its sphere radius.
         distance=max(150,math.sqrt(extent.x**2+extent.y**2+extent.z**2)*2.5)
         expected=origin-rig.get_actor_forward_vector()*distance
         host.call_method('PrepareSurfacePress',(unreal.Vector(),unreal.Vector(1,0,0)))

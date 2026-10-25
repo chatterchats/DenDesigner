@@ -2,7 +2,7 @@
 
 String keys/values are intentionally independent of widget labels and localized
 key display names. The ordinary rotating store provides the persistence envelope.
-No runtime dependency on MXM, JSON IO, or native code is introduced.
+Preferences use native mod SaveGame slots.
 """
 from graph import Graph, variable as v, KML
 from runtime import ROOT, arr, unpack, struct, save_variables

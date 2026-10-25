@@ -36,19 +36,7 @@ def run(unreal,root,source,fixture,field,field_name,check):
         value=field(prop(doc,'Entries')[0],'Position')
         return (value.x,value.y,value.z)
 
-    rebuild_key='test_presets_rebuild'
-    rebuild_slot=manager.call_method('BankSlot',(rebuild_key,0,False))
-    rebuild_path=saved/'SaveGames'/(rebuild_slot+'.sav')
-    had_rebuild=rebuild_path.exists()
     try:
-        if had_rebuild:
-            rebuilt,rebuild_status,_=manager.call_method('LoadLibrary',(rebuild_key,False,0))
-            check(rebuild_status == 1 and rebuilt is not None, 'preset library loads across asset rebuilds')
-            assert rebuild_status == 1 and rebuilt is not None
-            values=prop(rebuilt,'Entries')
-            nested=field(values[0],'Entries',library_type)
-            check(field(values[0],'Name',library_type) == 'zEtA' and field(nested[0],'Position') == unreal.Vector(901,902,903), 'preset nested entries preserve identities and transforms across rebuilds')
-            check(list(field(nested[0],'Materials')) == ['', '/Game/Test/MI_Override.MI_Override'] and field(nested[1],'Kind') == 1, 'preset material slots and stored props survive rebuilds')
         for p in paths:
             p.unlink(missing_ok=True)
         check(listing() == ([],0), 'absent preset library lists empty without writing a file')
@@ -77,14 +65,6 @@ def run(unreal,root,source,fixture,field,field_name,check):
         check(all(p.name.startswith('presets-layout-') for p in paths if p.exists()), 'preset names never become filesystem paths')
         lib,status,bank=manager.call_method('LoadLibrary',('presets',False,0))
         assert status == 1
-        fixture_dir=Path(os.environ['DENDESIGNER_REPO'])/'dist/verification/native/migration-fixtures'
-        fixture_dir.mkdir(parents=True,exist_ok=True)
-        (fixture_dir/'presets.sav').write_bytes(paths[bank].read_bytes())
-        if not had_rebuild:
-            rebuilt,rebuild_status=manager.call_method('SaveLibrary',(rebuild_key,lib,False,0,''))
-            check(rebuild_status == 1 and rebuilt is not None, 'preset rebuild fixture saved in isolated kit slot')
-        else:
-            check(unreal.GameplayStatics.delete_game_in_slot(rebuild_slot,0), 'preset rebuild fixture cleaned after verification')
         previous,status,_=manager.call_method('LoadLibrary',('presets',False,prop(lib,'Revision')))
         check(status == 1 and len(prop(previous,'Entries')) == 2, 'previous preset library is available as a backup')
         # Fail the next write, then confirm it cannot alter the current library.

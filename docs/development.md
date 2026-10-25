@@ -1,7 +1,6 @@
 # Development
 
-The maintained project is the pak-only editor. The retired Lua runtime, override plugin,
-feasibility prototype and historical probes are not build dependencies or release contents.
+The maintained project is the pak-only editor and its separate creator tools.
 
 ## Repository map
 
@@ -16,16 +15,15 @@ feasibility prototype and historical probes are not build dependencies or releas
 | `unreal/scripts/` | Editor-only asset authoring, import, export and verification scripts. |
 | `tools/build/` | Runtime build, packaging, catalog generation and release validation. |
 | `tools/prop_packs/` | Creator-bundle packaging, scripted pack builds and provider-reference export. |
-| `tools/migration/` | Optional legacy-layout conversion and its save-format schema. |
 | `tools/dev/` | Optional guarded game input, screenshots and Sandbox isolation. |
 | `tests/python/` | Standard-library tests; run without Unreal. |
 | `tests/unreal/` | Compiled Blueprint tests and public-kit creator integration checks. |
 | `tests/fixtures/`, `tests/integration/` | Fixed reference data and the separate travel QA plugin. |
 | `authoring/prop-packs/` | Widget/Python editor plugin, creator guides, optional scripted helper, shared reference and manifests. |
 | `unreal/DenPropsExample/` | Separate development sample plugin; never bundled with the editor. |
-| `distribution/` | Documentation shipped with runtime and optional migration archives. |
+| `distribution/pak/` | Player documentation and mod-manager metadata shipped with the runtime. |
 | `dist/build/` | Ignored current build products, work files and logs. |
-| `dist/packages/` | Runtime, migration and creator ZIPs with checksums. |
+| `dist/packages/` | Runtime and creator ZIPs with checksums. |
 | `dist/verification/`, `dist/state/` | Current test evidence and development-helper state. |
 
 ## Prerequisites
@@ -35,7 +33,7 @@ environment. Prop-pack creators use the [public SDK/base-modkit workflow](../aut
 and do not need this kit.
 
 Use the project's UE **5.6.1** SWZC Merged Kit, regenerated with the editor-only **ZComAuthoring**
-plugin, and Python 3.10+. Core build and test tooling does not require LuaJIT or the old edition.
+plugin, and Python 3.10+.
 The kit supplies its own Unreal Python API and authoring helper. Player installations require none
 of these development tools.
 
@@ -82,18 +80,29 @@ Den Designer edition first, following the player guide; other UE4SS mods may rem
 
 The version lives in `unreal/DenDesignerGF/DenDesignerGF.uplugin` (`Version` and `VersionName`).
 Increment the version before publishing different content under an existing archive name.
+Update `distribution/pak/modinfo.json` and `distribution/pak/zcom-mod.json` to the same version.
+The packager checks their shared title, author, description and standalone IoStore identity against
+the verified runtime; mismatched metadata stops packaging.
 
 ```sh
 python3 tools/build/gf_build_info.py
-python3 tools/build/package_gf.py                    # preview version only
-python3 tools/build/package_gf.py --acceptance /path/to/reviewed-report.json
+python3 tools/build/package_gf.py
 ```
 
-Stable versions require reviewed, exact-build acceptance evidence. Preview packages explicitly
-state that full regression is incomplete. Packaging checks every archived byte, generates a manifest
+Before publishing, complete the [release checklist](verification.md#release-checklist).
+Packaging checks every archived byte, generates a manifest
 and checksum, and refuses to replace a same-version archive with different content. It creates a
-runtime ZIP and a separate optional migration ZIP. Prop packs, QA plugins, source art, private
+runtime ZIP. Prop packs, QA plugins, source art, private
 screenshots and unreleased presets are excluded by the explicit package inventory.
+
+The runtime archive mirrors `SWZeroCompany/`, with every file under
+`Content/Paks/~mods/DenDesigner/`: three matching containers, both mod-manager metadata files,
+player docs, license and integrity manifest. The manifest records build/package verification;
+in-game results belong in release notes. The creator-editor ZIP is editor
+tooling and is not labelled as an installable game mod.
+
+`--install` uses the same `DenDesigner` subfolder and refuses an existing flat container set to
+avoid loading duplicate versions. See the player guide for updating an older manual installation.
 
 All package commands write to `dist/packages/`. Existing runtime and creator-editor ZIPs were
 retained unchanged. Historical build reports describe their original test runs; they are not
@@ -127,7 +136,7 @@ creator bundle includes sample artwork or requires the private kit to package.
 The [sample prop pack](../authoring/prop-packs/README.md) rebuilds from local FBX/PNG sources
 when those files are available under the Git-ignored `example/assets` directory. A clean checkout
 includes the manifest, importer and credits, but no sample artwork. When present, the sample
-does not need adjacent mods, a Blender export step or Lua scripts. Existing engine materials
+does not need adjacent mods or a Blender export step. Existing engine materials
 are referenced by path. The cabinet uses an opaque parent to prevent front faces drawing through
 its side panels. The sample is a development artifact with separate attribution and provenance
 limitations; it is not silently included in a public editor package.
@@ -139,7 +148,7 @@ install path and Lutris ID are development configuration. `tools/dev/game_keys.p
 only to the identified game window. A lost-focus check must stop the attempt; never remove the guard.
 
 `dd.py den`, `send` and `restart` require the separately installed **ZC Sandbox** controller.
-`lua` and `con` require the separate development console. These optional diagnostic routes do not
+`con` sends Unreal console commands through ZC Sandbox. These optional diagnostic routes do not
 prove UE4SS independence; use normal game input with the loader disabled for standalone acceptance.
 `log` reads the game's native log. See [verification](verification.md) before running live tests.
 

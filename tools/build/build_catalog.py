@@ -18,7 +18,7 @@ OUT = REPO / "unreal/data/catalog.json"
 BATCH = 400
 MIN_SHELF = 4  # smaller shelves merge into "<group>: Props"
 
-# Folders (Lua-free regexes on the package path) that never hold furniture.
+# Folders (regexes on the package path) that never hold furniture.
 SKIP_PATH = re.compile("|".join([
     r"^/(?!Game/|Engine/BasicShapes/)",       # plugins and engine content, except the basic shapes
     r"/__PendingDelete/", r"/_?GENERATED/", r"/GeometryScript", r"/HLOD", r"/_LevelInstances/", r"DEPRECATED",

@@ -20,5 +20,5 @@ DENDESIGNER_REPO="$repo" DENDESIGNER_TEST_SAVED="$kit/Saved" DENDESIGNER_EXISTIN
     "$root/UnrealEngine/Engine/Binaries/Linux/UnrealEditor-Cmd" "$kit/SWZeroCompany.uproject" \
     -run=pythonscript -script="$repo/tests/unreal/test_runtime.py" \
     -unattended -nop4 -nosplash -NullRHI -stdout -FullStdOutLogOutput -NoCrashDialog > "$log" 2>&1 || true
-rg 'DENNATIVE|ZCOMAUTH.*(error|warning|FAILED)' "$log" || true
+rg 'DENNATIVE_RESULT|DENNATIVE_CHECK FAIL|LogPython: Error|ZCOMAUTH.*(error|warning|FAILED)' "$log" || true
 rg -q 'DENNATIVE_RESULT ok' "$log"
