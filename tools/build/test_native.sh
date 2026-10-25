@@ -16,7 +16,9 @@ mkdir -p "$(dirname "$log")"
 [ -e "$kit/Mods/DenDesignerGF" ] || ln -s "$repo/unreal/DenDesignerGF" "$kit/Mods/DenDesignerGF"
 [ "$(readlink -f "$kit/Mods/DenDesignerGF")" = "$repo/unreal/DenDesignerGF" ] || exit 1
 python3 -I "$repo/unreal/specs/runtime.py"
-DENDESIGNER_REPO="$repo" DENDESIGNER_TEST_SAVED="$kit/Saved" DENDESIGNER_EXISTING="$existing" \
+icons="$repo/dist/build/runtime-work/icons"
+[ "$existing" = 1 ] || bash "$repo/tools/build/render_icons.sh" "$icons"
+DENDESIGNER_REPO="$repo" DENDESIGNER_TEST_SAVED="$kit/Saved" DENDESIGNER_EXISTING="$existing" DENDESIGNERGF_ICONS="$icons" \
     "$root/UnrealEngine/Engine/Binaries/Linux/UnrealEditor-Cmd" "$kit/SWZeroCompany.uproject" \
     -run=pythonscript -script="$repo/tests/unreal/test_runtime.py" \
     -unattended -nop4 -nosplash -NullRHI -stdout -FullStdOutLogOutput -NoCrashDialog > "$log" 2>&1 || true

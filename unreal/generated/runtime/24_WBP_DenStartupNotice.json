@@ -12,7 +12,7 @@
         "class": "/Script/UMG.Border",
         "name": "Panel",
         "props": {
-          "BrushColor": "(R=0.012,G=0.016,B=0.024,A=1)",
+          "BrushColor": "(R=0.0027,G=0.003,B=0.004,A=0.88)",
           "Padding": "(Left=20,Top=14,Right=20,Bottom=14)"
         },
         "slot": {
@@ -25,7 +25,7 @@
             "props": {
               "Text": "",
               "Font.Size": 16,
-              "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+              "ColorAndOpacity": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
               "AutoWrapText": "true"
             },
             "variable": true

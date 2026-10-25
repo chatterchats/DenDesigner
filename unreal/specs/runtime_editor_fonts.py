@@ -22,8 +22,10 @@ def style_list():
     call(g,'tilestyle',UIROOT+'WBP_DenCatalogEntry:ApplyNativeStyle',{'self':'tile.AsWBP Den Catalog Entry'})
     g.node('shelf','cast',**{'class':UIROOT+'WBP_DenCatalogShelf'});g.wire(('item.Item','shelf.Object'))
     call(g,'shelfstyle',UIROOT+'WBP_DenCatalogShelf:ApplyNativeStyle',{'self':'shelf.AsWBP Den Catalog Shelf'})
+    g.node('chip','cast',**{'class':UIROOT+'WBP_DenCatalogChip'});g.wire(('item.Item','chip.Object'))
+    call(g,'chipstyle',UIROOT+'WBP_DenCatalogChip:ApplyNativeStyle',{'self':'chip.AsWBP Den Catalog Chip'})
     set_value(g,'advance','local:EntryIndex',call(g,'next',KML+':Add_IntInt',{'A':'i.EntryIndex'},B=1))
-    g.chain('entry','valid','loop','tile','tilestyle','advance','loop');g.chain('tile.CastFailed','shelf','shelfstyle','advance');g.chain('shelf.CastFailed','advance')
+    g.chain('entry','valid','loop','tile','tilestyle','advance','loop');g.chain('tile.CastFailed','shelf','shelfstyle','advance');g.chain('shelf.CastFailed','chip','chipstyle','advance');g.chain('chip.CastFailed','advance')
     return g.function('StyleEditorList',inputs=[v('List','object:/Script/UMG.ListViewBase')],locals=[v('EntryIndex','int','0')])
 
 

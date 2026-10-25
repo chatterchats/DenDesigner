@@ -59,10 +59,10 @@ def selected():
 
 def spec():
     g=editor.Graph();rows=[]
-    def heading(name,label):rows.append(editor.text(name,label,17,editor.GOLD,slot={'Padding':'(Left=0,Top=20,Right=0,Bottom=8)'}))
+    def heading(name,label):rows.append(editor.label(name,label,slot={'Padding':'(Left=0,Top=18,Right=0,Bottom=6)'}))
     def row(key,label,field):
-        title=editor.text('Label_'+key,label,13,wrap=True,slot={'Size':'(SizeRule=Fill,Value=1)','VerticalAlignment':'VAlign_Center','Padding':'(Left=0,Top=0,Right=16,Bottom=0)'})
-        box={'class':'/Script/UMG.SizeBox','name':'Width_'+key,'props':{'WidthOverride':150,'bOverride_WidthOverride':'true'},'children':[field]}
+        title=editor.text('Label_'+key,label,13,wrap=True,slot={'Size':'(SizeRule=Fill,Value=1)','VerticalAlignment':'VAlign_Center','Padding':'(Left=0,Top=0,Right=12,Bottom=0)'})
+        box={'class':'/Script/UMG.SizeBox','name':'Width_'+key,'props':{'WidthOverride':124,'bOverride_WidthOverride':'true'},'children':[field]}
         rows.append(editor.row('Row_'+key,[title,box]))
     heading('Camera','Camera')
     for key,label in NUMERIC_LABELS.items():
@@ -82,13 +82,15 @@ def spec():
         g.nodes += [{'id':key,'kind':'bound_event','widget':'Field_'+key,'delegate':'OnKeySelected'},
                     {'id':key+'capture','kind':'call','function':'self:CaptureSettingKey','defaults':{'Event':'setting:'+key}}]
         g.links += [[key+'.then',key+'capture.execute'],[key+'.SelectedKey',key+'capture.Chord']]
-    rows.append(editor.text('FixedHint','Mouse controls, Esc, Delete, arrow keys, Page Up/Down and +/− remain fixed. F9 is reserved. Grid, Range, Floors, Walls and Structure are on the top bar.',12,editor.DIM,wrap=True,slot={'Padding':'(Left=0,Top=14,Right=0,Bottom=8)'}))
-    tree=editor.side_panel(PATH,'Settings',[
-        editor.text('Intro','Changes save automatically and apply immediately.',12,editor.DIM,wrap=True),
+    rows.append(editor.text('FixedHint','Mouse controls, Esc, Delete, arrow keys, Page Up/Down and +/− remain fixed. F9 is reserved. Grid, Range, Floors, Walls and Structure are on the menu bar.',12,editor.DIM,wrap=True,slot={'Padding':'(Left=0,Top=14,Right=0,Bottom=8)'}))
+    # Settings take the inspector dock's place while open.
+    panel=editor.inspector_panel('Panel',[
+        editor.text('Title','Settings',20,editor.GOLD,role='title'),
+        editor.text('Intro','Changes save automatically and apply immediately.',12,editor.DIM,wrap=True,slot={'Padding':'(Left=0,Top=6,Right=0,Bottom=0)'}),
         {'class':'/Script/UMG.ScrollBox','name':'SettingsScroll','slot':{'Size':'(SizeRule=Fill,Value=1)'},'children':[
             {'class':'/Script/UMG.VerticalBox','name':'SettingsRows','children':rows}]},
         editor.text('Message','',12,editor.DIM,wrap=True,slot={'Padding':'(Left=0,Top=12,Right=0,Bottom=8)'}),
-        editor.row('Footer',[editor.button('ResetSettings','Reset settings'),editor.button('CloseSettings','Back to editing')])])
-    tree['children'][0]['slot']['LayoutData']='(Anchors=(Minimum=(X=1,Y=0),Maximum=(X=1,Y=1)),Offsets=(Left=-580,Top=88,Right=560,Bottom=88))'
+        editor.row('Footer',[editor.button('ResetSettings','Reset settings'),editor.button('CloseSettings','Close')])])
+    tree={'class':'/Script/UMG.CanvasPanel','name':'Root','children':[panel]}
     g.click('ResetSettings','settings_reset');g.click('CloseSettings','settings_close')
     return dict(kind='widget',path=PATH,variables=[v('Refreshing','bool','false')],tree=tree,functions=[*editor.NATIVE_EVENT,refresh(),selected()],graph=g.spec())

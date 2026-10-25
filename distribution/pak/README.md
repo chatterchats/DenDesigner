@@ -36,18 +36,23 @@ Keep one copy of each; renamed copies from a mod manager can still be loaded by 
 
 ## Editing
 
+- The game's HUD hides while the editor is open and returns when you close it.
 - Fly with WASD, Space up, Ctrl down, and Shift for faster movement. Hold RMB to look around.
-- Click a prop to select it. Use Move, Rotate, or Scale in the selection panel, or T to cycle
-  the gizmo. Axis and plane handles constrain the edit. Numeric fields accept values with Enter.
+- Click a prop to select it. Choose Select, Move, Rotate or Scale on the menu bar, or press T to
+  cycle them; Select hides the gizmo. Axis and plane handles constrain the edit. The inspector on
+  the right shows the selected prop's position, rotation and scale; its fields accept values with Enter.
 - Drag along a surface; Shift-drag moves vertically. Q/E or the wheel rotate. Use +/− to scale.
 - C duplicates, X stores, and Z/Y undo or redo. The Storeroom restores stored props without undo.
+- Catalog, Storeroom, Compositions and Layouts open from the tabs on the left; choose the open tab
+  again to close it.
 - The catalog provides search, collections and thumbnails. Choose a prop, then click the world
   to place it. Shift-click places additional copies; Esc cancels placement.
-- Grid and Range are on the top bar. Floors and Walls independently enable selection of their
+- Grid, Range, Floors, Walls and Structure are on the menu bar; highlighted ones are on. Grid shows
+  its step and Range its distance; click them to change. Floors and Walls independently enable selection of their
   respective pieces; Structure controls the remaining architecture, such as ceilings and beams.
   Floors and walls do not require Structure to be on. Range limits selection distance.
-- Settings contains camera speeds, background-task toggles and key bindings. Help displays the
-  effective controls. F9 is reserved because it conflicts with an observed load/mod action.
+- Settings contains camera speeds, background-task toggles and key bindings; it opens in place of
+  the inspector. Help displays the effective controls. F9 is reserved because it conflicts with an observed load/mod action.
 - Save commits the layout. Done or the opening shortcut exits; unsaved changes require a choice.
 
 ## Prop packs

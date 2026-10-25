@@ -6,7 +6,8 @@ from runtime_world import set_value, validity
 from runtime_apply import get, bump
 from runtime_session import HISTORY, LAYOUT, prop, method
 from runtime_editor_assets import EVENT, BUS, RIG
-from runtime_editor_host import PANELS, WIDGET, WBL, text, widget, visibility
+from runtime_editor_host import PANELS, WIDGET, WBL, text, widget, visibility, style_toggle
+import ui_templates as editor
 
 
 def set_panel():
@@ -19,6 +20,8 @@ def set_panel():
         g.chain(previous,var+'valid',var+'selected',var+'show',var+'next');g.chain(var+'selected.else',var+'hide',var+'next');g.chain(var+'valid.else',var+'next');previous=var+'next.then_0'
     g.call('catalog','self:CatalogPanelChanged');g.call('storeroom','self:StoreroomPanelChanged');g.call('layouts','self:LayoutsPanelChanged');g.call('settings','self:SettingsPanelChanged');g.call('compositions','self:CompositionsPanelChanged');g.chain(previous,'catalog','storeroom','layouts','settings','compositions');branch(g,'keepcomposition',call(g,'compositionpanel',STR+'EqualEqual_StrStr',{'A':'entry.Name'},B='compositions'));g.call('clearcomposition','self:ClearCompositionSelection');g.chain('compositions','keepcomposition');g.chain('keepcomposition.else','clearcomposition')
     g.call('compositioncancel','self:CancelCompositionPreview');g.chain('entry','panelopen','cancelplacement','compositioncancel','remember');g.chain('panelopen.else','remember')
+    # Settings take the inspector dock's place while open.
+    g.call('inspector','self:RefreshSelectionUI');g.chain('keepcomposition','inspector');g.chain('clearcomposition','inspector')
     return g.function('SetEditorPanel',inputs=[v('Name','string')])
 
 
@@ -129,13 +132,28 @@ def cycle(grid):
     return g.function('CycleEditorGrid' if grid else 'CycleEditorReach')
 
 
+def toggle_style():
+    # The active backing, icon and caption colours match ui_templates (ACTIVE_BACK, ACCENT, SOFT).
+    g=Graph();previous='entry'
+    back=call(g,'backcolor',KML+':SelectColor',{'bPickA':'entry.On'},A=editor.ACTIVE_BACK,B=editor.CLEAR)
+    tint=call(g,'tint',KML+':SelectColor',{'bPickA':'entry.On'},A=editor.rgba(*editor.ACCENT),B=editor.rgba(*editor.SOFT_RGB))
+    for part,fn,pin,value in [('Back','/Script/UMG.Border:SetBrushColor','InBrushColor',back),('Icon','/Script/UMG.Image:SetColorAndOpacity','InColorAndOpacity',tint)]:
+        branch(g,part+'valid',validity(g,part+'check','entry.'+part));call(g,part+'set',fn,{'self':'entry.'+part,pin:value})
+        g.node(part+'next','sequence',outputs=1);g.chain(previous,part+'valid',part+'set',part+'next');g.chain(part+'valid.else',part+'next');previous=part+'next.then_0'
+    g.node('slate','make_struct',struct='/Script/SlateCore.SlateColor');g.wire((tint,'slate.SpecifiedColor'))
+    branch(g,'labelvalid',validity(g,'labelcheck','entry.Label'))
+    call(g,'labelset','/Script/UMG.TextBlock:SetColorAndOpacity',{'self':'entry.Label','InColorAndOpacity':'slate.SlateColor'})
+    g.chain(previous,'labelvalid','labelset')
+    return g.function('StyleEditorToggle',inputs=[v('Back','object:/Script/UMG.Border'),v('Icon','object:/Script/UMG.Image'),v('Label','object:/Script/UMG.TextBlock'),v('On','bool')])
+
+
 def handle():
     g=Graph();unpack(g,'event',EVENT,'entry.Event')
     branch(g,'look',call(g,'lookname',STR+'EqualEqual_StrStr',{'A':'event.EventName'},B='look_hold'))
     held=call(g,'held',KML+':Greater_DoubleDouble',{'A':'event.Scalar'},B=.5);g.call('looking','self:SetLooking');g.wire((held,'looking.Held'))
     previous='look.else'
     commands=[('confirm_save','EditorConfirmSave',{}),('confirm_discard','EditorConfirmDiscard',{}),('confirm_cancel','EditorConfirmCancel',{}),('back','EditorBack',{})]
-    normal=[('compositions','ToggleEditorPanel',{'Name':'compositions'}),('composition_select','ToggleCompositionSelection',{}),('composition_clear','ClearCompositionSelection',{}),('settings','ToggleEditorPanel',{'Name':'settings'}),('settings_close','SetEditorPanel',{'Name':''}),('settings_reset','ChangeEditorSetting',{'Reset':'true'}),('catalog','ToggleEditorPanel',{'Name':'catalog'}),('layouts','ToggleEditorPanel',{'Name':'layouts'}),('storeroom','ToggleEditorPanel',{'Name':'storeroom'}),('help','ToggleEditorHelp',{}),('snap','CycleEditorGrid',{}),('reach','CycleEditorReach',{}),('numeric_done','FocusEditorViewport',{}),('mode_move','SetGizmoMode',{'Mode':1}),('mode_rotate','SetGizmoMode',{'Mode':2}),('mode_scale','SetGizmoMode',{'Mode':3}),('gimbal','CycleGizmoMode',{})]
+    normal=[('compositions','ToggleEditorPanel',{'Name':'compositions'}),('composition_select','ToggleCompositionSelection',{}),('composition_clear','ClearCompositionSelection',{}),('settings','ToggleEditorPanel',{'Name':'settings'}),('settings_close','SetEditorPanel',{'Name':''}),('settings_reset','ChangeEditorSetting',{'Reset':'true'}),('catalog','ToggleEditorPanel',{'Name':'catalog'}),('layouts','ToggleEditorPanel',{'Name':'layouts'}),('storeroom','ToggleEditorPanel',{'Name':'storeroom'}),('help','ToggleEditorHelp',{}),('snap','CycleEditorGrid',{}),('reach','CycleEditorReach',{}),('numeric_done','FocusEditorViewport',{}),('mode_select','SetGizmoMode',{'Mode':0}),('mode_move','SetGizmoMode',{'Mode':1}),('mode_rotate','SetGizmoMode',{'Mode':2}),('mode_scale','SetGizmoMode',{'Mode':3}),('gimbal','CycleGizmoMode',{})]
     for i,(name,fn,defaults) in enumerate(commands+normal):
         if i==len(commands):
             branch(g,'modal',call(g,'ismodal',KML+':Greater_IntInt',{'A':get(g,'ConfirmMode')},B=0));g.chain(previous,'modal');branch(g,'select',call(g,'selectname',STR+'EqualEqual_StrStr',{'A':'event.EventName'},B='select'));g.call('pick','self:GizmoPointerButton');g.wire(('event.Scalar','pick.Value'));branch(g,'placing',get(g,'PlacementActive'));g.call('place','self:PlacementPointerButton');g.wire(('event.Scalar','place.Value'));branch(g,'composing',get(g,'CompositionPlacing'));g.call('composeclick','self:CompositionPointerButton');g.wire(('event.Scalar','composeclick.Value'));g.chain('modal.else','select','composing','composeclick');g.chain('composing.else','placing','place');g.chain('placing.else','pick');previous='select.else'
@@ -212,18 +230,21 @@ def refresh():
             any_=call(g,name+'any',KML+':Greater_IntInt',{'A':name+'len.ReturnValue'},B=0);ready=combine(g,name+'ready',[ready,any_])
         obj=widget(g,name+'button','Toolbar',name);call(g,name+'enable',WIDGET+':SetIsEnabled',{'self':obj,'bInIsEnabled':ready});g.chain(previous,name+'enable');previous=name+'enable'
     # The selection/filter port reads the same native values displayed here.
-    for field,widgetname,prefix,divisor in [('GridStep','SnapLabel','Grid: ',1),('ReachCm','ReachLabel','Range: ',100)]:
+    for field,widgetname,divisor,suffix in [('GridStep','SnapLabel',1,' cm'),('ReachCm','ReachLabel',100,' m')]:
         amount=call(g,field+'value',KML+':Divide_DoubleDouble',{'A':get(g,field)},B=divisor)
         whole=call(g,field+'whole',KML+':FTrunc',{'A':amount})
         number=call(g,field+'number',STR+'Conv_IntToString',{'InInt':whole})
-        label=call(g,field+'label',STR+'Concat_StrStr',{'B':number},A=prefix)
-        suffix=' cm' if field=='GridStep' else 'm';full=call(g,field+'full',STR+'Concat_StrStr',{'A':label},B=suffix)
+        full=call(g,field+'full',STR+'Concat_StrStr',{'A':number},B=suffix)
         text(g,field+'text','Toolbar',widgetname,value=full);g.chain(previous,field+'text');previous=field+'text'
     branch(g,'gridoff',call(g,'zero',KML+':EqualEqual_DoubleDouble',{'A':get(g,'GridStep')},B=0))
-    text(g,'offlabel','Toolbar','SnapLabel',constant='Grid: Off');g.node('aftergrid','sequence',outputs=1);g.chain(previous,'gridoff','offlabel','aftergrid');g.chain('gridoff.else','aftergrid');previous='aftergrid.then_0'
-    for field,name,label in [('StructureEnabled','LockLabel','Structure'),('FloorsEnabled','FloorsLabel','Floors'),('WallsEnabled','WallsLabel','Walls')]:
-        branch(g,field+'branch',get(g,field));text(g,field+'on','Toolbar',name,constant=label+': On');text(g,field+'off','Toolbar',name,constant=label+': Off');g.node(field+'next','sequence',outputs=1)
-        g.chain(previous,field+'branch',field+'on',field+'next');g.chain(field+'branch.else',field+'off',field+'next');previous=field+'next.then_0'
+    text(g,'offlabel','Toolbar','SnapLabel',constant='Off');g.node('aftergrid','sequence',outputs=1);g.chain(previous,'gridoff','offlabel','aftergrid');g.chain('gridoff.else','aftergrid');previous='aftergrid.then_0'
+    # Grid and the selection filters are toggles; the library tabs show the open panel.
+    toggles=[('Snap',call(g,'gridon',KML+':NotEqual_DoubleDouble',{'A':get(g,'GridStep')},B=0)),
+             ('Floors',get(g,'FloorsEnabled')),('Walls',get(g,'WallsEnabled')),('Lock',get(g,'StructureEnabled'))]
+    toggles+=[(button,call(g,'tab'+button,STR+'EqualEqual_StrStr',{'A':get(g,'ActivePanel')},B=name)) for button,_,name,_ in editor.LIBRARY]
+    for button,on in toggles:
+        g.chain(previous,style_toggle(g,'style'+button,'Toolbar',button,on));previous='style'+button
+    g.call('modes','self:RefreshGizmoModeUI');g.chain(previous,'modes');previous='modes'
     g.call('feedback','self:EditorFeedback');text(g,'hints','Toolbar','Hints',value='feedback.Message')
     set_value(g,'busycache','LastUIBusy',get(g,'Busy'));set_value(g,'draftcache','LastUIDraftStatus',get(g,'LastDraftStatus'));set_value(g,'prefcache','LastUIPreferencesStatus',get(g,'PreferencesStatus'));g.call('layoutfeedback','self:RefreshLayoutFeedback');g.call('scopelabels','self:RefreshLayoutScope');g.chain(previous,'feedback','hints','busycache','draftcache','prefcache','layoutfeedback','scopelabels')
     return g.function('RefreshEditorUI')
@@ -254,4 +275,4 @@ def poll():
     return g.function('PollEditorUI')
 
 
-def functions():return [set_panel(),toggle_panel(),confirm(),offer_recovery(),exit_editor(),back(),confirm_choice('save'),confirm_choice('discard'),confirm_choice('cancel'),help_toggle(),focus_viewport(),cycle(True),cycle(False),handle(),process(),feedback(),refresh(),poll()]
+def functions():return [toggle_style(),set_panel(),toggle_panel(),confirm(),offer_recovery(),exit_editor(),back(),confirm_choice('save'),confirm_choice('discard'),confirm_choice('cancel'),help_toggle(),focus_viewport(),cycle(True),cycle(False),handle(),process(),feedback(),refresh(),poll()]

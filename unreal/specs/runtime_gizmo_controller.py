@@ -12,7 +12,7 @@ from runtime_session import method, prop
 from runtime_assets import JOB
 from runtime_pick import FACT
 from runtime_editor_assets import BUS, RIG
-from runtime_editor_host import PC, WIDGET, PANELS, widget
+from runtime_editor_host import PC, WIDGET, PANELS, widget, style_toggle
 from runtime_gizmo_math import MATH
 from runtime_gizmo_visual import VISUAL, OVERLAY
 
@@ -72,7 +72,7 @@ def blocked():
     branch(g,'state',combine(g,'blockedstate',checks,True));g.set('yes','local:OK','true');finish_bool(g,'Blocked')
     branch(g,'bus',validity(g,'busvalid',get(g,'InputBus')));method(g,'typing',BUS,'IsTyping',get(g,'InputBus'));branch(g,'typingcheck','typing.Typing')
     previous='typingcheck.else'
-    for i,(var,field) in enumerate([(var,'Panel') for var,_,_ in PANELS]+[('Toolbar','Feedback')]):
+    for i,(var,field) in enumerate([(var,'Panel') for var,_,_ in PANELS]+[('Toolbar','Feedback'),('Toolbar','LibraryTabs')]):
         name='panel'+str(i);branch(g,name+'valid',validity(g,name+'check',get(g,var)))
         panel=widget(g,name+'widget',var,field)
         hovered=call(g,name+'hover',WIDGET+':IsHovered',{'self':panel});visible=call(g,name+'visible',WIDGET+':IsVisible',{'self':get(g,var)})
@@ -190,10 +190,9 @@ def cycle():
 
 
 def mode_ui():
-    g=Graph();branch(g,'valid',validity(g,'inspectorvalid',get(g,'Inspector')));previous='valid'
-    for i,name in enumerate(['Move','Rotate','ScaleMode'],1):
-        color=call(g,'color'+name,KML+':SelectColor',{'bPickA':eq(g,name+'selected',get(g,'GizmoMode'),i)},A='(R=1,G=0.75,B=0.32,A=1)',B='(R=1,G=1,B=1,A=1)')
-        call(g,'button'+name,'/Script/UMG.Button:SetBackgroundColor',{'self':widget(g,'widget'+name,'Inspector',name),'InBackgroundColor':color});g.chain(previous,'button'+name);previous='button'+name
+    g=Graph();branch(g,'valid',validity(g,'toolbarvalid',get(g,'Toolbar')));previous='valid'
+    for i,name in enumerate(['SelectMode','Move','Rotate','ScaleMode']):
+        g.chain(previous,style_toggle(g,'style'+name,'Toolbar',name,eq(g,name+'selected',get(g,'GizmoMode'),i)));previous='style'+name
     g.chain('entry','valid')
     return g.function('RefreshGizmoModeUI')
 

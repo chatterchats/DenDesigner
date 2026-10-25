@@ -1,6 +1,6 @@
 {
   "kind": "widget",
-  "path": "/DenDesignerGF/Editor/WBP_DenLayouts",
+  "path": "/DenDesignerGF/Editor/WBP_DenCompositions",
   "tree": {
     "class": "/Script/UMG.CanvasPanel",
     "name": "Root",
@@ -9,11 +9,14 @@
         "class": "/Script/UMG.Border",
         "name": "Panel",
         "props": {
-          "BrushColor": "(R=0.012,G=0.016,B=0.024,A=1)",
-          "Padding": "(Left=14,Top=12,Right=14,Bottom=12)"
+          "BrushColor": "(R=1,G=1,B=1,A=1)",
+          "Background.DrawAs": "RoundedBox",
+          "Background.TintColor": "(SpecifiedColor=(R=0.0027,G=0.003,B=0.004,A=0.88))",
+          "Background.OutlineSettings": "(CornerRadii=(X=8,Y=8,Z=8,W=8),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.1)),Width=1.0,RoundingType=FixedRadius)",
+          "Padding": "(Left=14,Top=14,Right=14,Bottom=12)"
         },
         "slot": {
-          "LayoutData": "(Anchors=(Minimum=(X=1,Y=0),Maximum=(X=1,Y=1)),Offsets=(Left=-756,Top=88,Right=736,Bottom=88))"
+          "LayoutData": "(Anchors=(Minimum=(X=0,Y=0),Maximum=(X=0,Y=1)),Offsets=(Left=12,Top=144,Right=470,Bottom=58))"
         },
         "children": [
           {
@@ -24,49 +27,62 @@
                 "class": "/Script/UMG.TextBlock",
                 "name": "Title",
                 "props": {
-                  "Text": "Layouts",
+                  "Text": "Compositions",
                   "Font.Size": 20,
-                  "ColorAndOpacity": "(SpecifiedColor=(R=1,G=0.78,B=0.35,A=1),ColorUseRule=UseColor_Specified)"
+                  "ColorAndOpacity": "(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=1),ColorUseRule=UseColor_Specified)"
+                },
+                "variable": true,
+                "slot": {
+                  "Padding": "(Left=0,Top=0,Right=0,Bottom=10)"
+                }
+              },
+              {
+                "class": "/Script/UMG.TextBlock",
+                "name": "SelectionCount",
+                "props": {
+                  "Text": "0 parts selected",
+                  "Font.Size": 16,
+                  "ColorAndOpacity": "(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=1),ColorUseRule=UseColor_Specified)"
                 },
                 "variable": true
               },
               {
                 "class": "/Script/UMG.TextBlock",
-                "name": "ScopeText",
+                "name": "SelectionHint",
                 "props": {
-                  "Text": "",
-                  "Font.Size": 13,
-                  "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                  "Text": "Select parts, then click each prop to add or remove it. Save a reusable copy of the arrangement; originals stay in place.",
+                  "Font.Size": 12,
+                  "ColorAndOpacity": "(SpecifiedColor=(R=0.386,G=0.423,B=0.479,A=1),ColorUseRule=UseColor_Specified)",
                   "AutoWrapText": "true"
                 },
-                "variable": true,
-                "slot": {
-                  "Padding": "(Left=0,Top=8,Right=0,Bottom=6)"
-                }
+                "variable": true
               },
               {
                 "class": "/Script/UMG.HorizontalBox",
-                "name": "ScopeRow",
+                "name": "SelectionRow",
                 "slot": {
                   "Padding": "(Left=0,Top=6,Right=0,Bottom=6)"
                 },
                 "children": [
                   {
                     "class": "/Script/UMG.Button",
-                    "name": "ScopeButton",
+                    "name": "SelectParts",
                     "variable": true,
                     "props": {
                       "BackgroundColor": "(R=1,G=1,B=1,A=1)",
                       "IsFocusable": "false",
                       "WidgetStyle.Normal.DrawAs": "RoundedBox",
-                      "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=0.055,G=0.07,B=0.095,A=1))",
-                      "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.22,G=0.27,B=0.34,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.04))",
+                      "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.16)),Width=1.0,RoundingType=FixedRadius)",
                       "WidgetStyle.Hovered.DrawAs": "RoundedBox",
-                      "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=0.11,G=0.14,B=0.19,A=1))",
-                      "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.75,G=0.6,B=0.3,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.09))",
+                      "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.6)),Width=1.0,RoundingType=FixedRadius)",
                       "WidgetStyle.Pressed.DrawAs": "RoundedBox",
-                      "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=0.03,G=0.04,B=0.055,A=1))",
-                      "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.75,G=0.6,B=0.3,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=0,G=0,B=0,A=0.2))",
+                      "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.6)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.Disabled.DrawAs": "RoundedBox",
+                      "WidgetStyle.Disabled.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.04))",
+                      "WidgetStyle.Disabled.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.16)),Width=1.0,RoundingType=FixedRadius)",
                       "WidgetStyle.NormalPadding": "(Left=12,Top=7,Right=12,Bottom=7)",
                       "WidgetStyle.PressedPadding": "(Left=12,Top=8,Right=12,Bottom=6)"
                     },
@@ -76,11 +92,56 @@
                     "children": [
                       {
                         "class": "/Script/UMG.TextBlock",
-                        "name": "ScopeButtonLabel",
+                        "name": "SelectPartsLabel",
                         "props": {
-                          "Text": "Create campaign layout",
+                          "Text": "Select parts",
                           "Font.Size": 14,
-                          "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                          "ColorAndOpacity": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
+                          "TextTransformPolicy": "ToUpper",
+                          "Justification": "Center"
+                        },
+                        "variable": true,
+                        "slot": {
+                          "HorizontalAlignment": "HAlign_Center",
+                          "VerticalAlignment": "VAlign_Center"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "class": "/Script/UMG.Button",
+                    "name": "ClearParts",
+                    "variable": true,
+                    "props": {
+                      "BackgroundColor": "(R=1,G=1,B=1,A=1)",
+                      "IsFocusable": "false",
+                      "WidgetStyle.Normal.DrawAs": "RoundedBox",
+                      "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.04))",
+                      "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.16)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.Hovered.DrawAs": "RoundedBox",
+                      "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.09))",
+                      "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.6)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.Pressed.DrawAs": "RoundedBox",
+                      "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=0,G=0,B=0,A=0.2))",
+                      "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.6)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.Disabled.DrawAs": "RoundedBox",
+                      "WidgetStyle.Disabled.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.04))",
+                      "WidgetStyle.Disabled.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.16)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.NormalPadding": "(Left=12,Top=7,Right=12,Bottom=7)",
+                      "WidgetStyle.PressedPadding": "(Left=12,Top=8,Right=12,Bottom=6)"
+                    },
+                    "slot": {
+                      "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+                    },
+                    "children": [
+                      {
+                        "class": "/Script/UMG.TextBlock",
+                        "name": "ClearPartsLabel",
+                        "props": {
+                          "Text": "Clear selection",
+                          "Font.Size": 14,
+                          "ColorAndOpacity": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
+                          "TextTransformPolicy": "ToUpper",
                           "Justification": "Center"
                         },
                         "variable": true,
@@ -92,41 +153,6 @@
                     ]
                   }
                 ]
-              },
-              {
-                "class": "/Script/UMG.TextBlock",
-                "name": "ScopeHint",
-                "props": {
-                  "Text": "Start with a copy of your current Den. Returning to Home removes the campaign copy; a backup is kept.",
-                  "Font.Size": 11,
-                  "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)",
-                  "AutoWrapText": "true"
-                },
-                "variable": true
-              },
-              {
-                "class": "/Script/UMG.TextBlock",
-                "name": "PresetsTitle",
-                "props": {
-                  "Text": "Presets",
-                  "Font.Size": 17,
-                  "ColorAndOpacity": "(SpecifiedColor=(R=1,G=0.78,B=0.35,A=1),ColorUseRule=UseColor_Specified)"
-                },
-                "variable": true,
-                "slot": {
-                  "Padding": "(Left=0,Top=16,Right=0,Bottom=4)"
-                }
-              },
-              {
-                "class": "/Script/UMG.TextBlock",
-                "name": "PresetsHint",
-                "props": {
-                  "Text": "Keep a named version of your Den. Apply a preset to preview it, then Save to keep it. Undo brings back the previous layout.",
-                  "Font.Size": 11,
-                  "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)",
-                  "AutoWrapText": "true"
-                },
-                "variable": true
               },
               {
                 "class": "/Script/UMG.HorizontalBox",
@@ -136,70 +162,69 @@
                 },
                 "children": [
                   {
-                    "class": "/Script/UMG.SizeBox",
-                    "name": "PresetNameBox",
+                    "class": "/Script/UMG.EditableTextBox",
+                    "name": "CompositionName",
+                    "variable": true,
                     "props": {
-                      "WidthOverride": 360,
-                      "bOverride_WidthOverride": "true"
+                      "WidgetStyle.ForegroundColor": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
+                      "WidgetStyle.FocusedForegroundColor": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
+                      "WidgetStyle.TextStyle.ColorAndOpacity": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
+                      "WidgetStyle.TextStyle.Font.Size": 14,
+                      "WidgetStyle.Padding": "(Left=12,Top=8,Right=10,Bottom=8)",
+                      "WidgetStyle.BackgroundImageNormal.DrawAs": "RoundedBox",
+                      "WidgetStyle.BackgroundImageNormal.TintColor": "(SpecifiedColor=(R=0,G=0,B=0,A=0.35))",
+                      "WidgetStyle.BackgroundImageNormal.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.12)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.BackgroundImageHovered.DrawAs": "RoundedBox",
+                      "WidgetStyle.BackgroundImageHovered.TintColor": "(SpecifiedColor=(R=0,G=0,B=0,A=0.35))",
+                      "WidgetStyle.BackgroundImageHovered.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.2)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.BackgroundImageFocused.DrawAs": "RoundedBox",
+                      "WidgetStyle.BackgroundImageFocused.TintColor": "(SpecifiedColor=(R=0,G=0,B=0,A=0.35))",
+                      "WidgetStyle.BackgroundImageFocused.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.8)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.BackgroundImageReadOnly.DrawAs": "RoundedBox",
+                      "WidgetStyle.BackgroundImageReadOnly.TintColor": "(SpecifiedColor=(R=0,G=0,B=0,A=0.35))",
+                      "WidgetStyle.BackgroundImageReadOnly.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.12)),Width=1.0,RoundingType=FixedRadius)",
+                      "HintText": "Composition name"
                     },
-                    "children": [
-                      {
-                        "class": "/Script/UMG.EditableTextBox",
-                        "name": "PresetName",
-                        "variable": true,
-                        "props": {
-                          "WidgetStyle.ForegroundColor": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
-                          "WidgetStyle.FocusedForegroundColor": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
-                          "WidgetStyle.TextStyle.ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
-                          "WidgetStyle.TextStyle.Font.Size": 14,
-                          "WidgetStyle.Padding": "(Left=12,Top=8,Right=12,Bottom=8)",
-                          "WidgetStyle.BackgroundImageNormal.DrawAs": "RoundedBox",
-                          "WidgetStyle.BackgroundImageNormal.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
-                          "WidgetStyle.BackgroundImageNormal.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
-                          "WidgetStyle.BackgroundImageHovered.DrawAs": "RoundedBox",
-                          "WidgetStyle.BackgroundImageHovered.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
-                          "WidgetStyle.BackgroundImageHovered.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
-                          "WidgetStyle.BackgroundImageFocused.DrawAs": "RoundedBox",
-                          "WidgetStyle.BackgroundImageFocused.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
-                          "WidgetStyle.BackgroundImageFocused.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.65,G=0.48,B=0.18,A=1)),Width=1.0,RoundingType=FixedRadius)",
-                          "WidgetStyle.BackgroundImageReadOnly.DrawAs": "RoundedBox",
-                          "WidgetStyle.BackgroundImageReadOnly.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
-                          "WidgetStyle.BackgroundImageReadOnly.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
-                          "HintText": "New preset name"
-                        }
-                      }
-                    ]
+                    "slot": {
+                      "Size": "(SizeRule=Fill,Value=1)",
+                      "Padding": "(Left=0,Top=0,Right=6,Bottom=0)",
+                      "VerticalAlignment": "VAlign_Center"
+                    }
                   },
                   {
                     "class": "/Script/UMG.Button",
-                    "name": "SavePreset",
+                    "name": "SaveComposition",
                     "variable": true,
                     "props": {
                       "BackgroundColor": "(R=1,G=1,B=1,A=1)",
                       "IsFocusable": "false",
                       "WidgetStyle.Normal.DrawAs": "RoundedBox",
-                      "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=0.055,G=0.07,B=0.095,A=1))",
-                      "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.22,G=0.27,B=0.34,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.04))",
+                      "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.16)),Width=1.0,RoundingType=FixedRadius)",
                       "WidgetStyle.Hovered.DrawAs": "RoundedBox",
-                      "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=0.11,G=0.14,B=0.19,A=1))",
-                      "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.75,G=0.6,B=0.3,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.09))",
+                      "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.6)),Width=1.0,RoundingType=FixedRadius)",
                       "WidgetStyle.Pressed.DrawAs": "RoundedBox",
-                      "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=0.03,G=0.04,B=0.055,A=1))",
-                      "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.75,G=0.6,B=0.3,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=0,G=0,B=0,A=0.2))",
+                      "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.6)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.Disabled.DrawAs": "RoundedBox",
+                      "WidgetStyle.Disabled.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.04))",
+                      "WidgetStyle.Disabled.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.16)),Width=1.0,RoundingType=FixedRadius)",
                       "WidgetStyle.NormalPadding": "(Left=12,Top=7,Right=12,Bottom=7)",
                       "WidgetStyle.PressedPadding": "(Left=12,Top=8,Right=12,Bottom=6)"
                     },
                     "slot": {
-                      "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+                      "VerticalAlignment": "VAlign_Center"
                     },
                     "children": [
                       {
                         "class": "/Script/UMG.TextBlock",
-                        "name": "SavePresetLabel",
+                        "name": "SaveCompositionLabel",
                         "props": {
-                          "Text": "Create preset",
+                          "Text": "Save",
                           "Font.Size": 14,
-                          "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                          "ColorAndOpacity": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
+                          "TextTransformPolicy": "ToUpper",
                           "Justification": "Center"
                         },
                         "variable": true,
@@ -213,41 +238,98 @@
                 ]
               },
               {
-                "class": "/Script/UMG.ListView",
-                "name": "Presets",
+                "class": "/Script/UMG.Border",
+                "name": "LibraryDivider",
+                "props": {
+                  "BrushColor": "(R=1,G=1,B=1,A=1)",
+                  "Background.DrawAs": "RoundedBox",
+                  "Background.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.14))",
+                  "Background.OutlineSettings": "(CornerRadii=(X=0,Y=0,Z=0,W=0),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
+                  "Padding": "(Left=0,Top=0,Right=0,Bottom=0)"
+                },
+                "slot": {
+                  "Padding": "(Left=0,Top=12,Right=0,Bottom=12)"
+                },
+                "children": [
+                  {
+                    "class": "/Script/UMG.SizeBox",
+                    "name": "LibraryDividerSize",
+                    "props": {
+                      "HeightOverride": 1,
+                      "bOverride_HeightOverride": "true"
+                    }
+                  }
+                ]
+              },
+              {
+                "class": "/Script/UMG.TextBlock",
+                "name": "LibraryTitle",
+                "props": {
+                  "Text": "Saved compositions",
+                  "Font.Size": 13,
+                  "ColorAndOpacity": "(SpecifiedColor=(R=0.386,G=0.423,B=0.479,A=1),ColorUseRule=UseColor_Specified)",
+                  "TextTransformPolicy": "ToUpper"
+                },
+                "variable": true
+              },
+              {
+                "class": "/Script/UMG.TileView",
+                "name": "Compositions",
                 "variable": true,
                 "props": {
                   "bIsFocusable": "false",
                   "SelectionMode": "Single",
-                  "EntryWidgetClass": "/DenDesignerGF/Editor/WBP_DenCatalogShelf"
+                  "EntryWidgetClass": "/DenDesignerGF/Editor/WBP_DenCatalogEntry",
+                  "EntryWidth": 212,
+                  "EntryHeight": 250,
+                  "ScrollBarStyle.Thickness": 4,
+                  "ScrollBarStyle.HorizontalBackgroundImage.DrawAs": "NoDrawType",
+                  "ScrollBarStyle.HorizontalTopSlotImage.DrawAs": "NoDrawType",
+                  "ScrollBarStyle.HorizontalBottomSlotImage.DrawAs": "NoDrawType",
+                  "ScrollBarStyle.VerticalBackgroundImage.DrawAs": "NoDrawType",
+                  "ScrollBarStyle.VerticalTopSlotImage.DrawAs": "NoDrawType",
+                  "ScrollBarStyle.VerticalBottomSlotImage.DrawAs": "NoDrawType",
+                  "ScrollBarStyle.NormalThumbImage.DrawAs": "RoundedBox",
+                  "ScrollBarStyle.NormalThumbImage.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.18))",
+                  "ScrollBarStyle.NormalThumbImage.OutlineSettings": "(CornerRadii=(X=2.0,Y=2.0,Z=2.0,W=2.0),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
+                  "ScrollBarStyle.HoveredThumbImage.DrawAs": "RoundedBox",
+                  "ScrollBarStyle.HoveredThumbImage.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.32))",
+                  "ScrollBarStyle.HoveredThumbImage.OutlineSettings": "(CornerRadii=(X=2.0,Y=2.0,Z=2.0,W=2.0),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
+                  "ScrollBarStyle.DraggedThumbImage.DrawAs": "RoundedBox",
+                  "ScrollBarStyle.DraggedThumbImage.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.45))",
+                  "ScrollBarStyle.DraggedThumbImage.OutlineSettings": "(CornerRadii=(X=2.0,Y=2.0,Z=2.0,W=2.0),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)"
                 },
                 "slot": {
-                  "Size": "(SizeRule=Fill,Value=1.0)"
+                  "Size": "(SizeRule=Fill,Value=1.0)",
+                  "Padding": "(Left=0,Top=4,Right=0,Bottom=4)"
                 }
               },
               {
                 "class": "/Script/UMG.HorizontalBox",
-                "name": "PresetRow",
+                "name": "LibraryRow",
                 "slot": {
                   "Padding": "(Left=0,Top=6,Right=0,Bottom=6)"
                 },
                 "children": [
                   {
                     "class": "/Script/UMG.Button",
-                    "name": "LoadPreset",
+                    "name": "LoadComposition",
                     "variable": true,
                     "props": {
                       "BackgroundColor": "(R=1,G=1,B=1,A=1)",
                       "IsFocusable": "false",
                       "WidgetStyle.Normal.DrawAs": "RoundedBox",
-                      "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=0.055,G=0.07,B=0.095,A=1))",
-                      "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.22,G=0.27,B=0.34,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.04))",
+                      "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.16)),Width=1.0,RoundingType=FixedRadius)",
                       "WidgetStyle.Hovered.DrawAs": "RoundedBox",
-                      "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=0.11,G=0.14,B=0.19,A=1))",
-                      "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.75,G=0.6,B=0.3,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.09))",
+                      "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.6)),Width=1.0,RoundingType=FixedRadius)",
                       "WidgetStyle.Pressed.DrawAs": "RoundedBox",
-                      "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=0.03,G=0.04,B=0.055,A=1))",
-                      "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.75,G=0.6,B=0.3,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=0,G=0,B=0,A=0.2))",
+                      "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.6)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.Disabled.DrawAs": "RoundedBox",
+                      "WidgetStyle.Disabled.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.04))",
+                      "WidgetStyle.Disabled.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.16)),Width=1.0,RoundingType=FixedRadius)",
                       "WidgetStyle.NormalPadding": "(Left=12,Top=7,Right=12,Bottom=7)",
                       "WidgetStyle.PressedPadding": "(Left=12,Top=8,Right=12,Bottom=6)"
                     },
@@ -257,11 +339,12 @@
                     "children": [
                       {
                         "class": "/Script/UMG.TextBlock",
-                        "name": "LoadPresetLabel",
+                        "name": "LoadCompositionLabel",
                         "props": {
-                          "Text": "Load selected",
+                          "Text": "Place selected",
                           "Font.Size": 14,
-                          "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                          "ColorAndOpacity": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
+                          "TextTransformPolicy": "ToUpper",
                           "Justification": "Center"
                         },
                         "variable": true,
@@ -274,20 +357,23 @@
                   },
                   {
                     "class": "/Script/UMG.Button",
-                    "name": "DeletePreset",
+                    "name": "DeleteComposition",
                     "variable": true,
                     "props": {
                       "BackgroundColor": "(R=1,G=1,B=1,A=1)",
                       "IsFocusable": "false",
                       "WidgetStyle.Normal.DrawAs": "RoundedBox",
-                      "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=0.055,G=0.07,B=0.095,A=1))",
-                      "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.22,G=0.27,B=0.34,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.04))",
+                      "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.16)),Width=1.0,RoundingType=FixedRadius)",
                       "WidgetStyle.Hovered.DrawAs": "RoundedBox",
-                      "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=0.11,G=0.14,B=0.19,A=1))",
-                      "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.75,G=0.6,B=0.3,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.09))",
+                      "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.6)),Width=1.0,RoundingType=FixedRadius)",
                       "WidgetStyle.Pressed.DrawAs": "RoundedBox",
-                      "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=0.03,G=0.04,B=0.055,A=1))",
-                      "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.75,G=0.6,B=0.3,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=0,G=0,B=0,A=0.2))",
+                      "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.6)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.Disabled.DrawAs": "RoundedBox",
+                      "WidgetStyle.Disabled.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.04))",
+                      "WidgetStyle.Disabled.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.16)),Width=1.0,RoundingType=FixedRadius)",
                       "WidgetStyle.NormalPadding": "(Left=12,Top=7,Right=12,Bottom=7)",
                       "WidgetStyle.PressedPadding": "(Left=12,Top=8,Right=12,Bottom=6)"
                     },
@@ -297,11 +383,12 @@
                     "children": [
                       {
                         "class": "/Script/UMG.TextBlock",
-                        "name": "DeletePresetLabel",
+                        "name": "DeleteCompositionLabel",
                         "props": {
                           "Text": "Delete selected",
                           "Font.Size": 14,
-                          "ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                          "ColorAndOpacity": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
+                          "TextTransformPolicy": "ToUpper",
                           "Justification": "Center"
                         },
                         "variable": true,
@@ -320,7 +407,7 @@
                 "props": {
                   "Text": "",
                   "Font.Size": 12,
-                  "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)",
+                  "ColorAndOpacity": "(SpecifiedColor=(R=0.386,G=0.423,B=0.479,A=1),ColorUseRule=UseColor_Specified)",
                   "AutoWrapText": "true"
                 },
                 "variable": true
@@ -440,7 +527,8 @@
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
             "TypefaceFontName": "DmBd",
-            "Size": "20"
+            "Size": "20",
+            "LetterSpacing": "0"
           }
         },
         {
@@ -457,7 +545,7 @@
         {
           "id": "font1",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font1check",
@@ -474,14 +562,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "13"
+            "TypefaceFontName": "Bold",
+            "Size": "16",
+            "LetterSpacing": "20"
           }
         },
         {
           "id": "font1widget",
           "kind": "get",
-          "var": "ScopeText"
+          "var": "SelectionCount"
         },
         {
           "id": "font1set",
@@ -492,7 +581,7 @@
         {
           "id": "font2",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font2check",
@@ -509,14 +598,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "14"
+            "TypefaceFontName": "Regular",
+            "Size": "12",
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font2widget",
           "kind": "get",
-          "var": "ScopeButtonLabel"
+          "var": "SelectionHint"
         },
         {
           "id": "font2set",
@@ -527,7 +617,7 @@
         {
           "id": "font3",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font3check",
@@ -544,14 +634,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Regular",
-            "Size": "11"
+            "TypefaceFontName": "Medium",
+            "Size": "14",
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font3widget",
           "kind": "get",
-          "var": "ScopeHint"
+          "var": "SelectPartsLabel"
         },
         {
           "id": "font3set",
@@ -579,14 +670,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Bold",
-            "Size": "17"
+            "TypefaceFontName": "Medium",
+            "Size": "14",
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font4widget",
           "kind": "get",
-          "var": "PresetsTitle"
+          "var": "ClearPartsLabel"
         },
         {
           "id": "font4set",
@@ -597,7 +689,7 @@
         {
           "id": "font5",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font5check",
@@ -614,14 +706,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Regular",
-            "Size": "11"
+            "TypefaceFontName": "Medium",
+            "Size": "14",
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font5widget",
           "kind": "get",
-          "var": "PresetsHint"
+          "var": "SaveCompositionLabel"
         },
         {
           "id": "font5set",
@@ -649,14 +742,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "14"
+            "TypefaceFontName": "Bold",
+            "Size": "13",
+            "LetterSpacing": "120"
           }
         },
         {
           "id": "font6widget",
           "kind": "get",
-          "var": "SavePresetLabel"
+          "var": "LibraryTitle"
         },
         {
           "id": "font6set",
@@ -685,13 +779,14 @@
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
             "TypefaceFontName": "Medium",
-            "Size": "14"
+            "Size": "14",
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font7widget",
           "kind": "get",
-          "var": "LoadPresetLabel"
+          "var": "LoadCompositionLabel"
         },
         {
           "id": "font7set",
@@ -720,13 +815,14 @@
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
             "TypefaceFontName": "Medium",
-            "Size": "14"
+            "Size": "14",
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font8widget",
           "kind": "get",
-          "var": "DeletePresetLabel"
+          "var": "DeleteCompositionLabel"
         },
         {
           "id": "font8set",
@@ -755,7 +851,8 @@
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
             "TypefaceFontName": "Regular",
-            "Size": "12"
+            "Size": "12",
+            "LetterSpacing": "0"
           }
         },
         {
@@ -820,7 +917,7 @@
           "font1.self"
         ],
         [
-          "font1.PrimaryFont",
+          "font1.SecondaryFont",
           "font1check.Object"
         ],
         [
@@ -828,11 +925,11 @@
           "font1valid.Condition"
         ],
         [
-          "font1.PrimaryFont",
+          "font1.SecondaryFont",
           "font1info.FontObject"
         ],
         [
-          "font1widget.ScopeText",
+          "font1widget.SelectionCount",
           "font1set.self"
         ],
         [
@@ -856,7 +953,7 @@
           "font2.self"
         ],
         [
-          "font2.SecondaryFont",
+          "font2.PrimaryFont",
           "font2check.Object"
         ],
         [
@@ -864,11 +961,11 @@
           "font2valid.Condition"
         ],
         [
-          "font2.SecondaryFont",
+          "font2.PrimaryFont",
           "font2info.FontObject"
         ],
         [
-          "font2widget.ScopeButtonLabel",
+          "font2widget.SelectionHint",
           "font2set.self"
         ],
         [
@@ -892,7 +989,7 @@
           "font3.self"
         ],
         [
-          "font3.PrimaryFont",
+          "font3.SecondaryFont",
           "font3check.Object"
         ],
         [
@@ -900,11 +997,11 @@
           "font3valid.Condition"
         ],
         [
-          "font3.PrimaryFont",
+          "font3.SecondaryFont",
           "font3info.FontObject"
         ],
         [
-          "font3widget.ScopeHint",
+          "font3widget.SelectPartsLabel",
           "font3set.self"
         ],
         [
@@ -940,7 +1037,7 @@
           "font4info.FontObject"
         ],
         [
-          "font4widget.PresetsTitle",
+          "font4widget.ClearPartsLabel",
           "font4set.self"
         ],
         [
@@ -964,7 +1061,7 @@
           "font5.self"
         ],
         [
-          "font5.PrimaryFont",
+          "font5.SecondaryFont",
           "font5check.Object"
         ],
         [
@@ -972,11 +1069,11 @@
           "font5valid.Condition"
         ],
         [
-          "font5.PrimaryFont",
+          "font5.SecondaryFont",
           "font5info.FontObject"
         ],
         [
-          "font5widget.PresetsHint",
+          "font5widget.SaveCompositionLabel",
           "font5set.self"
         ],
         [
@@ -1012,7 +1109,7 @@
           "font6info.FontObject"
         ],
         [
-          "font6widget.SavePresetLabel",
+          "font6widget.LibraryTitle",
           "font6set.self"
         ],
         [
@@ -1048,7 +1145,7 @@
           "font7info.FontObject"
         ],
         [
-          "font7widget.LoadPresetLabel",
+          "font7widget.LoadCompositionLabel",
           "font7set.self"
         ],
         [
@@ -1084,7 +1181,7 @@
           "font8info.FontObject"
         ],
         [
-          "font8widget.DeletePresetLabel",
+          "font8widget.DeleteCompositionLabel",
           "font8set.self"
         ],
         [
@@ -1145,162 +1242,204 @@
   "graph": {
     "nodes": [
       {
-        "id": "ScopeButton",
+        "id": "SelectParts",
         "kind": "bound_event",
-        "widget": "ScopeButton",
+        "widget": "SelectParts",
         "delegate": "OnClicked"
       },
       {
-        "id": "ScopeButton_event",
+        "id": "SelectParts_event",
         "kind": "call",
         "function": "self:Native_Event",
         "defaults": {
-          "Name": "scope"
+          "Name": "composition_select"
         }
       },
       {
-        "id": "SavePreset",
+        "id": "ClearParts",
         "kind": "bound_event",
-        "widget": "SavePreset",
+        "widget": "ClearParts",
         "delegate": "OnClicked"
       },
       {
-        "id": "SavePreset_event",
+        "id": "ClearParts_event",
         "kind": "call",
         "function": "self:Native_Event",
         "defaults": {
-          "Name": "save_preset"
+          "Name": "composition_clear"
         }
       },
       {
-        "id": "SavePreset_box",
+        "id": "SaveComposition",
+        "kind": "bound_event",
+        "widget": "SaveComposition",
+        "delegate": "OnClicked"
+      },
+      {
+        "id": "SaveComposition_event",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "save_composition"
+        }
+      },
+      {
+        "id": "SaveComposition_box",
         "kind": "get",
-        "var": "PresetName"
+        "var": "CompositionName"
       },
       {
-        "id": "SavePreset_text",
+        "id": "SaveComposition_text",
         "kind": "call",
         "function": "/Script/UMG.EditableTextBox:GetText"
       },
       {
-        "id": "PresetName",
+        "id": "CompositionName",
         "kind": "bound_event",
-        "widget": "PresetName",
+        "widget": "CompositionName",
         "delegate": "OnTextCommitted"
       },
       {
-        "id": "PresetName_event",
+        "id": "CompositionName_event",
         "kind": "call",
         "function": "self:Native_Event",
         "defaults": {
-          "Name": "save_preset"
+          "Name": "save_composition"
         }
       },
       {
-        "id": "presets",
+        "id": "name_enter",
+        "kind": "call",
+        "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ByteByte",
+        "defaults": {
+          "B": "1"
+        }
+      },
+      {
+        "id": "name_entered",
+        "kind": "branch"
+      },
+      {
+        "id": "compositions",
         "kind": "bound_event",
-        "widget": "Presets",
+        "widget": "Compositions",
         "delegate": "BP_OnItemClicked"
       },
       {
-        "id": "presets_cast",
+        "id": "compositions_cast",
         "kind": "cast",
         "class": "/DenDesignerGF/Editor/BP_DenCatalogItem"
       },
       {
-        "id": "presets_key",
+        "id": "compositions_key",
         "kind": "get",
         "var": "/DenDesignerGF/Editor/BP_DenCatalogItem:Key"
       },
       {
-        "id": "presets_event",
+        "id": "compositions_event",
         "kind": "call",
         "function": "self:Native_Event",
         "defaults": {
-          "Name": "preset"
+          "Name": "composition_card"
         }
       },
       {
-        "id": "LoadPreset",
+        "id": "LoadComposition",
         "kind": "bound_event",
-        "widget": "LoadPreset",
+        "widget": "LoadComposition",
         "delegate": "OnClicked"
       },
       {
-        "id": "LoadPreset_event",
+        "id": "LoadComposition_event",
         "kind": "call",
         "function": "self:Native_Event",
         "defaults": {
-          "Name": "load_preset"
+          "Name": "load_composition"
         }
       },
       {
-        "id": "DeletePreset",
+        "id": "DeleteComposition",
         "kind": "bound_event",
-        "widget": "DeletePreset",
+        "widget": "DeleteComposition",
         "delegate": "OnClicked"
       },
       {
-        "id": "DeletePreset_event",
+        "id": "DeleteComposition_event",
         "kind": "call",
         "function": "self:Native_Event",
         "defaults": {
-          "Name": "delete_preset"
+          "Name": "delete_composition"
         }
       }
     ],
     "links": [
       [
-        "ScopeButton.then",
-        "ScopeButton_event.execute"
+        "SelectParts.then",
+        "SelectParts_event.execute"
       ],
       [
-        "SavePreset.then",
-        "SavePreset_event.execute"
+        "ClearParts.then",
+        "ClearParts_event.execute"
       ],
       [
-        "SavePreset_box.PresetName",
-        "SavePreset_text.self"
+        "SaveComposition.then",
+        "SaveComposition_event.execute"
       ],
       [
-        "SavePreset_text.ReturnValue",
-        "SavePreset_event.Arg"
+        "SaveComposition_box.CompositionName",
+        "SaveComposition_text.self"
       ],
       [
-        "PresetName.then",
-        "PresetName_event.execute"
+        "SaveComposition_text.ReturnValue",
+        "SaveComposition_event.Arg"
       ],
       [
-        "PresetName.Text",
-        "PresetName_event.Arg"
+        "CompositionName.Text",
+        "CompositionName_event.Arg"
       ],
       [
-        "presets.then",
-        "presets_cast.execute"
+        "CompositionName.CommitMethod",
+        "name_enter.A"
       ],
       [
-        "presets.Item",
-        "presets_cast.Object"
+        "name_enter.ReturnValue",
+        "name_entered.Condition"
       ],
       [
-        "presets_cast.then",
-        "presets_event.execute"
+        "CompositionName.then",
+        "name_entered.execute"
       ],
       [
-        "presets_cast.AsBP Den Catalog Item",
-        "presets_key.self"
+        "name_entered.then",
+        "CompositionName_event.execute"
       ],
       [
-        "presets_key.Key",
-        "presets_event.Arg"
+        "compositions.then",
+        "compositions_cast.execute"
       ],
       [
-        "LoadPreset.then",
-        "LoadPreset_event.execute"
+        "compositions.Item",
+        "compositions_cast.Object"
       ],
       [
-        "DeletePreset.then",
-        "DeletePreset_event.execute"
+        "compositions_cast.then",
+        "compositions_event.execute"
+      ],
+      [
+        "compositions_cast.AsBP Den Catalog Item",
+        "compositions_key.self"
+      ],
+      [
+        "compositions_key.Key",
+        "compositions_event.Arg"
+      ],
+      [
+        "LoadComposition.then",
+        "LoadComposition_event.execute"
+      ],
+      [
+        "DeleteComposition.then",
+        "DeleteComposition_event.execute"
       ]
     ]
   },

@@ -9,11 +9,14 @@
         "class": "/Script/UMG.Border",
         "name": "Panel",
         "props": {
-          "BrushColor": "(R=0.012,G=0.016,B=0.024,A=1)",
-          "Padding": "(Left=14,Top=12,Right=14,Bottom=12)"
+          "BrushColor": "(R=1,G=1,B=1,A=1)",
+          "Background.DrawAs": "RoundedBox",
+          "Background.TintColor": "(SpecifiedColor=(R=0.0027,G=0.003,B=0.004,A=0.88))",
+          "Background.OutlineSettings": "(CornerRadii=(X=8,Y=8,Z=8,W=8),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.1)),Width=1.0,RoundingType=FixedRadius)",
+          "Padding": "(Left=14,Top=14,Right=14,Bottom=12)"
         },
         "slot": {
-          "LayoutData": "(Anchors=(Minimum=(X=1,Y=0),Maximum=(X=1,Y=1)),Offsets=(Left=-756,Top=88,Right=736,Bottom=88))"
+          "LayoutData": "(Anchors=(Minimum=(X=0,Y=0),Maximum=(X=0,Y=1)),Offsets=(Left=12,Top=144,Right=470,Bottom=58))"
         },
         "children": [
           {
@@ -26,37 +29,80 @@
                 "props": {
                   "Text": "Catalog",
                   "Font.Size": 20,
-                  "ColorAndOpacity": "(SpecifiedColor=(R=1,G=0.78,B=0.35,A=1),ColorUseRule=UseColor_Specified)"
+                  "ColorAndOpacity": "(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=1),ColorUseRule=UseColor_Specified)"
                 },
-                "variable": true
+                "variable": true,
+                "slot": {
+                  "Padding": "(Left=0,Top=0,Right=0,Bottom=10)"
+                }
               },
               {
                 "class": "/Script/UMG.EditableTextBox",
                 "name": "Search",
                 "variable": true,
                 "props": {
-                  "WidgetStyle.ForegroundColor": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
-                  "WidgetStyle.FocusedForegroundColor": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
-                  "WidgetStyle.TextStyle.ColorAndOpacity": "(SpecifiedColor=(R=0.92,G=0.94,B=0.97,A=1),ColorUseRule=UseColor_Specified)",
+                  "WidgetStyle.ForegroundColor": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
+                  "WidgetStyle.FocusedForegroundColor": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
+                  "WidgetStyle.TextStyle.ColorAndOpacity": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
                   "WidgetStyle.TextStyle.Font.Size": 14,
-                  "WidgetStyle.Padding": "(Left=12,Top=8,Right=12,Bottom=8)",
+                  "WidgetStyle.Padding": "(Left=12,Top=8,Right=10,Bottom=8)",
                   "WidgetStyle.BackgroundImageNormal.DrawAs": "RoundedBox",
-                  "WidgetStyle.BackgroundImageNormal.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
-                  "WidgetStyle.BackgroundImageNormal.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                  "WidgetStyle.BackgroundImageNormal.TintColor": "(SpecifiedColor=(R=0,G=0,B=0,A=0.35))",
+                  "WidgetStyle.BackgroundImageNormal.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.12)),Width=1.0,RoundingType=FixedRadius)",
                   "WidgetStyle.BackgroundImageHovered.DrawAs": "RoundedBox",
-                  "WidgetStyle.BackgroundImageHovered.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
-                  "WidgetStyle.BackgroundImageHovered.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                  "WidgetStyle.BackgroundImageHovered.TintColor": "(SpecifiedColor=(R=0,G=0,B=0,A=0.35))",
+                  "WidgetStyle.BackgroundImageHovered.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.2)),Width=1.0,RoundingType=FixedRadius)",
                   "WidgetStyle.BackgroundImageFocused.DrawAs": "RoundedBox",
-                  "WidgetStyle.BackgroundImageFocused.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
-                  "WidgetStyle.BackgroundImageFocused.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.65,G=0.48,B=0.18,A=1)),Width=1.0,RoundingType=FixedRadius)",
+                  "WidgetStyle.BackgroundImageFocused.TintColor": "(SpecifiedColor=(R=0,G=0,B=0,A=0.35))",
+                  "WidgetStyle.BackgroundImageFocused.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.8)),Width=1.0,RoundingType=FixedRadius)",
                   "WidgetStyle.BackgroundImageReadOnly.DrawAs": "RoundedBox",
-                  "WidgetStyle.BackgroundImageReadOnly.TintColor": "(SpecifiedColor=(R=0.025,G=0.033,B=0.046,A=1))",
-                  "WidgetStyle.BackgroundImageReadOnly.OutlineSettings": "(CornerRadii=(X=3,Y=3,Z=3,W=3),Color=(SpecifiedColor=(R=0.13,G=0.16,B=0.21,A=1)),Width=1.0,RoundingType=FixedRadius)",
-                  "HintText": "Search props\u2026"
+                  "WidgetStyle.BackgroundImageReadOnly.TintColor": "(SpecifiedColor=(R=0,G=0,B=0,A=0.35))",
+                  "WidgetStyle.BackgroundImageReadOnly.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.12)),Width=1.0,RoundingType=FixedRadius)",
+                  "HintText": "Search props, packs, tags\u2026"
                 },
                 "slot": {
-                  "Padding": "(Left=0,Top=14,Right=0,Bottom=14)"
+                  "Padding": "(Left=0,Top=0,Right=0,Bottom=10)"
                 }
+              },
+              {
+                "class": "/Script/UMG.SizeBox",
+                "name": "ShelfBox",
+                "props": {
+                  "HeightOverride": 42,
+                  "bOverride_HeightOverride": "true"
+                },
+                "slot": {
+                  "Padding": "(Left=0,Top=0,Right=0,Bottom=12)"
+                },
+                "children": [
+                  {
+                    "class": "/Script/UMG.ListView",
+                    "name": "Shelves",
+                    "variable": true,
+                    "props": {
+                      "bIsFocusable": "false",
+                      "SelectionMode": "Single",
+                      "EntryWidgetClass": "/DenDesignerGF/Editor/WBP_DenCatalogChip",
+                      "Orientation": "Orient_Horizontal",
+                      "ScrollBarStyle.Thickness": 3,
+                      "ScrollBarStyle.HorizontalBackgroundImage.DrawAs": "NoDrawType",
+                      "ScrollBarStyle.HorizontalTopSlotImage.DrawAs": "NoDrawType",
+                      "ScrollBarStyle.HorizontalBottomSlotImage.DrawAs": "NoDrawType",
+                      "ScrollBarStyle.VerticalBackgroundImage.DrawAs": "NoDrawType",
+                      "ScrollBarStyle.VerticalTopSlotImage.DrawAs": "NoDrawType",
+                      "ScrollBarStyle.VerticalBottomSlotImage.DrawAs": "NoDrawType",
+                      "ScrollBarStyle.NormalThumbImage.DrawAs": "RoundedBox",
+                      "ScrollBarStyle.NormalThumbImage.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.18))",
+                      "ScrollBarStyle.NormalThumbImage.OutlineSettings": "(CornerRadii=(X=1.5,Y=1.5,Z=1.5,W=1.5),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
+                      "ScrollBarStyle.HoveredThumbImage.DrawAs": "RoundedBox",
+                      "ScrollBarStyle.HoveredThumbImage.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.32))",
+                      "ScrollBarStyle.HoveredThumbImage.OutlineSettings": "(CornerRadii=(X=1.5,Y=1.5,Z=1.5,W=1.5),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
+                      "ScrollBarStyle.DraggedThumbImage.DrawAs": "RoundedBox",
+                      "ScrollBarStyle.DraggedThumbImage.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.45))",
+                      "ScrollBarStyle.DraggedThumbImage.OutlineSettings": "(CornerRadii=(X=1.5,Y=1.5,Z=1.5,W=1.5),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)"
+                    }
+                  }
+                ]
               },
               {
                 "class": "/Script/UMG.TextBlock",
@@ -64,70 +110,55 @@
                 "props": {
                   "Text": "",
                   "Font.Size": 14,
-                  "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)",
+                  "ColorAndOpacity": "(SpecifiedColor=(R=0.386,G=0.423,B=0.479,A=1),ColorUseRule=UseColor_Specified)",
                   "AutoWrapText": "true"
                 },
                 "variable": true
               },
               {
-                "class": "/Script/UMG.HorizontalBox",
-                "name": "Lists",
-                "slot": {
-                  "Size": "(SizeRule=Fill,Value=1.0)"
+                "class": "/Script/UMG.TileView",
+                "name": "Items",
+                "variable": true,
+                "props": {
+                  "bIsFocusable": "false",
+                  "SelectionMode": "Single",
+                  "EntryWidgetClass": "/DenDesignerGF/Editor/WBP_DenCatalogEntry",
+                  "EntryWidth": 212,
+                  "EntryHeight": 250,
+                  "ScrollBarStyle.Thickness": 4,
+                  "ScrollBarStyle.HorizontalBackgroundImage.DrawAs": "NoDrawType",
+                  "ScrollBarStyle.HorizontalTopSlotImage.DrawAs": "NoDrawType",
+                  "ScrollBarStyle.HorizontalBottomSlotImage.DrawAs": "NoDrawType",
+                  "ScrollBarStyle.VerticalBackgroundImage.DrawAs": "NoDrawType",
+                  "ScrollBarStyle.VerticalTopSlotImage.DrawAs": "NoDrawType",
+                  "ScrollBarStyle.VerticalBottomSlotImage.DrawAs": "NoDrawType",
+                  "ScrollBarStyle.NormalThumbImage.DrawAs": "RoundedBox",
+                  "ScrollBarStyle.NormalThumbImage.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.18))",
+                  "ScrollBarStyle.NormalThumbImage.OutlineSettings": "(CornerRadii=(X=2.0,Y=2.0,Z=2.0,W=2.0),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
+                  "ScrollBarStyle.HoveredThumbImage.DrawAs": "RoundedBox",
+                  "ScrollBarStyle.HoveredThumbImage.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.32))",
+                  "ScrollBarStyle.HoveredThumbImage.OutlineSettings": "(CornerRadii=(X=2.0,Y=2.0,Z=2.0,W=2.0),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
+                  "ScrollBarStyle.DraggedThumbImage.DrawAs": "RoundedBox",
+                  "ScrollBarStyle.DraggedThumbImage.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.45))",
+                  "ScrollBarStyle.DraggedThumbImage.OutlineSettings": "(CornerRadii=(X=2.0,Y=2.0,Z=2.0,W=2.0),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)"
                 },
-                "children": [
-                  {
-                    "class": "/Script/UMG.SizeBox",
-                    "name": "ShelfBox",
-                    "props": {
-                      "WidthOverride": 200,
-                      "bOverride_WidthOverride": "true"
-                    },
-                    "slot": {
-                      "Padding": "(Left=0,Top=0,Right=8,Bottom=0)"
-                    },
-                    "children": [
-                      {
-                        "class": "/Script/UMG.ListView",
-                        "name": "Shelves",
-                        "variable": true,
-                        "props": {
-                          "bIsFocusable": "false",
-                          "SelectionMode": "Single",
-                          "EntryWidgetClass": "/DenDesignerGF/Editor/WBP_DenCatalogShelf"
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "class": "/Script/UMG.TileView",
-                    "name": "Items",
-                    "variable": true,
-                    "props": {
-                      "bIsFocusable": "false",
-                      "SelectionMode": "Single",
-                      "EntryWidgetClass": "/DenDesignerGF/Editor/WBP_DenCatalogEntry",
-                      "EntryWidth": 160,
-                      "EntryHeight": 226
-                    },
-                    "slot": {
-                      "Size": "(SizeRule=Fill,Value=1.0)"
-                    }
-                  }
-                ]
+                "slot": {
+                  "Size": "(SizeRule=Fill,Value=1.0)",
+                  "Padding": "(Left=0,Top=4,Right=0,Bottom=4)"
+                }
               },
               {
                 "class": "/Script/UMG.TextBlock",
                 "name": "Footer",
                 "props": {
                   "Text": "",
-                  "Font.Size": 11,
-                  "ColorAndOpacity": "(SpecifiedColor=(R=0.62,G=0.67,B=0.74,A=1),ColorUseRule=UseColor_Specified)",
+                  "Font.Size": 12,
+                  "ColorAndOpacity": "(SpecifiedColor=(R=0.386,G=0.423,B=0.479,A=1),ColorUseRule=UseColor_Specified)",
                   "AutoWrapText": "true"
                 },
                 "variable": true,
                 "slot": {
-                  "Padding": "(Left=0,Top=8,Right=0,Bottom=0)"
+                  "Padding": "(Left=0,Top=6,Right=0,Bottom=0)"
                 }
               }
             ]
@@ -245,7 +276,8 @@
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
             "TypefaceFontName": "DmBd",
-            "Size": "20"
+            "Size": "20",
+            "LetterSpacing": "0"
           }
         },
         {
@@ -280,7 +312,8 @@
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
             "TypefaceFontName": "Regular",
-            "Size": "14"
+            "Size": "14",
+            "LetterSpacing": "0"
           }
         },
         {
@@ -315,7 +348,8 @@
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
             "TypefaceFontName": "Regular",
-            "Size": "11"
+            "Size": "12",
+            "LetterSpacing": "0"
           }
         },
         {

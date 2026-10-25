@@ -25,10 +25,10 @@ def sha(path):
 
 
 def inputs(root):
-    paths = [DESCRIPTOR, Path("unreal/scripts/build_gf.py"),
-             Path("tools/build/build_gf.sh"), Path("tools/build/gf_build_info.py")]
+    paths = [DESCRIPTOR, Path("unreal/scripts/build_gf.py"), Path("unreal/scripts/editor_icons.py"),
+             Path("tools/build/build_gf.sh"), Path("tools/build/render_icons.sh"), Path("tools/build/gf_build_info.py")]
     for folder, pattern in [("unreal/specs", "*.py"), ("unreal/data", "*.json"),
-                            ("unreal/generated/runtime", "*.json")]:
+                            ("unreal/generated/runtime", "*.json"), ("unreal/icons", "*.svg")]:
         paths.extend(p.relative_to(root) for p in sorted((root / folder).glob(pattern)))
     return {p.as_posix(): sha(root / p) for p in sorted(paths)}
 
@@ -46,6 +46,9 @@ def inspect(root):
     expected = {f"../../../SWZeroCompany/Mods/{PLUGIN}/Content/{s['path'].removeprefix('/'+PLUGIN+'/')}.uasset"
                 for s in specs}
     expected.add(f"../../../SWZeroCompany/Mods/{PLUGIN}/Content/{PLUGIN}.uasset")
+    # Icon textures are imported by build_gf.py rather than authored from specs.
+    expected |= {f"../../../SWZeroCompany/Mods/{PLUGIN}/Content/Editor/Icons/T_Icon_{p.stem}.uasset"
+                 for p in (root / "unreal/icons").glob("*.svg")}
     require(all(s["path"].startswith("/" + PLUGIN + "/") for s in specs), "Unexpected asset namespace")
     logs = root / "dist/build/runtime-logs"
     entries = lambda text: set(re.findall(r'Display: "([^"]+)" offset:', text))

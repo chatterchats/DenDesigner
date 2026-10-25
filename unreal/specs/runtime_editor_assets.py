@@ -14,7 +14,7 @@ BUS=ROOT+'BP_DenEditorBus'
 FONT='/Script/Engine.Font'
 RIG=UIROOT+'BP_DenEditorRig'
 TOOLBAR=UIROOT+'WBP_DenToolbar'
-WIDGETS=['WBP_DenToolbar','WBP_DenCatalogEntry','WBP_DenCatalogShelf','WBP_DenCatalog','WBP_DenLayouts','WBP_DenStoreroom','WBP_DenTransform','WBP_DenSettings','WBP_DenCompositions']
+WIDGETS=['WBP_DenToolbar','WBP_DenCatalogEntry','WBP_DenCatalogShelf','WBP_DenCatalogChip','WBP_DenCatalog','WBP_DenLayouts','WBP_DenStoreroom','WBP_DenTransform','WBP_DenSettings','WBP_DenCompositions']
 WIDGET='/Script/UMG.Widget'
 
 def opening_key():
@@ -144,7 +144,7 @@ def bridge(name):
 def font_roles(tree,in_button=False):
     if tree.get('class')=='/Script/UMG.TextBlock':
         props=tree['props'];size=props.get('Font.Size',12);color=props.get('ColorAndOpacity')
-        role='button' if in_button else ('title' if size>=20 else 'heading') if color==editor.GOLD else 'hint' if color==editor.DIM else 'body'
+        role=tree.get('role') or ('button' if in_button else ('title' if size>=20 else 'heading') if color==editor.GOLD else 'hint' if color==editor.DIM else 'body')
         yield tree['name'],role,size
     for child in tree.get('children',[]):yield from font_roles(child,in_button or tree.get('class')=='/Script/UMG.Button')
 
@@ -153,13 +153,14 @@ def style(tree):
     g=Graph();g.get('bus','EditorBus');branch(g,'valid',validity(g,'check','bus.EditorBus'))
     g.chain('entry','valid')
     previous='valid'
-    roles={'title':('TitleFont','DmBd'),'heading':('SecondaryFont','Bold'),'button':('SecondaryFont','Medium'),
-           'body':('PrimaryFont','Medium'),'hint':('PrimaryFont','Regular')}
+    # (font, typeface, letter spacing in 1/1000 em): capitals in labels and buttons are spaced out.
+    roles={'title':('TitleFont','DmBd',0),'heading':('SecondaryFont','Bold',20),'label':('SecondaryFont','Bold',120),
+           'button':('SecondaryFont','Medium',70),'body':('PrimaryFont','Medium',0),'hint':('PrimaryFont','Regular',0)}
     for i,(widget,role,size) in enumerate(font_roles(tree)):
-        field,face=roles[role];name='font'+str(i)
+        field,face,spacing=roles[role];name='font'+str(i)
         g.get(name,BUS+':'+field);g.wire(('bus.EditorBus',name+'.self'))
         branch(g,name+'valid',validity(g,name+'check',name+'.'+field))
-        g.node(name+'info','make_struct',struct='/Script/SlateCore.SlateFontInfo',defaults={'TypefaceFontName':face,'Size':str(size)})
+        g.node(name+'info','make_struct',struct='/Script/SlateCore.SlateFontInfo',defaults={'TypefaceFontName':face,'Size':str(size),'LetterSpacing':str(spacing)})
         g.wire((name+'.'+field,name+'info.FontObject'));g.get(name+'widget',widget)
         call(g,name+'set','/Script/UMG.TextBlock:SetFont',{'self':name+'widget.'+widget,'InFontInfo':name+'info.SlateFontInfo'})
         g.chain(previous,name+'valid',name+'set')
@@ -171,36 +172,22 @@ def style(tree):
 def convert(source):
     value=copy.deepcopy(source)
     def expose_panels(node):
-        if node.get('name') in ['Panel','Feedback','ScopeHint']:node['variable']=True
+        if node.get('name') in ['Panel','Feedback','ScopeHint','LibraryTabs']:node['variable']=True
         for child in node.get('children',[]):expose_panels(child)
     if 'tree' in value:expose_panels(value['tree'])
     name=value['path'].rsplit('/',1)[-1]
-    if name=='WBP_DenToolbar':
-        def add_settings(node):
-            if node.get('name')=='NavigationRight':
-                button=copy.deepcopy(next(b for b in node['children'] if b['name']=='Help'))
-                button['name']='Settings';button['children'][0]['name']='SettingsLabel';button['children'][0]['props']['Text']='Settings'
-                node['children'].insert(2,button)
-            for child in node.get('children',[]):add_settings(child)
-        add_settings(value['tree'])
-        def add_compositions(node):
-            if node.get('name')=='NavigationLeft':
-                button=copy.deepcopy(next(b for b in node['children'] if b['name']=='Layouts'))
-                button['name']='Compositions';button['children'][0]['name']='CompositionsLabel';button['children'][0]['props']['Text']='Compositions'
-                node['children'].append(button)
-            for child in node.get('children',[]):add_compositions(child)
-        add_compositions(value['tree'])
-        value['graph']['nodes'] += [dict(id='Compositions',kind='bound_event',widget='Compositions',delegate='OnClicked'),dict(id='CompositionsEvent',kind='call',function='self:Native_Event',defaults={'Name':'compositions'})]
-        value['graph']['links'].append(['Compositions.then','CompositionsEvent.execute'])
-        value['graph']['nodes'] += [dict(id='Settings',kind='bound_event',widget='Settings',delegate='OnClicked'),dict(id='SettingsEvent',kind='call',function='self:Native_Event',defaults={'Name':'settings'})]
-        value['graph']['links'].append(['Settings.then','SettingsEvent.execute'])
     if value['kind'] in ['widget','blueprint']:
         value.setdefault('variables',[]).append(v('EditorBus','object:'+BUS))
         functions=[]
         for fn in value.get('functions',[]):
             if fn['name'] in ['Native_Action','Native_Vector','Native_Event']:functions.append(bridge(fn['name']))
             else:functions.append(fn)
-        if value['kind']=='widget':functions.append(style(value['tree']))
+        if value['kind']=='widget':
+            functions.append(style(value['tree']))
+            def strip_roles(node):
+                node.pop('role',None)
+                for child in node.get('children',[]):strip_roles(child)
+            strip_roles(value['tree'])
         value['functions']=functions
     if name=='BP_DenCatalogItem':
         value['variables'] += [v('AssetPath','string'),v('ThumbnailDocument','object:/DenDesignerGF/Runtime/BP_DenLayoutSave')]
@@ -210,7 +197,7 @@ def convert(source):
         value['functions'].append(refresh_tile())
     if name=='WBP_DenTransform':
         def constrain(node):
-            if node.get('name')=='Selection':node.setdefault('props',{})['WrapTextAt']=320
+            if node.get('name')=='Selection':node.setdefault('props',{})['WrapTextAt']=editor.INSPECTOR_WIDTH-36
             for child in node.get('children',[]):constrain(child)
         constrain(value['tree'])
         # Queue the focus return: Slate clears focus after the commit callback,
@@ -250,7 +237,7 @@ def convert(source):
                                [event+'released.then',event+'typing.execute'],['inputbus.EditorBus',event+'typing.self'],
                                [event+'typing.then',event+'textfocus.execute'],[event+'typing.Typing',event+'textfocus.Condition'],
                                [event+'textfocus.else',target+'.execute']]
-    if name in ['WBP_DenCatalogEntry','WBP_DenCatalogShelf']:
+    if name in ['WBP_DenCatalogEntry','WBP_DenCatalogShelf','WBP_DenCatalogChip']:
         # Recycled entries obtain the bus (and loaded font references) from the
         # item assigned to them, without retaining external widget/object pointers.
         graph=value['graph'];graph['nodes'] += [
@@ -272,7 +259,7 @@ def specs():
     yield '20_BP_DenEditorBus',bus_spec()
     from runtime_settings_widget import spec as settings_spec
     from runtime_composition_widget import spec as composition_spec
-    sources=editor.input_actions()+[editor.mapping_context(),editor.rig(),editor.toolbar(),editor.catalog_item(),editor.catalog_entry(),editor.catalog_shelf(),editor.catalog(),editor.layouts(),editor.storeroom(),editor.transform(),settings_spec(),composition_spec()]
+    sources=editor.input_actions()+[editor.mapping_context(),editor.rig(),editor.toolbar(),editor.catalog_item(),editor.catalog_entry(),editor.catalog_shelf(),editor.catalog_chip(),editor.catalog(),editor.layouts(),editor.storeroom(),editor.transform(),settings_spec(),composition_spec()]
     for index,source in enumerate(sources,1):
         spec=convert(source)
         assert spec['path'].startswith('/DenDesignerGF/')

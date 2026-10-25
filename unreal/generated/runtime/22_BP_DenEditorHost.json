@@ -123,6 +123,10 @@
       "type": "string"
     },
     {
+      "name": "HUDHidden",
+      "type": "bool"
+    },
+    {
       "name": "CompositionParts",
       "type": "struct:/DenDesignerGF/Runtime/ST_DenCompositionPick[]"
     },
@@ -3127,6 +3131,12 @@
           "defaults": {}
         },
         {
+          "id": "hud",
+          "kind": "call",
+          "function": "self:HideGameHUD",
+          "defaults": {}
+        },
+        {
           "id": "yes",
           "kind": "set",
           "var": "local:OK",
@@ -3551,6 +3561,10 @@
         ],
         [
           "recovery.then",
+          "hud.execute"
+        ],
+        [
+          "hud.then",
           "yes.execute"
         ],
         [
@@ -3682,6 +3696,12 @@
           "id": "mappings",
           "kind": "call",
           "function": "self:ReleaseEditorMappings",
+          "defaults": {}
+        },
+        {
+          "id": "hud",
+          "kind": "call",
+          "function": "self:RestoreGameHUD",
           "defaults": {}
         },
         {
@@ -4130,6 +4150,10 @@
       "links": [
         [
           "entry.then",
+          "hud.execute"
+        ],
+        [
+          "hud.then",
           "compositionparts.execute"
         ],
         [
@@ -4833,6 +4857,238 @@
         [
           "show.then",
           "ui.execute"
+        ]
+      ]
+    },
+    {
+      "name": "HideGameHUD",
+      "nodes": [
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "subsystem",
+          "kind": "call",
+          "function": "/Script/BitReactorGame.BRG_CinematicSubsystem:GetCinematicSubsystem",
+          "defaults": {}
+        },
+        {
+          "id": "subvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "busy",
+          "kind": "call",
+          "function": "/Script/BitReactorGame.BRG_CinematicSubsystem:IsAnyCinematicModeActive",
+          "defaults": {}
+        },
+        {
+          "id": "getHUDHidden",
+          "kind": "get",
+          "var": "HUDHidden"
+        },
+        {
+          "id": "notyet",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "free",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "allowed0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "available",
+          "kind": "branch"
+        },
+        {
+          "id": "request",
+          "kind": "call",
+          "function": "/Script/BitReactorGame.BRG_CinematicSubsystem:LegacyCinematicModeRequest",
+          "defaults": {
+            "bInCinematicMode": "true",
+            "bHidePlayer": "false",
+            "bAffectsHUD": "true",
+            "bAffectsMovement": "false",
+            "bAffectsTurning": "false"
+          }
+        },
+        {
+          "id": "hidden",
+          "kind": "set",
+          "var": "HUDHidden",
+          "defaults": {
+            "HUDHidden": "true"
+          }
+        }
+      ],
+      "links": [
+        [
+          "self.self",
+          "subsystem.WorldContextObject"
+        ],
+        [
+          "subsystem.ReturnValue",
+          "subvalid.Object"
+        ],
+        [
+          "subvalid.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "subsystem.ReturnValue",
+          "busy.self"
+        ],
+        [
+          "getHUDHidden.HUDHidden",
+          "notyet.A"
+        ],
+        [
+          "busy.ReturnValue",
+          "free.A"
+        ],
+        [
+          "free.ReturnValue",
+          "allowed0.A"
+        ],
+        [
+          "notyet.ReturnValue",
+          "allowed0.B"
+        ],
+        [
+          "allowed0.ReturnValue",
+          "available.Condition"
+        ],
+        [
+          "subsystem.ReturnValue",
+          "request.self"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "available.execute"
+        ],
+        [
+          "available.then",
+          "request.execute"
+        ],
+        [
+          "request.then",
+          "hidden.execute"
+        ]
+      ]
+    },
+    {
+      "name": "RestoreGameHUD",
+      "nodes": [
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "subsystem",
+          "kind": "call",
+          "function": "/Script/BitReactorGame.BRG_CinematicSubsystem:GetCinematicSubsystem",
+          "defaults": {}
+        },
+        {
+          "id": "subvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "getHUDHidden",
+          "kind": "get",
+          "var": "HUDHidden"
+        },
+        {
+          "id": "hidden",
+          "kind": "branch"
+        },
+        {
+          "id": "release",
+          "kind": "call",
+          "function": "/Script/BitReactorGame.BRG_CinematicSubsystem:LegacyCinematicModeRequest",
+          "defaults": {
+            "bInCinematicMode": "false",
+            "bHidePlayer": "false",
+            "bAffectsHUD": "false",
+            "bAffectsMovement": "false",
+            "bAffectsTurning": "false"
+          }
+        },
+        {
+          "id": "shown",
+          "kind": "set",
+          "var": "HUDHidden",
+          "defaults": {
+            "HUDHidden": "false"
+          }
+        }
+      ],
+      "links": [
+        [
+          "self.self",
+          "subsystem.WorldContextObject"
+        ],
+        [
+          "subsystem.ReturnValue",
+          "subvalid.Object"
+        ],
+        [
+          "subvalid.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "getHUDHidden.HUDHidden",
+          "hidden.Condition"
+        ],
+        [
+          "subsystem.ReturnValue",
+          "release.self"
+        ],
+        [
+          "entry.then",
+          "hidden.execute"
+        ],
+        [
+          "hidden.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "release.execute"
+        ],
+        [
+          "release.then",
+          "shown.execute"
+        ],
+        [
+          "valid.else",
+          "shown.execute"
         ]
       ]
     },
@@ -14984,6 +15240,212 @@
       ]
     },
     {
+      "name": "StyleEditorToggle",
+      "inputs": [
+        {
+          "name": "Back",
+          "type": "object:/Script/UMG.Border"
+        },
+        {
+          "name": "Icon",
+          "type": "object:/Script/UMG.Image"
+        },
+        {
+          "name": "Label",
+          "type": "object:/Script/UMG.TextBlock"
+        },
+        {
+          "name": "On",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "backcolor",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectColor",
+          "defaults": {
+            "A": "(R=0.888,G=0.479,B=0.07,A=0.16)",
+            "B": "(R=1,G=1,B=1,A=0)"
+          }
+        },
+        {
+          "id": "tint",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectColor",
+          "defaults": {
+            "A": "(R=0.888,G=0.479,B=0.07,A=1)",
+            "B": "(R=0.584,G=0.611,B=0.651,A=1)"
+          }
+        },
+        {
+          "id": "Backcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "Backvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "Backset",
+          "kind": "call",
+          "function": "/Script/UMG.Border:SetBrushColor",
+          "defaults": {}
+        },
+        {
+          "id": "Backnext",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "Iconcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "Iconvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "Iconset",
+          "kind": "call",
+          "function": "/Script/UMG.Image:SetColorAndOpacity",
+          "defaults": {}
+        },
+        {
+          "id": "Iconnext",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "slate",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateColor"
+        },
+        {
+          "id": "labelcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "labelvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "labelset",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetColorAndOpacity",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "entry.On",
+          "backcolor.bPickA"
+        ],
+        [
+          "entry.On",
+          "tint.bPickA"
+        ],
+        [
+          "entry.Back",
+          "Backcheck.Object"
+        ],
+        [
+          "Backcheck.ReturnValue",
+          "Backvalid.Condition"
+        ],
+        [
+          "entry.Back",
+          "Backset.self"
+        ],
+        [
+          "backcolor.ReturnValue",
+          "Backset.InBrushColor"
+        ],
+        [
+          "entry.then",
+          "Backvalid.execute"
+        ],
+        [
+          "Backvalid.then",
+          "Backset.execute"
+        ],
+        [
+          "Backset.then",
+          "Backnext.execute"
+        ],
+        [
+          "Backvalid.else",
+          "Backnext.execute"
+        ],
+        [
+          "entry.Icon",
+          "Iconcheck.Object"
+        ],
+        [
+          "Iconcheck.ReturnValue",
+          "Iconvalid.Condition"
+        ],
+        [
+          "entry.Icon",
+          "Iconset.self"
+        ],
+        [
+          "tint.ReturnValue",
+          "Iconset.InColorAndOpacity"
+        ],
+        [
+          "Backnext.then_0",
+          "Iconvalid.execute"
+        ],
+        [
+          "Iconvalid.then",
+          "Iconset.execute"
+        ],
+        [
+          "Iconset.then",
+          "Iconnext.execute"
+        ],
+        [
+          "Iconvalid.else",
+          "Iconnext.execute"
+        ],
+        [
+          "tint.ReturnValue",
+          "slate.SpecifiedColor"
+        ],
+        [
+          "entry.Label",
+          "labelcheck.Object"
+        ],
+        [
+          "labelcheck.ReturnValue",
+          "labelvalid.Condition"
+        ],
+        [
+          "entry.Label",
+          "labelset.self"
+        ],
+        [
+          "slate.SlateColor",
+          "labelset.InColorAndOpacity"
+        ],
+        [
+          "Iconnext.then_0",
+          "labelvalid.execute"
+        ],
+        [
+          "labelvalid.then",
+          "labelset.execute"
+        ]
+      ]
+    },
+    {
       "name": "SetEditorPanel",
       "inputs": [
         {
@@ -15307,6 +15769,12 @@
           "id": "compositioncancel",
           "kind": "call",
           "function": "self:CancelCompositionPreview",
+          "defaults": {}
+        },
+        {
+          "id": "inspector",
+          "kind": "call",
+          "function": "self:RefreshSelectionUI",
           "defaults": {}
         }
       ],
@@ -15638,6 +16106,14 @@
         [
           "panelopen.else",
           "remember.execute"
+        ],
+        [
+          "keepcomposition.then",
+          "inspector.execute"
+        ],
+        [
+          "clearcomposition.then",
+          "inspector.execute"
         ]
       ]
     },
@@ -18409,7 +18885,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "mode_move"
+            "B": "mode_select"
           }
         },
         {
@@ -18421,7 +18897,7 @@
           "kind": "call",
           "function": "self:SetGizmoMode",
           "defaults": {
-            "Mode": "1"
+            "Mode": "0"
           }
         },
         {
@@ -18429,7 +18905,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "mode_rotate"
+            "B": "mode_move"
           }
         },
         {
@@ -18441,7 +18917,7 @@
           "kind": "call",
           "function": "self:SetGizmoMode",
           "defaults": {
-            "Mode": "2"
+            "Mode": "1"
           }
         },
         {
@@ -18449,7 +18925,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "mode_scale"
+            "B": "mode_rotate"
           }
         },
         {
@@ -18461,7 +18937,7 @@
           "kind": "call",
           "function": "self:SetGizmoMode",
           "defaults": {
-            "Mode": "3"
+            "Mode": "2"
           }
         },
         {
@@ -18469,7 +18945,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "gimbal"
+            "B": "mode_scale"
           }
         },
         {
@@ -18478,6 +18954,26 @@
         },
         {
           "id": "call20",
+          "kind": "call",
+          "function": "self:SetGizmoMode",
+          "defaults": {
+            "Mode": "3"
+          }
+        },
+        {
+          "id": "eq21",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "gimbal"
+          }
+        },
+        {
+          "id": "name21",
+          "kind": "branch"
+        },
+        {
+          "id": "call21",
           "kind": "call",
           "function": "self:CycleGizmoMode",
           "defaults": {}
@@ -20374,6 +20870,22 @@
         ],
         [
           "event.EventName",
+          "eq21.A"
+        ],
+        [
+          "eq21.ReturnValue",
+          "name21.Condition"
+        ],
+        [
+          "name20.else",
+          "name21.execute"
+        ],
+        [
+          "name21.then",
+          "call21.execute"
+        ],
+        [
+          "event.EventName",
           "setting0eq.A"
         ],
         [
@@ -20385,7 +20897,7 @@
           "setting0apply.Value"
         ],
         [
-          "name20.else",
+          "name21.else",
           "setting0.execute"
         ],
         [
@@ -22647,14 +23159,6 @@
           "defaults": {}
         },
         {
-          "id": "GridSteplabel",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
-          "defaults": {
-            "A": "Grid: "
-          }
-        },
-        {
           "id": "GridStepfull",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
@@ -22699,19 +23203,11 @@
           "defaults": {}
         },
         {
-          "id": "ReachCmlabel",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
-          "defaults": {
-            "A": "Range: "
-          }
-        },
-        {
           "id": "ReachCmfull",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
           "defaults": {
-            "B": "m"
+            "B": " m"
           }
         },
         {
@@ -22747,7 +23243,7 @@
           "kind": "call",
           "function": "/Script/UMG.TextBlock:SetText",
           "defaults": {
-            "InText": "Grid: Off"
+            "InText": "Off"
           }
         },
         {
@@ -22756,44 +23252,12 @@
           "outputs": 1
         },
         {
-          "id": "getStructureEnabled",
-          "kind": "get",
-          "var": "StructureEnabled"
-        },
-        {
-          "id": "StructureEnabledbranch",
-          "kind": "branch"
-        },
-        {
-          "id": "StructureEnabledonwidget",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:LockLabel"
-        },
-        {
-          "id": "StructureEnabledon",
+          "id": "gridon",
           "kind": "call",
-          "function": "/Script/UMG.TextBlock:SetText",
+          "function": "/Script/Engine.KismetMathLibrary:NotEqual_DoubleDouble",
           "defaults": {
-            "InText": "Structure: On"
+            "B": "0"
           }
-        },
-        {
-          "id": "StructureEnabledoffwidget",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:LockLabel"
-        },
-        {
-          "id": "StructureEnabledoff",
-          "kind": "call",
-          "function": "/Script/UMG.TextBlock:SetText",
-          "defaults": {
-            "InText": "Structure: Off"
-          }
-        },
-        {
-          "id": "StructureEnablednext",
-          "kind": "sequence",
-          "outputs": 1
         },
         {
           "id": "getFloorsEnabled",
@@ -22801,79 +23265,225 @@
           "var": "FloorsEnabled"
         },
         {
-          "id": "FloorsEnabledbranch",
-          "kind": "branch"
-        },
-        {
-          "id": "FloorsEnabledonwidget",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:FloorsLabel"
-        },
-        {
-          "id": "FloorsEnabledon",
-          "kind": "call",
-          "function": "/Script/UMG.TextBlock:SetText",
-          "defaults": {
-            "InText": "Floors: On"
-          }
-        },
-        {
-          "id": "FloorsEnabledoffwidget",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:FloorsLabel"
-        },
-        {
-          "id": "FloorsEnabledoff",
-          "kind": "call",
-          "function": "/Script/UMG.TextBlock:SetText",
-          "defaults": {
-            "InText": "Floors: Off"
-          }
-        },
-        {
-          "id": "FloorsEnablednext",
-          "kind": "sequence",
-          "outputs": 1
-        },
-        {
           "id": "getWallsEnabled",
           "kind": "get",
           "var": "WallsEnabled"
         },
         {
-          "id": "WallsEnabledbranch",
-          "kind": "branch"
+          "id": "getStructureEnabled",
+          "kind": "get",
+          "var": "StructureEnabled"
         },
         {
-          "id": "WallsEnabledonwidget",
+          "id": "getActivePanel",
+          "kind": "get",
+          "var": "ActivePanel"
+        },
+        {
+          "id": "tabCatalog",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "catalog"
+          }
+        },
+        {
+          "id": "tabStoreroom",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "storeroom"
+          }
+        },
+        {
+          "id": "tabCompositions",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "compositions"
+          }
+        },
+        {
+          "id": "tabLayouts",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "layouts"
+          }
+        },
+        {
+          "id": "styleSnap",
+          "kind": "call",
+          "function": "self:StyleEditorToggle",
+          "defaults": {}
+        },
+        {
+          "id": "styleSnapback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:SnapBack"
+        },
+        {
+          "id": "styleSnapicon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:SnapIcon"
+        },
+        {
+          "id": "styleSnaplabel",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:SnapLabel"
+        },
+        {
+          "id": "styleFloors",
+          "kind": "call",
+          "function": "self:StyleEditorToggle",
+          "defaults": {}
+        },
+        {
+          "id": "styleFloorsback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:FloorsBack"
+        },
+        {
+          "id": "styleFloorsicon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:FloorsIcon"
+        },
+        {
+          "id": "styleFloorslabel",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:FloorsLabel"
+        },
+        {
+          "id": "styleWalls",
+          "kind": "call",
+          "function": "self:StyleEditorToggle",
+          "defaults": {}
+        },
+        {
+          "id": "styleWallsback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:WallsBack"
+        },
+        {
+          "id": "styleWallsicon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:WallsIcon"
+        },
+        {
+          "id": "styleWallslabel",
           "kind": "get",
           "var": "/DenDesignerGF/Editor/WBP_DenToolbar:WallsLabel"
         },
         {
-          "id": "WallsEnabledon",
+          "id": "styleLock",
           "kind": "call",
-          "function": "/Script/UMG.TextBlock:SetText",
-          "defaults": {
-            "InText": "Walls: On"
-          }
+          "function": "self:StyleEditorToggle",
+          "defaults": {}
         },
         {
-          "id": "WallsEnabledoffwidget",
+          "id": "styleLockback",
           "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:WallsLabel"
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:LockBack"
         },
         {
-          "id": "WallsEnabledoff",
+          "id": "styleLockicon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:LockIcon"
+        },
+        {
+          "id": "styleLocklabel",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:LockLabel"
+        },
+        {
+          "id": "styleCatalog",
           "kind": "call",
-          "function": "/Script/UMG.TextBlock:SetText",
-          "defaults": {
-            "InText": "Walls: Off"
-          }
+          "function": "self:StyleEditorToggle",
+          "defaults": {}
         },
         {
-          "id": "WallsEnablednext",
-          "kind": "sequence",
-          "outputs": 1
+          "id": "styleCatalogback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:CatalogBack"
+        },
+        {
+          "id": "styleCatalogicon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:CatalogIcon"
+        },
+        {
+          "id": "styleCataloglabel",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:CatalogLabel"
+        },
+        {
+          "id": "styleStoreroom",
+          "kind": "call",
+          "function": "self:StyleEditorToggle",
+          "defaults": {}
+        },
+        {
+          "id": "styleStoreroomback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:StoreroomBack"
+        },
+        {
+          "id": "styleStoreroomicon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:StoreroomIcon"
+        },
+        {
+          "id": "styleStoreroomlabel",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:StoreroomLabel"
+        },
+        {
+          "id": "styleCompositions",
+          "kind": "call",
+          "function": "self:StyleEditorToggle",
+          "defaults": {}
+        },
+        {
+          "id": "styleCompositionsback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:CompositionsBack"
+        },
+        {
+          "id": "styleCompositionsicon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:CompositionsIcon"
+        },
+        {
+          "id": "styleCompositionslabel",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:CompositionsLabel"
+        },
+        {
+          "id": "styleLayouts",
+          "kind": "call",
+          "function": "self:StyleEditorToggle",
+          "defaults": {}
+        },
+        {
+          "id": "styleLayoutsback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:LayoutsBack"
+        },
+        {
+          "id": "styleLayoutsicon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:LayoutsIcon"
+        },
+        {
+          "id": "styleLayoutslabel",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:LayoutsLabel"
+        },
+        {
+          "id": "modes",
+          "kind": "call",
+          "function": "self:RefreshGizmoModeUI",
+          "defaults": {}
         },
         {
           "id": "feedback",
@@ -23141,10 +23751,6 @@
         ],
         [
           "GridStepnumber.ReturnValue",
-          "GridSteplabel.B"
-        ],
-        [
-          "GridSteplabel.ReturnValue",
           "GridStepfull.A"
         ],
         [
@@ -23177,10 +23783,6 @@
         ],
         [
           "ReachCmnumber.ReturnValue",
-          "ReachCmlabel.B"
-        ],
-        [
-          "ReachCmlabel.ReturnValue",
           "ReachCmfull.A"
         ],
         [
@@ -23232,124 +23834,284 @@
           "aftergrid.execute"
         ],
         [
-          "getStructureEnabled.StructureEnabled",
-          "StructureEnabledbranch.Condition"
+          "getGridStep.GridStep",
+          "gridon.A"
+        ],
+        [
+          "getActivePanel.ActivePanel",
+          "tabCatalog.A"
+        ],
+        [
+          "getActivePanel.ActivePanel",
+          "tabStoreroom.A"
+        ],
+        [
+          "getActivePanel.ActivePanel",
+          "tabCompositions.A"
+        ],
+        [
+          "getActivePanel.ActivePanel",
+          "tabLayouts.A"
         ],
         [
           "getToolbar.Toolbar",
-          "StructureEnabledonwidget.self"
-        ],
-        [
-          "StructureEnabledonwidget.LockLabel",
-          "StructureEnabledon.self"
+          "styleSnapback.self"
         ],
         [
           "getToolbar.Toolbar",
-          "StructureEnabledoffwidget.self"
+          "styleSnapicon.self"
         ],
         [
-          "StructureEnabledoffwidget.LockLabel",
-          "StructureEnabledoff.self"
+          "getToolbar.Toolbar",
+          "styleSnaplabel.self"
+        ],
+        [
+          "styleSnapback.SnapBack",
+          "styleSnap.Back"
+        ],
+        [
+          "styleSnapicon.SnapIcon",
+          "styleSnap.Icon"
+        ],
+        [
+          "styleSnaplabel.SnapLabel",
+          "styleSnap.Label"
+        ],
+        [
+          "gridon.ReturnValue",
+          "styleSnap.On"
         ],
         [
           "aftergrid.then_0",
-          "StructureEnabledbranch.execute"
+          "styleSnap.execute"
         ],
         [
-          "StructureEnabledbranch.then",
-          "StructureEnabledon.execute"
+          "getToolbar.Toolbar",
+          "styleFloorsback.self"
         ],
         [
-          "StructureEnabledon.then",
-          "StructureEnablednext.execute"
+          "getToolbar.Toolbar",
+          "styleFloorsicon.self"
         ],
         [
-          "StructureEnabledbranch.else",
-          "StructureEnabledoff.execute"
+          "getToolbar.Toolbar",
+          "styleFloorslabel.self"
         ],
         [
-          "StructureEnabledoff.then",
-          "StructureEnablednext.execute"
+          "styleFloorsback.FloorsBack",
+          "styleFloors.Back"
+        ],
+        [
+          "styleFloorsicon.FloorsIcon",
+          "styleFloors.Icon"
+        ],
+        [
+          "styleFloorslabel.FloorsLabel",
+          "styleFloors.Label"
         ],
         [
           "getFloorsEnabled.FloorsEnabled",
-          "FloorsEnabledbranch.Condition"
+          "styleFloors.On"
+        ],
+        [
+          "styleSnap.then",
+          "styleFloors.execute"
         ],
         [
           "getToolbar.Toolbar",
-          "FloorsEnabledonwidget.self"
-        ],
-        [
-          "FloorsEnabledonwidget.FloorsLabel",
-          "FloorsEnabledon.self"
+          "styleWallsback.self"
         ],
         [
           "getToolbar.Toolbar",
-          "FloorsEnabledoffwidget.self"
+          "styleWallsicon.self"
         ],
         [
-          "FloorsEnabledoffwidget.FloorsLabel",
-          "FloorsEnabledoff.self"
+          "getToolbar.Toolbar",
+          "styleWallslabel.self"
         ],
         [
-          "StructureEnablednext.then_0",
-          "FloorsEnabledbranch.execute"
+          "styleWallsback.WallsBack",
+          "styleWalls.Back"
         ],
         [
-          "FloorsEnabledbranch.then",
-          "FloorsEnabledon.execute"
+          "styleWallsicon.WallsIcon",
+          "styleWalls.Icon"
         ],
         [
-          "FloorsEnabledon.then",
-          "FloorsEnablednext.execute"
-        ],
-        [
-          "FloorsEnabledbranch.else",
-          "FloorsEnabledoff.execute"
-        ],
-        [
-          "FloorsEnabledoff.then",
-          "FloorsEnablednext.execute"
+          "styleWallslabel.WallsLabel",
+          "styleWalls.Label"
         ],
         [
           "getWallsEnabled.WallsEnabled",
-          "WallsEnabledbranch.Condition"
+          "styleWalls.On"
+        ],
+        [
+          "styleFloors.then",
+          "styleWalls.execute"
         ],
         [
           "getToolbar.Toolbar",
-          "WallsEnabledonwidget.self"
-        ],
-        [
-          "WallsEnabledonwidget.WallsLabel",
-          "WallsEnabledon.self"
+          "styleLockback.self"
         ],
         [
           "getToolbar.Toolbar",
-          "WallsEnabledoffwidget.self"
+          "styleLockicon.self"
         ],
         [
-          "WallsEnabledoffwidget.WallsLabel",
-          "WallsEnabledoff.self"
+          "getToolbar.Toolbar",
+          "styleLocklabel.self"
         ],
         [
-          "FloorsEnablednext.then_0",
-          "WallsEnabledbranch.execute"
+          "styleLockback.LockBack",
+          "styleLock.Back"
         ],
         [
-          "WallsEnabledbranch.then",
-          "WallsEnabledon.execute"
+          "styleLockicon.LockIcon",
+          "styleLock.Icon"
         ],
         [
-          "WallsEnabledon.then",
-          "WallsEnablednext.execute"
+          "styleLocklabel.LockLabel",
+          "styleLock.Label"
         ],
         [
-          "WallsEnabledbranch.else",
-          "WallsEnabledoff.execute"
+          "getStructureEnabled.StructureEnabled",
+          "styleLock.On"
         ],
         [
-          "WallsEnabledoff.then",
-          "WallsEnablednext.execute"
+          "styleWalls.then",
+          "styleLock.execute"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleCatalogback.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleCatalogicon.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleCataloglabel.self"
+        ],
+        [
+          "styleCatalogback.CatalogBack",
+          "styleCatalog.Back"
+        ],
+        [
+          "styleCatalogicon.CatalogIcon",
+          "styleCatalog.Icon"
+        ],
+        [
+          "styleCataloglabel.CatalogLabel",
+          "styleCatalog.Label"
+        ],
+        [
+          "tabCatalog.ReturnValue",
+          "styleCatalog.On"
+        ],
+        [
+          "styleLock.then",
+          "styleCatalog.execute"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleStoreroomback.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleStoreroomicon.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleStoreroomlabel.self"
+        ],
+        [
+          "styleStoreroomback.StoreroomBack",
+          "styleStoreroom.Back"
+        ],
+        [
+          "styleStoreroomicon.StoreroomIcon",
+          "styleStoreroom.Icon"
+        ],
+        [
+          "styleStoreroomlabel.StoreroomLabel",
+          "styleStoreroom.Label"
+        ],
+        [
+          "tabStoreroom.ReturnValue",
+          "styleStoreroom.On"
+        ],
+        [
+          "styleCatalog.then",
+          "styleStoreroom.execute"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleCompositionsback.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleCompositionsicon.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleCompositionslabel.self"
+        ],
+        [
+          "styleCompositionsback.CompositionsBack",
+          "styleCompositions.Back"
+        ],
+        [
+          "styleCompositionsicon.CompositionsIcon",
+          "styleCompositions.Icon"
+        ],
+        [
+          "styleCompositionslabel.CompositionsLabel",
+          "styleCompositions.Label"
+        ],
+        [
+          "tabCompositions.ReturnValue",
+          "styleCompositions.On"
+        ],
+        [
+          "styleStoreroom.then",
+          "styleCompositions.execute"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleLayoutsback.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleLayoutsicon.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleLayoutslabel.self"
+        ],
+        [
+          "styleLayoutsback.LayoutsBack",
+          "styleLayouts.Back"
+        ],
+        [
+          "styleLayoutsicon.LayoutsIcon",
+          "styleLayouts.Icon"
+        ],
+        [
+          "styleLayoutslabel.LayoutsLabel",
+          "styleLayouts.Label"
+        ],
+        [
+          "tabLayouts.ReturnValue",
+          "styleLayouts.On"
+        ],
+        [
+          "styleCompositions.then",
+          "styleLayouts.execute"
+        ],
+        [
+          "styleLayouts.then",
+          "modes.execute"
         ],
         [
           "getToolbar.Toolbar",
@@ -23376,7 +24138,7 @@
           "prefcache.LastUIPreferencesStatus"
         ],
         [
-          "WallsEnablednext.then_0",
+          "modes.then",
           "feedback.execute"
         ],
         [
@@ -23616,6 +24378,17 @@
           "defaults": {}
         },
         {
+          "id": "chip",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Editor/WBP_DenCatalogChip"
+        },
+        {
+          "id": "chipstyle",
+          "kind": "call",
+          "function": "/DenDesignerGF/Editor/WBP_DenCatalogChip:ApplyNativeStyle",
+          "defaults": {}
+        },
+        {
           "id": "next",
           "kind": "call",
           "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
@@ -23683,6 +24456,14 @@
           "shelfstyle.self"
         ],
         [
+          "item.Item",
+          "chip.Object"
+        ],
+        [
+          "chip.AsWBP Den Catalog Chip",
+          "chipstyle.self"
+        ],
+        [
           "i.EntryIndex",
           "next.A"
         ],
@@ -23728,6 +24509,18 @@
         ],
         [
           "shelf.CastFailed",
+          "chip.execute"
+        ],
+        [
+          "chip.then",
+          "chipstyle.execute"
+        ],
+        [
+          "chipstyle.then",
+          "advance.execute"
+        ],
+        [
+          "chip.CastFailed",
           "advance.execute"
         ]
       ]
@@ -26662,9 +27455,28 @@
           "kind": "branch"
         },
         {
+          "id": "getActivePanel",
+          "kind": "get",
+          "var": "ActivePanel"
+        },
+        {
+          "id": "settings",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:NotEqual_StrStr",
+          "defaults": {
+            "B": "settings"
+          }
+        },
+        {
           "id": "getHasSelection",
           "kind": "get",
           "var": "HasSelection"
+        },
+        {
+          "id": "shown0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
         },
         {
           "id": "selected",
@@ -26743,7 +27555,19 @@
           "valid.Condition"
         ],
         [
+          "getActivePanel.ActivePanel",
+          "settings.A"
+        ],
+        [
           "getHasSelection.HasSelection",
+          "shown0.A"
+        ],
+        [
+          "settings.ReturnValue",
+          "shown0.B"
+        ],
+        [
+          "shown0.ReturnValue",
           "selected.Condition"
         ],
         [
@@ -29309,7 +30133,7 @@
           "function": "/Script/Engine.KismetTextLibrary:Conv_DoubleToText",
           "defaults": {
             "bUseGrouping": "false",
-            "MaximumFractionalDigits": "3"
+            "MaximumFractionalDigits": "2"
           }
         },
         {
@@ -29373,7 +30197,7 @@
           "function": "/Script/Engine.KismetTextLibrary:Conv_DoubleToText",
           "defaults": {
             "bUseGrouping": "false",
-            "MaximumFractionalDigits": "3"
+            "MaximumFractionalDigits": "2"
           }
         },
         {
@@ -29437,7 +30261,7 @@
           "function": "/Script/Engine.KismetTextLibrary:Conv_DoubleToText",
           "defaults": {
             "bUseGrouping": "false",
-            "MaximumFractionalDigits": "3"
+            "MaximumFractionalDigits": "2"
           }
         },
         {
@@ -29507,7 +30331,7 @@
           "function": "/Script/Engine.KismetTextLibrary:Conv_DoubleToText",
           "defaults": {
             "bUseGrouping": "false",
-            "MaximumFractionalDigits": "3"
+            "MaximumFractionalDigits": "2"
           }
         },
         {
@@ -29577,7 +30401,7 @@
           "function": "/Script/Engine.KismetTextLibrary:Conv_DoubleToText",
           "defaults": {
             "bUseGrouping": "false",
-            "MaximumFractionalDigits": "3"
+            "MaximumFractionalDigits": "2"
           }
         },
         {
@@ -29647,7 +30471,7 @@
           "function": "/Script/Engine.KismetTextLibrary:Conv_DoubleToText",
           "defaults": {
             "bUseGrouping": "false",
-            "MaximumFractionalDigits": "3"
+            "MaximumFractionalDigits": "2"
           }
         },
         {
@@ -29720,7 +30544,7 @@
           "function": "/Script/Engine.KismetTextLibrary:Conv_DoubleToText",
           "defaults": {
             "bUseGrouping": "false",
-            "MaximumFractionalDigits": "3"
+            "MaximumFractionalDigits": "2"
           }
         },
         {
@@ -31523,7 +32347,7 @@
           "function": "/Script/Engine.KismetTextLibrary:Conv_DoubleToText",
           "defaults": {
             "bUseGrouping": "false",
-            "MaximumFractionalDigits": "3"
+            "MaximumFractionalDigits": "2"
           }
         },
         {
@@ -31543,7 +32367,7 @@
           "function": "/Script/Engine.KismetTextLibrary:Conv_DoubleToText",
           "defaults": {
             "bUseGrouping": "false",
-            "MaximumFractionalDigits": "3"
+            "MaximumFractionalDigits": "2"
           }
         },
         {
@@ -31563,7 +32387,7 @@
           "function": "/Script/Engine.KismetTextLibrary:Conv_DoubleToText",
           "defaults": {
             "bUseGrouping": "false",
-            "MaximumFractionalDigits": "3"
+            "MaximumFractionalDigits": "2"
           }
         },
         {
@@ -31583,7 +32407,7 @@
           "function": "/Script/Engine.KismetTextLibrary:Conv_DoubleToText",
           "defaults": {
             "bUseGrouping": "false",
-            "MaximumFractionalDigits": "3"
+            "MaximumFractionalDigits": "2"
           }
         },
         {
@@ -31603,7 +32427,7 @@
           "function": "/Script/Engine.KismetTextLibrary:Conv_DoubleToText",
           "defaults": {
             "bUseGrouping": "false",
-            "MaximumFractionalDigits": "3"
+            "MaximumFractionalDigits": "2"
           }
         },
         {
@@ -31623,7 +32447,7 @@
           "function": "/Script/Engine.KismetTextLibrary:Conv_DoubleToText",
           "defaults": {
             "bUseGrouping": "false",
-            "MaximumFractionalDigits": "3"
+            "MaximumFractionalDigits": "2"
           }
         },
         {
@@ -31643,7 +32467,7 @@
           "function": "/Script/Engine.KismetTextLibrary:Conv_DoubleToText",
           "defaults": {
             "bUseGrouping": "false",
-            "MaximumFractionalDigits": "3"
+            "MaximumFractionalDigits": "2"
           }
         },
         {
@@ -38396,6 +39220,48 @@
           "id": "panel7next",
           "kind": "sequence",
           "outputs": 1
+        },
+        {
+          "id": "panel8check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "panel8valid",
+          "kind": "branch"
+        },
+        {
+          "id": "panel8widget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:LibraryTabs"
+        },
+        {
+          "id": "panel8hover",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:IsHovered",
+          "defaults": {}
+        },
+        {
+          "id": "panel8visible",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:IsVisible",
+          "defaults": {}
+        },
+        {
+          "id": "panel8both0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "panel8over",
+          "kind": "branch"
+        },
+        {
+          "id": "panel8next",
+          "kind": "sequence",
+          "outputs": 1
         }
       ],
       "links": [
@@ -38864,6 +39730,58 @@
           "panel7next.execute"
         ],
         [
+          "getToolbar.Toolbar",
+          "panel8check.Object"
+        ],
+        [
+          "panel8check.ReturnValue",
+          "panel8valid.Condition"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "panel8widget.self"
+        ],
+        [
+          "panel8widget.LibraryTabs",
+          "panel8hover.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "panel8visible.self"
+        ],
+        [
+          "panel8hover.ReturnValue",
+          "panel8both0.A"
+        ],
+        [
+          "panel8visible.ReturnValue",
+          "panel8both0.B"
+        ],
+        [
+          "panel8both0.ReturnValue",
+          "panel8over.Condition"
+        ],
+        [
+          "panel7next.then_0",
+          "panel8valid.execute"
+        ],
+        [
+          "panel8valid.then",
+          "panel8over.execute"
+        ],
+        [
+          "panel8over.then",
+          "yes.execute"
+        ],
+        [
+          "panel8valid.else",
+          "panel8next.execute"
+        ],
+        [
+          "panel8over.else",
+          "panel8next.execute"
+        ],
+        [
           "entry.then",
           "state.execute"
         ],
@@ -38892,7 +39810,7 @@
           "yes.execute"
         ],
         [
-          "panel7next.then_0",
+          "panel8next.then_0",
           "result.execute"
         ]
       ]
@@ -41296,12 +42214,12 @@
       "name": "RefreshGizmoModeUI",
       "nodes": [
         {
-          "id": "getInspector",
+          "id": "getToolbar",
           "kind": "get",
-          "var": "Inspector"
+          "var": "Toolbar"
         },
         {
-          "id": "inspectorvalid",
+          "id": "toolbarvalid",
           "kind": "call",
           "function": "/Script/Engine.KismetSystemLibrary:IsValid",
           "defaults": {}
@@ -41316,6 +42234,35 @@
           "var": "GizmoMode"
         },
         {
+          "id": "SelectModeselected",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "styleSelectMode",
+          "kind": "call",
+          "function": "self:StyleEditorToggle",
+          "defaults": {}
+        },
+        {
+          "id": "styleSelectModeback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:SelectModeBack"
+        },
+        {
+          "id": "styleSelectModeicon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:SelectModeIcon"
+        },
+        {
+          "id": "styleSelectModelabel",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:SelectModeLabel"
+        },
+        {
           "id": "Moveselected",
           "kind": "call",
           "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
@@ -41324,24 +42271,25 @@
           }
         },
         {
-          "id": "colorMove",
+          "id": "styleMove",
           "kind": "call",
-          "function": "/Script/Engine.KismetMathLibrary:SelectColor",
-          "defaults": {
-            "A": "(R=1,G=0.75,B=0.32,A=1)",
-            "B": "(R=1,G=1,B=1,A=1)"
-          }
-        },
-        {
-          "id": "widgetMove",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenTransform:Move"
-        },
-        {
-          "id": "buttonMove",
-          "kind": "call",
-          "function": "/Script/UMG.Button:SetBackgroundColor",
+          "function": "self:StyleEditorToggle",
           "defaults": {}
+        },
+        {
+          "id": "styleMoveback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:MoveBack"
+        },
+        {
+          "id": "styleMoveicon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:MoveIcon"
+        },
+        {
+          "id": "styleMovelabel",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:MoveLabel"
         },
         {
           "id": "Rotateselected",
@@ -41352,24 +42300,25 @@
           }
         },
         {
-          "id": "colorRotate",
+          "id": "styleRotate",
           "kind": "call",
-          "function": "/Script/Engine.KismetMathLibrary:SelectColor",
-          "defaults": {
-            "A": "(R=1,G=0.75,B=0.32,A=1)",
-            "B": "(R=1,G=1,B=1,A=1)"
-          }
-        },
-        {
-          "id": "widgetRotate",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenTransform:Rotate"
-        },
-        {
-          "id": "buttonRotate",
-          "kind": "call",
-          "function": "/Script/UMG.Button:SetBackgroundColor",
+          "function": "self:StyleEditorToggle",
           "defaults": {}
+        },
+        {
+          "id": "styleRotateback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:RotateBack"
+        },
+        {
+          "id": "styleRotateicon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:RotateIcon"
+        },
+        {
+          "id": "styleRotatelabel",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:RotateLabel"
         },
         {
           "id": "ScaleModeselected",
@@ -41380,106 +42329,179 @@
           }
         },
         {
-          "id": "colorScaleMode",
+          "id": "styleScaleMode",
           "kind": "call",
-          "function": "/Script/Engine.KismetMathLibrary:SelectColor",
-          "defaults": {
-            "A": "(R=1,G=0.75,B=0.32,A=1)",
-            "B": "(R=1,G=1,B=1,A=1)"
-          }
-        },
-        {
-          "id": "widgetScaleMode",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenTransform:ScaleMode"
-        },
-        {
-          "id": "buttonScaleMode",
-          "kind": "call",
-          "function": "/Script/UMG.Button:SetBackgroundColor",
+          "function": "self:StyleEditorToggle",
           "defaults": {}
+        },
+        {
+          "id": "styleScaleModeback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:ScaleModeBack"
+        },
+        {
+          "id": "styleScaleModeicon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:ScaleModeIcon"
+        },
+        {
+          "id": "styleScaleModelabel",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:ScaleModeLabel"
         }
       ],
       "links": [
         [
-          "getInspector.Inspector",
-          "inspectorvalid.Object"
+          "getToolbar.Toolbar",
+          "toolbarvalid.Object"
         ],
         [
-          "inspectorvalid.ReturnValue",
+          "toolbarvalid.ReturnValue",
           "valid.Condition"
+        ],
+        [
+          "getGizmoMode.GizmoMode",
+          "SelectModeselected.A"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleSelectModeback.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleSelectModeicon.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleSelectModelabel.self"
+        ],
+        [
+          "styleSelectModeback.SelectModeBack",
+          "styleSelectMode.Back"
+        ],
+        [
+          "styleSelectModeicon.SelectModeIcon",
+          "styleSelectMode.Icon"
+        ],
+        [
+          "styleSelectModelabel.SelectModeLabel",
+          "styleSelectMode.Label"
+        ],
+        [
+          "SelectModeselected.ReturnValue",
+          "styleSelectMode.On"
+        ],
+        [
+          "valid.then",
+          "styleSelectMode.execute"
         ],
         [
           "getGizmoMode.GizmoMode",
           "Moveselected.A"
         ],
         [
+          "getToolbar.Toolbar",
+          "styleMoveback.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleMoveicon.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleMovelabel.self"
+        ],
+        [
+          "styleMoveback.MoveBack",
+          "styleMove.Back"
+        ],
+        [
+          "styleMoveicon.MoveIcon",
+          "styleMove.Icon"
+        ],
+        [
+          "styleMovelabel.MoveLabel",
+          "styleMove.Label"
+        ],
+        [
           "Moveselected.ReturnValue",
-          "colorMove.bPickA"
+          "styleMove.On"
         ],
         [
-          "getInspector.Inspector",
-          "widgetMove.self"
-        ],
-        [
-          "widgetMove.Move",
-          "buttonMove.self"
-        ],
-        [
-          "colorMove.ReturnValue",
-          "buttonMove.InBackgroundColor"
-        ],
-        [
-          "valid.then",
-          "buttonMove.execute"
+          "styleSelectMode.then",
+          "styleMove.execute"
         ],
         [
           "getGizmoMode.GizmoMode",
           "Rotateselected.A"
         ],
         [
+          "getToolbar.Toolbar",
+          "styleRotateback.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleRotateicon.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleRotatelabel.self"
+        ],
+        [
+          "styleRotateback.RotateBack",
+          "styleRotate.Back"
+        ],
+        [
+          "styleRotateicon.RotateIcon",
+          "styleRotate.Icon"
+        ],
+        [
+          "styleRotatelabel.RotateLabel",
+          "styleRotate.Label"
+        ],
+        [
           "Rotateselected.ReturnValue",
-          "colorRotate.bPickA"
+          "styleRotate.On"
         ],
         [
-          "getInspector.Inspector",
-          "widgetRotate.self"
-        ],
-        [
-          "widgetRotate.Rotate",
-          "buttonRotate.self"
-        ],
-        [
-          "colorRotate.ReturnValue",
-          "buttonRotate.InBackgroundColor"
-        ],
-        [
-          "buttonMove.then",
-          "buttonRotate.execute"
+          "styleMove.then",
+          "styleRotate.execute"
         ],
         [
           "getGizmoMode.GizmoMode",
           "ScaleModeselected.A"
         ],
         [
+          "getToolbar.Toolbar",
+          "styleScaleModeback.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleScaleModeicon.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleScaleModelabel.self"
+        ],
+        [
+          "styleScaleModeback.ScaleModeBack",
+          "styleScaleMode.Back"
+        ],
+        [
+          "styleScaleModeicon.ScaleModeIcon",
+          "styleScaleMode.Icon"
+        ],
+        [
+          "styleScaleModelabel.ScaleModeLabel",
+          "styleScaleMode.Label"
+        ],
+        [
           "ScaleModeselected.ReturnValue",
-          "colorScaleMode.bPickA"
+          "styleScaleMode.On"
         ],
         [
-          "getInspector.Inspector",
-          "widgetScaleMode.self"
-        ],
-        [
-          "widgetScaleMode.ScaleMode",
-          "buttonScaleMode.self"
-        ],
-        [
-          "colorScaleMode.ReturnValue",
-          "buttonScaleMode.InBackgroundColor"
-        ],
-        [
-          "buttonRotate.then",
-          "buttonScaleMode.execute"
+          "styleRotate.then",
+          "styleScaleMode.execute"
         ],
         [
           "entry.then",

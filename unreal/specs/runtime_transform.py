@@ -18,7 +18,7 @@ POSE=[('Position','vector','K2_GetComponentLocation'),('Rotation','rotator','K2_
 
 
 def format_number(g,name,source):
-    return call(g,name,'/Script/Engine.KismetTextLibrary:Conv_DoubleToText',{'Value':source},bUseGrouping='false',MaximumFractionalDigits=3)
+    return call(g,name,'/Script/Engine.KismetTextLibrary:Conv_DoubleToText',{'Value':source},bUseGrouping='false',MaximumFractionalDigits=2)
 
 
 def copy_entry(g,name,source,changes=None,defaults=None):

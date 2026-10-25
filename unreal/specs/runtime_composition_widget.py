@@ -4,13 +4,14 @@ import ui_templates as e
 
 def spec():
     g=e.Graph()
-    tree=e.side_panel(e.ROOT+'WBP_DenCompositions','Compositions',[
-        e.text('SelectionCount','0 parts selected',16,e.GOLD),
+    tree=e.library_panel('Compositions',[
+        e.text('SelectionCount','0 parts selected',16,e.GOLD,role='heading'),
         e.text('SelectionHint','Select parts, then click each prop to add or remove it. Save a reusable copy of the arrangement; originals stay in place.',12,e.DIM,wrap=True),
         e.row('SelectionRow',[e.button('SelectParts','Select parts',14),e.button('ClearParts','Clear selection',14)]),
-        e.row('SaveRow',[e.box('CompositionName','Composition name',width=300),e.button('SaveComposition','Save composition',14)]),
-        e.text('LibraryTitle','Saved compositions',17,e.GOLD),
-        {'class':'/Script/UMG.TileView','name':'Compositions','variable':True,'props':{'bIsFocusable':'false','SelectionMode':'Single','EntryWidgetClass':e.ROOT+'WBP_DenCatalogEntry','EntryWidth':160,'EntryHeight':226},'slot':{'Size':'(SizeRule=Fill,Value=1.0)'}},
+        e.entry_row('SaveRow',e.box('CompositionName','Composition name'),e.button('SaveComposition','Save',14)),
+        e.divider('LibraryDivider',vertical=False),
+        e.label('LibraryTitle','Saved compositions'),
+        e.cards('Compositions'),
         e.row('LibraryRow',[e.button('LoadComposition','Place selected',14),e.button('DeleteComposition','Delete selected',14)]),
         e.text('Footer','',12,e.DIM,wrap=True),
     ])

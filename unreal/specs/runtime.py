@@ -293,6 +293,12 @@ def specs():
 if __name__ == '__main__':
     target = Path(__file__).resolve().parents[1] / 'generated/runtime'
     target.mkdir(parents=True, exist_ok=True)
+    written = set()
     for name, spec in specs():
         (target / (name + '.json')).write_text(json.dumps(spec, indent=2) + '\n')
+        written.add(name + '.json')
+    # A renumbered or removed spec must not be built from its old file.
+    for stale in target.glob('*.json'):
+        if stale.name not in written:
+            stale.unlink()
     print(f'Generated native runtime specs in {target}')

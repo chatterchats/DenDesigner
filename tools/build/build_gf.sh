@@ -32,7 +32,9 @@ cp "$kit/Releases/BaseGame/Windows/AssetRegistry.bin" "$kit/Releases/BaseGame/$p
 
 echo "1/3 Authoring Blueprint runtime and UI"
 python3 -I "$repo/unreal/specs/runtime.py"
-DENDESIGNERGF_RUNTIME_SPECS="$repo/unreal/generated/runtime" \
+icons="$work/icons"
+bash "$repo/tools/build/render_icons.sh" "$icons"
+DENDESIGNERGF_RUNTIME_SPECS="$repo/unreal/generated/runtime" DENDESIGNERGF_ICONS="$icons" \
     "$engine/Binaries/Linux/UnrealEditor-Cmd" "$project" \
     -run=pythonscript -script="$repo/unreal/scripts/build_gf.py" \
     -unattended -nop4 -nosplash -NullRHI -stdout -FullStdOutLogOutput -NoCrashDialog \

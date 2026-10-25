@@ -13,6 +13,8 @@ REPO = Path(os.environ['DENDESIGNER_REPO'])
 saved = Path(unreal.Paths.convert_relative_path_to_full(unreal.Paths.project_saved_dir())).resolve()
 assert saved == Path(os.environ['DENDESIGNER_TEST_SAVED']).resolve(), 'Refusing tests outside kit Saved'
 sys.path.insert(0, str(REPO / 'unreal/specs'))
+sys.path.insert(0, str(REPO / 'unreal/scripts'))
+from editor_icons import import_icons
 from runtime import ROOT, ENTRY, LAYOUT, MUTATION, CHANGE, Graph, v, specs
 
 failures = []
@@ -115,7 +117,7 @@ try:
         if not paths or missing:
             raise RuntimeError('existing runtime assets are missing: ' + ', '.join(missing))
         unreal.log('DENNATIVE using existing runtime assets without reauthoring')
-    elif not paths or not zcom_authoring.build(paths):
+    elif not paths or not import_icons() or not zcom_authoring.build(paths):
         raise RuntimeError('runtime authoring failed')
     from runtime_store import FIELDS
     save_spec = next(s for _,s in specs() if s['path'] == LAYOUT)

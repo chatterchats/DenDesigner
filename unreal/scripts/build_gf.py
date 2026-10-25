@@ -1,9 +1,13 @@
 """Author the pak runtime and its GameFeatureData. Prints DENDESIGNERGF_RESULT."""
 import os
+import sys
 from pathlib import Path
 
 import unreal
 import zcom_authoring
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from editor_icons import import_icons  # noqa: E402
 
 PLUGIN = "DenDesignerGF"
 DATA_PATH = f"/{PLUGIN}/{PLUGIN}"
@@ -45,6 +49,6 @@ def build_data():
 
 
 specs = sorted(Path(os.environ["DENDESIGNERGF_RUNTIME_SPECS"]).glob("*.json"))
-ok = bool(specs) and zcom_authoring.build(specs)
+ok = bool(specs) and import_icons() and zcom_authoring.build(specs)
 ok = ok and build_data()
 unreal.log(f"DENDESIGNERGF_RESULT {'ok' if ok else 'failed'} ({len(specs)} specs)")

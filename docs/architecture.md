@@ -21,6 +21,12 @@ apply, pick/surface, transforms/drag/gizmos, history, layouts/store/drafts, cata
 Storeroom, preferences/input, compositions and thumbnails. `ui_templates.py` supplies native widget
 and input templates; `runtime_editor_assets.py` wires the bus, font styling and focus guards.
 
+The editor UI has a menu bar (tools, grid/range, selection filters, history and saving), a library
+dock on the left whose tabs open one panel at a time, an inspector dock on the right (Settings take
+its place while open) and a status bar. Tools, tabs and filters show their state by tint, applied by
+`StyleEditorToggle`. Icons come from `unreal/icons/*.svg`: `tools/build/render_icons.sh` renders them
+and `unreal/scripts/editor_icons.py` imports them as UI textures before the widgets are authored.
+
 ## Persistent identities
 
 `ST_DenEntry` records placed, stored and vanilla component edits with stable keys, full object/asset

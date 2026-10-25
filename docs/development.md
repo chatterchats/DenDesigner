@@ -9,7 +9,8 @@ The maintained project is the pak-only editor and its separate creator tools.
 | `unreal/DenDesignerGF/` | Runtime Game Feature descriptor; `Content/` is generated. |
 | `unreal/specs/runtime*.py` | Blueprint runtime, widgets, input and services. |
 | `unreal/specs/graph.py` | Shared graph-generation helpers. |
-| `unreal/specs/ui_templates.py` | Native widget trees and camera/input templates. |
+| `unreal/specs/ui_templates.py` | Native widget trees, the UI theme and camera/input templates. |
+| `unreal/icons/` | Editor UI icons: 24 px white-stroke SVGs, tinted by the widgets. |
 | `unreal/generated/runtime/` | Generated JSON specifications, retained for review. |
 | `unreal/data/` | Catalog metadata and gizmo geometry consumed directly by the build. |
 | `unreal/scripts/` | Editor-only asset authoring, import, export and verification scripts. |

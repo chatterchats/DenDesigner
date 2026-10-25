@@ -7,7 +7,7 @@ from pathlib import Path
 
 def fixture_spec():
     from graph import Graph, variable as v
-    from runtime_editor_assets import BUS, EVENT, RIG
+    from runtime_editor_assets import BUS, EVENT, RIG, UIROOT
     from runtime_editor_host import HOST
 
     from runtime import LAYOUT,ENTRY
@@ -17,7 +17,9 @@ def fixture_spec():
     for owner, fields in [
         (HOST, [('InputBus', 'object:'+BUS), ('UIOpen', 'bool'),
                 ('EditorRig', 'object:'+RIG), ('LastStatus', 'int'),
-                ('LastDraftStatus', 'int'), ('GridStep', 'double'), ('PresetStorageKey','string'),('CompositionStorageKey','string'), ('ActiveCampaignID','string'), ('HomeStorageKey','string'), ('PreferencesStorageKey','string'), ('PreferencesStatus','int')]),
+                ('LastDraftStatus', 'int'), ('GridStep', 'double'), ('PresetStorageKey','string'),('CompositionStorageKey','string'), ('ActiveCampaignID','string'), ('HomeStorageKey','string'), ('PreferencesStorageKey','string'), ('PreferencesStatus','int'),
+                ('Toolbar','object:'+UIROOT+'WBP_DenToolbar'), ('Inspector','object:'+UIROOT+'WBP_DenTransform'),
+                ('SettingsPanel','object:'+UIROOT+'WBP_DenSettings'), ('HasSelection','bool')]),
         (RIG, [('EditorBus', 'object:'+BUS), ('OpeningInputBlocked', 'bool')]),
         (DATA, [('Paths', 'string[]')]),
         (LAYOUT, [('Entries','struct:'+ENTRY+'[]')]),
@@ -213,6 +215,8 @@ def run(unreal, root, fixture, field, field_name, check):
               'Walls toolbar command toggles only wall selection')
         command('walls')
         check(not get(host,'WallsEnabled'), 'Walls toolbar command turns wall selection off again')
+        import test_editor_ui_native
+        test_editor_ui_native.run(unreal,host,get,set_,command,check)
         host.call_method('SetEditorConfirm', (1,))
         command('snap')
         command('catalog')
@@ -323,9 +327,9 @@ def run(unreal, root, fixture, field, field_name, check):
         original_pose=precise.get_actor_transform()
         count=len(get(get(host,'History'),'UndoSteps'))
         # Headless hosts have no Slate widgets. These values match the native
-        # formatter's three-decimal display; none are rounding tie cases.
-        for name_,shown in [('X','15000.123'),('Y','-15000.568'),('Z','15000.988'),
-                            ('Pitch','1.123'),('Yaw','2.568'),('Roll','3.988'),('Scale','1.234')]:
+        # formatter's two-decimal display; none are rounding tie cases.
+        for name_,shown in [('X','15000.12'),('Y','-15000.57'),('Z','15000.99'),
+                            ('Pitch','1.12'),('Yaw','2.57'),('Roll','3.99'),('Scale','1.23')]:
             host.call_method('SetSelectionField',(name_,shown));settle_edits()
             check(len(get(get(host,'History'),'UndoSteps'))==count and precise.get_actor_transform()==original_pose,
                   'submitting rounded '+name_+' preserves exact pose and creates no history')

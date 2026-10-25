@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.1.0-preview.6 — editor UI rework
+
+- Reworked the editor UI: a menu bar with grouped tools, grid/range and selection filters; a library
+  dock on the left with Catalog, Storeroom, Compositions and Layouts tabs; an inspector dock on the right;
+  and a status bar with the fixed mouse and Esc controls.
+- New look: translucent panels with thin outlines, an amber accent, condensed capital labels and icons.
+  Active tools, tabs and filters are highlighted instead of reading "On"/"Off".
+- The game's HUD hides while the editor is open, through the game's own cinematic HUD switch.
+- Added a Select tool that hides the gizmo. Move, Rotate and Scale moved from the inspector to the menu bar.
+- Catalog collections are a row of chips above two-column cards; Settings open in the inspector's place.
+- Inspector fields show two decimals (0.01 cm); typed values keep full precision.
+- Widget names, events, saved data and key bindings are unchanged.
+
 ## Unreleased — prop-pack editor tools
 
 Not part of 1.0.0; awaiting Windows editor testing.

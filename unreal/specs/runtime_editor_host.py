@@ -19,6 +19,7 @@ SUB='/Script/EnhancedInput.EnhancedInputLocalPlayerSubsystem'
 SUBINTERFACE='/Script/EnhancedInput.EnhancedInputSubsystemInterface'
 WIDGET='/Script/UMG.Widget'
 USERWIDGET='/Script/UMG.UserWidget'
+CINEMATIC='/Script/BitReactorGame.BRG_CinematicSubsystem'
 PANELS=[('Toolbar','WBP_DenToolbar',50),('Inspector','WBP_DenTransform',45),('CatalogPanel','WBP_DenCatalog',40),('LayoutsPanel','WBP_DenLayouts',40),('StoreroomPanel','WBP_DenStoreroom',40),('SettingsPanel','WBP_DenSettings',40),('CompositionsPanel','WBP_DenCompositions',40)]
 
 
@@ -34,6 +35,13 @@ def text(g,node,panel,field,value=None,constant=None):
 
 
 def visibility(g,node,obj,mode):return call(g,node,WIDGET+':SetVisibility',{'self':obj},InVisibility=mode)
+
+
+def style_toggle(g,node,panel,button,on):
+    """Shows whether a tool, tab or filter (ui_templates.toggle) is on."""
+    g.call(node,'self:StyleEditorToggle')
+    g.wire(*[(widget(g,node+part.lower(),panel,button+part),node+'.'+part) for part in ['Back','Icon','Label']],(on,node+'.On'))
+    return node
 
 
 def create_panels():
@@ -97,16 +105,16 @@ def mount():
     branch(g,'accepted',call(g,'match',KML+':EqualEqual_ObjectObject',{'A':current,'B':get(g,'EditorRig')}))
     call(g,'mode',WBL+':SetInputMode_GameAndUIEx',{'PlayerController':'entry.Player'},InMouseLockMode='DoNotLock',bHideCursorDuringCapture='false',bFlushInput='false')
     g.set('open','UIOpen','true');g.set('fontindex','FontIndex','0');g.set('confirmreset','ConfirmMode','0');g.set('panelreset','ActivePanel','');g.set('helpreset','HelpOpen','false')
-    g.call('selection','self:InitializeSelection');g.call('gizmo','self:InitializeEditorGizmo');g.call('refresh','self:RefreshEditorUI');g.call('recovery','self:OfferRecovery');g.set('yes','local:OK','true');finish_bool(g)
+    g.call('selection','self:InitializeSelection');g.call('gizmo','self:InitializeEditorGizmo');g.call('refresh','self:RefreshEditorUI');g.call('recovery','self:OfferRecovery');g.call('hud','self:HideGameHUD');g.set('yes','local:OK','true');finish_bool(g)
     g.call('cleanup','self:DetachEditor',RestoreView='true')
-    g.chain('entry','available','level','den','camera','subcast','subsave','player','viewcopy',*capture,'captured','buscreate','buscast','bussave','spawn','finish','rigcast','rigsave','rigbus','preferences','applypreferences','panels','created','startbus','enable','mapping','mapped',*setters,'target','accepted','mode','open','fontindex','confirmreset','panelreset','helpreset','selection','gizmo','refresh','recovery','yes','result')
+    g.chain('entry','available','level','den','camera','subcast','subsave','player','viewcopy',*capture,'captured','buscreate','buscast','bussave','spawn','finish','rigcast','rigsave','rigbus','preferences','applypreferences','panels','created','startbus','enable','mapping','mapped',*setters,'target','accepted','mode','open','fontindex','confirmreset','panelreset','helpreset','selection','gizmo','refresh','recovery','hud','yes','result')
     for pin in ['available.else','den.else','camera.else','subcast.CastFailed']:g.chain(pin,'result')
     for pin in ['buscast.CastFailed','rigcast.CastFailed','created.else','mapped.else','accepted.else']:g.chain(pin,'cleanup','result')
     return g.function('MountEditor',inputs=[v('Player','object:'+PC)],outputs=[v('Accepted','bool')],locals=[v('OK','bool','false')])
 
 
 def detach():
-    g=Graph();g.call('compositionparts','self:ClearCompositionSelection');g.call('compositionpreview','self:CancelCompositionPreview');g.call('stored','self:ClearStoreroomListing');g.call('thumbs','self:ReleaseThumbnails');g.call('placement','self:CancelPlacement');g.call('queue','self:ClearEditorMutations');g.call('catalog','self:ReleaseCatalog');g.call('gizmo','self:DestroyEditorGizmo');g.call('selection','self:ClearSelection');g.call('mappings','self:ReleaseEditorMappings');g.chain('entry','compositionparts','compositionpreview','stored','thumbs','placement','queue','catalog','gizmo','selection','mappings');previous='mappings'
+    g=Graph();g.call('compositionparts','self:ClearCompositionSelection');g.call('compositionpreview','self:CancelCompositionPreview');g.call('stored','self:ClearStoreroomListing');g.call('thumbs','self:ReleaseThumbnails');g.call('placement','self:CancelPlacement');g.call('queue','self:ClearEditorMutations');g.call('catalog','self:ReleaseCatalog');g.call('gizmo','self:DestroyEditorGizmo');g.call('selection','self:ClearSelection');g.call('mappings','self:ReleaseEditorMappings');g.call('hud','self:RestoreGameHUD');g.chain('entry','hud','compositionparts','compositionpreview','stored','thumbs','placement','queue','catalog','gizmo','selection','mappings');previous='mappings'
     operations=[('bus','InputBus',BUS+':Stop',{}),('riginput','EditorRig',ACTOR+':DisableInput',{})]
     for name,var,fn,defaults in operations:
         branch(g,name+'valid',validity(g,name+'check',get(g,var)));call(g,name,fn,dict({'self':get(g,var)},**({'PlayerController':get(g,'EditorController')} if name=='riginput' else {})),**defaults)
@@ -151,6 +159,28 @@ def look():
     return g.function('SetLooking',inputs=[v('Held','bool')])
 
 
+def game_hud(hide):
+    # The game hides its HUD for cinematics; PhotoMode uses the same request. Only the HUD switch is set, so camera,
+    # movement and the player stay as they are. A running game cinematic is left alone, and only our own request is
+    # released when the editor closes.
+    g=Graph();g.node('self','self')
+    sub=call(g,'subsystem',CINEMATIC+':GetCinematicSubsystem',{'WorldContextObject':'self.self'})
+    branch(g,'valid',validity(g,'subvalid',sub))
+    if hide:
+        busy=call(g,'busy',CINEMATIC+':IsAnyCinematicModeActive',{'self':sub})
+        notyet=call(g,'notyet',KML+':Not_PreBool',{'A':get(g,'HUDHidden')})
+        branch(g,'available',combine(g,'allowed',[call(g,'free',KML+':Not_PreBool',{'A':busy}),notyet]))
+        call(g,'request',CINEMATIC+':LegacyCinematicModeRequest',{'self':sub},bInCinematicMode='true',bHidePlayer='false',
+             bAffectsHUD='true',bAffectsMovement='false',bAffectsTurning='false')
+        g.set('hidden','HUDHidden','true');g.chain('entry','valid','available','request','hidden')
+    else:
+        branch(g,'hidden',get(g,'HUDHidden'))
+        call(g,'release',CINEMATIC+':LegacyCinematicModeRequest',{'self':sub},bInCinematicMode='false',bHidePlayer='false',
+             bAffectsHUD='false',bAffectsMovement='false',bAffectsTurning='false')
+        g.set('shown','HUDHidden','false');g.chain('entry','hidden','valid','release','shown');g.chain('valid.else','shown')
+    return g.function('HideGameHUD' if hide else 'RestoreGameHUD')
+
+
 def keep_camera():
     g=Graph();branch(g,'open',combine(g,'valid',[get(g,'UIOpen'),validity(g,'player',get(g,'EditorController')),validity(g,'rig',get(g,'EditorRig'))]))
     current=call(g,'current',PC+':GetViewTarget',{'self':get(g,'EditorController')})
@@ -190,7 +220,7 @@ def spec():
     variables=[v('EditorController','object:'+PC),v('PreviousView','object:'+ACTOR),v('EditorRig','object:'+RIG),v('InputSubsystem','object:'+SUB),v('InputBus','object:'+BUS),
         v('FontJob','object:'+JOB),v('FontRequestAt','double'),v('FontIndex','int'),v('UIOpen','bool'),v('ControllerCaptured','bool'),v('PreviousCursor','bool'),v('PreviousClicks','bool'),v('PreviousHover','bool'),
         v('Looking','bool'),v('ActivePanel','string'),v('HelpOpen','bool'),v('ConfirmMode','int'),v('GridIndex','int'),v('ReachIndex','int','1'),v('GridStep','double','0'),v('ReachCm','double','2000'),
-        v('StructureEnabled','bool','false'),v('FloorsEnabled','bool','true'),v('WallsEnabled','bool','false'),v('LastUIBusy','bool'),v('LastUIDraftStatus','int','-1'),v('UnhandledCommands','int'),v('LastUnhandled','string')]
+        v('StructureEnabled','bool','false'),v('FloorsEnabled','bool','true'),v('WallsEnabled','bool','false'),v('LastUIBusy','bool'),v('LastUIDraftStatus','int','-1'),v('UnhandledCommands','int'),v('LastUnhandled','string'),v('HUDHidden','bool')]
     variables += composition_variables()+composition_library_variables()+composition_preview_variables()+selection_variables()+queue_variables()+drag_variables()+gizmo_variables()+surface_variables()+copy_variables()+catalog_variables()+placement_variables()+thumbnail_variables()+storeroom_variables()+layout_ui_variables()+scope_ui_variables()+preference_variables()+input_variables()+settings_variables()
     variables += [v(var,'object:'+UIROOT+cls) for var,cls,_ in PANELS]
-    return dict(kind='blueprint',path=HOST,parent=SESSION,variables=variables,graph=g.spec(),functions=[create_panels(),mount(),detach(),look(),keep_camera(),*composition_functions(),*composition_library_functions(),*composition_preview_functions(),*command_functions(),*font_functions(),*selection_functions(),*transform_functions(),*queue_functions(),*drag_functions(),*gizmo_functions(),*surface_functions(),*copy_functions(),*catalog_functions(),*placement_functions(),*thumbnail_functions(),*storeroom_functions(),*layout_ui_functions(),*scope_ui_functions(),*preference_functions(),*input_functions(),*settings_functions()])
+    return dict(kind='blueprint',path=HOST,parent=SESSION,variables=variables,graph=g.spec(),functions=[create_panels(),mount(),detach(),look(),game_hud(True),game_hud(False),keep_camera(),*composition_functions(),*composition_library_functions(),*composition_preview_functions(),*command_functions(),*font_functions(),*selection_functions(),*transform_functions(),*queue_functions(),*drag_functions(),*gizmo_functions(),*surface_functions(),*copy_functions(),*catalog_functions(),*placement_functions(),*thumbnail_functions(),*storeroom_functions(),*layout_ui_functions(),*scope_ui_functions(),*preference_functions(),*input_functions(),*settings_functions()])

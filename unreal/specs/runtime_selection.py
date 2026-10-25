@@ -1,7 +1,7 @@
 """Native editor selection lifecycle; no blocking loads."""
 from graph import Graph, variable as v, KML, GS
 from runtime import unpack
-from runtime_store import call, branch, combine
+from runtime_store import call, branch, combine, STR
 from runtime_world import PRIMITIVE, set_value, validity
 from runtime_session import prop, method
 from runtime_apply import get
@@ -94,7 +94,9 @@ def revalidate():
 
 def refresh():
     g=Graph();branch(g,'valid',validity(g,'check',get(g,'Inspector')))
-    branch(g,'selected',get(g,'HasSelection'));unpack(g,'facts',FACT,get(g,'Selected'))
+    # Settings take the inspector dock's place while open.
+    settings=call(g,'settings',STR+'NotEqual_StrStr',{'A':get(g,'ActivePanel')},B='settings')
+    branch(g,'selected',combine(g,'shown',[get(g,'HasSelection'),settings]));unpack(g,'facts',FACT,get(g,'Selected'))
     text(g,'name','Inspector','Selection',value='facts.Label');visibility(g,'panelshow',widget(g,'panel','Inspector','Panel'),'SelfHitTestInvisible');visibility(g,'show',get(g,'Inspector'),'SelfHitTestInvisible');visibility(g,'hide',get(g,'Inspector'),'Collapsed')
     g.call('fields','self:RefreshTransformFields');g.call('gizmostyle','self:RefreshGizmoModeUI');g.chain('entry','valid','selected','name','panelshow','show','fields','gizmostyle');g.chain('selected.else','hide')
     return g.function('RefreshSelectionUI')
