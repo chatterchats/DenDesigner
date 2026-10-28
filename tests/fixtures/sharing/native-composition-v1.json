@@ -1,0 +1,85 @@
+{
+  "SchemaVersion": 1,
+  "Entries": [
+    {
+      "Kind": 0,
+      "Key": "local-generated-uuid",
+      "Mesh": "/Furniture/Meshes/SM_Chair.SM_Chair",
+      "Position": [
+        10,
+        20,
+        30
+      ],
+      "Rotation": [
+        0,
+        45,
+        0
+      ],
+      "Scale": [
+        1,
+        2,
+        1
+      ],
+      "HasPosition": true,
+      "HasRotation": true,
+      "HasScale": true,
+      "Hidden": false,
+      "CollisionMode": 2,
+      "Materials": [
+        "",
+        "/Finishes/Materials/MI_Blue.MI_Blue"
+      ],
+      "Source": "private/local/source",
+      "HasFingerprint": false,
+      "FingerprintMesh": "",
+      "FingerprintPosition": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "Kind": 0,
+      "Key": "second-local",
+      "Mesh": "/Furniture/Meshes/SM_Chair.SM_Chair",
+      "Position": [
+        60,
+        20,
+        30
+      ],
+      "Rotation": [
+        0,
+        45,
+        0
+      ],
+      "Scale": [
+        1,
+        2,
+        1
+      ],
+      "HasPosition": true,
+      "HasRotation": true,
+      "HasScale": true,
+      "Hidden": false,
+      "CollisionMode": 2,
+      "Materials": [
+        "",
+        "/Finishes/Materials/MI_Blue.MI_Blue"
+      ],
+      "Source": "private/local/source",
+      "HasFingerprint": false,
+      "FingerprintMesh": "",
+      "FingerprintPosition": [
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "HasCompositionAnchor": true,
+  "CompositionAnchor": [
+    500,
+    600,
+    0
+  ]
+}

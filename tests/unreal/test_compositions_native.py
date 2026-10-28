@@ -116,6 +116,8 @@ def run(unreal,host,bus,target,facts,get,field,field_name,check,settle,command,s
         check(not finish_preview() and rows(get(host,'WorkingDocument'))==baseline,'missing asset cancels composition without a partial layout write')
         host.call_method('SetEditorPanel',('compositions',));host.call_method('RefreshCompositionLibrary');rev=get(host,'CompositionListRevision');emit('composition_card',str(rev)+':0');emit('delete_composition');check(get(host,'ConfirmMode')==5,'composition deletion requires confirmation')
         emit('confirm_save');check(len(service.call_method('ListPresets')[0])==0,'confirmed delete removes only the named composition')
+        import test_community_native
+        test_community_native.run(unreal,host,document,get,field,check,saved,finish_preview,settle,command)
     finally:
         host.call_method('SetEditorConfirm',(0,));host.call_method('CancelCompositionPreview');host.call_method('ClearCompositionSelection');host.call_method('SetEditorPanel',('',))
         actors.destroy_actor(other)

@@ -48,6 +48,9 @@ def poll():
     branch(g,'stored',call(g,'isstored',STR+'EqualEqual_StrStr',{'A':get(g,'ActivePanel')},B='storeroom'));branch(g,'storedvalid',validity(g,'spvalid',get(g,'StoreroomPanel')))
     set_value(g,'storedlist','local:ThumbnailList',widget(g,'storeditems','StoreroomPanel','Stored'));g.get('list','local:ThumbnailList')
     branch(g,'compositions',call(g,'iscompositions',STR+'EqualEqual_StrStr',{'A':get(g,'ActivePanel')},B='compositions'));branch(g,'compositionsvalid',validity(g,'covvalid',get(g,'CompositionsPanel')));set_value(g,'compositionslist','local:ThumbnailList',widget(g,'compositionitems','CompositionsPanel','Compositions'))
+    branch(g,'community',call(g,'iscommunity',STR+'EqualEqual_StrStr',{'A':get(g,'ActivePanel')},B='community'));branch(g,'communityvalid',validity(g,'commvalid',get(g,'CommunityPanel')))
+    branch(g,'upload',call(g,'isupload',STR+'EqualEqual_StrStr',{'A':get(g,'CommunityArea')},B='upload'))
+    set_value(g,'sourceslist','local:ThumbnailList',widget(g,'sources','CommunityPanel','CommunitySources'));set_value(g,'publiclist','local:ThumbnailList',widget(g,'public','CommunityPanel','CommunityListings'))
     g.call('ensure','self:EnsureThumbnailWorker');branch(g,'worker',validity(g,'workervalid',get(g,'ThumbnailWorker')))
     rows=call(g,'rows',LIST+':GetDisplayedEntryWidgets',{'self':'list.ThumbnailList'});arr(g,'count','Length',rows)
     branch(g,'wrap',op(g,'beyond','GreaterEqual_IntInt',get(g,'ThumbnailCursor'),'count.ReturnValue'));g.set('reset','ThumbnailCursor','0')
@@ -58,7 +61,7 @@ def poll():
     method(g,'request',QUEUE,'Request',get(g,'ThumbnailWorker'),{'Path':path});set_value(g,'meshtexture','local:RequestedTexture','request.Texture');g.get('requested','local:RequestedTexture');branch(g,'texture',validity(g,'ready','requested.RequestedTexture'))
     current=prop(g,'current',ITEM,'Thumb',item);branch(g,'changed',call(g,'different',KML+':NotEqual_ObjectObject',{'A':current,'B':'requested.RequestedTexture'}));set_value(g,'assign',ITEM+':Thumb','requested.RequestedTexture');g.wire((item,'assign.self'));method(g,'refresh',TILE,'RefreshNativeThumbnail','tile.AsWBP Den Catalog Entry')
     set_value(g,'next','ThumbnailCursor',op(g,'increment','Add_IntInt',get(g,'ThumbnailCursor'),B=1));set_value(g,'step','local:Steps',op(g,'stepnext','Add_IntInt','steps.Steps',B=1))
-    g.chain('entry','open','catalog','catalogvalid','cataloglist','ensure','worker','wrap','reset','loop','tile','itemvalid','composition','requestcomposition','compositiontexture','texture','changed','assign','refresh','next','step','loop');g.chain('catalog.else','stored','storedvalid','storedlist','ensure');g.chain('wrap.else','loop');g.chain('stored.else','compositions','compositionsvalid','compositionslist','ensure');g.chain('composition.else','request','meshtexture','texture')
+    g.chain('entry','open','catalog','catalogvalid','cataloglist','ensure','worker','wrap','reset','loop','tile','itemvalid','composition','requestcomposition','compositiontexture','texture','changed','assign','refresh','next','step','loop');g.chain('catalog.else','stored','storedvalid','storedlist','ensure');g.chain('wrap.else','loop');g.chain('stored.else','compositions','compositionsvalid','compositionslist','ensure');g.chain('compositions.else','community','communityvalid','upload','sourceslist','ensure');g.chain('upload.else','publiclist','ensure');g.chain('composition.else','request','meshtexture','texture')
     for pin in ['tile.CastFailed','itemvalid.else','texture.else','changed.else']:g.chain(pin,'next')
     return g.function('PollThumbnailUI',locals=[v('ThumbnailList','object:'+LIST),v('Steps','int','0'),v('RequestedTexture','object:'+TEXTURE)])
 

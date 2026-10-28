@@ -1,0 +1,389 @@
+{
+  "date": "2026-10-26",
+  "scope": "Static investigation; no shipped-game execution",
+  "executable": {
+    "path": "/run/media/chats/e0057d4a-fe46-43eb-a837-db51979c500f/Games/STAR WARS Zero Company (2026)/Star Wars Zero Company/SWZeroCompany/Binaries/Win64/SWZeroCompany.exe",
+    "bytes": 267171480,
+    "sha256": "aa3ff2e0759c90bae58054f2a68398e5b705fdfd05659242404d8c3602c6f36e"
+  },
+  "historical_reflection_metadata": {
+    "tool": "UE4SS JMapGenerator (https://github.com/UE4SS-RE/RE-UE4SS)",
+    "timestamp": "2026-09-13T18:28:32Z",
+    "source": "SWZeroCompany.exe",
+    "engine_version": {
+      "major": 5,
+      "minor": 6
+    },
+    "build_change_list": "196985",
+    "image_base_address": "0x6fffec840000",
+    "object_count": 73481,
+    "vtable_count": 5124
+  },
+  "objects_count": 73481,
+  "functions_count": 37700,
+  "selected_objects": [
+    {
+      "path": "/Script/Bruno.BrunoSaveGameSubsystem:LoadFile",
+      "type": "Function",
+      "class": "/Script/CoreUObject.Function",
+      "outer": "/Script/Bruno.BrunoSaveGameSubsystem",
+      "super_struct": "",
+      "property_count": "2",
+      "children_count": "0",
+      "properties_size": "24",
+      "object_flags": "RF_Public | RF_Transient",
+      "class_flags": "",
+      "function_flags": "FUNC_Final | FUNC_Native | FUNC_Public | FUNC_BlueprintCallable",
+      "address": "0x7fffde6f4340",
+      "vtable": "0x6ffff95b59f0",
+      "instance_vtable": ""
+    },
+    {
+      "path": "/Script/Engine.GameplayStatics:LoadGameFromSlot",
+      "type": "Function",
+      "class": "/Script/CoreUObject.Function",
+      "outer": "/Script/Engine.GameplayStatics",
+      "super_struct": "",
+      "property_count": "3",
+      "children_count": "0",
+      "properties_size": "32",
+      "object_flags": "RF_Public | RF_Transient",
+      "class_flags": "",
+      "function_flags": "FUNC_Final | FUNC_RequiredAPI | FUNC_Native | FUNC_Static | FUNC_Public | FUNC_BlueprintCallable",
+      "address": "0x7fffde8eb368",
+      "vtable": "0x6ffff95b59f0",
+      "instance_vtable": ""
+    },
+    {
+      "path": "/Script/Engine.GameplayStatics:SaveGameToSlot",
+      "type": "Function",
+      "class": "/Script/CoreUObject.Function",
+      "outer": "/Script/Engine.GameplayStatics",
+      "super_struct": "",
+      "property_count": "4",
+      "children_count": "0",
+      "properties_size": "32",
+      "object_flags": "RF_Public | RF_Transient",
+      "class_flags": "",
+      "function_flags": "FUNC_Final | FUNC_RequiredAPI | FUNC_Native | FUNC_Static | FUNC_Public | FUNC_BlueprintCallable",
+      "address": "0x7fffde8ec5c8",
+      "vtable": "0x6ffff95b59f0",
+      "instance_vtable": ""
+    },
+    {
+      "path": "/Script/JsonUtilities",
+      "type": "Package",
+      "class": "/Script/CoreUObject.Package",
+      "outer": "",
+      "super_struct": "",
+      "property_count": "0",
+      "children_count": "3",
+      "properties_size": "",
+      "object_flags": "RF_Public",
+      "class_flags": "",
+      "function_flags": "",
+      "address": "0x7fffde368900",
+      "vtable": "0x6ffff95f78a0",
+      "instance_vtable": ""
+    },
+    {
+      "path": "/Script/JsonUtilities.Default__JsonUtilitiesDummyObject",
+      "type": "Object",
+      "class": "/Script/JsonUtilities.JsonUtilitiesDummyObject",
+      "outer": "/Script/JsonUtilities",
+      "super_struct": "",
+      "property_count": "0",
+      "children_count": "0",
+      "properties_size": "",
+      "object_flags": "RF_Public | RF_ClassDefaultObject | RF_ArchetypeObject",
+      "class_flags": "",
+      "function_flags": "",
+      "address": "0x7fffdec83a60",
+      "vtable": "0x6ffff95b6700",
+      "instance_vtable": ""
+    },
+    {
+      "path": "/Script/JsonUtilities.JsonObjectWrapper",
+      "type": "ScriptStruct",
+      "class": "/Script/CoreUObject.ScriptStruct",
+      "outer": "/Script/JsonUtilities",
+      "super_struct": "",
+      "property_count": "1",
+      "children_count": "0",
+      "properties_size": "32",
+      "object_flags": "RF_Public | RF_Transient",
+      "class_flags": "",
+      "function_flags": "",
+      "address": "0x7fffde727d88",
+      "vtable": "0x6ffff95b7438",
+      "instance_vtable": ""
+    },
+    {
+      "path": "/Script/JsonUtilities.JsonUtilitiesDummyObject",
+      "type": "Class",
+      "class": "/Script/CoreUObject.Class",
+      "outer": "/Script/JsonUtilities",
+      "super_struct": "/Script/CoreUObject.Object",
+      "property_count": "0",
+      "children_count": "0",
+      "properties_size": "40",
+      "object_flags": "RF_Public | RF_Standalone | RF_Transient",
+      "class_flags": "CLASS_MatchedSerializers | CLASS_Native | CLASS_TokenStreamAssembled | CLASS_Intrinsic | CLASS_Constructed",
+      "function_flags": "",
+      "address": "0x7fffde00e750",
+      "vtable": "0x6ffff95c43a8",
+      "instance_vtable": "0x6ffff95b6700"
+    },
+    {
+      "path": "/Script/MovieRenderPipelineCore.MoviePipelineExecutorBase",
+      "type": "Class",
+      "class": "/Script/CoreUObject.Class",
+      "outer": "/Script/MovieRenderPipelineCore",
+      "super_struct": "/Script/CoreUObject.Object",
+      "property_count": "7",
+      "children_count": "17",
+      "properties_size": "280",
+      "object_flags": "RF_Public | RF_Standalone | RF_Transient",
+      "class_flags": "CLASS_Abstract | CLASS_MatchedSerializers | CLASS_Native | CLASS_RequiredAPI | CLASS_TokenStreamAssembled | CLASS_HasInstancedReference | CLASS_Intrinsic | CLASS_Constructed",
+      "function_flags": "",
+      "address": "0x7fffde1fc550",
+      "vtable": "0x6ffff95c43a8",
+      "instance_vtable": "0x6ffffa67a0c0"
+    },
+    {
+      "path": "/Script/MovieRenderPipelineCore.MoviePipelineExecutorBase:SendHTTPRequest",
+      "type": "Function",
+      "class": "/Script/CoreUObject.Function",
+      "outer": "/Script/MovieRenderPipelineCore.MoviePipelineExecutorBase",
+      "super_struct": "",
+      "property_count": "5",
+      "children_count": "0",
+      "properties_size": "136",
+      "object_flags": "RF_Public | RF_Transient",
+      "class_flags": "",
+      "function_flags": "FUNC_Final | FUNC_Native | FUNC_Protected | FUNC_HasOutParms | FUNC_BlueprintCallable",
+      "address": "0x7fffdea33108",
+      "vtable": "0x6ffff95b59f0",
+      "instance_vtable": ""
+    },
+    {
+      "path": "/Script/MovieRenderPipelineCore.MoviePipelineHttpResponseRecieved__DelegateSignature",
+      "type": "Function",
+      "class": "/Script/CoreUObject.DelegateFunction",
+      "outer": "/Script/MovieRenderPipelineCore",
+      "super_struct": "",
+      "property_count": "3",
+      "children_count": "0",
+      "properties_size": "24",
+      "object_flags": "RF_Public | RF_Transient",
+      "class_flags": "",
+      "function_flags": "FUNC_MulticastDelegate | FUNC_Public | FUNC_Delegate",
+      "address": "0x7fffde63e4b0",
+      "vtable": "0x6ffff95b59f0",
+      "instance_vtable": ""
+    },
+    {
+      "path": "/Script/UMG.AsyncTaskDownloadImage:DownloadImage",
+      "type": "Function",
+      "class": "/Script/CoreUObject.Function",
+      "outer": "/Script/UMG.AsyncTaskDownloadImage",
+      "super_struct": "",
+      "property_count": "2",
+      "children_count": "0",
+      "properties_size": "24",
+      "object_flags": "RF_Public | RF_Transient",
+      "class_flags": "",
+      "function_flags": "FUNC_Final | FUNC_RequiredAPI | FUNC_Native | FUNC_Static | FUNC_Public | FUNC_BlueprintCallable",
+      "address": "0x7fffde86f048",
+      "vtable": "0x6ffff95b59f0",
+      "instance_vtable": ""
+    }
+  ],
+  "selected_properties": [
+    {
+      "owner_path": "/Script/MovieRenderPipelineCore.MoviePipelineExecutorBase",
+      "owner_type": "Class",
+      "property_index": "3",
+      "name": "HTTPResponseRecievedDelegate",
+      "offset": "144",
+      "size": "16",
+      "array_dim": "1",
+      "type": "MulticastInlineDelegateProperty",
+      "type_detail": "signature_function=/Script/MovieRenderPipelineCore.MoviePipelineHttpResponseRecieved__DelegateSignature",
+      "flags": "CPF_ZeroConstructor | CPF_InstancedReference | CPF_BlueprintAssignable | CPF_Protected | CPF_NativeAccessSpecifierProtected",
+      "address": "0x5da6a580"
+    },
+    {
+      "owner_path": "/Script/MovieRenderPipelineCore.MoviePipelineExecutorBase:SendHTTPRequest",
+      "owner_type": "Function",
+      "property_index": "0",
+      "name": "InURL",
+      "offset": "0",
+      "size": "16",
+      "array_dim": "1",
+      "type": "StrProperty",
+      "type_detail": "",
+      "flags": "CPF_Parm | CPF_ZeroConstructor | CPF_HasGetValueTypeHash | CPF_NativeAccessSpecifierPublic",
+      "address": "0x5da71580"
+    },
+    {
+      "owner_path": "/Script/MovieRenderPipelineCore.MoviePipelineExecutorBase:SendHTTPRequest",
+      "owner_type": "Function",
+      "property_index": "1",
+      "name": "InVerb",
+      "offset": "16",
+      "size": "16",
+      "array_dim": "1",
+      "type": "StrProperty",
+      "type_detail": "",
+      "flags": "CPF_Parm | CPF_ZeroConstructor | CPF_HasGetValueTypeHash | CPF_NativeAccessSpecifierPublic",
+      "address": "0x5da715f0"
+    },
+    {
+      "owner_path": "/Script/MovieRenderPipelineCore.MoviePipelineExecutorBase:SendHTTPRequest",
+      "owner_type": "Function",
+      "property_index": "2",
+      "name": "InMessage",
+      "offset": "32",
+      "size": "16",
+      "array_dim": "1",
+      "type": "StrProperty",
+      "type_detail": "",
+      "flags": "CPF_Parm | CPF_ZeroConstructor | CPF_HasGetValueTypeHash | CPF_NativeAccessSpecifierPublic",
+      "address": "0x5da71660"
+    },
+    {
+      "owner_path": "/Script/MovieRenderPipelineCore.MoviePipelineExecutorBase:SendHTTPRequest",
+      "owner_type": "Function",
+      "property_index": "3",
+      "name": "InHeaders",
+      "offset": "48",
+      "size": "80",
+      "array_dim": "1",
+      "type": "MapProperty",
+      "type_detail": "key_prop={\"address\":\"0x5da71740\",\"name\":\"InHeaders_Key\",\"offset\":0,\"array_dim\":1,\"size\":16,\"type\":\"StrProperty\",\"flags\":\"CPF_ZeroConstructor | CPF_HasGetValueTypeHash\"} | value_prop={\"address\":\"0x5da716d0\",\"name\":\"InHeaders\",\"offset\":16,\"array_dim\":1,\"size\":16,\"type\":\"StrProperty\",\"flags\":\"CPF_ZeroConstructor | CPF_HasGetValueTypeHash\"}",
+      "flags": "CPF_ConstParm | CPF_Parm | CPF_OutParm | CPF_ReferenceParm | CPF_NativeAccessSpecifierPublic",
+      "address": "0x5d8018c0"
+    },
+    {
+      "owner_path": "/Script/MovieRenderPipelineCore.MoviePipelineExecutorBase:SendHTTPRequest",
+      "owner_type": "Function",
+      "property_index": "4",
+      "name": "ReturnValue",
+      "offset": "128",
+      "size": "4",
+      "array_dim": "1",
+      "type": "IntProperty",
+      "type_detail": "",
+      "flags": "CPF_Parm | CPF_OutParm | CPF_ZeroConstructor | CPF_ReturnParm | CPF_IsPlainOldData | CPF_NoDestructor | CPF_HasGetValueTypeHash | CPF_NativeAccessSpecifierPublic",
+      "address": "0x5da717b0"
+    },
+    {
+      "owner_path": "/Script/MovieRenderPipelineCore.MoviePipelineHttpResponseRecieved__DelegateSignature",
+      "owner_type": "Function",
+      "property_index": "0",
+      "name": "RequestIndex",
+      "offset": "0",
+      "size": "4",
+      "array_dim": "1",
+      "type": "IntProperty",
+      "type_detail": "",
+      "flags": "CPF_Parm | CPF_ZeroConstructor | CPF_IsPlainOldData | CPF_NoDestructor | CPF_HasGetValueTypeHash | CPF_NativeAccessSpecifierPublic",
+      "address": "0x5d1a3500"
+    },
+    {
+      "owner_path": "/Script/MovieRenderPipelineCore.MoviePipelineHttpResponseRecieved__DelegateSignature",
+      "owner_type": "Function",
+      "property_index": "1",
+      "name": "ResponseCode",
+      "offset": "4",
+      "size": "4",
+      "array_dim": "1",
+      "type": "IntProperty",
+      "type_detail": "",
+      "flags": "CPF_Parm | CPF_ZeroConstructor | CPF_IsPlainOldData | CPF_NoDestructor | CPF_HasGetValueTypeHash | CPF_NativeAccessSpecifierPublic",
+      "address": "0x5d1a3490"
+    },
+    {
+      "owner_path": "/Script/MovieRenderPipelineCore.MoviePipelineHttpResponseRecieved__DelegateSignature",
+      "owner_type": "Function",
+      "property_index": "2",
+      "name": "Message",
+      "offset": "8",
+      "size": "16",
+      "array_dim": "1",
+      "type": "StrProperty",
+      "type_detail": "",
+      "flags": "CPF_Parm | CPF_ZeroConstructor | CPF_HasGetValueTypeHash | CPF_NativeAccessSpecifierPublic",
+      "address": "0x5d1a3420"
+    }
+  ],
+  "bounded_absence_search": {
+    "VaRest": [],
+    "HttpBlueprint": [],
+    "JsonBlueprint": [],
+    "PythonScript": [],
+    "FileHelper": [],
+    "LoadFileToString": []
+  },
+  "source_hashes": [
+    {
+      "path": "/run/media/chats/e0057d4a-fe46-43eb-a837-db51979c500f/ZComMods/ZeroCompany_RE_Reference_v2/reference/mappings/jmap/objects.tsv",
+      "sha256": "c367c0d477d9c2b83034c77af4313920dda704136f464116749e78c5a8d8c639"
+    },
+    {
+      "path": "/run/media/chats/e0057d4a-fe46-43eb-a837-db51979c500f/ZComMods/ZeroCompany_RE_Reference_v2/reference/mappings/jmap/properties.tsv",
+      "sha256": "a5407b83b10d129a07c3749976d0c27ad2dd896d462e803d4c21629b9807408a"
+    },
+    {
+      "path": "/run/media/chats/e0057d4a-fe46-43eb-a837-db51979c500f/ZComMods/ZeroCompany_RE_Reference_v2/reference/object_dumps/object_symbol_presence.tsv",
+      "sha256": "9e33bf610494677d7e90ca1e87df5a14f99ad0505a9ff1a14d3bde290a09c682"
+    },
+    {
+      "path": "/run/media/chats/0c7bd812-03b4-405c-9602-31282b68fd64/UnrealEngine/Engine/Plugins/MovieScene/MovieRenderPipeline/Source/MovieRenderPipelineCore/Public/MoviePipelineExecutor.h",
+      "sha256": "5e07bd235d012335d6aac6bbd70588b09edbaaaa7358df75e9229385c9accbd5"
+    },
+    {
+      "path": "/run/media/chats/0c7bd812-03b4-405c-9602-31282b68fd64/UnrealEngine/Engine/Plugins/MovieScene/MovieRenderPipeline/Source/MovieRenderPipelineCore/Private/MoviePipelineExecutor.cpp",
+      "sha256": "8a72799146afab5156cc50ad45cf99801989c9e9f7d8f743c7be693ee6b728ab"
+    },
+    {
+      "path": "/run/media/chats/0c7bd812-03b4-405c-9602-31282b68fd64/UnrealEngine/Engine/Source/Runtime/UMG/Private/Blueprint/AsyncTaskDownloadImage.cpp",
+      "sha256": "86760274d3cd23042c8f5ac57d26dbd803a5c2335d16c15c7ab1d1794bf5cb3e"
+    },
+    {
+      "path": "/run/media/chats/0c7bd812-03b4-405c-9602-31282b68fd64/UnrealEngine/Engine/Plugins/Experimental/PythonScriptPlugin/PythonScriptPlugin.uplugin",
+      "sha256": "7a355543790998ba9bf947abc0ac52bdcc942b173d6c863d687d84e95c894699"
+    }
+  ],
+  "binary_literal_offsets": {
+    "SendHTTPRequest": {
+      "ascii": 233213456,
+      "utf16le": -1
+    },
+    "MoviePipelineExecutorBase": {
+      "ascii": -1,
+      "utf16le": 233212466
+    },
+    "JsonObjectWrapper": {
+      "ascii": 218694112,
+      "utf16le": 218693634
+    },
+    "JsonBlueprintUtilities": {
+      "ascii": -1,
+      "utf16le": -1
+    },
+    "AsyncTaskDownloadImage": {
+      "ascii": -1,
+      "utf16le": 221985632
+    },
+    "VaRest": {
+      "ascii": -1,
+      "utf16le": -1
+    },
+    "HttpBlueprint": {
+      "ascii": -1,
+      "utf16le": -1
+    }
+  }
+}

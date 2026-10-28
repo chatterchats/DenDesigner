@@ -35,6 +35,15 @@ Layouts live under `Saved/SaveGames/ZComDen/Native/v1`; thumbnails use `Saved/ZC
 These existing namespaces are intentionally stable. The mod does not write decorations into the
 campaign save.
 
+The [Community bridge](distribution/community/README.md) powers a dedicated in-game
+**Community** window, separate from the local **Compositions** workflow. Browse the
+actual public service feed with search/paging, inspect locally rendered previews,
+and Download to the local library. Upload chooses saved LOCAL sources independently;
+review, publishing and Account stay in Community. The bridge remains headless.
+Dens browse and Full Den publishing are explicitly unavailable until their stage.
+The core local editor remains pak-only. See the
+[verification record](docs/community-verification.md) for test scope and feed limits.
+
 ## Source and builds
 
 Players need the runtime ZIP, not this source checkout. Build archives are kept out of Git;
@@ -79,3 +88,4 @@ art retain their original ownership and licenses. The development sample manifes
 [credits](authoring/prop-packs/example/CREDITS.md) are included, but its local artwork is excluded
 from Git pending complete cabinet provenance. Public pack creators should use their own assets.
 
+Community authentication implementation and beta upload setup: [Steam sign-in and upload keys](docs/community-authentication.md).

@@ -1,0 +1,11 @@
+[
+  {
+    "key": "/Game/Maps/Den.Den:PersistentLevel.Table.StaticMeshComponent0",
+    "mesh": "/Game/Den/SM_Table.SM_Table",
+    "position": [
+      100,
+      0,
+      0
+    ]
+  }
+]

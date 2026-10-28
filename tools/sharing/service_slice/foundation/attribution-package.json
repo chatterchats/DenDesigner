@@ -1,0 +1,19 @@
+{
+  "name": "zcom-share",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test",
+    "dev": "npm run build && wrangler dev --config wrangler.local.jsonc --local",
+    "dev:fixtures": "npm run build && wrangler dev --config wrangler.local.jsonc --local --var FIXTURE_MODE:true",
+    "db:local": "wrangler d1 migrations apply DB --local --config wrangler.local.jsonc",
+    "db:production": "wrangler d1 migrations apply DB --remote --config wrangler.production.jsonc",
+    "deploy:check": "npm run build && wrangler deploy --dry-run --config wrangler.production.jsonc",
+    "deploy": "npm run build && npm test && wrangler deploy --config wrangler.production.jsonc",
+    "verify": "node scripts/verify.mjs"
+  },
+  "devDependencies": { "wrangler": "4.153.0" },
+  "engines": { "node": ">=22" }
+}

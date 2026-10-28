@@ -1,0 +1,81 @@
+[
+  {
+    "schema": 1,
+    "plugin": "Furniture",
+    "id": "furniture-pack",
+    "title": "Furniture",
+    "author": "Creator",
+    "version": "1.0.0",
+    "props": [
+      {
+        "name": "Chair",
+        "mesh": "/Furniture/Meshes/SM_Chair.SM_Chair",
+        "size": [
+          50,
+          50,
+          90
+        ],
+        "collision": true
+      }
+    ],
+    "assets": [
+      {
+        "id": "chair-mesh",
+        "path": "/Furniture/Meshes/SM_Chair.SM_Chair",
+        "kind": "mesh"
+      }
+    ]
+  },
+  {
+    "schema": 1,
+    "plugin": "Finishes",
+    "id": "finishes-pack",
+    "title": "Finishes",
+    "author": "Creator",
+    "version": "2.0.0",
+    "props": [
+      {
+        "name": "Swatch",
+        "mesh": "/Finishes/SM_Swatch.SM_Swatch",
+        "size": [
+          10,
+          10,
+          10
+        ],
+        "collision": false
+      }
+    ],
+    "assets": [
+      {
+        "id": "swatch-mesh",
+        "path": "/Finishes/SM_Swatch.SM_Swatch",
+        "kind": "mesh"
+      },
+      {
+        "id": "blue-material",
+        "path": "/Finishes/Materials/MI_Blue.MI_Blue",
+        "kind": "material"
+      }
+    ]
+  },
+  {
+    "schema": 1,
+    "plugin": "Unused",
+    "id": "unused-pack",
+    "title": "Unused",
+    "author": "Creator",
+    "version": "1.0.0",
+    "props": [
+      {
+        "name": "Unused",
+        "mesh": "/Unused/SM_Thing.SM_Thing",
+        "size": [
+          1,
+          1,
+          1
+        ],
+        "collision": false
+      }
+    ]
+  }
+]

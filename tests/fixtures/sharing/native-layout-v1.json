@@ -1,0 +1,127 @@
+{
+  "SchemaVersion": 1,
+  "Entries": [
+    {
+      "Kind": 0,
+      "Key": "local-generated-uuid",
+      "Mesh": "/Furniture/Meshes/SM_Chair.SM_Chair",
+      "Position": [
+        10,
+        20,
+        30
+      ],
+      "Rotation": [
+        0,
+        45,
+        0
+      ],
+      "Scale": [
+        1,
+        2,
+        1
+      ],
+      "HasPosition": true,
+      "HasRotation": true,
+      "HasScale": true,
+      "Hidden": false,
+      "CollisionMode": 2,
+      "Materials": [
+        "",
+        "/Finishes/Materials/MI_Blue.MI_Blue"
+      ],
+      "Source": "private/local/source",
+      "HasFingerprint": false,
+      "FingerprintMesh": "",
+      "FingerprintPosition": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "Kind": 1,
+      "Key": "stored-local",
+      "Mesh": "/Furniture/Meshes/SM_Chair.SM_Chair",
+      "Position": [
+        -10,
+        0,
+        1
+      ],
+      "Rotation": [
+        0,
+        45,
+        0
+      ],
+      "Scale": [
+        1,
+        2,
+        1
+      ],
+      "HasPosition": true,
+      "HasRotation": true,
+      "HasScale": true,
+      "Hidden": false,
+      "CollisionMode": 2,
+      "Materials": [
+        "",
+        "/Finishes/Materials/MI_Blue.MI_Blue"
+      ],
+      "Source": "private/local/source",
+      "HasFingerprint": false,
+      "FingerprintMesh": "",
+      "FingerprintPosition": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "Kind": 2,
+      "Key": "/Game/Maps/Den.Den:PersistentLevel.Table.StaticMeshComponent0",
+      "Mesh": "/Game/Den/SM_Table.SM_Table",
+      "Position": [
+        10,
+        20,
+        30
+      ],
+      "Rotation": [
+        0,
+        45,
+        0
+      ],
+      "Scale": [
+        1,
+        2,
+        1
+      ],
+      "HasPosition": false,
+      "HasRotation": false,
+      "HasScale": false,
+      "Hidden": true,
+      "CollisionMode": 2,
+      "Materials": [],
+      "Source": "private/local/source",
+      "HasFingerprint": true,
+      "FingerprintMesh": "/Game/Den/SM_Table.SM_Table",
+      "FingerprintPosition": [
+        100,
+        0,
+        0
+      ]
+    }
+  ],
+  "CampaignID": "SECRET-CAMPAIGN",
+  "StorageKey": "campaign-private",
+  "Scope": "campaign",
+  "Revision": 76,
+  "ContentID": "private-bank",
+  "WriteCompleteID": "private-commit",
+  "DraftBaseID": "private-recovery",
+  "Preferences": {
+    "token": "secret"
+  },
+  "LocalPath": "/home/private",
+  "Credentials": {
+    "password": "secret"
+  }
+}

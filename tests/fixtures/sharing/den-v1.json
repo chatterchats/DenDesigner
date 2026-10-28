@@ -1,0 +1,177 @@
+{
+  "format": "zcom-share",
+  "schema_version": 1,
+  "content_type": "den",
+  "metadata": {
+    "title": "Blue corner",
+    "description": "A chair arrangement",
+    "author": {
+      "id": "author-public-id",
+      "display_name": "Creator"
+    },
+    "media": [
+      {
+        "id": "preview-1",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 600,
+        "bytes": 1000,
+        "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "alt": "Blue chairs"
+      }
+    ]
+  },
+  "compatibility": {
+    "game_id": "steam:2075800",
+    "game_version": "fixture-game-1",
+    "mod_id": "community.den-designer",
+    "mod_version": "fixture-mod-1",
+    "native_fingerprint": "d551ebd3505b1834dae56c40be27755e573c0c224c486e145aa2e7aacb2a18b9"
+  },
+  "payload": {
+    "entries": [
+      {
+        "Kind": 0,
+        "Key": "prop-0",
+        "Mesh": "/Furniture/Meshes/SM_Chair.SM_Chair",
+        "Position": [
+          10,
+          20,
+          30
+        ],
+        "Rotation": [
+          0,
+          45,
+          0
+        ],
+        "Scale": [
+          1,
+          2,
+          1
+        ],
+        "HasPosition": true,
+        "HasRotation": true,
+        "HasScale": true,
+        "Hidden": false,
+        "CollisionMode": 2,
+        "Materials": [
+          "",
+          "/Finishes/Materials/MI_Blue.MI_Blue"
+        ],
+        "HasFingerprint": false,
+        "FingerprintMesh": "",
+        "FingerprintPosition": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "Kind": 1,
+        "Key": "prop-1",
+        "Mesh": "/Furniture/Meshes/SM_Chair.SM_Chair",
+        "Position": [
+          -10,
+          0,
+          1
+        ],
+        "Rotation": [
+          0,
+          45,
+          0
+        ],
+        "Scale": [
+          1,
+          2,
+          1
+        ],
+        "HasPosition": true,
+        "HasRotation": true,
+        "HasScale": true,
+        "Hidden": false,
+        "CollisionMode": 2,
+        "Materials": [
+          "",
+          "/Finishes/Materials/MI_Blue.MI_Blue"
+        ],
+        "HasFingerprint": false,
+        "FingerprintMesh": "",
+        "FingerprintPosition": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "Kind": 2,
+        "Key": "/Game/Maps/Den.Den:PersistentLevel.Table.StaticMeshComponent0",
+        "Mesh": "/Game/Den/SM_Table.SM_Table",
+        "Position": [
+          10,
+          20,
+          30
+        ],
+        "Rotation": [
+          0,
+          45,
+          0
+        ],
+        "Scale": [
+          1,
+          2,
+          1
+        ],
+        "HasPosition": false,
+        "HasRotation": false,
+        "HasScale": false,
+        "Hidden": true,
+        "CollisionMode": 2,
+        "Materials": [],
+        "HasFingerprint": true,
+        "FingerprintMesh": "/Game/Den/SM_Table.SM_Table",
+        "FingerprintPosition": [
+          100,
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "dependencies": {
+    "packs": [
+      {
+        "id": "finishes-pack",
+        "version": "2.0.0"
+      },
+      {
+        "id": "furniture-pack",
+        "version": "1.0.0"
+      }
+    ],
+    "assets": [
+      {
+        "path": "/Finishes/Materials/MI_Blue.MI_Blue",
+        "kind": "material",
+        "owner": "finishes-pack",
+        "asset_id": "blue-material"
+      },
+      {
+        "path": "/Furniture/Meshes/SM_Chair.SM_Chair",
+        "kind": "mesh",
+        "owner": "furniture-pack",
+        "asset_id": "chair-mesh"
+      },
+      {
+        "path": "/Game/Den/SM_Table.SM_Table",
+        "kind": "mesh",
+        "owner": "game",
+        "asset_id": "native-table"
+      }
+    ],
+    "unknown_assets": []
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "payload_sha256": "f3dce448802475e20410236d7ed0530a9299b983fe6c26b413c71666db14a36a"
+  }
+}

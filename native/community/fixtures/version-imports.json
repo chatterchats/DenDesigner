@@ -1,0 +1,27 @@
+{
+  "SWZeroCompany.exe": {
+    "sha256": "aa3ff2e0759c90bae58054f2a68398e5b705fdfd05659242404d8c3602c6f36e",
+    "version_imports": [
+      "VerQueryValueW",
+      "GetFileVersionInfoW",
+      "GetFileVersionInfoSizeW"
+    ]
+  },
+  "d3d12core.dll": {
+    "sha256": "37016d6b7d9507aec44ce096e634d331f9d116d343ec2cde0a07fd4db6509bb2",
+    "version_imports": [
+      "GetFileVersionInfoSizeW",
+      "GetFileVersionInfoW",
+      "VerQueryValueA"
+    ]
+  },
+  "dxgi.dll": {
+    "sha256": "0cee63f9c9f13f3ac909c5b4903f4dbb4b719a7ab3b4f13b0deaf83c814b94f7",
+    "version_imports": [
+      "VerQueryValueW",
+      "GetFileVersionInfoSizeW",
+      "VerQueryValueA",
+      "GetFileVersionInfoW"
+    ]
+  }
+}

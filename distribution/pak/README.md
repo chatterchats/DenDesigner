@@ -1,7 +1,21 @@
 # Den Designer — pak edition
 
+Preview.21 corrects the preview.20 startup serialization crash. Preview.20 is withdrawn.
+
 Decorate the Den with the game's props. This edition runs entirely from cooked Blueprint assets:
 no UE4SS, Python, or additional DLL is required to play.
+
+The **Compositions** toolbar destination is local: create, browse, place and delete
+saved arrangements. The distinct **Community** destination contains online Browse,
+Upload and Account controls, using the matching headless bridge **0.1.0-preview.10**
+with this **1.1.0-preview.22** pak. Browse actual public compositions, inspect locally
+rendered previews and Download to the local library without placing them. Upload
+selects saved LOCAL compositions independently of browsing; metadata, dependency
+review, progress and connection controls stay in the game. Remember connection
+explicitly opts into plain local key storage. Only the website-account button opens
+a browser for Steam/key generation. Dens browsing and Full Den publishing remain
+labelled placeholders pending their backend/capture stage. The offline editor and
+local Compositions work without the bridge. See its installation guide for details.
 
 The archive mirrors the game's `SWZeroCompany` folder. Its single component lives under
 `Content/Paks/~mods/DenDesigner/`, with `modinfo.json` and `zcom-mod.json` beside the three containers.

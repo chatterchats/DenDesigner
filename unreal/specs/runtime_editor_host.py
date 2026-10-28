@@ -20,7 +20,7 @@ SUBINTERFACE='/Script/EnhancedInput.EnhancedInputSubsystemInterface'
 WIDGET='/Script/UMG.Widget'
 USERWIDGET='/Script/UMG.UserWidget'
 CINEMATIC='/Script/BitReactorGame.BRG_CinematicSubsystem'
-PANELS=[('Toolbar','WBP_DenToolbar',50),('Inspector','WBP_DenTransform',45),('CatalogPanel','WBP_DenCatalog',40),('LayoutsPanel','WBP_DenLayouts',40),('StoreroomPanel','WBP_DenStoreroom',40),('SettingsPanel','WBP_DenSettings',40),('CompositionsPanel','WBP_DenCompositions',40)]
+PANELS=[('Toolbar','WBP_DenToolbar',50),('Inspector','WBP_DenTransform',45),('CatalogPanel','WBP_DenCatalog',40),('LayoutsPanel','WBP_DenLayouts',40),('StoreroomPanel','WBP_DenStoreroom',40),('SettingsPanel','WBP_DenSettings',40),('CompositionsPanel','WBP_DenCompositions',40),('CommunityPanel','WBP_DenCommunity',40)]
 
 
 def widget_class(variable):return UIROOT+next(cls for var,cls,_ in PANELS if var==variable)
@@ -50,7 +50,7 @@ def create_panel(var,cls,order):
     g=Graph();g.node('self','self');previous='entry'
     obj=call(g,'create'+var,WBL+':Create',{'WorldContextObject':'self.self','OwningPlayer':get(g,'EditorController')},WidgetType=UIROOT+cls)
     g.node('cast'+var,'cast',**{'class':UIROOT+cls});g.wire((obj,'cast'+var+'.Object'))
-    castpin='cast'+var+'.As'+{'WBP_DenToolbar':'WBP Den Toolbar','WBP_DenTransform':'WBP Den Transform','WBP_DenCatalog':'WBP Den Catalog','WBP_DenLayouts':'WBP Den Layouts','WBP_DenStoreroom':'WBP Den Storeroom','WBP_DenSettings':'WBP Den Settings','WBP_DenCompositions':'WBP Den Compositions'}[cls]
+    castpin='cast'+var+'.As'+{'WBP_DenToolbar':'WBP Den Toolbar','WBP_DenTransform':'WBP Den Transform','WBP_DenCatalog':'WBP Den Catalog','WBP_DenLayouts':'WBP Den Layouts','WBP_DenStoreroom':'WBP Den Storeroom','WBP_DenSettings':'WBP Den Settings','WBP_DenCompositions':'WBP Den Compositions','WBP_DenCommunity':'WBP Den Community'}[cls]
     set_value(g,'save'+var,var,castpin)
     set_value(g,'bus'+var,UIROOT+cls+':EditorBus',get(g,'InputBus'));g.wire((get(g,var),'bus'+var+'.self'))
     call(g,'show'+var,USERWIDGET+':AddToViewport',{'self':get(g,var)},ZOrder=order)
@@ -126,7 +126,7 @@ def mount():
 
 
 def detach():
-    g=Graph();g.call('compositionparts','self:ClearCompositionSelection');g.call('compositionpreview','self:CancelCompositionPreview');g.call('stored','self:ClearStoreroomListing');g.call('thumbs','self:ReleaseThumbnails');g.call('placement','self:CancelPlacement');g.call('queue','self:ClearEditorMutations');g.call('catalog','self:ReleaseCatalog');g.call('gizmo','self:DestroyEditorGizmo');g.call('selection','self:ClearSelection');g.call('mappings','self:ReleaseEditorMappings');g.call('hud','self:RestoreGameHUD');g.chain('entry','hud','compositionparts','compositionpreview','stored','thumbs','placement','queue','catalog','gizmo','selection','mappings');previous='mappings'
+    g=Graph();g.call('communitycancel','self:CancelCommunityFetch');g.call('compositionparts','self:ClearCompositionSelection');g.call('compositionpreview','self:CancelCompositionPreview');g.call('stored','self:ClearStoreroomListing');g.call('thumbs','self:ReleaseThumbnails');g.call('placement','self:CancelPlacement');g.call('queue','self:ClearEditorMutations');g.call('catalog','self:ReleaseCatalog');g.call('gizmo','self:DestroyEditorGizmo');g.call('selection','self:ClearSelection');g.call('mappings','self:ReleaseEditorMappings');g.call('hud','self:RestoreGameHUD');g.chain('entry','hud','communitycancel','compositionparts','compositionpreview','stored','thumbs','placement','queue','catalog','gizmo','selection','mappings');previous='mappings'
     operations=[('bus','InputBus',BUS+':Stop',{}),('riginput','EditorRig',ACTOR+':DisableInput',{})]
     for name,var,fn,defaults in operations:
         branch(g,name+'valid',validity(g,name+'check',get(g,var)));call(g,name,fn,dict({'self':get(g,var)},**({'PlayerController':get(g,'EditorController')} if name=='riginput' else {})),**defaults)
@@ -267,18 +267,20 @@ def full_spec():
     from runtime_settings_ui import functions as settings_functions, variables as settings_variables
     from runtime_input_ui import functions as input_functions, variables as input_variables
     from runtime_snap import functions as snap_functions, variables as snap_variables
+    from runtime_community import functions as community_functions, variables as community_variables
+    from runtime_community_mailbox import functions as mailbox_functions, variables as mailbox_variables
     g=Graph();g.node('tick','event',name='ReceiveTick')
-    for name,fn in [('pump','Pump'),('draft','PollDraft'),('events','ProcessEditorEvents'),('catalog','PollCatalogUI'),('storeroom','PollStoreroomUI'),('thumbnails','PollThumbnailUI'),('placement','PollPlacement'),('compositionpreview','PollCompositionPreview'),('drag','PollSelectionDrag'),('selection','PollSelection'),('copy','PollCopiedSelection'),('surface','PollSurfaceDrag'),('gizmo','PollEditorGizmo'),('edits','PumpEditorMutations'),('camera','KeepEditorCamera'),('pointer','PollEditorPointer'),('fonts','PollEditorFonts'),('refresh','PollEditorUI')]:g.call(name,'self:'+fn)
-    g.chain('tick','pump','draft','events','catalog','storeroom','thumbnails','placement','compositionpreview','drag','selection','copy','surface','gizmo','edits','camera','pointer','fonts','refresh')
+    for name,fn in [('pump','Pump'),('draft','PollDraft'),('events','ProcessEditorEvents'),('catalog','PollCatalogUI'),('storeroom','PollStoreroomUI'),('thumbnails','PollThumbnailUI'),('placement','PollPlacement'),('community','PollCommunityFetch'),('communitypreviews','PollCommunityPreviews'),('compositionpreview','PollCompositionPreview'),('drag','PollSelectionDrag'),('selection','PollSelection'),('copy','PollCopiedSelection'),('surface','PollSurfaceDrag'),('gizmo','PollEditorGizmo'),('edits','PumpEditorMutations'),('camera','KeepEditorCamera'),('pointer','PollEditorPointer'),('fonts','PollEditorFonts'),('refresh','PollEditorUI')]:g.call(name,'self:'+fn)
+    g.chain('tick','pump','draft','events','catalog','storeroom','thumbnails','placement','community','communitypreviews','compositionpreview','drag','selection','copy','surface','gizmo','edits','camera','pointer','fonts','refresh')
     g.node('end','event',name='ReceiveEndPlay');g.call('flush','self:FlushDraft');g.set('close','Editing','false')
     g.call('detach','self:DetachEditor',RestoreView='false');g.call('cancel','self:CancelWork');g.call('forget','self:Forget');g.chain('end','flush','close','detach','cancel','forget')
     variables=[v('EditorController','object:'+PC),v('PreviousView','object:'+ACTOR),v('EditorRig','object:'+RIG),v('InputSubsystem','object:'+SUB),v('InputBus','object:'+BUS),
         v('FontJob','object:'+JOB),v('FontRequestAt','double'),v('FontIndex','int'),v('UIOpen','bool'),v('ControllerCaptured','bool'),v('PreviousCursor','bool'),v('PointerRestoreFrame','int64','-1'),v('PreviousClicks','bool'),v('PreviousHover','bool'),
         v('Looking','bool'),v('ActivePanel','string'),v('HelpOpen','bool'),v('ConfirmMode','int'),v('GridIndex','int'),v('ReachIndex','int','1'),v('GridStep','double','0'),v('ReachCm','double','2000'),
         v('StructureEnabled','bool','false'),v('FloorsEnabled','bool','true'),v('WallsEnabled','bool','false'),v('LastUIBusy','bool'),v('LastUIDraftStatus','int','-1'),v('UnhandledCommands','int'),v('LastUnhandled','string'),v('HUDHidden','bool'),v('RotationPivot','string','centre')]
-    variables += composition_variables()+composition_library_variables()+composition_preview_variables()+selection_variables()+queue_variables()+drag_variables()+gizmo_variables()+surface_variables()+copy_variables()+catalog_variables()+placement_variables()+thumbnail_variables()+storeroom_variables()+layout_ui_variables()+scope_ui_variables()+preference_variables()+input_variables()+settings_variables()+snap_variables()
+    variables += composition_variables()+composition_library_variables()+composition_preview_variables()+selection_variables()+queue_variables()+drag_variables()+gizmo_variables()+surface_variables()+copy_variables()+catalog_variables()+placement_variables()+thumbnail_variables()+storeroom_variables()+layout_ui_variables()+scope_ui_variables()+preference_variables()+input_variables()+settings_variables()+snap_variables()+community_variables()+mailbox_variables()
     variables += [v(var,'object:'+UIROOT+cls) for var,cls,_ in PANELS]
-    return dict(kind='blueprint',path=HOST,parent=SESSION,variables=variables,graph=g.spec(),functions=[*[create_panel(*panel) for panel in PANELS],create_panels(),mount(),detach(),look(),game_hud(True),game_hud(False),restore_pointer(),finish_entry(),poll_pointer(),keep_camera(),*composition_functions(),*composition_library_functions(),*composition_preview_functions(),*command_functions(),*font_functions(),*selection_functions(),*transform_functions(),*pivot_functions(),*queue_functions(),*drag_functions(),*gizmo_functions(),*surface_functions(),*copy_functions(),*catalog_functions(),*placement_functions(),*thumbnail_functions(),*storeroom_functions(),*layout_ui_functions(),*scope_ui_functions(),*preference_functions(),*input_functions(),*settings_functions(),*snap_functions()])
+    return dict(kind='blueprint',path=HOST,parent=SESSION,variables=variables,graph=g.spec(),functions=[*[create_panel(*panel) for panel in PANELS],create_panels(),mount(),detach(),look(),game_hud(True),game_hud(False),restore_pointer(),finish_entry(),poll_pointer(),keep_camera(),*composition_functions(),*composition_library_functions(),*composition_preview_functions(),*command_functions(),*font_functions(),*selection_functions(),*transform_functions(),*pivot_functions(),*queue_functions(),*drag_functions(),*gizmo_functions(),*surface_functions(),*copy_functions(),*catalog_functions(),*placement_functions(),*thumbnail_functions(),*storeroom_functions(),*layout_ui_functions(),*scope_ui_functions(),*preference_functions(),*input_functions(),*settings_functions(),*snap_functions(),*community_functions(),*mailbox_functions()])
 
 
 EDITOR_BASE=ROOT+'BP_DenEditorState'

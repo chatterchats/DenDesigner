@@ -1,0 +1,13 @@
+{
+  "target": {
+    "game_id": "steam:2075800",
+    "game_version": "25898267",
+    "mod_id": "community.den-designer",
+    "mod_version": "1.1.0-preview.19",
+    "native_fingerprint": ""
+  },
+  "installed_packs": {},
+  "available_assets": {
+    "/Game/Game/Environments/Strategy/HQ/Props/Control/Control_Monitor_A.Control_Monitor_A": "mesh"
+  }
+}

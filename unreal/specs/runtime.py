@@ -207,6 +207,8 @@ def save_variables(entries_type, scope):
 
 
 def specs():
+    yield '00_BP_DenCommunityWireSave', dict(kind='blueprint', path=ROOT+'BP_DenCommunityWireSave',
+        parent='/Script/Engine.SaveGame', variables=[v('Token','string'),v('Input','string'),v('Wire','string')])
     yield '01_ST_DenEntry', struct(ENTRY, [
         v('Kind', 'int'), v('Key', 'string'), v('Mesh', 'string'),
         v('Position', 'vector'), v('Rotation', 'rotator'), v('Scale', 'vector', '1,1,1'),

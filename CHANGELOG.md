@@ -1,12 +1,58 @@
+## 1.1.0-preview.22 / Community bridge 0.1.0-preview.10
+
+- Restore local WBP_DenCompositions creation/library/placement; add distinct
+  WBP_DenCommunity and toolbar navigation with the same editor style.
+- Public service-backed native cards, search/paging, detail/requirements view,
+  revision-pinned downloads, bounded local preview rendering and cache reuse.
+- Separate public selection, local upload source selection, reviewed snapshot,
+  forms, account state and explicit download-to-library actions.
+- Preserve headless transport, authenticated publishing and PNG padding fix;
+  leave Dens and Full Den publication visibly unavailable.
+
+## Community bridge 0.1.0-preview.9 (pak preview.21 unchanged)
+
+- Fix cached-preview upload rejection caused by the engine PNG exporter writing
+  allocator slack after IEND. Validate CRCs/structure and send only the complete
+  cached PNG stream; keep server validation strict and preserve staged retry IDs.
+- Report fixed specific messages for thumbnail/payload/metadata/revision/quota and
+  service failures. Never reflect arbitrary response bodies into the game.
+- Verified eight actual cache streams against service validation, 79 Python tests,
+  and the isolated staged native transport with a padded synthetic cache image.
+
+## 1.1.0-preview.21 / Community bridge 0.1.0-preview.8
+
+- Fix the preview.20 startup crash caused by invalid serialized fields in the
+  cooked editor host. Separate state/leaf helpers into BP_DenEditorState and
+  split transform/help graphs while preserving the Community UI.
+- Require deserialization of every cooked export and Blueprint script before
+  packaging. Parser-reported errors are failures even if the parser exits zero.
+- Preview.20 is withdrawn. Source compilation and kit VM checks alone did not
+  detect its shipping serialization failure.
+
+## 1.1.0-preview.20 / Community bridge 0.1.0-preview.7
+
+- Dedicated in-game Community areas for Browse, Upload and Account; removed the
+  desktop connection/publishing form and focus activation.
+- UMG saved snapshot review, metadata, requirements, progress, retry, result links
+  and copy controls; retained authenticated staged composition publication.
+- Explicit unavailable Full Den state, in-panel saved-preset selection and
+  save-current-as-new-preset action. No Full Den endpoint is used or claimed.
+- Close/cancel invalidation, masked credential clearing, retained recoverable forms
+  and separate reviewed upload identity.
+
 # Changelog
 
-## 1.1.0-preview.23 — editor only (Community split out)
+## 1.1.0-preview.19 — experimental Community test import
 
-- Editor changes from previews 9–18 without the Community window, bridge or publishing.
-  The Community work continues separately on the `community` branch.
-- Keeps two general fixes made during the Community previews: helper state lives in
-  BP_DenEditorState (avoids the preview.20 startup serialization crash), and packaging
-  requires every cooked export and Blueprint script to deserialize first.
+- Add a bounded, token-scoped Community request and value import boundary to the
+  composition panel, retaining the local library, thumbnail and placement workflow.
+- Prepare a separate standalone native bridge using a `version.dll` proxy and a
+  short-lived HTTPS worker; no UE4SS, Python installation or engine hooks required.
+- Publish the reviewed `DenDesignerTest01` monitor composition and its versioned
+  read-only API route. This native slice deliberately rejects unsupported assets,
+  packs, material overrides, media and noninteger transforms.
+- See `docs/community-verification.md` for exact test scope. Kit or worker results
+  must not be treated as shipped-game UI/rendering verification.
 
 ## 1.1.0-preview.18 — selection after adding and restoring props
 

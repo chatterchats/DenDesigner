@@ -1,0 +1,19 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenCommunityWireSave",
+  "parent": "/Script/Engine.SaveGame",
+  "variables": [
+    {
+      "name": "Token",
+      "type": "string"
+    },
+    {
+      "name": "Input",
+      "type": "string"
+    },
+    {
+      "name": "Wire",
+      "type": "string"
+    }
+  ]
+}

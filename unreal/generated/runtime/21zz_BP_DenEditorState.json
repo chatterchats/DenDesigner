@@ -829,6 +829,197 @@
       "type": "int"
     },
     {
+      "name": "CommunityBrowsePage",
+      "type": "int"
+    },
+    {
+      "name": "CommunityBrowsePages",
+      "type": "int"
+    },
+    {
+      "name": "CommunityBrowseTotal",
+      "type": "int"
+    },
+    {
+      "name": "CommunityBrowseSelected",
+      "type": "int",
+      "default": "-1"
+    },
+    {
+      "name": "CommunityPreviewCursor",
+      "type": "int"
+    },
+    {
+      "name": "CommunityPreviewIndex",
+      "type": "int"
+    },
+    {
+      "name": "CommunityBrowseLoaded",
+      "type": "bool"
+    },
+    {
+      "name": "CommunityBrowseSearch",
+      "type": "string"
+    },
+    {
+      "name": "CommunityBrowseRows",
+      "type": "object:/DenDesignerGF/Editor/BP_DenCatalogItem[]"
+    },
+    {
+      "name": "CommunityBrowseCodes",
+      "type": "string[]"
+    },
+    {
+      "name": "CommunityBrowseDescriptions",
+      "type": "string[]"
+    },
+    {
+      "name": "CommunityBrowseRequirements",
+      "type": "string[]"
+    },
+    {
+      "name": "CommunityBrowseCreators",
+      "type": "string[]"
+    },
+    {
+      "name": "CommunityBrowseRevisions",
+      "type": "int[]"
+    },
+    {
+      "name": "CommunityBrowseDocuments",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave[]"
+    },
+    {
+      "name": "CommunityBrowseStates",
+      "type": "int[]"
+    },
+    {
+      "name": "CommunityCachedKeys",
+      "type": "string[]"
+    },
+    {
+      "name": "CommunityCachedDocuments",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave[]"
+    },
+    {
+      "name": "CommunitySourceNames",
+      "type": "string[]"
+    },
+    {
+      "name": "CommunitySourceRows",
+      "type": "object:/DenDesignerGF/Editor/BP_DenCatalogItem[]"
+    },
+    {
+      "name": "CommunitySourceName",
+      "type": "string"
+    },
+    {
+      "name": "CommunitySourceListStatus",
+      "type": "int"
+    },
+    {
+      "name": "CommunitySourceListRevision",
+      "type": "int"
+    },
+    {
+      "name": "CommunitySourceLibraryID",
+      "type": "string"
+    },
+    {
+      "name": "CommunityArea",
+      "type": "string",
+      "default": "browse"
+    },
+    {
+      "name": "CommunityMessage",
+      "type": "string"
+    },
+    {
+      "name": "CommunityUploadJSON",
+      "type": "string"
+    },
+    {
+      "name": "CommunityUploadName",
+      "type": "string"
+    },
+    {
+      "name": "CommunityUploadLibraryID",
+      "type": "string"
+    },
+    {
+      "name": "CommunityUploadThumbnail",
+      "type": "string"
+    },
+    {
+      "name": "CommunityPublicURL",
+      "type": "string"
+    },
+    {
+      "name": "CommunityPublicCode",
+      "type": "string"
+    },
+    {
+      "name": "CommunityProfile",
+      "type": "string"
+    },
+    {
+      "name": "CommunityDenName",
+      "type": "string"
+    },
+    {
+      "name": "CommunityRemember",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "CommunityOutgoing",
+      "type": "string"
+    },
+    {
+      "name": "CommunityToken",
+      "type": "string"
+    },
+    {
+      "name": "CommunityRequest",
+      "type": "string"
+    },
+    {
+      "name": "CommunityStarted",
+      "type": "double"
+    },
+    {
+      "name": "CommunityPending",
+      "type": "bool"
+    },
+    {
+      "name": "CommunityDocument",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+    },
+    {
+      "name": "CommunityExpected",
+      "type": "int"
+    },
+    {
+      "name": "CommunityName",
+      "type": "string"
+    },
+    {
+      "name": "CommunityReport",
+      "type": "string"
+    },
+    {
+      "name": "CommunityWireLines",
+      "type": "string[]"
+    },
+    {
+      "name": "CommunityWireCursor",
+      "type": "int"
+    },
+    {
+      "name": "CommunityMailboxAt",
+      "type": "double"
+    },
+    {
       "name": "Toolbar",
       "type": "object:/DenDesignerGF/Editor/WBP_DenToolbar"
     },
@@ -855,6 +1046,10 @@
     {
       "name": "CompositionsPanel",
       "type": "object:/DenDesignerGF/Editor/WBP_DenCompositions"
+    },
+    {
+      "name": "CommunityPanel",
+      "type": "object:/DenDesignerGF/Editor/WBP_DenCommunity"
     }
   ],
   "graph": {
@@ -2967,6 +3162,385 @@
         ],
         [
           "registerCompositionsPanelCompositionName.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "CreateCommunityPanelPanel",
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "getEditorController",
+          "kind": "get",
+          "var": "EditorController"
+        },
+        {
+          "id": "createCommunityPanel",
+          "kind": "call",
+          "function": "/Script/UMG.WidgetBlueprintLibrary:Create",
+          "defaults": {
+            "WidgetType": "/DenDesignerGF/Editor/WBP_DenCommunity"
+          }
+        },
+        {
+          "id": "castCommunityPanel",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Editor/WBP_DenCommunity"
+        },
+        {
+          "id": "saveCommunityPanel",
+          "kind": "set",
+          "var": "CommunityPanel"
+        },
+        {
+          "id": "getInputBus",
+          "kind": "get",
+          "var": "InputBus"
+        },
+        {
+          "id": "busCommunityPanel",
+          "kind": "set",
+          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:EditorBus"
+        },
+        {
+          "id": "getCommunityPanel",
+          "kind": "get",
+          "var": "CommunityPanel"
+        },
+        {
+          "id": "showCommunityPanel",
+          "kind": "call",
+          "function": "/Script/UMG.UserWidget:AddToViewport",
+          "defaults": {
+            "ZOrder": "40"
+          }
+        },
+        {
+          "id": "visibleCommunityPanel",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetVisibility",
+          "defaults": {
+            "InVisibility": "Collapsed"
+          }
+        },
+        {
+          "id": "registerCommunityPanelCommunityCodewidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:CommunityCode"
+        },
+        {
+          "id": "registerCommunityPanelCommunityCode",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenEditorBus:RegisterTextInput",
+          "defaults": {}
+        },
+        {
+          "id": "registerCommunityPanelCommunitySearchwidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:CommunitySearch"
+        },
+        {
+          "id": "registerCommunityPanelCommunitySearch",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenEditorBus:RegisterTextInput",
+          "defaults": {}
+        },
+        {
+          "id": "registerCommunityPanelPublishTitlewidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:PublishTitle"
+        },
+        {
+          "id": "registerCommunityPanelPublishTitle",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenEditorBus:RegisterTextInput",
+          "defaults": {}
+        },
+        {
+          "id": "registerCommunityPanelPublishDescriptionwidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:PublishDescription"
+        },
+        {
+          "id": "registerCommunityPanelPublishDescription",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenEditorBus:RegisterTextInput",
+          "defaults": {}
+        },
+        {
+          "id": "registerCommunityPanelPublishCodewidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:PublishCode"
+        },
+        {
+          "id": "registerCommunityPanelPublishCode",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenEditorBus:RegisterTextInput",
+          "defaults": {}
+        },
+        {
+          "id": "registerCommunityPanelPublishRevisionwidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:PublishRevision"
+        },
+        {
+          "id": "registerCommunityPanelPublishRevision",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenEditorBus:RegisterTextInput",
+          "defaults": {}
+        },
+        {
+          "id": "registerCommunityPanelDenPresetNamewidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:DenPresetName"
+        },
+        {
+          "id": "registerCommunityPanelDenPresetName",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenEditorBus:RegisterTextInput",
+          "defaults": {}
+        },
+        {
+          "id": "registerCommunityPanelCommunityKeywidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:CommunityKey"
+        },
+        {
+          "id": "registerCommunityPanelCommunityKey",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenEditorBus:RegisterTextInput",
+          "defaults": {}
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        }
+      ],
+      "links": [
+        [
+          "self.self",
+          "createCommunityPanel.WorldContextObject"
+        ],
+        [
+          "getEditorController.EditorController",
+          "createCommunityPanel.OwningPlayer"
+        ],
+        [
+          "createCommunityPanel.ReturnValue",
+          "castCommunityPanel.Object"
+        ],
+        [
+          "castCommunityPanel.AsWBP Den Community",
+          "saveCommunityPanel.CommunityPanel"
+        ],
+        [
+          "getInputBus.InputBus",
+          "busCommunityPanel.EditorBus"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "busCommunityPanel.self"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "showCommunityPanel.self"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "visibleCommunityPanel.self"
+        ],
+        [
+          "entry.then",
+          "createCommunityPanel.execute"
+        ],
+        [
+          "createCommunityPanel.then",
+          "castCommunityPanel.execute"
+        ],
+        [
+          "castCommunityPanel.then",
+          "saveCommunityPanel.execute"
+        ],
+        [
+          "saveCommunityPanel.then",
+          "busCommunityPanel.execute"
+        ],
+        [
+          "busCommunityPanel.then",
+          "showCommunityPanel.execute"
+        ],
+        [
+          "showCommunityPanel.then",
+          "visibleCommunityPanel.execute"
+        ],
+        [
+          "castCommunityPanel.CastFailed",
+          "result.execute"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "registerCommunityPanelCommunityCodewidget.self"
+        ],
+        [
+          "getInputBus.InputBus",
+          "registerCommunityPanelCommunityCode.self"
+        ],
+        [
+          "registerCommunityPanelCommunityCodewidget.CommunityCode",
+          "registerCommunityPanelCommunityCode.Widget"
+        ],
+        [
+          "visibleCommunityPanel.then",
+          "registerCommunityPanelCommunityCode.execute"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "registerCommunityPanelCommunitySearchwidget.self"
+        ],
+        [
+          "getInputBus.InputBus",
+          "registerCommunityPanelCommunitySearch.self"
+        ],
+        [
+          "registerCommunityPanelCommunitySearchwidget.CommunitySearch",
+          "registerCommunityPanelCommunitySearch.Widget"
+        ],
+        [
+          "registerCommunityPanelCommunityCode.then",
+          "registerCommunityPanelCommunitySearch.execute"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "registerCommunityPanelPublishTitlewidget.self"
+        ],
+        [
+          "getInputBus.InputBus",
+          "registerCommunityPanelPublishTitle.self"
+        ],
+        [
+          "registerCommunityPanelPublishTitlewidget.PublishTitle",
+          "registerCommunityPanelPublishTitle.Widget"
+        ],
+        [
+          "registerCommunityPanelCommunitySearch.then",
+          "registerCommunityPanelPublishTitle.execute"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "registerCommunityPanelPublishDescriptionwidget.self"
+        ],
+        [
+          "getInputBus.InputBus",
+          "registerCommunityPanelPublishDescription.self"
+        ],
+        [
+          "registerCommunityPanelPublishDescriptionwidget.PublishDescription",
+          "registerCommunityPanelPublishDescription.Widget"
+        ],
+        [
+          "registerCommunityPanelPublishTitle.then",
+          "registerCommunityPanelPublishDescription.execute"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "registerCommunityPanelPublishCodewidget.self"
+        ],
+        [
+          "getInputBus.InputBus",
+          "registerCommunityPanelPublishCode.self"
+        ],
+        [
+          "registerCommunityPanelPublishCodewidget.PublishCode",
+          "registerCommunityPanelPublishCode.Widget"
+        ],
+        [
+          "registerCommunityPanelPublishDescription.then",
+          "registerCommunityPanelPublishCode.execute"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "registerCommunityPanelPublishRevisionwidget.self"
+        ],
+        [
+          "getInputBus.InputBus",
+          "registerCommunityPanelPublishRevision.self"
+        ],
+        [
+          "registerCommunityPanelPublishRevisionwidget.PublishRevision",
+          "registerCommunityPanelPublishRevision.Widget"
+        ],
+        [
+          "registerCommunityPanelPublishCode.then",
+          "registerCommunityPanelPublishRevision.execute"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "registerCommunityPanelDenPresetNamewidget.self"
+        ],
+        [
+          "getInputBus.InputBus",
+          "registerCommunityPanelDenPresetName.self"
+        ],
+        [
+          "registerCommunityPanelDenPresetNamewidget.DenPresetName",
+          "registerCommunityPanelDenPresetName.Widget"
+        ],
+        [
+          "registerCommunityPanelPublishRevision.then",
+          "registerCommunityPanelDenPresetName.execute"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "registerCommunityPanelCommunityKeywidget.self"
+        ],
+        [
+          "getInputBus.InputBus",
+          "registerCommunityPanelCommunityKey.self"
+        ],
+        [
+          "registerCommunityPanelCommunityKeywidget.CommunityKey",
+          "registerCommunityPanelCommunityKey.Widget"
+        ],
+        [
+          "registerCommunityPanelDenPresetName.then",
+          "registerCommunityPanelCommunityKey.execute"
+        ],
+        [
+          "out.OK",
+          "result.Accepted"
+        ],
+        [
+          "registerCommunityPanelCommunityKey.then",
           "yes.execute"
         ],
         [
@@ -9561,6 +10135,11 @@
           "outputs": 1
         },
         {
+          "id": "getCommunityPanel",
+          "kind": "get",
+          "var": "CommunityPanel"
+        },
+        {
           "id": "panel7check",
           "kind": "call",
           "function": "/Script/Engine.KismetSystemLibrary:IsValid",
@@ -9573,7 +10152,7 @@
         {
           "id": "panel7widget",
           "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:Feedback"
+          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:Panel"
         },
         {
           "id": "panel7hover",
@@ -9615,7 +10194,7 @@
         {
           "id": "panel8widget",
           "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:LibraryTabs"
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:Feedback"
         },
         {
           "id": "panel8hover",
@@ -9641,6 +10220,48 @@
         },
         {
           "id": "panel8next",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "panel9check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "panel9valid",
+          "kind": "branch"
+        },
+        {
+          "id": "panel9widget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:LibraryTabs"
+        },
+        {
+          "id": "panel9hover",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:IsHovered",
+          "defaults": {}
+        },
+        {
+          "id": "panel9visible",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:IsVisible",
+          "defaults": {}
+        },
+        {
+          "id": "panel9both0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "panel9over",
+          "kind": "branch"
+        },
+        {
+          "id": "panel9next",
           "kind": "sequence",
           "outputs": 1
         }
@@ -10059,7 +10680,7 @@
           "panel6next.execute"
         ],
         [
-          "getToolbar.Toolbar",
+          "getCommunityPanel.CommunityPanel",
           "panel7check.Object"
         ],
         [
@@ -10067,15 +10688,15 @@
           "panel7valid.Condition"
         ],
         [
-          "getToolbar.Toolbar",
+          "getCommunityPanel.CommunityPanel",
           "panel7widget.self"
         ],
         [
-          "panel7widget.Feedback",
+          "panel7widget.Panel",
           "panel7hover.self"
         ],
         [
-          "getToolbar.Toolbar",
+          "getCommunityPanel.CommunityPanel",
           "panel7visible.self"
         ],
         [
@@ -10123,7 +10744,7 @@
           "panel8widget.self"
         ],
         [
-          "panel8widget.LibraryTabs",
+          "panel8widget.Feedback",
           "panel8hover.self"
         ],
         [
@@ -10163,6 +10784,58 @@
           "panel8next.execute"
         ],
         [
+          "getToolbar.Toolbar",
+          "panel9check.Object"
+        ],
+        [
+          "panel9check.ReturnValue",
+          "panel9valid.Condition"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "panel9widget.self"
+        ],
+        [
+          "panel9widget.LibraryTabs",
+          "panel9hover.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "panel9visible.self"
+        ],
+        [
+          "panel9hover.ReturnValue",
+          "panel9both0.A"
+        ],
+        [
+          "panel9visible.ReturnValue",
+          "panel9both0.B"
+        ],
+        [
+          "panel9both0.ReturnValue",
+          "panel9over.Condition"
+        ],
+        [
+          "panel8next.then_0",
+          "panel9valid.execute"
+        ],
+        [
+          "panel9valid.then",
+          "panel9over.execute"
+        ],
+        [
+          "panel9over.then",
+          "yes.execute"
+        ],
+        [
+          "panel9valid.else",
+          "panel9next.execute"
+        ],
+        [
+          "panel9over.else",
+          "panel9next.execute"
+        ],
+        [
           "entry.then",
           "state.execute"
         ],
@@ -10191,7 +10864,7 @@
           "yes.execute"
         ],
         [
-          "panel8next.then_0",
+          "panel9next.then_0",
           "result.execute"
         ]
       ]
@@ -17673,6 +18346,2621 @@
         [
           "show.else",
           "hidden.execute"
+        ]
+      ]
+    },
+    {
+      "name": "RefreshCommunityDetail",
+      "nodes": [
+        {
+          "id": "getCommunityBrowseRows",
+          "kind": "get",
+          "var": "CommunityBrowseRows"
+        },
+        {
+          "id": "count",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "getCommunityBrowseSelected",
+          "kind": "get",
+          "var": "CommunityBrowseSelected"
+        },
+        {
+          "id": "min",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "max",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "boundscheck0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "bounds",
+          "kind": "branch"
+        },
+        {
+          "id": "Rows",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "getCommunityBrowseDescriptions",
+          "kind": "get",
+          "var": "CommunityBrowseDescriptions"
+        },
+        {
+          "id": "Descriptions",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "getCommunityBrowseRequirements",
+          "kind": "get",
+          "var": "CommunityBrowseRequirements"
+        },
+        {
+          "id": "Requirements",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "getCommunityBrowseRevisions",
+          "kind": "get",
+          "var": "CommunityBrowseRevisions"
+        },
+        {
+          "id": "Revisions",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "getCommunityBrowseCreators",
+          "kind": "get",
+          "var": "CommunityBrowseCreators"
+        },
+        {
+          "id": "Creators",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "title",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/BP_DenCatalogItem:Title"
+        },
+        {
+          "id": "creatorcaption",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "A": " \u00b7 "
+          }
+        },
+        {
+          "id": "caption",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "descriptionprefix",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "A": "\n"
+          }
+        },
+        {
+          "id": "description",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "revisionnum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Conv_IntToString",
+          "defaults": {}
+        },
+        {
+          "id": "revisionprefix",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "A": "\nRevision: "
+          }
+        },
+        {
+          "id": "revision",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "requirementprefix",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "A": "\n"
+          }
+        },
+        {
+          "id": "requirementcaption",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "getCommunityPanel",
+          "kind": "get",
+          "var": "CommunityPanel"
+        },
+        {
+          "id": "detailwidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:CommunityDetail"
+        },
+        {
+          "id": "detail",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getCommunityBrowseRows.CommunityBrowseRows",
+          "count.TargetArray"
+        ],
+        [
+          "getCommunityBrowseSelected.CommunityBrowseSelected",
+          "min.A"
+        ],
+        [
+          "getCommunityBrowseSelected.CommunityBrowseSelected",
+          "max.A"
+        ],
+        [
+          "count.ReturnValue",
+          "max.B"
+        ],
+        [
+          "min.ReturnValue",
+          "boundscheck0.A"
+        ],
+        [
+          "max.ReturnValue",
+          "boundscheck0.B"
+        ],
+        [
+          "boundscheck0.ReturnValue",
+          "bounds.Condition"
+        ],
+        [
+          "getCommunityBrowseRows.CommunityBrowseRows",
+          "Rows.TargetArray"
+        ],
+        [
+          "getCommunityBrowseSelected.CommunityBrowseSelected",
+          "Rows.Index"
+        ],
+        [
+          "getCommunityBrowseDescriptions.CommunityBrowseDescriptions",
+          "Descriptions.TargetArray"
+        ],
+        [
+          "getCommunityBrowseSelected.CommunityBrowseSelected",
+          "Descriptions.Index"
+        ],
+        [
+          "getCommunityBrowseRequirements.CommunityBrowseRequirements",
+          "Requirements.TargetArray"
+        ],
+        [
+          "getCommunityBrowseSelected.CommunityBrowseSelected",
+          "Requirements.Index"
+        ],
+        [
+          "getCommunityBrowseRevisions.CommunityBrowseRevisions",
+          "Revisions.TargetArray"
+        ],
+        [
+          "getCommunityBrowseSelected.CommunityBrowseSelected",
+          "Revisions.Index"
+        ],
+        [
+          "getCommunityBrowseCreators.CommunityBrowseCreators",
+          "Creators.TargetArray"
+        ],
+        [
+          "getCommunityBrowseSelected.CommunityBrowseSelected",
+          "Creators.Index"
+        ],
+        [
+          "Rows.Item",
+          "title.self"
+        ],
+        [
+          "Creators.Item",
+          "creatorcaption.B"
+        ],
+        [
+          "title.Title",
+          "caption.A"
+        ],
+        [
+          "creatorcaption.ReturnValue",
+          "caption.B"
+        ],
+        [
+          "Descriptions.Item",
+          "descriptionprefix.B"
+        ],
+        [
+          "caption.ReturnValue",
+          "description.A"
+        ],
+        [
+          "descriptionprefix.ReturnValue",
+          "description.B"
+        ],
+        [
+          "Revisions.Item",
+          "revisionnum.InInt"
+        ],
+        [
+          "revisionnum.ReturnValue",
+          "revisionprefix.B"
+        ],
+        [
+          "description.ReturnValue",
+          "revision.A"
+        ],
+        [
+          "revisionprefix.ReturnValue",
+          "revision.B"
+        ],
+        [
+          "Requirements.Item",
+          "requirementprefix.B"
+        ],
+        [
+          "revision.ReturnValue",
+          "requirementcaption.A"
+        ],
+        [
+          "requirementprefix.ReturnValue",
+          "requirementcaption.B"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "detailwidget.self"
+        ],
+        [
+          "detailwidget.CommunityDetail",
+          "detail.self"
+        ],
+        [
+          "requirementcaption.ReturnValue",
+          "detail.InText"
+        ],
+        [
+          "entry.then",
+          "bounds.execute"
+        ],
+        [
+          "bounds.then",
+          "detail.execute"
+        ]
+      ]
+    },
+    {
+      "name": "RefreshCommunityDetailPreview",
+      "nodes": [
+        {
+          "id": "getUIOpen",
+          "kind": "get",
+          "var": "UIOpen"
+        },
+        {
+          "id": "getCommunityPanel",
+          "kind": "get",
+          "var": "CommunityPanel"
+        },
+        {
+          "id": "communitypanelalive",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "getActivePanel",
+          "kind": "get",
+          "var": "ActivePanel"
+        },
+        {
+          "id": "communityactive",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "community"
+          }
+        },
+        {
+          "id": "getCommunityArea",
+          "kind": "get",
+          "var": "CommunityArea"
+        },
+        {
+          "id": "browseactive",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "browse"
+          }
+        },
+        {
+          "id": "browseractive0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "browseractive1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "browseractive2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "active",
+          "kind": "branch"
+        },
+        {
+          "id": "getCommunityBrowseSelected",
+          "kind": "get",
+          "var": "CommunityBrowseSelected"
+        },
+        {
+          "id": "getCommunityBrowseRows",
+          "kind": "get",
+          "var": "CommunityBrowseRows"
+        },
+        {
+          "id": "count",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "min",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "max",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "boundscheck0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "bounds",
+          "kind": "branch"
+        },
+        {
+          "id": "row",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "texture",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/BP_DenCatalogItem:Thumb"
+        },
+        {
+          "id": "thumbvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "image",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:CommunityPreview"
+        },
+        {
+          "id": "brush",
+          "kind": "call",
+          "function": "/Script/UMG.Image:SetBrushFromTexture",
+          "defaults": {
+            "bMatchSize": "false"
+          }
+        },
+        {
+          "id": "show",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetVisibility",
+          "defaults": {
+            "InVisibility": "Visible"
+          }
+        },
+        {
+          "id": "hide",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetVisibility",
+          "defaults": {
+            "InVisibility": "Hidden"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getCommunityPanel.CommunityPanel",
+          "communitypanelalive.Object"
+        ],
+        [
+          "getActivePanel.ActivePanel",
+          "communityactive.A"
+        ],
+        [
+          "getCommunityArea.CommunityArea",
+          "browseactive.A"
+        ],
+        [
+          "getUIOpen.UIOpen",
+          "browseractive0.A"
+        ],
+        [
+          "communitypanelalive.ReturnValue",
+          "browseractive0.B"
+        ],
+        [
+          "browseractive0.ReturnValue",
+          "browseractive1.A"
+        ],
+        [
+          "communityactive.ReturnValue",
+          "browseractive1.B"
+        ],
+        [
+          "browseractive1.ReturnValue",
+          "browseractive2.A"
+        ],
+        [
+          "browseactive.ReturnValue",
+          "browseractive2.B"
+        ],
+        [
+          "browseractive2.ReturnValue",
+          "active.Condition"
+        ],
+        [
+          "getCommunityBrowseRows.CommunityBrowseRows",
+          "count.TargetArray"
+        ],
+        [
+          "getCommunityBrowseSelected.CommunityBrowseSelected",
+          "min.A"
+        ],
+        [
+          "getCommunityBrowseSelected.CommunityBrowseSelected",
+          "max.A"
+        ],
+        [
+          "count.ReturnValue",
+          "max.B"
+        ],
+        [
+          "min.ReturnValue",
+          "boundscheck0.A"
+        ],
+        [
+          "max.ReturnValue",
+          "boundscheck0.B"
+        ],
+        [
+          "boundscheck0.ReturnValue",
+          "bounds.Condition"
+        ],
+        [
+          "getCommunityBrowseRows.CommunityBrowseRows",
+          "row.TargetArray"
+        ],
+        [
+          "getCommunityBrowseSelected.CommunityBrowseSelected",
+          "row.Index"
+        ],
+        [
+          "row.Item",
+          "texture.self"
+        ],
+        [
+          "texture.Thumb",
+          "thumbvalid.Object"
+        ],
+        [
+          "thumbvalid.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "image.self"
+        ],
+        [
+          "image.CommunityPreview",
+          "brush.self"
+        ],
+        [
+          "texture.Thumb",
+          "brush.Texture"
+        ],
+        [
+          "image.CommunityPreview",
+          "show.self"
+        ],
+        [
+          "image.CommunityPreview",
+          "hide.self"
+        ],
+        [
+          "entry.then",
+          "active.execute"
+        ],
+        [
+          "active.then",
+          "bounds.execute"
+        ],
+        [
+          "bounds.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "brush.execute"
+        ],
+        [
+          "brush.then",
+          "show.execute"
+        ],
+        [
+          "valid.else",
+          "hide.execute"
+        ],
+        [
+          "bounds.else",
+          "hide.execute"
+        ]
+      ]
+    },
+    {
+      "name": "CanStartCommunityBrowse",
+      "outputs": [
+        {
+          "name": "Allowed",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getCommunityPending",
+          "kind": "get",
+          "var": "CommunityPending"
+        },
+        {
+          "id": "idle",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "getCommunityRequest",
+          "kind": "get",
+          "var": "CommunityRequest"
+        },
+        {
+          "id": "catalog",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:StartsWith",
+          "defaults": {
+            "InPrefix": "CATALOG/",
+            "SearchCase": "CaseSensitive"
+          }
+        },
+        {
+          "id": "preview",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:StartsWith",
+          "defaults": {
+            "InPrefix": "PREVIEW/",
+            "SearchCase": "CaseSensitive"
+          }
+        },
+        {
+          "id": "available0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "available1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getCommunityPending.CommunityPending",
+          "idle.A"
+        ],
+        [
+          "getCommunityRequest.CommunityRequest",
+          "catalog.SourceString"
+        ],
+        [
+          "getCommunityRequest.CommunityRequest",
+          "preview.SourceString"
+        ],
+        [
+          "idle.ReturnValue",
+          "available0.A"
+        ],
+        [
+          "catalog.ReturnValue",
+          "available0.B"
+        ],
+        [
+          "available0.ReturnValue",
+          "available1.A"
+        ],
+        [
+          "preview.ReturnValue",
+          "available1.B"
+        ],
+        [
+          "available1.ReturnValue",
+          "result.Allowed"
+        ],
+        [
+          "entry.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ReadCommunitySourceCard",
+      "inputs": [
+        {
+          "name": "Key",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        },
+        {
+          "name": "Name",
+          "type": "string"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "CompositionNameCopy",
+          "type": "string"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getUIOpen",
+          "kind": "get",
+          "var": "UIOpen"
+        },
+        {
+          "id": "getActivePanel",
+          "kind": "get",
+          "var": "ActivePanel"
+        },
+        {
+          "id": "layoutname",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "community"
+          }
+        },
+        {
+          "id": "layoutactive0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "active",
+          "kind": "branch"
+        },
+        {
+          "id": "split",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Split",
+          "defaults": {
+            "InStr": ":",
+            "SearchCase": "CaseSensitive",
+            "SearchDir": "FromStart"
+          }
+        },
+        {
+          "id": "parsed",
+          "kind": "branch"
+        },
+        {
+          "id": "revision",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Conv_StringToInt",
+          "defaults": {}
+        },
+        {
+          "id": "index",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Conv_StringToInt",
+          "defaults": {}
+        },
+        {
+          "id": "getCommunitySourceNames",
+          "kind": "get",
+          "var": "CommunitySourceNames"
+        },
+        {
+          "id": "length",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "getCommunitySourceListRevision",
+          "kind": "get",
+          "var": "CommunitySourceListRevision"
+        },
+        {
+          "id": "same",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "min",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "max",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "revexactstr",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Conv_IntToString",
+          "defaults": {}
+        },
+        {
+          "id": "revexact",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "idxexactstr",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Conv_IntToString",
+          "defaults": {}
+        },
+        {
+          "id": "idxexact",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "checks0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "checks1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "checks2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "checks3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "found",
+          "kind": "set",
+          "var": "local:CompositionNameCopy"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        },
+        {
+          "id": "nameout",
+          "kind": "get",
+          "var": "local:CompositionNameCopy"
+        }
+      ],
+      "links": [
+        [
+          "getActivePanel.ActivePanel",
+          "layoutname.A"
+        ],
+        [
+          "getUIOpen.UIOpen",
+          "layoutactive0.A"
+        ],
+        [
+          "layoutname.ReturnValue",
+          "layoutactive0.B"
+        ],
+        [
+          "layoutactive0.ReturnValue",
+          "active.Condition"
+        ],
+        [
+          "entry.Key",
+          "split.SourceString"
+        ],
+        [
+          "split.ReturnValue",
+          "parsed.Condition"
+        ],
+        [
+          "split.LeftS",
+          "revision.InString"
+        ],
+        [
+          "split.RightS",
+          "index.InString"
+        ],
+        [
+          "getCommunitySourceNames.CommunitySourceNames",
+          "length.TargetArray"
+        ],
+        [
+          "revision.ReturnValue",
+          "same.A"
+        ],
+        [
+          "getCommunitySourceListRevision.CommunitySourceListRevision",
+          "same.B"
+        ],
+        [
+          "index.ReturnValue",
+          "min.A"
+        ],
+        [
+          "index.ReturnValue",
+          "max.A"
+        ],
+        [
+          "length.ReturnValue",
+          "max.B"
+        ],
+        [
+          "revision.ReturnValue",
+          "revexactstr.InInt"
+        ],
+        [
+          "split.LeftS",
+          "revexact.A"
+        ],
+        [
+          "revexactstr.ReturnValue",
+          "revexact.B"
+        ],
+        [
+          "index.ReturnValue",
+          "idxexactstr.InInt"
+        ],
+        [
+          "split.RightS",
+          "idxexact.A"
+        ],
+        [
+          "idxexactstr.ReturnValue",
+          "idxexact.B"
+        ],
+        [
+          "same.ReturnValue",
+          "checks0.A"
+        ],
+        [
+          "min.ReturnValue",
+          "checks0.B"
+        ],
+        [
+          "checks0.ReturnValue",
+          "checks1.A"
+        ],
+        [
+          "max.ReturnValue",
+          "checks1.B"
+        ],
+        [
+          "checks1.ReturnValue",
+          "checks2.A"
+        ],
+        [
+          "revexact.ReturnValue",
+          "checks2.B"
+        ],
+        [
+          "checks2.ReturnValue",
+          "checks3.A"
+        ],
+        [
+          "idxexact.ReturnValue",
+          "checks3.B"
+        ],
+        [
+          "checks3.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "getCommunitySourceNames.CommunitySourceNames",
+          "item.TargetArray"
+        ],
+        [
+          "index.ReturnValue",
+          "item.Index"
+        ],
+        [
+          "item.Item",
+          "found.CompositionNameCopy"
+        ],
+        [
+          "out.OK",
+          "result.Accepted"
+        ],
+        [
+          "nameout.CompositionNameCopy",
+          "result.Name"
+        ],
+        [
+          "entry.then",
+          "active.execute"
+        ],
+        [
+          "active.then",
+          "parsed.execute"
+        ],
+        [
+          "parsed.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "found.execute"
+        ],
+        [
+          "found.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "active.else",
+          "result.execute"
+        ],
+        [
+          "parsed.else",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "RefreshCommunityFeedback",
+      "nodes": [
+        {
+          "id": "getCommunityPanel",
+          "kind": "get",
+          "var": "CommunityPanel"
+        },
+        {
+          "id": "panel",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "getCommunityMessage",
+          "kind": "get",
+          "var": "CommunityMessage"
+        },
+        {
+          "id": "footerwidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:Footer"
+        },
+        {
+          "id": "footer",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {}
+        },
+        {
+          "id": "getCommunityRemember",
+          "kind": "get",
+          "var": "CommunityRemember"
+        },
+        {
+          "id": "label",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectString",
+          "defaults": {
+            "A": "Remember connection: On",
+            "B": "Remember connection: Off"
+          }
+        },
+        {
+          "id": "rememberwidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:RememberCommunityLabel"
+        },
+        {
+          "id": "remember",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getCommunityPanel.CommunityPanel",
+          "panel.Object"
+        ],
+        [
+          "panel.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "footerwidget.self"
+        ],
+        [
+          "footerwidget.Footer",
+          "footer.self"
+        ],
+        [
+          "getCommunityMessage.CommunityMessage",
+          "footer.InText"
+        ],
+        [
+          "getCommunityRemember.CommunityRemember",
+          "label.bPickA"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "rememberwidget.self"
+        ],
+        [
+          "rememberwidget.RememberCommunityLabel",
+          "remember.self"
+        ],
+        [
+          "label.ReturnValue",
+          "remember.InText"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "footer.execute"
+        ],
+        [
+          "footer.then",
+          "remember.execute"
+        ]
+      ]
+    },
+    {
+      "name": "BuildCommunityRequirements",
+      "inputs": [
+        {
+          "name": "Document",
+          "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Report",
+          "type": "string"
+        }
+      ],
+      "locals": [
+        {
+          "name": "RequirementCursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "RequirementMaterialCursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "RequirementReport",
+          "type": "string",
+          "default": "Requirements detected from saved part values. Service coverage and installed assets are validated independently."
+        }
+      ],
+      "nodes": [
+        {
+          "id": "doc",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "document",
+          "kind": "branch"
+        },
+        {
+          "id": "entries",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Entries"
+        },
+        {
+          "id": "count",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:RequirementCursor"
+        },
+        {
+          "id": "report",
+          "kind": "get",
+          "var": "local:RequirementReport"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "more",
+          "kind": "branch"
+        },
+        {
+          "id": "part",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "partdata",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "reviewed",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "/Game/Game/Environments/Strategy/HQ/Props/Control/Control_Monitor_A.Control_Monitor_A"
+          }
+        },
+        {
+          "id": "meshlabel",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectString",
+          "defaults": {
+            "A": "\nReviewed base game mesh: ",
+            "B": "\nUNKNOWN mesh/pack coverage: "
+          }
+        },
+        {
+          "id": "mesh",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "appendtext",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "append",
+          "kind": "set",
+          "var": "local:RequirementReport"
+        },
+        {
+          "id": "mireset",
+          "kind": "set",
+          "var": "local:RequirementMaterialCursor",
+          "defaults": {
+            "RequirementMaterialCursor": "0"
+          }
+        },
+        {
+          "id": "mi",
+          "kind": "get",
+          "var": "local:RequirementMaterialCursor"
+        },
+        {
+          "id": "mc",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "mwithin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "mmore",
+          "kind": "branch"
+        },
+        {
+          "id": "mat",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "matlabel",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "A": "\nMaterial (UNKNOWN pack coverage; empty = mesh default): "
+          }
+        },
+        {
+          "id": "mappendtext",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "mappend",
+          "kind": "set",
+          "var": "local:RequirementReport"
+        },
+        {
+          "id": "madd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "mnext",
+          "kind": "set",
+          "var": "local:RequirementMaterialCursor"
+        },
+        {
+          "id": "add",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "next",
+          "kind": "set",
+          "var": "local:RequirementCursor"
+        }
+      ],
+      "links": [
+        [
+          "entry.Document",
+          "doc.Object"
+        ],
+        [
+          "doc.ReturnValue",
+          "document.Condition"
+        ],
+        [
+          "entry.Document",
+          "entries.self"
+        ],
+        [
+          "entries.Entries",
+          "count.TargetArray"
+        ],
+        [
+          "i.RequirementCursor",
+          "within.A"
+        ],
+        [
+          "count.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "more.Condition"
+        ],
+        [
+          "entries.Entries",
+          "part.TargetArray"
+        ],
+        [
+          "i.RequirementCursor",
+          "part.Index"
+        ],
+        [
+          "part.Item",
+          "partdata.ST_DenEntry"
+        ],
+        [
+          "partdata.Mesh",
+          "reviewed.A"
+        ],
+        [
+          "reviewed.ReturnValue",
+          "meshlabel.bPickA"
+        ],
+        [
+          "meshlabel.ReturnValue",
+          "mesh.A"
+        ],
+        [
+          "partdata.Mesh",
+          "mesh.B"
+        ],
+        [
+          "report.RequirementReport",
+          "appendtext.A"
+        ],
+        [
+          "mesh.ReturnValue",
+          "appendtext.B"
+        ],
+        [
+          "appendtext.ReturnValue",
+          "append.RequirementReport"
+        ],
+        [
+          "partdata.Materials",
+          "mc.TargetArray"
+        ],
+        [
+          "mi.RequirementMaterialCursor",
+          "mwithin.A"
+        ],
+        [
+          "mc.ReturnValue",
+          "mwithin.B"
+        ],
+        [
+          "mwithin.ReturnValue",
+          "mmore.Condition"
+        ],
+        [
+          "partdata.Materials",
+          "mat.TargetArray"
+        ],
+        [
+          "mi.RequirementMaterialCursor",
+          "mat.Index"
+        ],
+        [
+          "mat.Item",
+          "matlabel.B"
+        ],
+        [
+          "report.RequirementReport",
+          "mappendtext.A"
+        ],
+        [
+          "matlabel.ReturnValue",
+          "mappendtext.B"
+        ],
+        [
+          "mappendtext.ReturnValue",
+          "mappend.RequirementReport"
+        ],
+        [
+          "mi.RequirementMaterialCursor",
+          "madd.A"
+        ],
+        [
+          "madd.ReturnValue",
+          "mnext.RequirementMaterialCursor"
+        ],
+        [
+          "i.RequirementCursor",
+          "add.A"
+        ],
+        [
+          "add.ReturnValue",
+          "next.RequirementCursor"
+        ],
+        [
+          "report.RequirementReport",
+          "result.Report"
+        ],
+        [
+          "entry.then",
+          "document.execute"
+        ],
+        [
+          "document.then",
+          "more.execute"
+        ],
+        [
+          "more.then",
+          "append.execute"
+        ],
+        [
+          "append.then",
+          "mireset.execute"
+        ],
+        [
+          "mireset.then",
+          "mmore.execute"
+        ],
+        [
+          "mmore.then",
+          "mappend.execute"
+        ],
+        [
+          "mappend.then",
+          "mnext.execute"
+        ],
+        [
+          "mnext.then",
+          "mmore.execute"
+        ],
+        [
+          "mmore.else",
+          "next.execute"
+        ],
+        [
+          "next.then",
+          "more.execute"
+        ],
+        [
+          "more.else",
+          "result.execute"
+        ],
+        [
+          "document.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "OpenCommunityAccount",
+      "nodes": [
+        {
+          "id": "open",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:LaunchURL",
+          "defaults": {
+            "URL": "https://share.zcom.app/account"
+          }
+        }
+      ],
+      "links": [
+        [
+          "entry.then",
+          "open.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ReadCommunityDenCard",
+      "inputs": [
+        {
+          "name": "Key",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Accepted",
+          "type": "bool"
+        },
+        {
+          "name": "Name",
+          "type": "string"
+        }
+      ],
+      "locals": [
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "PresetNameCopy",
+          "type": "string"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getUIOpen",
+          "kind": "get",
+          "var": "UIOpen"
+        },
+        {
+          "id": "getActivePanel",
+          "kind": "get",
+          "var": "ActivePanel"
+        },
+        {
+          "id": "layoutname",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "community"
+          }
+        },
+        {
+          "id": "layoutactive0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "active",
+          "kind": "branch"
+        },
+        {
+          "id": "split",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Split",
+          "defaults": {
+            "InStr": ":",
+            "SearchCase": "CaseSensitive",
+            "SearchDir": "FromStart"
+          }
+        },
+        {
+          "id": "parsed",
+          "kind": "branch"
+        },
+        {
+          "id": "revision",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Conv_StringToInt",
+          "defaults": {}
+        },
+        {
+          "id": "index",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Conv_StringToInt",
+          "defaults": {}
+        },
+        {
+          "id": "getPresetNames",
+          "kind": "get",
+          "var": "PresetNames"
+        },
+        {
+          "id": "length",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "getPresetListRevision",
+          "kind": "get",
+          "var": "PresetListRevision"
+        },
+        {
+          "id": "same",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "min",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "max",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "revexactstr",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Conv_IntToString",
+          "defaults": {}
+        },
+        {
+          "id": "revexact",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "idxexactstr",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Conv_IntToString",
+          "defaults": {}
+        },
+        {
+          "id": "idxexact",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "checks0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "checks1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "checks2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "checks3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "found",
+          "kind": "set",
+          "var": "local:PresetNameCopy"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        },
+        {
+          "id": "nameout",
+          "kind": "get",
+          "var": "local:PresetNameCopy"
+        }
+      ],
+      "links": [
+        [
+          "getActivePanel.ActivePanel",
+          "layoutname.A"
+        ],
+        [
+          "getUIOpen.UIOpen",
+          "layoutactive0.A"
+        ],
+        [
+          "layoutname.ReturnValue",
+          "layoutactive0.B"
+        ],
+        [
+          "layoutactive0.ReturnValue",
+          "active.Condition"
+        ],
+        [
+          "entry.Key",
+          "split.SourceString"
+        ],
+        [
+          "split.ReturnValue",
+          "parsed.Condition"
+        ],
+        [
+          "split.LeftS",
+          "revision.InString"
+        ],
+        [
+          "split.RightS",
+          "index.InString"
+        ],
+        [
+          "getPresetNames.PresetNames",
+          "length.TargetArray"
+        ],
+        [
+          "revision.ReturnValue",
+          "same.A"
+        ],
+        [
+          "getPresetListRevision.PresetListRevision",
+          "same.B"
+        ],
+        [
+          "index.ReturnValue",
+          "min.A"
+        ],
+        [
+          "index.ReturnValue",
+          "max.A"
+        ],
+        [
+          "length.ReturnValue",
+          "max.B"
+        ],
+        [
+          "revision.ReturnValue",
+          "revexactstr.InInt"
+        ],
+        [
+          "split.LeftS",
+          "revexact.A"
+        ],
+        [
+          "revexactstr.ReturnValue",
+          "revexact.B"
+        ],
+        [
+          "index.ReturnValue",
+          "idxexactstr.InInt"
+        ],
+        [
+          "split.RightS",
+          "idxexact.A"
+        ],
+        [
+          "idxexactstr.ReturnValue",
+          "idxexact.B"
+        ],
+        [
+          "same.ReturnValue",
+          "checks0.A"
+        ],
+        [
+          "min.ReturnValue",
+          "checks0.B"
+        ],
+        [
+          "checks0.ReturnValue",
+          "checks1.A"
+        ],
+        [
+          "max.ReturnValue",
+          "checks1.B"
+        ],
+        [
+          "checks1.ReturnValue",
+          "checks2.A"
+        ],
+        [
+          "revexact.ReturnValue",
+          "checks2.B"
+        ],
+        [
+          "checks2.ReturnValue",
+          "checks3.A"
+        ],
+        [
+          "idxexact.ReturnValue",
+          "checks3.B"
+        ],
+        [
+          "checks3.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "getPresetNames.PresetNames",
+          "item.TargetArray"
+        ],
+        [
+          "index.ReturnValue",
+          "item.Index"
+        ],
+        [
+          "item.Item",
+          "found.PresetNameCopy"
+        ],
+        [
+          "out.OK",
+          "result.Accepted"
+        ],
+        [
+          "nameout.PresetNameCopy",
+          "result.Name"
+        ],
+        [
+          "entry.then",
+          "active.execute"
+        ],
+        [
+          "active.then",
+          "parsed.execute"
+        ],
+        [
+          "parsed.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "found.execute"
+        ],
+        [
+          "found.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "active.else",
+          "result.execute"
+        ],
+        [
+          "parsed.else",
+          "result.execute"
+        ],
+        [
+          "valid.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "NormalizeCommunityInput",
+      "inputs": [
+        {
+          "name": "Input",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CleanInput",
+          "type": "string"
+        },
+        {
+          "name": "Valid",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "trim",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Trim",
+          "defaults": {}
+        },
+        {
+          "id": "clean",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:TrimTrailing",
+          "defaults": {}
+        },
+        {
+          "id": "secret",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "Substring": "zcu_",
+            "bUseCase": "false"
+          }
+        },
+        {
+          "id": "notsecretcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "notsecret",
+          "kind": "branch"
+        },
+        {
+          "id": "length",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Len",
+          "defaults": {}
+        },
+        {
+          "id": "min",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "max",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "256"
+          }
+        },
+        {
+          "id": "sizecheck0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "size",
+          "kind": "branch"
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "more",
+          "kind": "branch"
+        },
+        {
+          "id": "character",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:GetSubstring",
+          "defaults": {
+            "Length": "1"
+          }
+        },
+        {
+          "id": "ascii",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "SearchIn": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-/.:",
+            "bUseCase": "true"
+          }
+        },
+        {
+          "id": "allowed",
+          "kind": "branch"
+        },
+        {
+          "id": "advance",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "next",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        }
+      ],
+      "links": [
+        [
+          "entry.Input",
+          "trim.SourceString"
+        ],
+        [
+          "trim.ReturnValue",
+          "clean.SourceString"
+        ],
+        [
+          "clean.ReturnValue",
+          "secret.SearchIn"
+        ],
+        [
+          "secret.ReturnValue",
+          "notsecretcheck.A"
+        ],
+        [
+          "notsecretcheck.ReturnValue",
+          "notsecret.Condition"
+        ],
+        [
+          "clean.ReturnValue",
+          "length.S"
+        ],
+        [
+          "length.ReturnValue",
+          "min.A"
+        ],
+        [
+          "length.ReturnValue",
+          "max.A"
+        ],
+        [
+          "min.ReturnValue",
+          "sizecheck0.A"
+        ],
+        [
+          "max.ReturnValue",
+          "sizecheck0.B"
+        ],
+        [
+          "sizecheck0.ReturnValue",
+          "size.Condition"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "length.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "more.Condition"
+        ],
+        [
+          "clean.ReturnValue",
+          "character.SourceString"
+        ],
+        [
+          "i.Cursor",
+          "character.StartIndex"
+        ],
+        [
+          "character.ReturnValue",
+          "ascii.Substring"
+        ],
+        [
+          "ascii.ReturnValue",
+          "allowed.Condition"
+        ],
+        [
+          "i.Cursor",
+          "advance.A"
+        ],
+        [
+          "advance.ReturnValue",
+          "next.Cursor"
+        ],
+        [
+          "out.OK",
+          "result.Valid"
+        ],
+        [
+          "clean.ReturnValue",
+          "result.CleanInput"
+        ],
+        [
+          "entry.then",
+          "notsecret.execute"
+        ],
+        [
+          "notsecret.else",
+          "result.execute"
+        ],
+        [
+          "notsecret.then",
+          "size.execute"
+        ],
+        [
+          "size.then",
+          "more.execute"
+        ],
+        [
+          "more.then",
+          "allowed.execute"
+        ],
+        [
+          "allowed.then",
+          "next.execute"
+        ],
+        [
+          "next.then",
+          "more.execute"
+        ],
+        [
+          "more.else",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "size.else",
+          "result.execute"
+        ],
+        [
+          "allowed.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ValidCommunityKey",
+      "inputs": [
+        {
+          "name": "Key",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Valid",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "ConnectionKeyIndex",
+          "type": "int",
+          "default": "4"
+        },
+        {
+          "name": "OK",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "length",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Len",
+          "defaults": {}
+        },
+        {
+          "id": "prefix",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Left",
+          "defaults": {
+            "Count": "4"
+          }
+        },
+        {
+          "id": "size",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "68"
+          }
+        },
+        {
+          "id": "prefixmatch",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "zcu_"
+          }
+        },
+        {
+          "id": "checks0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "shape",
+          "kind": "branch"
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:ConnectionKeyIndex"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {
+            "B": "68"
+          }
+        },
+        {
+          "id": "more",
+          "kind": "branch"
+        },
+        {
+          "id": "char",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:GetSubstring",
+          "defaults": {
+            "Length": "1"
+          }
+        },
+        {
+          "id": "hexcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "SearchIn": "0123456789abcdef",
+            "bUseCase": "true"
+          }
+        },
+        {
+          "id": "hex",
+          "kind": "branch"
+        },
+        {
+          "id": "advance",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "next",
+          "kind": "set",
+          "var": "local:ConnectionKeyIndex"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:OK",
+          "defaults": {
+            "OK": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:OK"
+        }
+      ],
+      "links": [
+        [
+          "entry.Key",
+          "length.S"
+        ],
+        [
+          "entry.Key",
+          "prefix.SourceString"
+        ],
+        [
+          "length.ReturnValue",
+          "size.A"
+        ],
+        [
+          "prefix.ReturnValue",
+          "prefixmatch.A"
+        ],
+        [
+          "size.ReturnValue",
+          "checks0.A"
+        ],
+        [
+          "prefixmatch.ReturnValue",
+          "checks0.B"
+        ],
+        [
+          "checks0.ReturnValue",
+          "shape.Condition"
+        ],
+        [
+          "i.ConnectionKeyIndex",
+          "within.A"
+        ],
+        [
+          "within.ReturnValue",
+          "more.Condition"
+        ],
+        [
+          "entry.Key",
+          "char.SourceString"
+        ],
+        [
+          "i.ConnectionKeyIndex",
+          "char.StartIndex"
+        ],
+        [
+          "char.ReturnValue",
+          "hexcheck.Substring"
+        ],
+        [
+          "hexcheck.ReturnValue",
+          "hex.Condition"
+        ],
+        [
+          "i.ConnectionKeyIndex",
+          "advance.A"
+        ],
+        [
+          "advance.ReturnValue",
+          "next.ConnectionKeyIndex"
+        ],
+        [
+          "out.OK",
+          "result.Valid"
+        ],
+        [
+          "entry.then",
+          "shape.execute"
+        ],
+        [
+          "shape.then",
+          "more.execute"
+        ],
+        [
+          "more.then",
+          "hex.execute"
+        ],
+        [
+          "hex.then",
+          "next.execute"
+        ],
+        [
+          "next.then",
+          "more.execute"
+        ],
+        [
+          "more.else",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "shape.else",
+          "result.execute"
+        ],
+        [
+          "hex.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ClearCommunityKey",
+      "nodes": [
+        {
+          "id": "getCommunityPanel",
+          "kind": "get",
+          "var": "CommunityPanel"
+        },
+        {
+          "id": "alive",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "key",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:CommunityKey"
+        },
+        {
+          "id": "clear",
+          "kind": "call",
+          "function": "/Script/UMG.EditableTextBox:SetText",
+          "defaults": {
+            "InText": ""
+          }
+        }
+      ],
+      "links": [
+        [
+          "getCommunityPanel.CommunityPanel",
+          "alive.Object"
+        ],
+        [
+          "alive.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "key.self"
+        ],
+        [
+          "key.CommunityKey",
+          "clear.self"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "clear.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ReleaseCommunityMailbox",
+      "nodes": [
+        {
+          "id": "delete",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:DeleteGameInSlot",
+          "defaults": {
+            "SlotName": "ZComDen/Community/v1/request",
+            "UserIndex": "0"
+          }
+        },
+        {
+          "id": "getCommunityWireLines",
+          "kind": "get",
+          "var": "CommunityWireLines"
+        },
+        {
+          "id": "release",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "cursor",
+          "kind": "set",
+          "var": "CommunityWireCursor",
+          "defaults": {
+            "CommunityWireCursor": "0"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getCommunityWireLines.CommunityWireLines",
+          "release.TargetArray"
+        ],
+        [
+          "entry.then",
+          "delete.execute"
+        ],
+        [
+          "delete.then",
+          "release.execute"
+        ],
+        [
+          "release.then",
+          "cursor.execute"
         ]
       ]
     }
