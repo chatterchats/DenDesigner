@@ -43,7 +43,7 @@ class NativeCommunityTests(unittest.TestCase):
         cls.lib.dd_save_read.argtypes = [ctypes.c_char_p,ctypes.c_size_t,ctypes.POINTER(Save),ctypes.POINTER(ctypes.c_char_p)]
         cls.lib.dd_save_response.argtypes = [ctypes.c_char_p,ctypes.c_size_t,ctypes.POINTER(Save),ctypes.c_char_p,ctypes.c_void_p,ctypes.c_size_t,ctypes.POINTER(ctypes.c_size_t)]
         cls.fixture = (SOURCE/'fixtures/request-v1.sav').read_bytes()
-        cls.sample = json.loads((ROOT/'tools/sharing/service_slice/composition.json').read_text())
+        cls.sample = json.loads((ROOT/'tests/fixtures/sharing/published-monitor-v1.json').read_text())
     @classmethod
     def tearDownClass(cls): cls.temporary.cleanup()
     def validate(self, doc=None, raw=None, rehash=False):
