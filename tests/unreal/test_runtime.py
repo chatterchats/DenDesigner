@@ -80,6 +80,13 @@ def fixture_spec():
     unpack(issue,'data',ROOT+'ST_DenApplyIssue','item.Item')
     issue.wire(('data.Value','result.Value'),('data.Code','result.Code'));issue.chain('entry','result')
     setters.append(issue.function('ReadApplyIssue',inputs=[v('Manager','object:'+ROOT+'BP_DenApply'),v('Index','int')],outputs=[v('Value','struct:'+ENTRY),v('Code','int')]))
+    indexchange=Graph()
+    indexchange.get('changes',ROOT+'BP_DenApply:IndexMutations');indexchange.wire(('entry.Manager','changes.self'))
+    arr(indexchange,'item','Get','changes.IndexMutations');indexchange.wire(('entry.Index','item.Index'))
+    unpack(indexchange,'mutation',MUTATION,'item.Item');unpack(indexchange,'value',ENTRY,'mutation.Value')
+    indexchange.wire(('value.Key','result.Key'));indexchange.chain('entry','result')
+    setters.append(indexchange.function('ReadIndexChangeKey',inputs=[v('Manager','object:'+ROOT+'BP_DenApply'),v('Index','int')],outputs=[v('Key','string')]))
+
     setter = Graph()
     setter.set('set', ROOT + 'BP_DenPresetLibrary:SchemaVersion')
     setter.wire(('entry.Document','set.self'), ('entry.Value','set.SchemaVersion'))
@@ -102,6 +109,9 @@ def fixture_spec():
     samekeys=Graph();samekeys.call('same',INPUT+'EqualEqual_KeyKey')
     samekeys.wire(('entry.A','same.A'),('entry.B','same.B'),('same.ReturnValue','result.Equal'));samekeys.chain('entry','result')
     setters.append(samekeys.function('SameInputKeys',inputs=[v('A','struct:/Script/InputCore.Key'),v('B','struct:/Script/InputCore.Key')],outputs=[v('Equal','bool')]))
+    wheelkey=Graph();wheelkey.call('same',INPUT+'EqualEqual_KeyKey',B='MouseWheelAxis')
+    wheelkey.wire(('entry.Key','same.A'),('same.ReturnValue','result.Equal'));wheelkey.chain('entry','result')
+    setters.append(wheelkey.function('IsWheelKey',inputs=[v('Key','struct:/Script/InputCore.Key')],outputs=[v('Equal','bool')]))
     return dict(kind='blueprint', path='/Game/DenNativeTests/BP_Fixture', parent='/Script/Engine.SaveGame',
                 functions=[g.function('MakeEntry', inputs=[v('Kind','int'), v('Key','string'), v('Position','vector')],
                                       outputs=[v('Value','struct:' + ENTRY)]),
@@ -308,6 +318,8 @@ try:
     test_pick.run(unreal, ROOT, make, field, field_name, check)
     import test_gizmo_native
     test_gizmo_native.run(unreal, ROOT, check)
+    import test_snap_native
+    test_snap_native.run_math(unreal, ROOT, check)
     import test_catalog_native
     test_catalog_native.run(unreal, REPO, check)
     import test_prop_packs_native
@@ -316,6 +328,8 @@ try:
     import test_thumbnails_native
     test_thumbnails_native.run(unreal,check)
     test_editor_native.run(unreal, ROOT, make, field, field_name, check)
+    import test_console_native
+    test_console_native.run(unreal,check)
     import test_coordinator_native
     test_coordinator_native.run(unreal,check)
 except Exception:

@@ -199,6 +199,7 @@ def apply_batch():
 
 def save_variables(entries_type, scope):
     return [v('SchemaVersion', 'int', '1'), v('StorageKey', 'string'), v('Scope', 'string', scope),
+                   v('HasCompositionAnchor', 'bool'), v('CompositionAnchor', 'vector'),
                    v('CampaignID', 'string'), v('Enabled', 'bool', 'true'), v('DisplayName', 'string'), v('GameVersion', 'string'),
                    v('Revision', 'int64', '0'), v('ContentID', 'string'),
                    v('DraftBaseRevision', 'int64', '0'), v('DraftBaseID', 'string'), v('WrittenAt', 'string'), v('IsDraft', 'bool', 'false'),
@@ -263,6 +264,11 @@ def specs():
     from runtime_gizmo_visual import spec as gizmo_visual_spec
     yield '18d_BP_DenGizmoVisual',gizmo_visual_spec()
 
+    from runtime_snap_math import spec as snap_math_spec
+    from runtime_snap import guides_spec as snap_guides_spec
+    yield '18db_BP_DenSnapMath',snap_math_spec()
+    yield '18dc_BP_DenSnapGuides',snap_guides_spec()
+
     from runtime_prop_packs import types as prop_pack_types
     yield from prop_pack_types()
 
@@ -280,11 +286,16 @@ def specs():
     from runtime_input_mappings import spec as input_mappings_spec
     yield '21z_BP_DenInputMappings',input_mappings_spec()
 
-    from runtime_editor_host import spec as editor_host_spec
-    yield '22_BP_DenEditorHost',editor_host_spec()
+    from runtime_editor_host import split_specs
+    editor_state,editor_host=split_specs()
+    yield '21zz_BP_DenEditorState',editor_state
+    yield '22_BP_DenEditorHost',editor_host
 
     from runtime_shortcut import spec as shortcut_spec
     yield '23_BP_DenShortcut',shortcut_spec()
+    from runtime_console import spec as console_spec, indicator_spec
+    yield '23a_BP_DenConsoleIndicator',indicator_spec()
+    yield '23b_BP_DenOfficeConsole',console_spec()
     from runtime_coordinator import spec as coordinator_spec, notice_spec
     yield '24_WBP_DenStartupNotice',notice_spec()
     yield '25_BP_DenRuntimeCoordinator',coordinator_spec()

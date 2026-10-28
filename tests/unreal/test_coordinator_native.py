@@ -60,6 +60,11 @@ def run(unreal,check):
               'background layout application opens no UI and writes no layout, preferences or draft')
         coordinator.call_method('UpdateShortcut')
         check(prop(coordinator,'Shortcut') is not None,'world coordinator owns an opening shortcut independent of the editor UI')
+        coordinator.call_method('UpdateOfficeConsole')
+        console=prop(coordinator,'OfficeConsole')
+        check(console is not None,'world coordinator owns the office console interaction')
+        coordinator.call_method('UpdateOfficeConsole')
+        check(prop(coordinator,'OfficeConsole')==console,'repeated console updates reuse a single interaction actor')
         check(coordinator.call_method('EnsureHost') and prop(coordinator,'Host')==host,'repeated initialization reuses the world host')
         own,status=storage.call_method('MakeCampaign',(campaign,prop(host,'WorkingDocument')))
         assert status==1
@@ -76,8 +81,8 @@ def run(unreal,check):
         check(not prop(host,'Editing') and bad.read_bytes()==b'damaged coordinator fixture',
               'failed startup leaves corrupt layout bytes unchanged and no editing session active')
         coordinator.call_method('Shutdown')
-        check(prop(coordinator,'Host') is None and prop(coordinator,'Shortcut') is None and not prop(coordinator,'Initialized'),
-              'world shutdown releases its host, shortcut and initialization state')
+        check(prop(coordinator,'Host') is None and prop(coordinator,'Shortcut') is None and prop(coordinator,'OfficeConsole') is None and not prop(coordinator,'Initialized'),
+              'world shutdown releases its host, shortcut, console and initialization state')
         coordinator.call_method('Shutdown')
         check(prop(coordinator,'Host') is None,'world shutdown is idempotent')
     finally:

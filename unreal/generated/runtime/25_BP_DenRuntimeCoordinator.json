@@ -12,6 +12,10 @@
       "type": "object:/DenDesignerGF/Runtime/BP_DenEditorHost"
     },
     {
+      "name": "OfficeConsole",
+      "type": "object:/DenDesignerGF/Runtime/BP_DenOfficeConsole"
+    },
+    {
       "name": "Player",
       "type": "object:/Script/Engine.PlayerController"
     },
@@ -1289,11 +1293,9 @@
         },
         {
           "id": "request",
-          "kind": "set",
-          "var": "OpenRequested",
-          "defaults": {
-            "OpenRequested": "true"
-          }
+          "kind": "call",
+          "function": "self:RequestEditorOpen",
+          "defaults": {}
         }
       ],
       "links": [
@@ -1372,6 +1374,354 @@
         [
           "open.else",
           "request.execute"
+        ]
+      ]
+    },
+    {
+      "name": "RequestEditorOpen",
+      "nodes": [
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "getInitialized",
+          "kind": "get",
+          "var": "Initialized"
+        },
+        {
+          "id": "getHost",
+          "kind": "get",
+          "var": "Host"
+        },
+        {
+          "id": "host",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "getPlayer",
+          "kind": "get",
+          "var": "Player"
+        },
+        {
+          "id": "player",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "available0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "available1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "ready",
+          "kind": "branch"
+        },
+        {
+          "id": "ui",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorHost:UIOpen"
+        },
+        {
+          "id": "open",
+          "kind": "branch"
+        },
+        {
+          "id": "pausedvalue",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:IsGamePaused",
+          "defaults": {}
+        },
+        {
+          "id": "paused",
+          "kind": "branch"
+        },
+        {
+          "id": "request",
+          "kind": "set",
+          "var": "OpenRequested",
+          "defaults": {
+            "OpenRequested": "true"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getHost.Host",
+          "host.Object"
+        ],
+        [
+          "getPlayer.Player",
+          "player.Object"
+        ],
+        [
+          "getInitialized.Initialized",
+          "available0.A"
+        ],
+        [
+          "host.ReturnValue",
+          "available0.B"
+        ],
+        [
+          "available0.ReturnValue",
+          "available1.A"
+        ],
+        [
+          "player.ReturnValue",
+          "available1.B"
+        ],
+        [
+          "available1.ReturnValue",
+          "ready.Condition"
+        ],
+        [
+          "getHost.Host",
+          "ui.self"
+        ],
+        [
+          "ui.UIOpen",
+          "open.Condition"
+        ],
+        [
+          "self.self",
+          "pausedvalue.WorldContextObject"
+        ],
+        [
+          "pausedvalue.ReturnValue",
+          "paused.Condition"
+        ],
+        [
+          "entry.then",
+          "ready.execute"
+        ],
+        [
+          "ready.then",
+          "open.execute"
+        ],
+        [
+          "open.else",
+          "paused.execute"
+        ],
+        [
+          "paused.else",
+          "request.execute"
+        ]
+      ]
+    },
+    {
+      "name": "UpdateOfficeConsole",
+      "nodes": [
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "getOfficeConsole",
+          "kind": "get",
+          "var": "OfficeConsole"
+        },
+        {
+          "id": "console",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "exists",
+          "kind": "branch"
+        },
+        {
+          "id": "owner",
+          "kind": "call",
+          "function": "/Script/Engine.ActorComponent:GetOwner",
+          "defaults": {}
+        },
+        {
+          "id": "transform",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeTransform",
+          "defaults": {
+            "Scale": "1,1,1"
+          }
+        },
+        {
+          "id": "spawn",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:BeginDeferredActorSpawnFromClass",
+          "defaults": {
+            "ActorClass": "/DenDesignerGF/Runtime/BP_DenOfficeConsole",
+            "CollisionHandlingOverride": "AlwaysSpawn"
+          }
+        },
+        {
+          "id": "finish",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:FinishSpawningActor",
+          "defaults": {}
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/DenDesignerGF/Runtime/BP_DenOfficeConsole"
+        },
+        {
+          "id": "remember",
+          "kind": "set",
+          "var": "OfficeConsole"
+        },
+        {
+          "id": "getHost",
+          "kind": "get",
+          "var": "Host"
+        },
+        {
+          "id": "ui",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorHost:UIOpen"
+        },
+        {
+          "id": "closed",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "update",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenOfficeConsole:UpdateConsole",
+          "defaults": {}
+        },
+        {
+          "id": "consume",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenOfficeConsole:ConsumeRequest",
+          "defaults": {}
+        },
+        {
+          "id": "requested",
+          "kind": "branch"
+        },
+        {
+          "id": "request",
+          "kind": "call",
+          "function": "self:RequestEditorOpen",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getOfficeConsole.OfficeConsole",
+          "console.Object"
+        ],
+        [
+          "console.ReturnValue",
+          "exists.Condition"
+        ],
+        [
+          "self.self",
+          "owner.self"
+        ],
+        [
+          "self.self",
+          "spawn.WorldContextObject"
+        ],
+        [
+          "owner.ReturnValue",
+          "spawn.Owner"
+        ],
+        [
+          "transform.ReturnValue",
+          "spawn.SpawnTransform"
+        ],
+        [
+          "spawn.ReturnValue",
+          "finish.Actor"
+        ],
+        [
+          "transform.ReturnValue",
+          "finish.SpawnTransform"
+        ],
+        [
+          "finish.ReturnValue",
+          "cast.Object"
+        ],
+        [
+          "cast.AsBP Den Office Console",
+          "remember.OfficeConsole"
+        ],
+        [
+          "getHost.Host",
+          "ui.self"
+        ],
+        [
+          "ui.UIOpen",
+          "closed.A"
+        ],
+        [
+          "getOfficeConsole.OfficeConsole",
+          "update.self"
+        ],
+        [
+          "closed.ReturnValue",
+          "update.Available"
+        ],
+        [
+          "getOfficeConsole.OfficeConsole",
+          "consume.self"
+        ],
+        [
+          "consume.Requested",
+          "requested.Condition"
+        ],
+        [
+          "entry.then",
+          "exists.execute"
+        ],
+        [
+          "exists.then",
+          "update.execute"
+        ],
+        [
+          "update.then",
+          "consume.execute"
+        ],
+        [
+          "consume.then",
+          "requested.execute"
+        ],
+        [
+          "requested.then",
+          "request.execute"
+        ],
+        [
+          "exists.else",
+          "spawn.execute"
+        ],
+        [
+          "spawn.then",
+          "finish.execute"
+        ],
+        [
+          "finish.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "remember.execute"
+        ],
+        [
+          "remember.then",
+          "update.execute"
         ]
       ]
     },
@@ -2014,6 +2364,12 @@
           "defaults": {}
         },
         {
+          "id": "console",
+          "kind": "call",
+          "function": "self:UpdateOfficeConsole",
+          "defaults": {}
+        },
+        {
           "id": "open",
           "kind": "call",
           "function": "self:OpenRequestedEditor",
@@ -2175,6 +2531,10 @@
         ],
         [
           "toggle.then",
+          "console.execute"
+        ],
+        [
+          "console.then",
           "open.execute"
         ],
         [
@@ -2191,7 +2551,7 @@
         ],
         [
           "key.else",
-          "open.execute"
+          "console.execute"
         ]
       ]
     },
@@ -2219,6 +2579,32 @@
           "kind": "call",
           "function": "self:ClearNotice",
           "defaults": {}
+        },
+        {
+          "id": "getOfficeConsole",
+          "kind": "get",
+          "var": "OfficeConsole"
+        },
+        {
+          "id": "consolevalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "console",
+          "kind": "branch"
+        },
+        {
+          "id": "destroyconsole",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:K2_DestroyActor",
+          "defaults": {}
+        },
+        {
+          "id": "consoleclear",
+          "kind": "set",
+          "var": "OfficeConsole"
         },
         {
           "id": "getHost",
@@ -2264,6 +2650,18 @@
       ],
       "links": [
         [
+          "getOfficeConsole.OfficeConsole",
+          "consolevalid.Object"
+        ],
+        [
+          "consolevalid.ReturnValue",
+          "console.Condition"
+        ],
+        [
+          "getOfficeConsole.OfficeConsole",
+          "destroyconsole.self"
+        ],
+        [
           "getHost.Host",
           "valid.Object"
         ],
@@ -2289,6 +2687,18 @@
         ],
         [
           "notice.then",
+          "console.execute"
+        ],
+        [
+          "console.then",
+          "destroyconsole.execute"
+        ],
+        [
+          "destroyconsole.then",
+          "consoleclear.execute"
+        ],
+        [
+          "consoleclear.then",
           "host.execute"
         ],
         [
@@ -2314,6 +2724,10 @@
         [
           "host.else",
           "clear.execute"
+        ],
+        [
+          "console.else",
+          "consoleclear.execute"
         ]
       ]
     }

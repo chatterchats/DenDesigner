@@ -1,0 +1,2208 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenOfficeConsole",
+  "parent": "/Script/Engine.Actor",
+  "components": [
+    {
+      "name": "PromptIndicator",
+      "class": "/DenDesignerGF/Runtime/BP_DenConsoleIndicator",
+      "props": {
+        "Lifetime": "Manual",
+        "IndicatorConfig": "(WidgetClass=\"/Game/Game/UI/Tactical/ExploreMode/Widgets/WBP_TacticalExplorePrompts.WBP_TacticalExplorePrompts_C\",bClampToScreen=True)"
+      }
+    },
+    {
+      "name": "Root",
+      "class": "/Script/Engine.SceneComponent",
+      "props": {
+        "Mobility": "Movable"
+      }
+    },
+    {
+      "name": "Interaction",
+      "class": "/Script/BitReactorGame.InteractableComponent",
+      "attach": "Root",
+      "props": {
+        "bUsesAbilities": "false",
+        "bRegisterSelectionGroup": "true",
+        "bIsSingleUse": "false",
+        "bAllowInteractions": "false",
+        "bInteractionBlocked": "true",
+        "InputActionAbilities": "((InputAction=\"/Game/Game/Input/Actions/IA_ExploreInteract.IA_ExploreInteract\",InteractionText=\"Open Den Designer\"))"
+      }
+    }
+  ],
+  "variables": [
+    {
+      "name": "PromptIcon",
+      "type": "object:/Script/UMG.Widget"
+    },
+    {
+      "name": "NextPromptCheck",
+      "type": "double"
+    },
+    {
+      "name": "Target",
+      "type": "object:/Script/Engine.StaticMeshComponent"
+    },
+    {
+      "name": "Enabled",
+      "type": "bool"
+    },
+    {
+      "name": "Requested",
+      "type": "bool"
+    },
+    {
+      "name": "Candidates",
+      "type": "object:/Script/Engine.Actor[]"
+    },
+    {
+      "name": "Scanning",
+      "type": "bool"
+    },
+    {
+      "name": "Cursor",
+      "type": "int"
+    },
+    {
+      "name": "ComponentCursor",
+      "type": "int"
+    },
+    {
+      "name": "NextScan",
+      "type": "double"
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "activate",
+        "kind": "bound_event",
+        "component": "Interaction",
+        "delegate": "OnInteractionActivated"
+      },
+      {
+        "id": "request",
+        "kind": "call",
+        "function": "self:RequestOpen",
+        "defaults": {}
+      },
+      {
+        "id": "near",
+        "kind": "bound_event",
+        "component": "Interaction",
+        "delegate": "OnEnterNearInteraction"
+      },
+      {
+        "id": "nearpresentation",
+        "kind": "call",
+        "function": "self:PresentCurrentInteraction",
+        "defaults": {}
+      },
+      {
+        "id": "enter",
+        "kind": "bound_event",
+        "component": "Interaction",
+        "delegate": "OnEnterInteraction"
+      },
+      {
+        "id": "enterpresentation",
+        "kind": "call",
+        "function": "self:PresentCurrentInteraction",
+        "defaults": {}
+      },
+      {
+        "id": "end",
+        "kind": "event",
+        "name": "ReceiveEndPlay"
+      },
+      {
+        "id": "getPromptIndicator",
+        "kind": "get",
+        "var": "PromptIndicator"
+      },
+      {
+        "id": "removeindicator",
+        "kind": "call",
+        "function": "/Script/BitReactorGame.BitReactorWidgetComponent:RemoveIndicatorImmediate",
+        "defaults": {}
+      }
+    ],
+    "links": [
+      [
+        "activate.then",
+        "request.execute"
+      ],
+      [
+        "near.then",
+        "nearpresentation.execute"
+      ],
+      [
+        "enter.then",
+        "enterpresentation.execute"
+      ],
+      [
+        "getPromptIndicator.PromptIndicator",
+        "removeindicator.self"
+      ],
+      [
+        "end.then",
+        "removeindicator.execute"
+      ]
+    ]
+  },
+  "functions": [
+    {
+      "name": "MatchesConsole",
+      "inputs": [
+        {
+          "name": "MeshPath",
+          "type": "string"
+        },
+        {
+          "name": "LevelPath",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Matches",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "mesh",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "/Game/Game/Environments/Strategy/HQ/Props/Consoles/ConsoleLocks/SM_HUB_ConsoleLocks_3x1.SM_HUB_ConsoleLocks_3x1"
+          }
+        },
+        {
+          "id": "level",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:StartsWith",
+          "defaults": {
+            "InPrefix": "/Game/Game/Maps/Hub/",
+            "SearchCase": "CaseSensitive"
+          }
+        },
+        {
+          "id": "both0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "entry.MeshPath",
+          "mesh.A"
+        ],
+        [
+          "entry.LevelPath",
+          "level.SourceString"
+        ],
+        [
+          "mesh.ReturnValue",
+          "both0.A"
+        ],
+        [
+          "level.ReturnValue",
+          "both0.B"
+        ],
+        [
+          "both0.ReturnValue",
+          "result.Matches"
+        ],
+        [
+          "entry.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ConsiderConsole",
+      "inputs": [
+        {
+          "name": "Component",
+          "type": "object:/Script/Engine.StaticMeshComponent"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "component",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "mesh",
+          "kind": "get",
+          "var": "/Script/Engine.StaticMeshComponent:StaticMesh"
+        },
+        {
+          "id": "meshcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "meshvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "path",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:GetPathName",
+          "defaults": {}
+        },
+        {
+          "id": "owner",
+          "kind": "call",
+          "function": "/Script/Engine.ActorComponent:GetOwner",
+          "defaults": {}
+        },
+        {
+          "id": "level",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:GetPathName",
+          "defaults": {}
+        },
+        {
+          "id": "matches",
+          "kind": "call",
+          "function": "self:MatchesConsole",
+          "defaults": {}
+        },
+        {
+          "id": "match",
+          "kind": "branch"
+        },
+        {
+          "id": "target",
+          "kind": "set",
+          "var": "Target"
+        }
+      ],
+      "links": [
+        [
+          "entry.Component",
+          "component.Object"
+        ],
+        [
+          "component.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.Component",
+          "mesh.self"
+        ],
+        [
+          "mesh.StaticMesh",
+          "meshcheck.Object"
+        ],
+        [
+          "meshcheck.ReturnValue",
+          "meshvalid.Condition"
+        ],
+        [
+          "mesh.StaticMesh",
+          "path.Object"
+        ],
+        [
+          "entry.Component",
+          "owner.self"
+        ],
+        [
+          "owner.ReturnValue",
+          "level.Object"
+        ],
+        [
+          "path.ReturnValue",
+          "matches.MeshPath"
+        ],
+        [
+          "level.ReturnValue",
+          "matches.LevelPath"
+        ],
+        [
+          "matches.Matches",
+          "match.Condition"
+        ],
+        [
+          "entry.Component",
+          "target.Target"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "meshvalid.execute"
+        ],
+        [
+          "meshvalid.then",
+          "matches.execute"
+        ],
+        [
+          "matches.then",
+          "match.execute"
+        ],
+        [
+          "match.then",
+          "target.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ScanStep",
+      "nodes": [
+        {
+          "id": "getCandidates",
+          "kind": "get",
+          "var": "Candidates"
+        },
+        {
+          "id": "length",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "getCursor",
+          "kind": "get",
+          "var": "Cursor"
+        },
+        {
+          "id": "withincheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "within",
+          "kind": "branch"
+        },
+        {
+          "id": "actor",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "actorvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "components",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:K2_GetComponentsByClass",
+          "defaults": {
+            "ComponentClass": "/Script/Engine.StaticMeshComponent"
+          }
+        },
+        {
+          "id": "clen",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "getComponentCursor",
+          "kind": "get",
+          "var": "ComponentCursor"
+        },
+        {
+          "id": "cwithin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "component",
+          "kind": "branch"
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/Script/Engine.StaticMeshComponent"
+        },
+        {
+          "id": "consider",
+          "kind": "call",
+          "function": "self:ConsiderConsole",
+          "defaults": {}
+        },
+        {
+          "id": "nextcomponentadd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "nextcomponent",
+          "kind": "set",
+          "var": "ComponentCursor"
+        },
+        {
+          "id": "nextactoradd",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "nextactor",
+          "kind": "set",
+          "var": "Cursor"
+        },
+        {
+          "id": "reset",
+          "kind": "set",
+          "var": "ComponentCursor",
+          "defaults": {
+            "ComponentCursor": "0"
+          }
+        },
+        {
+          "id": "done",
+          "kind": "set",
+          "var": "Scanning",
+          "defaults": {
+            "Scanning": "false"
+          }
+        },
+        {
+          "id": "release",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getCandidates.Candidates",
+          "length.TargetArray"
+        ],
+        [
+          "getCursor.Cursor",
+          "withincheck.A"
+        ],
+        [
+          "length.ReturnValue",
+          "withincheck.B"
+        ],
+        [
+          "withincheck.ReturnValue",
+          "within.Condition"
+        ],
+        [
+          "getCandidates.Candidates",
+          "actor.TargetArray"
+        ],
+        [
+          "getCursor.Cursor",
+          "actor.Index"
+        ],
+        [
+          "actor.Item",
+          "actorvalid.Object"
+        ],
+        [
+          "actorvalid.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "actor.Item",
+          "components.self"
+        ],
+        [
+          "components.ReturnValue",
+          "clen.TargetArray"
+        ],
+        [
+          "getComponentCursor.ComponentCursor",
+          "cwithin.A"
+        ],
+        [
+          "clen.ReturnValue",
+          "cwithin.B"
+        ],
+        [
+          "cwithin.ReturnValue",
+          "component.Condition"
+        ],
+        [
+          "components.ReturnValue",
+          "item.TargetArray"
+        ],
+        [
+          "getComponentCursor.ComponentCursor",
+          "item.Index"
+        ],
+        [
+          "item.Item",
+          "cast.Object"
+        ],
+        [
+          "cast.AsStatic Mesh Component",
+          "consider.Component"
+        ],
+        [
+          "getComponentCursor.ComponentCursor",
+          "nextcomponentadd.A"
+        ],
+        [
+          "nextcomponentadd.ReturnValue",
+          "nextcomponent.ComponentCursor"
+        ],
+        [
+          "getCursor.Cursor",
+          "nextactoradd.A"
+        ],
+        [
+          "nextactoradd.ReturnValue",
+          "nextactor.Cursor"
+        ],
+        [
+          "getCandidates.Candidates",
+          "release.TargetArray"
+        ],
+        [
+          "entry.then",
+          "within.execute"
+        ],
+        [
+          "within.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "component.execute"
+        ],
+        [
+          "component.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "consider.execute"
+        ],
+        [
+          "consider.then",
+          "nextcomponent.execute"
+        ],
+        [
+          "valid.else",
+          "nextactor.execute"
+        ],
+        [
+          "nextactor.then",
+          "reset.execute"
+        ],
+        [
+          "component.else",
+          "nextactor.execute"
+        ],
+        [
+          "cast.CastFailed",
+          "nextcomponent.execute"
+        ],
+        [
+          "within.else",
+          "done.execute"
+        ],
+        [
+          "done.then",
+          "release.execute"
+        ]
+      ]
+    },
+    {
+      "name": "FindConsole",
+      "locals": [
+        {
+          "name": "Steps",
+          "type": "int",
+          "default": "0"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "getTarget",
+          "kind": "get",
+          "var": "Target"
+        },
+        {
+          "id": "targetvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "found",
+          "kind": "branch"
+        },
+        {
+          "id": "getScanning",
+          "kind": "get",
+          "var": "Scanning"
+        },
+        {
+          "id": "scanning",
+          "kind": "branch"
+        },
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "nowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getNextScan",
+          "kind": "get",
+          "var": "NextScan"
+        },
+        {
+          "id": "duecheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "due",
+          "kind": "branch"
+        },
+        {
+          "id": "actors",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAllActorsOfClass",
+          "defaults": {
+            "ActorClass": "/Script/Engine.StaticMeshActor"
+          }
+        },
+        {
+          "id": "cache",
+          "kind": "set",
+          "var": "Candidates"
+        },
+        {
+          "id": "start",
+          "kind": "set",
+          "var": "Scanning",
+          "defaults": {
+            "Scanning": "true"
+          }
+        },
+        {
+          "id": "cursor",
+          "kind": "set",
+          "var": "Cursor",
+          "defaults": {
+            "Cursor": "0"
+          }
+        },
+        {
+          "id": "componentcursor",
+          "kind": "set",
+          "var": "ComponentCursor",
+          "defaults": {
+            "ComponentCursor": "0"
+          }
+        },
+        {
+          "id": "starttime",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "starttimesum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "nextscan",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "later",
+          "kind": "set",
+          "var": "NextScan"
+        },
+        {
+          "id": "steps",
+          "kind": "get",
+          "var": "local:Steps"
+        },
+        {
+          "id": "underbudget",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {
+            "B": "64"
+          }
+        },
+        {
+          "id": "newtarget",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "missing",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "continue0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "continue1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "budget",
+          "kind": "branch"
+        },
+        {
+          "id": "step",
+          "kind": "call",
+          "function": "self:ScanStep",
+          "defaults": {}
+        },
+        {
+          "id": "increment",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "nextstep",
+          "kind": "set",
+          "var": "local:Steps"
+        },
+        {
+          "id": "stop",
+          "kind": "set",
+          "var": "Scanning",
+          "defaults": {
+            "Scanning": "false"
+          }
+        },
+        {
+          "id": "getCandidates",
+          "kind": "get",
+          "var": "Candidates"
+        },
+        {
+          "id": "clear",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getTarget.Target",
+          "targetvalid.Object"
+        ],
+        [
+          "targetvalid.ReturnValue",
+          "found.Condition"
+        ],
+        [
+          "getScanning.Scanning",
+          "scanning.Condition"
+        ],
+        [
+          "now.Seconds",
+          "nowsum.A"
+        ],
+        [
+          "now.PartialSeconds",
+          "nowsum.B"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "duecheck.A"
+        ],
+        [
+          "getNextScan.NextScan",
+          "duecheck.B"
+        ],
+        [
+          "duecheck.ReturnValue",
+          "due.Condition"
+        ],
+        [
+          "self.self",
+          "actors.WorldContextObject"
+        ],
+        [
+          "actors.OutActors",
+          "cache.Candidates"
+        ],
+        [
+          "starttime.Seconds",
+          "starttimesum.A"
+        ],
+        [
+          "starttime.PartialSeconds",
+          "starttimesum.B"
+        ],
+        [
+          "starttimesum.ReturnValue",
+          "nextscan.A"
+        ],
+        [
+          "nextscan.ReturnValue",
+          "later.NextScan"
+        ],
+        [
+          "steps.Steps",
+          "underbudget.A"
+        ],
+        [
+          "getTarget.Target",
+          "newtarget.Object"
+        ],
+        [
+          "newtarget.ReturnValue",
+          "missing.A"
+        ],
+        [
+          "getScanning.Scanning",
+          "continue0.A"
+        ],
+        [
+          "underbudget.ReturnValue",
+          "continue0.B"
+        ],
+        [
+          "continue0.ReturnValue",
+          "continue1.A"
+        ],
+        [
+          "missing.ReturnValue",
+          "continue1.B"
+        ],
+        [
+          "continue1.ReturnValue",
+          "budget.Condition"
+        ],
+        [
+          "steps.Steps",
+          "increment.A"
+        ],
+        [
+          "increment.ReturnValue",
+          "nextstep.Steps"
+        ],
+        [
+          "getCandidates.Candidates",
+          "clear.TargetArray"
+        ],
+        [
+          "entry.then",
+          "found.execute"
+        ],
+        [
+          "found.then",
+          "stop.execute"
+        ],
+        [
+          "stop.then",
+          "clear.execute"
+        ],
+        [
+          "found.else",
+          "scanning.execute"
+        ],
+        [
+          "scanning.then",
+          "budget.execute"
+        ],
+        [
+          "budget.then",
+          "step.execute"
+        ],
+        [
+          "step.then",
+          "nextstep.execute"
+        ],
+        [
+          "nextstep.then",
+          "budget.execute"
+        ],
+        [
+          "scanning.else",
+          "due.execute"
+        ],
+        [
+          "due.then",
+          "actors.execute"
+        ],
+        [
+          "actors.then",
+          "cache.execute"
+        ],
+        [
+          "cache.then",
+          "start.execute"
+        ],
+        [
+          "start.then",
+          "cursor.execute"
+        ],
+        [
+          "cursor.then",
+          "componentcursor.execute"
+        ],
+        [
+          "componentcursor.then",
+          "later.execute"
+        ],
+        [
+          "later.then",
+          "budget.execute"
+        ]
+      ]
+    },
+    {
+      "name": "PresentInteractionAction",
+      "inputs": [
+        {
+          "name": "Action",
+          "type": "object:/Script/BitReactorGame.InteractableAction"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "actionvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "data",
+          "kind": "get",
+          "var": "/Script/BitReactorGame.InteractableAction:Abilities"
+        },
+        {
+          "id": "fields",
+          "kind": "break_struct",
+          "struct": "/Script/BitReactorGame.InputActionAbilities"
+        },
+        {
+          "id": "icon",
+          "kind": "make_struct",
+          "struct": "/Script/BitReactorCore.BitReactorImageReference",
+          "defaults": {
+            "ImageReferenceType": "ImageBank",
+            "ImageBankTag": "(TagName=\"ImageBank.Icon.Options.Edit\")"
+          }
+        },
+        {
+          "id": "presentation",
+          "kind": "make_struct",
+          "struct": "/Script/BitReactorGame.InputActionAbilities",
+          "defaults": {
+            "InteractionText": "INVTEXT(\"OPEN DEN DESIGNER\")"
+          }
+        },
+        {
+          "id": "apply",
+          "kind": "set",
+          "var": "/Script/BitReactorGame.InteractableAction:Abilities"
+        }
+      ],
+      "links": [
+        [
+          "entry.Action",
+          "actionvalid.Object"
+        ],
+        [
+          "actionvalid.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.Action",
+          "data.self"
+        ],
+        [
+          "data.Abilities",
+          "fields.InputActionAbilities"
+        ],
+        [
+          "fields.InputAction",
+          "presentation.InputAction"
+        ],
+        [
+          "fields.AbilityTags",
+          "presentation.AbilityTags"
+        ],
+        [
+          "icon.BitReactorImageReference",
+          "presentation.Icon"
+        ],
+        [
+          "presentation.InputActionAbilities",
+          "apply.Abilities"
+        ],
+        [
+          "entry.Action",
+          "apply.self"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "apply.execute"
+        ]
+      ]
+    },
+    {
+      "name": "PresentCurrentInteraction",
+      "nodes": [
+        {
+          "id": "getInteraction",
+          "kind": "get",
+          "var": "Interaction"
+        },
+        {
+          "id": "current",
+          "kind": "get",
+          "var": "/Script/BitReactorGame.InteractableComponent:CurrentInteraction"
+        },
+        {
+          "id": "present",
+          "kind": "call",
+          "function": "self:PresentInteractionAction",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getInteraction.Interaction",
+          "current.self"
+        ],
+        [
+          "current.CurrentInteraction",
+          "present.Action"
+        ],
+        [
+          "entry.then",
+          "present.execute"
+        ]
+      ]
+    },
+    {
+      "name": "FitPromptIcon",
+      "inputs": [
+        {
+          "name": "Icon",
+          "type": "object:/Script/UMG.Widget"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "iconvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "pivot",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetRenderTransformPivot",
+          "defaults": {
+            "Pivot": "(X=0.5,Y=0.5)"
+          }
+        },
+        {
+          "id": "scale",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetRenderScale",
+          "defaults": {
+            "Scale": "(X=0.9,Y=0.9)"
+          }
+        },
+        {
+          "id": "offset",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetRenderTranslation",
+          "defaults": {
+            "Translation": "(X=0,Y=0)"
+          }
+        },
+        {
+          "id": "parent",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:GetParent",
+          "defaults": {}
+        },
+        {
+          "id": "parentcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "parentvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "slot",
+          "kind": "get",
+          "var": "/Script/UMG.Widget:Slot"
+        },
+        {
+          "id": "overlay",
+          "kind": "cast",
+          "class": "/Script/UMG.OverlaySlot"
+        },
+        {
+          "id": "horizontal",
+          "kind": "call",
+          "function": "/Script/UMG.OverlaySlot:SetHorizontalAlignment",
+          "defaults": {
+            "InHorizontalAlignment": "HAlign_Center"
+          }
+        },
+        {
+          "id": "vertical",
+          "kind": "call",
+          "function": "/Script/UMG.OverlaySlot:SetVerticalAlignment",
+          "defaults": {
+            "InVerticalAlignment": "VAlign_Center"
+          }
+        }
+      ],
+      "links": [
+        [
+          "entry.Icon",
+          "iconvalid.Object"
+        ],
+        [
+          "iconvalid.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.Icon",
+          "pivot.self"
+        ],
+        [
+          "entry.Icon",
+          "scale.self"
+        ],
+        [
+          "entry.Icon",
+          "offset.self"
+        ],
+        [
+          "entry.Icon",
+          "parent.self"
+        ],
+        [
+          "parent.ReturnValue",
+          "parentcheck.Object"
+        ],
+        [
+          "parentcheck.ReturnValue",
+          "parentvalid.Condition"
+        ],
+        [
+          "parent.ReturnValue",
+          "slot.self"
+        ],
+        [
+          "slot.Slot",
+          "overlay.Object"
+        ],
+        [
+          "overlay.AsOverlay Slot",
+          "horizontal.self"
+        ],
+        [
+          "overlay.AsOverlay Slot",
+          "vertical.self"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "pivot.execute"
+        ],
+        [
+          "pivot.then",
+          "scale.execute"
+        ],
+        [
+          "scale.then",
+          "offset.execute"
+        ],
+        [
+          "offset.then",
+          "parentvalid.execute"
+        ],
+        [
+          "parentvalid.then",
+          "overlay.execute"
+        ],
+        [
+          "overlay.then",
+          "horizontal.execute"
+        ],
+        [
+          "horizontal.then",
+          "vertical.execute"
+        ]
+      ]
+    },
+    {
+      "name": "RefreshPromptIcon",
+      "locals": [
+        {
+          "name": "WidgetCursor",
+          "type": "int",
+          "default": "0"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "getPromptIcon",
+          "kind": "get",
+          "var": "PromptIcon"
+        },
+        {
+          "id": "iconvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "cached",
+          "kind": "branch"
+        },
+        {
+          "id": "now",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "nowsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "getNextPromptCheck",
+          "kind": "get",
+          "var": "NextPromptCheck"
+        },
+        {
+          "id": "time",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "due",
+          "kind": "branch"
+        },
+        {
+          "id": "start",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:GetAccurateRealTime",
+          "defaults": {}
+        },
+        {
+          "id": "startsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "later",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {
+            "B": "0.1"
+          }
+        },
+        {
+          "id": "next",
+          "kind": "set",
+          "var": "NextPromptCheck"
+        },
+        {
+          "id": "widgets",
+          "kind": "call",
+          "function": "/Script/UMG.WidgetBlueprintLibrary:GetAllWidgetsOfClass",
+          "defaults": {
+            "WidgetClass": "/Game/Game/UI/Tactical/ExploreMode/Widgets/WBP_TacticalExplorePrompts.WBP_TacticalExplorePrompts_C",
+            "TopLevelOnly": "false"
+          }
+        },
+        {
+          "id": "length",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "cursor",
+          "kind": "get",
+          "var": "local:WidgetCursor"
+        },
+        {
+          "id": "withincheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "within",
+          "kind": "branch"
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/Game/Game/UI/Tactical/ExploreMode/Widgets/WBP_TacticalExplorePrompts.WBP_TacticalExplorePrompts_C"
+        },
+        {
+          "id": "owner",
+          "kind": "call",
+          "function": "/Script/BitReactorGame.BRG_IndicatorWidget:GetAttachedActor",
+          "defaults": {}
+        },
+        {
+          "id": "same",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_ObjectObject",
+          "defaults": {}
+        },
+        {
+          "id": "ours",
+          "kind": "branch"
+        },
+        {
+          "id": "icon",
+          "kind": "get",
+          "var": "/Game/Game/UI/Tactical/ExploreMode/Widgets/WBP_TacticalExplorePrompts.WBP_TacticalExplorePrompts_C:Icon"
+        },
+        {
+          "id": "cache",
+          "kind": "set",
+          "var": "PromptIcon"
+        },
+        {
+          "id": "fit",
+          "kind": "call",
+          "function": "self:FitPromptIcon",
+          "defaults": {}
+        },
+        {
+          "id": "increment",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:WidgetCursor"
+        }
+      ],
+      "links": [
+        [
+          "getPromptIcon.PromptIcon",
+          "iconvalid.Object"
+        ],
+        [
+          "iconvalid.ReturnValue",
+          "cached.Condition"
+        ],
+        [
+          "now.Seconds",
+          "nowsum.A"
+        ],
+        [
+          "now.PartialSeconds",
+          "nowsum.B"
+        ],
+        [
+          "nowsum.ReturnValue",
+          "time.A"
+        ],
+        [
+          "getNextPromptCheck.NextPromptCheck",
+          "time.B"
+        ],
+        [
+          "time.ReturnValue",
+          "due.Condition"
+        ],
+        [
+          "start.Seconds",
+          "startsum.A"
+        ],
+        [
+          "start.PartialSeconds",
+          "startsum.B"
+        ],
+        [
+          "startsum.ReturnValue",
+          "later.A"
+        ],
+        [
+          "later.ReturnValue",
+          "next.NextPromptCheck"
+        ],
+        [
+          "self.self",
+          "widgets.WorldContextObject"
+        ],
+        [
+          "widgets.FoundWidgets",
+          "length.TargetArray"
+        ],
+        [
+          "cursor.WidgetCursor",
+          "withincheck.A"
+        ],
+        [
+          "length.ReturnValue",
+          "withincheck.B"
+        ],
+        [
+          "withincheck.ReturnValue",
+          "within.Condition"
+        ],
+        [
+          "widgets.FoundWidgets",
+          "item.TargetArray"
+        ],
+        [
+          "cursor.WidgetCursor",
+          "item.Index"
+        ],
+        [
+          "item.Item",
+          "cast.Object"
+        ],
+        [
+          "cast.AsWBP Tactical Explore Prompts",
+          "owner.self"
+        ],
+        [
+          "owner.ReturnValue",
+          "same.A"
+        ],
+        [
+          "self.self",
+          "same.B"
+        ],
+        [
+          "same.ReturnValue",
+          "ours.Condition"
+        ],
+        [
+          "cast.AsWBP Tactical Explore Prompts",
+          "icon.self"
+        ],
+        [
+          "icon.Icon",
+          "cache.PromptIcon"
+        ],
+        [
+          "icon.Icon",
+          "fit.Icon"
+        ],
+        [
+          "cursor.WidgetCursor",
+          "increment.A"
+        ],
+        [
+          "increment.ReturnValue",
+          "advance.WidgetCursor"
+        ],
+        [
+          "entry.then",
+          "cached.execute"
+        ],
+        [
+          "cached.else",
+          "due.execute"
+        ],
+        [
+          "due.then",
+          "next.execute"
+        ],
+        [
+          "next.then",
+          "widgets.execute"
+        ],
+        [
+          "widgets.then",
+          "within.execute"
+        ],
+        [
+          "within.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "owner.execute"
+        ],
+        [
+          "owner.then",
+          "ours.execute"
+        ],
+        [
+          "ours.then",
+          "cache.execute"
+        ],
+        [
+          "cache.then",
+          "fit.execute"
+        ],
+        [
+          "ours.else",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "within.execute"
+        ],
+        [
+          "cast.CastFailed",
+          "advance.execute"
+        ]
+      ]
+    },
+    {
+      "name": "UpdateIndicator",
+      "nodes": [
+        {
+          "id": "getEnabled",
+          "kind": "get",
+          "var": "Enabled"
+        },
+        {
+          "id": "enabled",
+          "kind": "branch"
+        },
+        {
+          "id": "getPromptIndicator",
+          "kind": "get",
+          "var": "PromptIndicator"
+        },
+        {
+          "id": "active",
+          "kind": "call",
+          "function": "/Script/BitReactorGame.BitReactorWidgetComponent:HasActiveIndicator",
+          "defaults": {}
+        },
+        {
+          "id": "exists",
+          "kind": "branch"
+        },
+        {
+          "id": "create",
+          "kind": "call",
+          "function": "/Script/BitReactorGame.BitReactorWidgetComponent:BP_CreateAndAddIndicator",
+          "defaults": {}
+        },
+        {
+          "id": "remove",
+          "kind": "call",
+          "function": "/Script/BitReactorGame.BitReactorWidgetComponent:RemoveIndicatorImmediate",
+          "defaults": {}
+        },
+        {
+          "id": "clear",
+          "kind": "set",
+          "var": "PromptIcon"
+        },
+        {
+          "id": "reset",
+          "kind": "set",
+          "var": "NextPromptCheck",
+          "defaults": {
+            "NextPromptCheck": "0"
+          }
+        },
+        {
+          "id": "fit",
+          "kind": "call",
+          "function": "self:RefreshPromptIcon",
+          "defaults": {}
+        },
+        {
+          "id": "disabledclear",
+          "kind": "set",
+          "var": "PromptIcon"
+        }
+      ],
+      "links": [
+        [
+          "getEnabled.Enabled",
+          "enabled.Condition"
+        ],
+        [
+          "getPromptIndicator.PromptIndicator",
+          "active.self"
+        ],
+        [
+          "active.ReturnValue",
+          "exists.Condition"
+        ],
+        [
+          "getPromptIndicator.PromptIndicator",
+          "create.self"
+        ],
+        [
+          "getPromptIndicator.PromptIndicator",
+          "remove.self"
+        ],
+        [
+          "entry.then",
+          "enabled.execute"
+        ],
+        [
+          "enabled.then",
+          "exists.execute"
+        ],
+        [
+          "exists.then",
+          "fit.execute"
+        ],
+        [
+          "exists.else",
+          "clear.execute"
+        ],
+        [
+          "clear.then",
+          "reset.execute"
+        ],
+        [
+          "reset.then",
+          "create.execute"
+        ],
+        [
+          "create.then",
+          "fit.execute"
+        ],
+        [
+          "enabled.else",
+          "remove.execute"
+        ],
+        [
+          "remove.then",
+          "disabledclear.execute"
+        ]
+      ]
+    },
+    {
+      "name": "SetAvailable",
+      "inputs": [
+        {
+          "name": "Available",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "enabled",
+          "kind": "set",
+          "var": "Enabled"
+        },
+        {
+          "id": "allow",
+          "kind": "set",
+          "var": "/Script/BitReactorGame.InteractableComponent:bAllowInteractions"
+        },
+        {
+          "id": "getInteraction",
+          "kind": "get",
+          "var": "Interaction"
+        },
+        {
+          "id": "blocked",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "block",
+          "kind": "call",
+          "function": "/Script/BitReactorGame.InteractableComponent:SetInteractionBlocked",
+          "defaults": {}
+        },
+        {
+          "id": "disabled",
+          "kind": "branch"
+        },
+        {
+          "id": "clear",
+          "kind": "set",
+          "var": "Requested",
+          "defaults": {
+            "Requested": "false"
+          }
+        },
+        {
+          "id": "indicator",
+          "kind": "call",
+          "function": "self:UpdateIndicator",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "entry.Available",
+          "enabled.Enabled"
+        ],
+        [
+          "entry.Available",
+          "allow.bAllowInteractions"
+        ],
+        [
+          "getInteraction.Interaction",
+          "allow.self"
+        ],
+        [
+          "entry.Available",
+          "blocked.A"
+        ],
+        [
+          "getInteraction.Interaction",
+          "block.self"
+        ],
+        [
+          "blocked.ReturnValue",
+          "block.bInInteractionBlocked"
+        ],
+        [
+          "blocked.ReturnValue",
+          "disabled.Condition"
+        ],
+        [
+          "entry.then",
+          "enabled.execute"
+        ],
+        [
+          "enabled.then",
+          "allow.execute"
+        ],
+        [
+          "allow.then",
+          "block.execute"
+        ],
+        [
+          "block.then",
+          "disabled.execute"
+        ],
+        [
+          "disabled.then",
+          "clear.execute"
+        ],
+        [
+          "clear.then",
+          "indicator.execute"
+        ],
+        [
+          "disabled.else",
+          "indicator.execute"
+        ]
+      ]
+    },
+    {
+      "name": "RequestOpen",
+      "nodes": [
+        {
+          "id": "getEnabled",
+          "kind": "get",
+          "var": "Enabled"
+        },
+        {
+          "id": "getTarget",
+          "kind": "get",
+          "var": "Target"
+        },
+        {
+          "id": "target",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "ready0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "allowed",
+          "kind": "branch"
+        },
+        {
+          "id": "request",
+          "kind": "set",
+          "var": "Requested",
+          "defaults": {
+            "Requested": "true"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getTarget.Target",
+          "target.Object"
+        ],
+        [
+          "getEnabled.Enabled",
+          "ready0.A"
+        ],
+        [
+          "target.ReturnValue",
+          "ready0.B"
+        ],
+        [
+          "ready0.ReturnValue",
+          "allowed.Condition"
+        ],
+        [
+          "entry.then",
+          "allowed.execute"
+        ],
+        [
+          "allowed.then",
+          "request.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ConsumeRequest",
+      "outputs": [
+        {
+          "name": "Requested",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Pending",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getRequested",
+          "kind": "get",
+          "var": "Requested"
+        },
+        {
+          "id": "capture",
+          "kind": "set",
+          "var": "local:Pending"
+        },
+        {
+          "id": "clear",
+          "kind": "set",
+          "var": "Requested",
+          "defaults": {
+            "Requested": "false"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:Pending"
+        }
+      ],
+      "links": [
+        [
+          "getRequested.Requested",
+          "capture.Pending"
+        ],
+        [
+          "out.Pending",
+          "result.Requested"
+        ],
+        [
+          "entry.then",
+          "capture.execute"
+        ],
+        [
+          "capture.then",
+          "clear.execute"
+        ],
+        [
+          "clear.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "UpdateConsole",
+      "inputs": [
+        {
+          "name": "Available",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "find",
+          "kind": "call",
+          "function": "self:FindConsole",
+          "defaults": {}
+        },
+        {
+          "id": "getTarget",
+          "kind": "get",
+          "var": "Target"
+        },
+        {
+          "id": "valid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "target",
+          "kind": "branch"
+        },
+        {
+          "id": "hidden",
+          "kind": "get",
+          "var": "/Script/Engine.SceneComponent:bHiddenInGame"
+        },
+        {
+          "id": "owner",
+          "kind": "call",
+          "function": "/Script/Engine.ActorComponent:GetOwner",
+          "defaults": {}
+        },
+        {
+          "id": "actorhidden",
+          "kind": "get",
+          "var": "/Script/Engine.Actor:bHidden"
+        },
+        {
+          "id": "visible",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "actorvisible",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "enabled0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "enabled1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "bounds",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:GetComponentBounds",
+          "defaults": {}
+        },
+        {
+          "id": "move",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:K2_SetActorLocation",
+          "defaults": {
+            "bSweep": "false",
+            "bTeleport": "true"
+          }
+        },
+        {
+          "id": "enable",
+          "kind": "call",
+          "function": "self:SetAvailable",
+          "defaults": {}
+        },
+        {
+          "id": "disable",
+          "kind": "call",
+          "function": "self:SetAvailable",
+          "defaults": {
+            "Available": "false"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getTarget.Target",
+          "valid.Object"
+        ],
+        [
+          "valid.ReturnValue",
+          "target.Condition"
+        ],
+        [
+          "getTarget.Target",
+          "hidden.self"
+        ],
+        [
+          "getTarget.Target",
+          "owner.self"
+        ],
+        [
+          "owner.ReturnValue",
+          "actorhidden.self"
+        ],
+        [
+          "hidden.bHiddenInGame",
+          "visible.A"
+        ],
+        [
+          "actorhidden.bHidden",
+          "actorvisible.A"
+        ],
+        [
+          "entry.Available",
+          "enabled0.A"
+        ],
+        [
+          "visible.ReturnValue",
+          "enabled0.B"
+        ],
+        [
+          "enabled0.ReturnValue",
+          "enabled1.A"
+        ],
+        [
+          "actorvisible.ReturnValue",
+          "enabled1.B"
+        ],
+        [
+          "getTarget.Target",
+          "bounds.Component"
+        ],
+        [
+          "self.self",
+          "move.self"
+        ],
+        [
+          "bounds.Origin",
+          "move.NewLocation"
+        ],
+        [
+          "enabled1.ReturnValue",
+          "enable.Available"
+        ],
+        [
+          "entry.then",
+          "find.execute"
+        ],
+        [
+          "find.then",
+          "target.execute"
+        ],
+        [
+          "target.then",
+          "move.execute"
+        ],
+        [
+          "move.then",
+          "enable.execute"
+        ],
+        [
+          "target.else",
+          "disable.execute"
+        ]
+      ]
+    }
+  ]
+}

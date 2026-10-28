@@ -9,6 +9,11 @@
       "default": "false"
     },
     {
+      "name": "bAlt",
+      "type": "bool",
+      "default": "false"
+    },
+    {
       "name": "Speed",
       "type": "float",
       "default": "900.0"
@@ -1019,6 +1024,27 @@
         }
       },
       {
+        "id": "altkey",
+        "kind": "input_action",
+        "action": "/DenDesignerGF/Editor/IA_Den_Alt"
+      },
+      {
+        "id": "alt_on",
+        "kind": "set",
+        "var": "bAlt",
+        "defaults": {
+          "bAlt": "true"
+        }
+      },
+      {
+        "id": "alt_off",
+        "kind": "set",
+        "var": "bAlt",
+        "defaults": {
+          "bAlt": "false"
+        }
+      },
+      {
         "id": "look_hold",
         "kind": "input_action",
         "action": "/DenDesignerGF/Editor/IA_Den_LookHold"
@@ -1437,6 +1463,14 @@
       [
         "pitchrot.ReturnValue",
         "tilt.DeltaRotation"
+      ],
+      [
+        "altkey.Started",
+        "alt_on.execute"
+      ],
+      [
+        "altkey.Completed",
+        "alt_off.execute"
       ],
       [
         "fastkey.Started",

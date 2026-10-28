@@ -1,0 +1,16 @@
+Generated using the built-in image_gen tool.
+
+Final export: proportionally resized and center-cropped to exactly 1300x372
+pixels. No stretching. Saved as den-designer-banner.png.
+
+Use case: ads-marketing.
+Asset type: Nexus Mods header/banner for the Star Wars: Zero Company mod Den Designer.
+Primary request: generate a finished banner that closely matches the established series shown in the two supplied reference banners.
+Input images: Image 1 (Squad Six Reforged) and Image 2 (Character Share) are STYLE AND LAYOUT REFERENCES only. Match their dark background, fine cyan technical framing, metallic typography, title-panel placement, and small centered emblem. Do not retain their words or icons.
+Output: exactly 1300x372 pixels if possible, very wide landscape aspect ratio 3.4946:1, full bleed with no letterboxing. If size constraints require a taller canvas, keep all important artwork within the central 3.4946:1 horizontal band so it can be cropped without losing content.
+Scene/backdrop: near-black midnight navy with subtle cloudy blue texture, restrained thin cyan technical lines, faint concentric radar rings and central crosshair, symmetric angular HUD borders entering from all four corners, short side ticks, horizontal title panel, matching the supplied series.
+Subject: one crisp cyan interior-design emblem centered above the title, occupying the same upper-center radar arc as the reference icons. A simple front-facing upholstered armchair silhouette with a small diagonal pencil beside its upper-right side. Clean readable unified emblem representing furnishing and editing the Den; subtle luminous cyan bevels and restrained metallic depth. Keep emblem compact and comfortably separate from title. No people.
+Text (verbatim): "DEN DESIGNER". Exactly these two words, one straight horizontal line centered in the middle title panel. No other text.
+Typography: match the references' tall bold condensed uppercase sans-serif, cool silver-white vertical metallic gradient, sharp clean letter edges, understated texture and subtle dark depth. Same title height and baseline as the reference banners. Generous side margins.
+Palette: black, midnight navy, cool silver-white, luminous cyan only.
+Constraints: polished symmetrical science-fiction mod banner, accurate spelling, preserve negative space, no subtitle, tagline, version, badges, brand logos, watermark, rainbow, battle scene, spacecraft, reference image insets, or mockup.

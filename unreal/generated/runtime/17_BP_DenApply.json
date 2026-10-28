@@ -28,6 +28,24 @@
       "type": "struct:/DenDesignerGF/Runtime/ST_DenMutation[]"
     },
     {
+      "name": "IndexMutations",
+      "type": "struct:/DenDesignerGF/Runtime/ST_DenMutation[]"
+    },
+    {
+      "name": "IndexDeltaValid",
+      "type": "bool"
+    },
+    {
+      "name": "IndexFromGeneration",
+      "type": "int",
+      "default": "-1"
+    },
+    {
+      "name": "IndexThroughGeneration",
+      "type": "int",
+      "default": "-1"
+    },
+    {
       "name": "RetryItems",
       "type": "struct:/DenDesignerGF/Runtime/ST_DenMutation[]"
     },
@@ -331,6 +349,25 @@
           "defaults": {}
         },
         {
+          "id": "getIndexMutations",
+          "kind": "get",
+          "var": "IndexMutations"
+        },
+        {
+          "id": "indexchanges",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "indexinvalid",
+          "kind": "set",
+          "var": "IndexDeltaValid",
+          "defaults": {
+            "IndexDeltaValid": "false"
+          }
+        },
+        {
           "id": "stop",
           "kind": "set",
           "var": "Busy",
@@ -399,6 +436,10 @@
           "nextretry.TargetArray"
         ],
         [
+          "getIndexMutations.IndexMutations",
+          "indexchanges.TargetArray"
+        ],
+        [
           "getGeneration.Generation",
           "generationadd.A"
         ],
@@ -448,6 +489,14 @@
         ],
         [
           "nextretry.then",
+          "indexchanges.execute"
+        ],
+        [
+          "indexchanges.then",
+          "indexinvalid.execute"
+        ],
+        [
+          "indexinvalid.then",
           "stop.execute"
         ],
         [
@@ -487,6 +536,14 @@
           "name": "OK",
           "type": "bool",
           "default": "false"
+        },
+        {
+          "name": "PreviousIndexGeneration",
+          "type": "int"
+        },
+        {
+          "name": "PreviousIndexMutations",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenMutation[]"
         }
       ],
       "nodes": [
@@ -510,6 +567,74 @@
         {
           "id": "allowed",
           "kind": "branch"
+        },
+        {
+          "id": "getGeneration",
+          "kind": "get",
+          "var": "Generation"
+        },
+        {
+          "id": "indexbase",
+          "kind": "set",
+          "var": "local:PreviousIndexGeneration"
+        },
+        {
+          "id": "getIndexThroughGeneration",
+          "kind": "get",
+          "var": "IndexThroughGeneration"
+        },
+        {
+          "id": "indexsame",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "incremental",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "getIndexDeltaValid",
+          "kind": "get",
+          "var": "IndexDeltaValid"
+        },
+        {
+          "id": "carryvalid0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "carryvalid1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "carry",
+          "kind": "branch"
+        },
+        {
+          "id": "getIndexMutations",
+          "kind": "get",
+          "var": "IndexMutations"
+        },
+        {
+          "id": "carrychanges",
+          "kind": "set",
+          "var": "local:PreviousIndexMutations"
+        },
+        {
+          "id": "getIndexFromGeneration",
+          "kind": "get",
+          "var": "IndexFromGeneration"
+        },
+        {
+          "id": "carrybase",
+          "kind": "set",
+          "var": "local:PreviousIndexGeneration"
         },
         {
           "id": "cancel",
@@ -689,6 +814,45 @@
           }
         },
         {
+          "id": "previousindex",
+          "kind": "get",
+          "var": "local:PreviousIndexMutations"
+        },
+        {
+          "id": "indexcopy",
+          "kind": "set",
+          "var": "IndexMutations"
+        },
+        {
+          "id": "indexappend",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Append",
+          "defaults": {}
+        },
+        {
+          "id": "previousgeneration",
+          "kind": "get",
+          "var": "local:PreviousIndexGeneration"
+        },
+        {
+          "id": "indexfrom",
+          "kind": "set",
+          "var": "IndexFromGeneration"
+        },
+        {
+          "id": "indexthrough",
+          "kind": "set",
+          "var": "IndexThroughGeneration"
+        },
+        {
+          "id": "indexvalid",
+          "kind": "set",
+          "var": "IndexDeltaValid",
+          "defaults": {
+            "IndexDeltaValid": "true"
+          }
+        },
+        {
           "id": "yes",
           "kind": "set",
           "var": "local:OK",
@@ -720,6 +884,50 @@
           "allowed.Condition"
         ],
         [
+          "getGeneration.Generation",
+          "indexbase.PreviousIndexGeneration"
+        ],
+        [
+          "getIndexThroughGeneration.IndexThroughGeneration",
+          "indexsame.A"
+        ],
+        [
+          "getGeneration.Generation",
+          "indexsame.B"
+        ],
+        [
+          "entry.ReplaceAll",
+          "incremental.A"
+        ],
+        [
+          "getIndexDeltaValid.IndexDeltaValid",
+          "carryvalid0.A"
+        ],
+        [
+          "indexsame.ReturnValue",
+          "carryvalid0.B"
+        ],
+        [
+          "carryvalid0.ReturnValue",
+          "carryvalid1.A"
+        ],
+        [
+          "incremental.ReturnValue",
+          "carryvalid1.B"
+        ],
+        [
+          "carryvalid1.ReturnValue",
+          "carry.Condition"
+        ],
+        [
+          "getIndexMutations.IndexMutations",
+          "carrychanges.PreviousIndexMutations"
+        ],
+        [
+          "getIndexFromGeneration.IndexFromGeneration",
+          "carrybase.PreviousIndexGeneration"
+        ],
+        [
           "entry.Mutations",
           "copy.WorkItems"
         ],
@@ -744,6 +952,26 @@
           "replace.Condition"
         ],
         [
+          "previousindex.PreviousIndexMutations",
+          "indexcopy.IndexMutations"
+        ],
+        [
+          "getIndexMutations.IndexMutations",
+          "indexappend.TargetArray"
+        ],
+        [
+          "entry.Mutations",
+          "indexappend.SourceArray"
+        ],
+        [
+          "previousgeneration.PreviousIndexGeneration",
+          "indexfrom.IndexFromGeneration"
+        ],
+        [
+          "getGeneration.Generation",
+          "indexthrough.IndexThroughGeneration"
+        ],
+        [
           "out.OK",
           "result.Accepted"
         ],
@@ -753,6 +981,22 @@
         ],
         [
           "allowed.then",
+          "indexbase.execute"
+        ],
+        [
+          "indexbase.then",
+          "carry.execute"
+        ],
+        [
+          "carry.then",
+          "carrychanges.execute"
+        ],
+        [
+          "carrychanges.then",
+          "carrybase.execute"
+        ],
+        [
+          "carrybase.then",
           "cancel.execute"
         ],
         [
@@ -840,7 +1084,31 @@
           "result.execute"
         ],
         [
+          "carry.else",
+          "cancel.execute"
+        ],
+        [
           "replace.else",
+          "indexcopy.execute"
+        ],
+        [
+          "indexcopy.then",
+          "indexappend.execute"
+        ],
+        [
+          "indexappend.then",
+          "indexfrom.execute"
+        ],
+        [
+          "indexfrom.then",
+          "indexthrough.execute"
+        ],
+        [
+          "indexthrough.then",
+          "indexvalid.execute"
+        ],
+        [
+          "indexvalid.then",
           "refresh.execute"
         ],
         [
@@ -1438,6 +1706,44 @@
         [
           "hidden.else",
           "moved.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ConsumeIndexChanges",
+      "nodes": [
+        {
+          "id": "getIndexMutations",
+          "kind": "get",
+          "var": "IndexMutations"
+        },
+        {
+          "id": "clear",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "invalid",
+          "kind": "set",
+          "var": "IndexDeltaValid",
+          "defaults": {
+            "IndexDeltaValid": "false"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getIndexMutations.IndexMutations",
+          "clear.TargetArray"
+        ],
+        [
+          "entry.then",
+          "clear.execute"
+        ],
+        [
+          "clear.then",
+          "invalid.execute"
         ]
       ]
     },

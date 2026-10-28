@@ -177,6 +177,17 @@ def run(unreal,root,fixture,field,field_name,check):
         tick()
         check(len(get('Placed'))==1 and get('Busy'),'elapsed-time budget independently bounds cleanup even with a larger step limit')
         drain();set_('BudgetSeconds',0.004)
+        manager.call_method('ConsumeIndexChanges');index_base=get('Generation')
+        assert batch([mutation(a)]);drain()
+        assert batch([mutation(b)]);drain()
+        index_keys=[fixture.call_method('ReadIndexChangeKey',(manager,i)) for i in range(len(get('IndexMutations')))]
+        check(get('IndexDeltaValid') and get('IndexFromGeneration')==index_base
+              and get('IndexThroughGeneration')==get('Generation') and index_keys==['placed-a','placed-b'],
+              'unconsumed consecutive incremental batches retain every changed identity and their generation range')
+        manager.call_method('ConsumeIndexChanges')
+        check(not get('IndexDeltaValid') and not get('IndexMutations'),'selection consumes completed index changes without retaining old identities')
+        assert begin([]);drain()
+        check(not get('IndexDeltaValid') and not get('IndexMutations'),'whole-layout replacement invalidates incremental index reuse')
         check(not manager.call_method('BeginLayout',(None,)),'missing layout document rejected')
     finally:
         if unreal.SystemLibrary.is_valid(manager):

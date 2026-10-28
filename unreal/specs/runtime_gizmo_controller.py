@@ -15,6 +15,8 @@ from runtime_editor_assets import BUS, RIG
 from runtime_editor_host import PC, WIDGET, PANELS, widget, style_toggle
 from runtime_gizmo_math import MATH
 from runtime_gizmo_visual import VISUAL, OVERLAY
+from runtime_snap import GUIDES
+from runtime_pivot import world_offset
 
 
 def eq(g,name,a,b):return call(g,name,KML+':EqualEqual_IntInt',{'A':a},B=b)
@@ -37,14 +39,15 @@ def initialize():
     obj=call(g,'create',GS+':SpawnObject',{'Outer':'self.self'},ObjectClass=MATH)
     g.node('cast','cast',**{'class':MATH});g.wire((obj,'cast.Object'));set_value(g,'math','GizmoMath','cast.AsBP Den Gizmo Math')
     spawn(g,'visual',VISUAL,'AsBP Den Gizmo Visual','GizmoVisual');spawn(g,'job',JOB,'AsBP Den Asset Job','GizmoJob')
+    spawn(g,'guides',GUIDES,'AsBP Den Snap Guides','SnapGuideActor')
     method(g,'request',JOB,'Request',get(g,'GizmoJob'),Path=OVERLAY);set_value(g,'started','GizmoRequestAt',clock(g,'now'))
-    g.chain('entry','dispose','create','cast','math','visualspawn');g.chain('visualsave','jobspawn');g.chain('jobsave','request','started')
+    g.chain('entry','dispose','create','cast','math','visualspawn');g.chain('visualsave','jobspawn');g.chain('jobsave','guidesspawn');g.chain('guidessave','request','started')
     return g.function('InitializeEditorGizmo')
 
 
 def destroy():
     g=Graph();g.call('cancel','self:EndSelectionDrag',Commit='false');previous='cancel'
-    for name in ['GizmoJob','GizmoVisual']:
+    for name in ['GizmoJob','GizmoVisual','SnapGuideActor']:
         branch(g,name+'valid',validity(g,name+'check',get(g,name)));call(g,name+'destroy',ACTOR+':K2_DestroyActor',{'self':get(g,name)})
         g.set(name+'clear',name);g.chain(previous,name+'valid',name+'destroy',name+'clear');g.chain(name+'valid.else',name+'clear');previous=name+'clear'
     for name in ['GizmoMath','GizmoHoverKind','GizmoHoverAxis','GizmoDragKind','GizmoDragAxis']:
@@ -87,14 +90,18 @@ def blocked():
 def frame():
     g=Graph();unpack(g,'facts',FACT,get(g,'Selected'));g.call('ready','self:CanEdit')
     branch(g,'available',combine(g,'refs',['ready.Ready',get(g,'UIOpen'),get(g,'HasSelection'),validity(g,'component','facts.Component'),validity(g,'rig',get(g,'EditorRig')),validity(g,'math',get(g,'GizmoMath'))]))
-    center=call(g,'center',SCENE+':K2_GetComponentLocation',{'self':'facts.Component'});rotation=call(g,'rotation',SCENE+':K2_GetComponentRotation',{'self':'facts.Component'})
+    origin=call(g,'origin',SCENE+':K2_GetComponentLocation',{'self':'facts.Component'});rotation=call(g,'rotation',SCENE+':K2_GetComponentRotation',{'self':'facts.Component'})
+    scale=call(g,'scale',SCENE+':K2_GetComponentScale',{'self':'facts.Component'})
+    anchor=call(g,'anchorchoice',KML+':SelectString',{'A':get(g,'RotationPivot'),'bPickA':eq(g,'rotating',get(g,'GizmoMode'),2)},B='centre')
+    g.call('anchor','self:GetComponentEditPivot');g.wire(('facts.Component','anchor.Component'),(anchor,'anchor.Anchor'))
+    center=op(g,'center','Add_VectorVector',origin,world_offset(g,'anchoroffset','anchor.Point',rotation,scale))
     camera=call(g,'camera',ACTOR+':K2_GetActorLocation',{'self':get(g,'EditorRig')})
     distance=op(g,'distance','VSize',op(g,'difference','Subtract_VectorVector',center,camera))
     math(g,'size', 'SizeFor',{'Distance':distance})
     size=call(g,'frozen',KML+':SelectFloat',{'A':get(g,'GizmoDragSize'),'B':'size.Size','bPickA':combine(g,'freezesize',[get(g,'DragActive'),neg(g,'notsurface',get(g,'SurfaceDragging'))])})
     for name,source in [('Center',center),('Rotation',rotation),('Size',size)]:set_value(g,'save'+name,'local:Result'+name,source);g.get('out'+name,'local:Result'+name);g.wire(('out'+name+'.Result'+name,'result.'+name))
     g.set('yes','local:OK','true');finish_bool(g,'Valid')
-    g.chain('entry','ready','available','size','saveCenter','saveRotation','saveSize','yes','result');g.chain('available.else','result')
+    g.chain('entry','ready','available','anchor','size','saveCenter','saveRotation','saveSize','yes','result');g.chain('available.else','result')
     return g.function('GetGizmoFrame',outputs=[v('Valid','bool'),v('Center','vector'),v('Rotation','rotator'),v('Size','double')],locals=[v('OK','bool','false'),v('ResultCenter','vector'),v('ResultRotation','rotator'),v('ResultSize','double')])
 
 

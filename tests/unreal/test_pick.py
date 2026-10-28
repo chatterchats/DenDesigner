@@ -101,10 +101,33 @@ def run(unreal, root, fixture, field, field_name, check):
         wall.set_actor_location(vector((14800,15000,15000)),False,False)
         found=query()
         check(f(found,'Target')==wall, 'solid foreground wall occludes no-collision surface behind it')
+        wallcomp.set_collision_enabled(unreal.CollisionEnabled.NO_COLLISION)
+        picker.call_method('IndexCandidate',(wallcomp,))
+        picker.call_method('RemoveIndexedComponent',(comp,))
+        check(comp not in prop(picker,'SurfaceCandidates') and comp not in prop(picker,'BoundsCandidates')
+              and wallcomp in prop(picker,'SurfaceCandidates'),
+              'removing one indexed prop preserves the other selection candidates')
+        wallcomp.set_collision_enabled(unreal.CollisionEnabled.QUERY_AND_PHYSICS)
         # Existing recovered identities must not fork into a second layout key.
         alias='/Game/Old.Old:PersistentLevel.MovedFurniture'
         check(manager.call_method('BindVanilla',(alias,target)), 'picker fixture binds a recovered vanilla identity')
         check(f(facts(comp,manager),'Key')==alias, 'selection preserves recovered layout identity after object path changes')
+        mutation_factory=unreal.GameplayStatics.create_save_game_object(unreal.EditorAssetLibrary.load_blueprint_class('/Game/DenNativeTests/BP_Fixture'))
+        changed=mutation_factory.call_method('MakeEntry',(2,alias,unreal.Vector(15000,15000,15000)))
+        delta=[mutation_factory.call_method('MakeMutation',(changed,True))]
+        target.set_actor_hidden_in_game(True);picker.call_method('RefreshIndexChanges',(delta,))
+        check(comp not in prop(picker,'SurfaceCandidates') and wallcomp in prop(picker,'SurfaceCandidates'),
+              'incremental index refresh removes a hidden prop without losing unaffected candidates')
+        picker.call_method('RefreshIndexedActor',(wall,))
+        target.set_actor_hidden_in_game(False);wall.set_actor_location(vector((14960,15000,15000)),False,False)
+        picker.call_method('RequestPick',(vector((14700,15000,15000)),vector((1,0,0)),500.,True,True,True))
+        picker.call_method('RefreshIndexChanges',(delta,))
+        for _ in range(2000):
+            picker.call_method('PumpQuery')
+            if prop(picker,'QueryReady'):break
+        check(not prop(picker,'Indexing') and comp in prop(picker,'SurfaceCandidates')
+              and prop(picker,'QueryReady') and f(prop(picker,'QueryResult'),'Target')==target,
+              'restoring a no-collision prop updates fallback candidates and preserves an in-flight pick without reindexing')
         picker.call_method('RequestPick',(vector((14700,15000,15000)),vector((1,0,0)),500.,True,True,True))
         picker.call_method('CancelQuery')
         check(not prop(picker,'QueryPending') and not prop(picker,'QueryReady'), 'cancelling a queued pick discards its result')

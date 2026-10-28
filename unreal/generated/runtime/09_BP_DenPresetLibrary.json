@@ -18,6 +18,14 @@
       "default": "preset-library"
     },
     {
+      "name": "HasCompositionAnchor",
+      "type": "bool"
+    },
+    {
+      "name": "CompositionAnchor",
+      "type": "vector"
+    },
+    {
       "name": "CampaignID",
       "type": "string"
     },

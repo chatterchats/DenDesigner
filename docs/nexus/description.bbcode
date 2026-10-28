@@ -1,0 +1,168 @@
+[b]Den Designer[/b] lets you decorate the Den from inside the game. Add props from a searchable catalog, rearrange existing scenery, and build anything from a small desk display to a complete room layout.
+
+Walk up to the office console and choose [b]OPEN DEN DESIGNER[/b], or press [b]Ctrl+Home[/b] anywhere in the Den. Fly around, move things into place, and save your work. Decorations use the mod's own saves, separately from your campaign saves.
+
+[b]Runs entirely as a pak mod. No UE4SS or additional runtime DLL is required.[/b]
+
+[heading]Features[/heading]
+[list]
+[*][b]A catalog of thousands of game props[/b]: search, collections, recently used props and generated thumbnail cards.[/*]
+[*][b]Rearrange existing scenery[/b]: move, rotate, resize, duplicate or store eligible props already in the Den.[/*]
+[*][b]A flying editor camera[/b]: move around your work, look with the mouse and frame the selected prop.[/*]
+[*][b]Several ways to edit[/b]: surface dragging, height dragging, axis/plane gizmos, numeric fields and keyboard nudges.[/*]
+[*][b]Grid and nearby-prop snapping[/b]: line up edges and centres, fit objects flush against each other, or stack them. Guide lines show the match; hold Alt to bypass nearby-prop snapping.[/*]
+[*][b]A choice of rotation pivots[/b]: turn props around their centre, bottom, top or original mesh origin.[/*]
+[*][b]Independent selection filters[/b]: Floors, Walls and Structure, plus adjustable selection range.[/*]
+[*][b]Undo/redo and a Storeroom[/b]: undo edits, keep props out of the way, and restore stored items later.[/*]
+[*][b]Shared and campaign-specific layouts[/b]: decorate once for your campaigns, or give a particular campaign its own look. Named presets let you keep different full-layout designs.[/*]
+[*][b]Reusable compositions[/b]: save groups of up to 128 props, browse pictures of the whole arrangement and place more copies across campaigns.[/*]
+[*][b]Independent prop-pack support[/b]: compatible packs add their own catalog shelves and work with placement, the Storeroom and compositions.[/*]
+[*][b]Draft recovery and rotating backups[/b]: recover unfinished work after an interrupted editing session.[/*]
+[*][b]In-game settings and rebindable keys[/b]: tune the camera, snapping, rotation pivot, background tasks and editor controls. Help shows your active bindings.[/*]
+[/list]
+
+[heading]Using Den Designer[/heading]
+Enter the Den, then use the [b]office console[/b] marked with a pencil icon or press [b]Ctrl+Home[/b]. The game's HUD hides while you edit and returns when you finish.
+
+[b]Camera and selection[/b]
+[list]
+[*][b]WASD[/b] flies, [b]Space[/b] rises and [b]Ctrl[/b] descends. Hold [b]right mouse[/b] to look and [b]Shift[/b] to fly faster.[/*]
+[*][b]Left-click[/b] selects a prop. [b]F[/b] frames it in the camera.[/*]
+[*]Choose [b]Select, Move, Rotate or Scale[/b] on the menu bar, or press [b]T[/b] to cycle them.[/*]
+[*][b]Floors, Walls and Structure[/b] independently allow selection of those pieces. Range sets how far away you can select.[/*]
+[/list]
+
+[b]Placing and editing[/b]
+[list]
+[*]Open [b]Catalog[/b], choose a prop and click in the world to place it. [b]Shift-click[/b] places more copies; [b]Esc[/b] cancels placement.[/*]
+[*]Drag a selected prop along a surface, or hold [b]Shift[/b] while dragging to change its height.[/*]
+[*][b]Q/E[/b] or the [b]mouse wheel[/b] turns it. [b]Shift+wheel[/b] makes fine turns. [b]+/−[/b], including the keypad keys, scales it.[/*]
+[*]Use the gizmo handles to constrain an edit, or type precise position, rotation and scale values in the inspector and press [b]Enter[/b].[/*]
+[*][b]Arrow keys[/b] nudge horizontally; [b]Page Up/Down[/b] nudge vertically.[/*]
+[*][b]C[/b] copies, [b]X[/b] or [b]Delete[/b] stores, and [b]Z/Y[/b] undo/redo. Stored props can be restored from the [b]Storeroom[/b].[/*]
+[*][b]R[/b] resets an existing scenery edit. On a placed prop it straightens pitch/roll and resets scale, keeping its yaw.[/*]
+[/list]
+
+[b]Snapping and pivots[/b]
+[list]
+[*][b]Grid[/b] or [b]G[/b] cycles Off, 5, 10, 25 and 50 cm steps.[/*]
+[*][b]Snap[/b] matches nearby props: flush faces, aligned edges/centres and stacked objects. Hold [b]Alt[/b] to bypass this while moving; the grid remains independent.[/*]
+[*]Change [b]Pivot[/b] beside the rotation fields to Centre, Bottom, Top or Original. Numeric, gizmo and wheel/key rotation all use that point.[/*]
+[/list]
+
+Choose [b]Save[/b] to commit the layout and [b]Done[/b] to return to the game. Closing with unsaved work offers Save, Discard or Keep editing. The opening shortcut also requests exit.
+These are the default controls. If you rebind fast flight, the new key also controls fine wheel turns and height dragging.
+
+[heading]Layouts, Presets and Compositions[/heading]
+[b]Home[/b] is shared by campaigns that do not have their own layout. In [b]Layouts[/b], give the current campaign its own copy, switch it back to Home, or save/load named presets of a complete layout. The selected saved layout applies when the Den loads and on return from missions.
+
+[b]Compositions[/b] are reusable groups rather than full-layout replacements. Choose [b]Select parts[/b], click props to include them, finish selecting, name the arrangement and save it. Select its thumbnail and choose [b]Place selected[/b] to put down another copy. Each placement is one undo step, and its parts can then be edited individually.
+
+Compositions preserve relative transforms and supported material overrides, with a bottom-centre placement anchor. They are available across campaigns and their library saves immediately. Replacing or deleting a saved composition leaves previously placed copies in your layout.
+
+[heading]Settings[/heading]
+Open [b]Settings[/b] in the editor to adjust:
+[list]
+[*]Flight speed, fast-flight multiplier and mouse-look sensitivity.[/*]
+[*]Nearby-prop snapping, its guides and close-up snap distance (2–30 cm; default 8 cm).[/*]
+[*]The rotation pivot.[/*]
+[*]Draft autosave and thumbnail generation.[/*]
+[*]The editor opening shortcut and supported keyboard bindings.[/*]
+[/list]
+Settings save automatically and apply immediately. Reset settings restores defaults. Mouse controls, Alt's nearby-snap bypass, Esc, Delete, arrows, Page Up/Down and +/− remain fixed. F9 is reserved.
+
+[heading]Prop Packs[/heading]
+Compatible prop packs add static meshes under [b]Catalog → All collections → Prop packs[/b]. Each pack gets its own shelf; its name, author and tags also work in search.
+
+Install all three matching containers from a pack while the game is closed, then restart. Removing a pack keeps its entries in your layouts, so reinstalling it at the same asset paths lets its meshes resolve again.
+
+Prop packs and creator tools are separate from the runtime. [b]The runtime download contains no sample pack or model importer.[/b] Creator documentation is in the source repository; the separate editor tools remain a preview pending Windows editor testing.
+
+[heading]Requirements[/heading]
+[list]
+[*][b]Star Wars: Zero Company[/b][/*]
+[*][b]Keyboard and mouse[/b] for the editor.[/*]
+[/list]
+The current runtime targets the Steam release, build [b]25898267[/b]. Other game builds and the EA App release are unverified.
+UE4SS and a separate mod-settings manager are not required. Keep UE4SS installed if your other mods need it.
+
+[heading]Installation[/heading]
+[b]Mod manager[/b]
+Install the downloaded ZIP through your mod manager and enable [b]Den Designer[/b]. The archive includes metadata for the community managers:
+[list]
+[*][url=https://www.nexusmods.com/starwarszerocompany/mods/29]Zero Mod Manager[/url][/*]
+[*][url=https://www.nexusmods.com/starwarszerocompany/mods/121]Zero Company Mod Command[/url][/*]
+[/list]
+The runtime is one component. Install all three of its container files from the same version.
+
+[b]Manual installation[/b]
+Close the game, then extract the ZIP into the game's [b]SWZeroCompany[/b] folder, the one containing [b]Binaries[/b] and [b]Content[/b], and merge folders. The installed files should include:
+[code]SWZeroCompany/Content/Paks/~mods/DenDesigner/DenDesignerGF_P.pak
+SWZeroCompany/Content/Paks/~mods/DenDesigner/DenDesignerGF_P.ucas
+SWZeroCompany/Content/Paks/~mods/DenDesigner/DenDesignerGF_P.utoc[/code]
+Keep the accompanying metadata and player guide in that folder too.
+
+[b]Updating[/b]
+Close the game and update through the same manager, or replace the DenDesigner folder for a manual install. Keep your mod data. If upgrading from an older flat installation, remove its old [b]DenDesignerGF_P.pak[/b], [b].ucas[/b] and [b].utoc[/b] directly inside [b]Content/Paks/~mods[/b]. Do not leave duplicate copies for the game to load; keep backups outside the Paks folders.
+
+[b]Uninstalling[/b]
+Close the game and remove Den Designer through your manager, or delete [b]Content/Paks/~mods/DenDesigner[/b]. The mod's decorations stop applying and your campaign saves remain usable. Keep its saved data if you may reinstall.
+
+[heading]Saved Data and Recovery[/heading]
+Layouts, presets, compositions and settings live in the mod's own save directory:
+[code]%LOCALAPPDATA%\SWZeroCompany\Saved\SaveGames\ZComDen\Native\v1[/code]
+Back up [b]the whole directory[/b] together; do not mix individual rotating banks from different backups. Thumbnail images are cached separately under [b]Saved/ZComDen/thumbs[/b] and can be regenerated.
+
+Draft autosave is on by default. After an interrupted session, opening the editor offers recovery; a draft does not silently replace the saved layout. Use [b]Save[/b] to commit your design.
+
+Edits that cannot currently resolve their objects remain in the layout and appear in the Storeroom's unavailable list. You can keep them for returning content or forget individual entries; Undo can restore a forgotten entry in the active session.
+
+[heading]Compatibility and Limits[/heading]
+[list]
+[*]Den Designer edits eligible static meshes in the Den. Characters, animated objects, individual instanced-mesh pieces and protected gameplay/interactable objects are outside its supported selection scope.[/*]
+[*]Placed meshes are decorations; they do not acquire the original object's scripts or gameplay interactions.[/*]
+[*]Compatible prop packs are the supported way to add independent mesh content. Other mods' gameplay objects are not automatically editable.[/*]
+[*]Mods or game updates that change Den objects, asset paths or streaming may affect saved edits. Missing entries are retained for review.[/*]
+[*]There is no verified compatibility list for every mod combination. Back up your mod data before changing your content setup.[/*]
+[/list]
+
+[heading]Known Issues[/heading]
+[list]
+[*]The editor is designed for keyboard and mouse; controller editing is not supported.[/*]
+[*]The editor's interface text is in English.[/*]
+[*]Thumbnails may take time to appear on first use. Generation can be disabled in Settings.[/*]
+[*]A prop-pack update that changes a mesh's appearance can leave an old cached thumbnail. Delete that mesh's cached PNG to regenerate it.[/*]
+[/list]
+
+[heading]Troubleshooting[/heading]
+If something goes wrong, please include:
+[list]
+[*]Your game build and Den Designer version.[/*]
+[*]Your other installed mods and prop packs.[/*]
+[*]What you were doing, what happened and any on-screen message.[/*]
+[*]A screenshot or short recording where useful.[/*]
+[*][b]SWZeroCompany.log[/b] from [b]%LOCALAPPDATA%\SWZeroCompany\Saved\Logs[/b], if the game produced one.[/*]
+[/list]
+If the console prompt is unavailable, try [b]Ctrl+Home[/b] after the Den has finished loading, or your replacement shortcut. If a keyboard binding causes trouble, check [b]Help[/b] and [b]Settings[/b] for the active bindings and conflicts.
+The included player guide covers installation, saved data and recovery. Logs can contain local folder paths; look them over before sharing.
+
+[heading]Source Code and Issue Reports[/heading]
+Source, the full feature guide, creator documentation and issue tracking are available on [url=https://github.com/chatterchats/DenDesigner]GitHub[/url]. You can also report problems in the Bugs tab here on Nexus.
+
+[heading]Check Out My Other Mods[/heading]
+[list]
+[*][url=https://www.nexusmods.com/starwarszerocompany/mods/340]Squad Six Reforged[/url] — Take six operators into missions instead of four, with improved placement for the extra two.[/*]
+[*][url=https://www.nexusmods.com/starwarszerocompany/mods/315]Off Duty[/url] — Operators get tired from back-to-back missions and recover while off duty, giving the rest of your company a turn.[/*]
+[*][url=https://www.nexusmods.com/starwarszerocompany/mods/154]Fast Resonance[/url] — Shortens the Coil's ability presentations, with a speed setting and switches for individual abilities.[/*]
+[*][url=https://www.nexusmods.com/starwarszerocompany/mods/335]Skip Space Travel[/url] — Skips the ship-travel cutscenes before and after missions.[/*]
+[*][url=https://www.nexusmods.com/starwarszerocompany/mods/176]Character Share[/url] — Share custom characters and Astromechs using copy-and-paste codes in the Character Databank.[/*]
+[*][url=https://www.nexusmods.com/starwarszerocompany/mods/209]Enhanced Databank[/url] — Organize custom characters and Astromechs into folders in the game's Databank.[/*]
+[*][url=https://www.nexusmods.com/starwarszerocompany/mods/314]Colors+[/url] — Choose custom colors with a live preview in the character creator, barracks and armory.[/*]
+[/list]
+
+[heading]Shout-outs[/heading]
+[list]
+[*][url=https://forums.nexusmods.com/profile/1661783-gugarion/]Gugarion[/url] and the [url=https://discord.gg/qpBkjjKSRp][b]ZCom Modding Discord[/b][/url] — for sharing Zero Company modding knowledge and tools.[/*]
+[*][b]Bit Reactor, Respawn and Lucasfilm Games[/b] — for Star Wars: Zero Company and the game props and UI resources the editor uses.[/*]
+[*][b]Epic Games[/b] — for Unreal Engine and its Game Features, input and UI systems.[/*]
+[/list]

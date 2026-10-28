@@ -1,0 +1,3302 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenSnapGuides",
+  "parent": "/Script/Engine.Actor",
+  "defaults": {
+    "bHidden": "true"
+  },
+  "components": [
+    {
+      "name": "Mesh",
+      "class": "/Script/ProceduralMeshComponent.ProceduralMeshComponent",
+      "props": {
+        "Mobility": "Movable",
+        "BodyInstance.CollisionEnabled": "NoCollision",
+        "CastShadow": "false",
+        "bReceivesDecals": "false"
+      }
+    }
+  ],
+  "variables": [
+    {
+      "name": "Vertices",
+      "type": "vector[]"
+    },
+    {
+      "name": "Triangles",
+      "type": "int[]"
+    },
+    {
+      "name": "Colors",
+      "type": "color[]"
+    }
+  ],
+  "functions": [
+    {
+      "name": "ClearGuides",
+      "nodes": [
+        {
+          "id": "getVertices",
+          "kind": "get",
+          "var": "Vertices"
+        },
+        {
+          "id": "clearVertices",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "getTriangles",
+          "kind": "get",
+          "var": "Triangles"
+        },
+        {
+          "id": "clearTriangles",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "getColors",
+          "kind": "get",
+          "var": "Colors"
+        },
+        {
+          "id": "clearColors",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getVertices.Vertices",
+          "clearVertices.TargetArray"
+        ],
+        [
+          "entry.then",
+          "clearVertices.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "clearTriangles.TargetArray"
+        ],
+        [
+          "clearVertices.then",
+          "clearTriangles.execute"
+        ],
+        [
+          "getColors.Colors",
+          "clearColors.TargetArray"
+        ],
+        [
+          "clearTriangles.then",
+          "clearColors.execute"
+        ]
+      ]
+    },
+    {
+      "name": "AddLine",
+      "inputs": [
+        {
+          "name": "Start",
+          "type": "vector"
+        },
+        {
+          "name": "End",
+          "type": "vector"
+        },
+        {
+          "name": "Thickness",
+          "type": "double"
+        },
+        {
+          "name": "Color",
+          "type": "color"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Base",
+          "type": "int",
+          "default": "0"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "along",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "direction",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Normal",
+          "defaults": {
+            "Tolerance": "1e-06"
+          }
+        },
+        {
+          "id": "cross",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Cross_VectorVector",
+          "defaults": {
+            "B": "0,0,1"
+          }
+        },
+        {
+          "id": "across",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Normal",
+          "defaults": {
+            "Tolerance": "1e-06"
+          }
+        },
+        {
+          "id": "acrosslength",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:VSize",
+          "defaults": {}
+        },
+        {
+          "id": "upright",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {
+            "B": "0.5"
+          }
+        },
+        {
+          "id": "u",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectVector",
+          "defaults": {
+            "A": "1,0,0"
+          }
+        },
+        {
+          "id": "w",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Cross_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "tu",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {}
+        },
+        {
+          "id": "tw",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {}
+        },
+        {
+          "id": "getVertices",
+          "kind": "get",
+          "var": "Vertices"
+        },
+        {
+          "id": "count",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "base",
+          "kind": "set",
+          "var": "local:Base"
+        },
+        {
+          "id": "first",
+          "kind": "get",
+          "var": "local:Base"
+        },
+        {
+          "id": "ou0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "ow0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "o0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "p0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "v0",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "getColors",
+          "kind": "get",
+          "var": "Colors"
+        },
+        {
+          "id": "c0",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "ou1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "ow1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "o1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "p1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "v1",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "c1",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "ou2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "ow2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "o2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "p2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "v2",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "c2",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "ou3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "ow3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "o3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "p3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "v3",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "c3",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "ou4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "ow4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "o4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "p4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "v4",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "c4",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "ou5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "ow5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "o5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "p5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "v5",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "c5",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "ou6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "ow6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "o6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "p6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "v6",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "c6",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "ou7",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {
+            "B": "-1"
+          }
+        },
+        {
+          "id": "ow7",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "o7",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "p7",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "v7",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "c7",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "getTriangles",
+          "kind": "get",
+          "var": "Triangles"
+        },
+        {
+          "id": "t0",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "t1",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "t2",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "t3",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "t4",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "t5",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "3"
+          }
+        },
+        {
+          "id": "t6",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "t7",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i7",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "t8",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i8",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "t9",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i9",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "t10",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i10",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "3"
+          }
+        },
+        {
+          "id": "t11",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i11",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "t12",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i12",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "4"
+          }
+        },
+        {
+          "id": "t13",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i13",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "5"
+          }
+        },
+        {
+          "id": "t14",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i14",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "6"
+          }
+        },
+        {
+          "id": "t15",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i15",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "4"
+          }
+        },
+        {
+          "id": "t16",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i16",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "6"
+          }
+        },
+        {
+          "id": "t17",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i17",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "7"
+          }
+        },
+        {
+          "id": "t18",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i18",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "4"
+          }
+        },
+        {
+          "id": "t19",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i19",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "6"
+          }
+        },
+        {
+          "id": "t20",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i20",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "5"
+          }
+        },
+        {
+          "id": "t21",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i21",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "4"
+          }
+        },
+        {
+          "id": "t22",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i22",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "7"
+          }
+        },
+        {
+          "id": "t23",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i23",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "6"
+          }
+        },
+        {
+          "id": "t24",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i24",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "t25",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i25",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "t26",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i26",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "5"
+          }
+        },
+        {
+          "id": "t27",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i27",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "t28",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i28",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "5"
+          }
+        },
+        {
+          "id": "t29",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i29",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "4"
+          }
+        },
+        {
+          "id": "t30",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i30",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "t31",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i31",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "5"
+          }
+        },
+        {
+          "id": "t32",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i32",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "t33",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i33",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "t34",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i34",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "4"
+          }
+        },
+        {
+          "id": "t35",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i35",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "5"
+          }
+        },
+        {
+          "id": "t36",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i36",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "t37",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i37",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "t38",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i38",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "6"
+          }
+        },
+        {
+          "id": "t39",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i39",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "t40",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i40",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "6"
+          }
+        },
+        {
+          "id": "t41",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i41",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "5"
+          }
+        },
+        {
+          "id": "t42",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i42",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "t43",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i43",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "6"
+          }
+        },
+        {
+          "id": "t44",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i44",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "t45",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i45",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "t46",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i46",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "5"
+          }
+        },
+        {
+          "id": "t47",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i47",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "6"
+          }
+        },
+        {
+          "id": "t48",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i48",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "t49",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i49",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "3"
+          }
+        },
+        {
+          "id": "t50",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i50",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "7"
+          }
+        },
+        {
+          "id": "t51",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i51",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "t52",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i52",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "7"
+          }
+        },
+        {
+          "id": "t53",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i53",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "6"
+          }
+        },
+        {
+          "id": "t54",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i54",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "t55",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i55",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "7"
+          }
+        },
+        {
+          "id": "t56",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i56",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "3"
+          }
+        },
+        {
+          "id": "t57",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i57",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "t58",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i58",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "6"
+          }
+        },
+        {
+          "id": "t59",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i59",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "7"
+          }
+        },
+        {
+          "id": "t60",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i60",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "3"
+          }
+        },
+        {
+          "id": "t61",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i61",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "t62",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i62",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "4"
+          }
+        },
+        {
+          "id": "t63",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i63",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "3"
+          }
+        },
+        {
+          "id": "t64",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i64",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "4"
+          }
+        },
+        {
+          "id": "t65",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i65",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "7"
+          }
+        },
+        {
+          "id": "t66",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i66",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "3"
+          }
+        },
+        {
+          "id": "t67",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i67",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "4"
+          }
+        },
+        {
+          "id": "t68",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i68",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "t69",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i69",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "3"
+          }
+        },
+        {
+          "id": "t70",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i70",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "7"
+          }
+        },
+        {
+          "id": "t71",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "i71",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "4"
+          }
+        }
+      ],
+      "links": [
+        [
+          "entry.End",
+          "along.A"
+        ],
+        [
+          "entry.Start",
+          "along.B"
+        ],
+        [
+          "along.ReturnValue",
+          "direction.A"
+        ],
+        [
+          "direction.ReturnValue",
+          "cross.A"
+        ],
+        [
+          "cross.ReturnValue",
+          "across.A"
+        ],
+        [
+          "across.ReturnValue",
+          "acrosslength.A"
+        ],
+        [
+          "acrosslength.ReturnValue",
+          "upright.A"
+        ],
+        [
+          "across.ReturnValue",
+          "u.B"
+        ],
+        [
+          "upright.ReturnValue",
+          "u.bPickA"
+        ],
+        [
+          "direction.ReturnValue",
+          "w.A"
+        ],
+        [
+          "u.ReturnValue",
+          "w.B"
+        ],
+        [
+          "u.ReturnValue",
+          "tu.A"
+        ],
+        [
+          "entry.Thickness",
+          "tu.B"
+        ],
+        [
+          "w.ReturnValue",
+          "tw.A"
+        ],
+        [
+          "entry.Thickness",
+          "tw.B"
+        ],
+        [
+          "getVertices.Vertices",
+          "count.TargetArray"
+        ],
+        [
+          "count.ReturnValue",
+          "base.Base"
+        ],
+        [
+          "entry.then",
+          "base.execute"
+        ],
+        [
+          "tu.ReturnValue",
+          "ou0.A"
+        ],
+        [
+          "tw.ReturnValue",
+          "ow0.A"
+        ],
+        [
+          "ou0.ReturnValue",
+          "o0.A"
+        ],
+        [
+          "ow0.ReturnValue",
+          "o0.B"
+        ],
+        [
+          "entry.Start",
+          "p0.A"
+        ],
+        [
+          "o0.ReturnValue",
+          "p0.B"
+        ],
+        [
+          "getVertices.Vertices",
+          "v0.TargetArray"
+        ],
+        [
+          "p0.ReturnValue",
+          "v0.NewItem"
+        ],
+        [
+          "getColors.Colors",
+          "c0.TargetArray"
+        ],
+        [
+          "entry.Color",
+          "c0.NewItem"
+        ],
+        [
+          "base.then",
+          "v0.execute"
+        ],
+        [
+          "v0.then",
+          "c0.execute"
+        ],
+        [
+          "tu.ReturnValue",
+          "ou1.A"
+        ],
+        [
+          "tw.ReturnValue",
+          "ow1.A"
+        ],
+        [
+          "ou1.ReturnValue",
+          "o1.A"
+        ],
+        [
+          "ow1.ReturnValue",
+          "o1.B"
+        ],
+        [
+          "entry.Start",
+          "p1.A"
+        ],
+        [
+          "o1.ReturnValue",
+          "p1.B"
+        ],
+        [
+          "getVertices.Vertices",
+          "v1.TargetArray"
+        ],
+        [
+          "p1.ReturnValue",
+          "v1.NewItem"
+        ],
+        [
+          "getColors.Colors",
+          "c1.TargetArray"
+        ],
+        [
+          "entry.Color",
+          "c1.NewItem"
+        ],
+        [
+          "c0.then",
+          "v1.execute"
+        ],
+        [
+          "v1.then",
+          "c1.execute"
+        ],
+        [
+          "tu.ReturnValue",
+          "ou2.A"
+        ],
+        [
+          "tw.ReturnValue",
+          "ow2.A"
+        ],
+        [
+          "ou2.ReturnValue",
+          "o2.A"
+        ],
+        [
+          "ow2.ReturnValue",
+          "o2.B"
+        ],
+        [
+          "entry.Start",
+          "p2.A"
+        ],
+        [
+          "o2.ReturnValue",
+          "p2.B"
+        ],
+        [
+          "getVertices.Vertices",
+          "v2.TargetArray"
+        ],
+        [
+          "p2.ReturnValue",
+          "v2.NewItem"
+        ],
+        [
+          "getColors.Colors",
+          "c2.TargetArray"
+        ],
+        [
+          "entry.Color",
+          "c2.NewItem"
+        ],
+        [
+          "c1.then",
+          "v2.execute"
+        ],
+        [
+          "v2.then",
+          "c2.execute"
+        ],
+        [
+          "tu.ReturnValue",
+          "ou3.A"
+        ],
+        [
+          "tw.ReturnValue",
+          "ow3.A"
+        ],
+        [
+          "ou3.ReturnValue",
+          "o3.A"
+        ],
+        [
+          "ow3.ReturnValue",
+          "o3.B"
+        ],
+        [
+          "entry.Start",
+          "p3.A"
+        ],
+        [
+          "o3.ReturnValue",
+          "p3.B"
+        ],
+        [
+          "getVertices.Vertices",
+          "v3.TargetArray"
+        ],
+        [
+          "p3.ReturnValue",
+          "v3.NewItem"
+        ],
+        [
+          "getColors.Colors",
+          "c3.TargetArray"
+        ],
+        [
+          "entry.Color",
+          "c3.NewItem"
+        ],
+        [
+          "c2.then",
+          "v3.execute"
+        ],
+        [
+          "v3.then",
+          "c3.execute"
+        ],
+        [
+          "tu.ReturnValue",
+          "ou4.A"
+        ],
+        [
+          "tw.ReturnValue",
+          "ow4.A"
+        ],
+        [
+          "ou4.ReturnValue",
+          "o4.A"
+        ],
+        [
+          "ow4.ReturnValue",
+          "o4.B"
+        ],
+        [
+          "entry.End",
+          "p4.A"
+        ],
+        [
+          "o4.ReturnValue",
+          "p4.B"
+        ],
+        [
+          "getVertices.Vertices",
+          "v4.TargetArray"
+        ],
+        [
+          "p4.ReturnValue",
+          "v4.NewItem"
+        ],
+        [
+          "getColors.Colors",
+          "c4.TargetArray"
+        ],
+        [
+          "entry.Color",
+          "c4.NewItem"
+        ],
+        [
+          "c3.then",
+          "v4.execute"
+        ],
+        [
+          "v4.then",
+          "c4.execute"
+        ],
+        [
+          "tu.ReturnValue",
+          "ou5.A"
+        ],
+        [
+          "tw.ReturnValue",
+          "ow5.A"
+        ],
+        [
+          "ou5.ReturnValue",
+          "o5.A"
+        ],
+        [
+          "ow5.ReturnValue",
+          "o5.B"
+        ],
+        [
+          "entry.End",
+          "p5.A"
+        ],
+        [
+          "o5.ReturnValue",
+          "p5.B"
+        ],
+        [
+          "getVertices.Vertices",
+          "v5.TargetArray"
+        ],
+        [
+          "p5.ReturnValue",
+          "v5.NewItem"
+        ],
+        [
+          "getColors.Colors",
+          "c5.TargetArray"
+        ],
+        [
+          "entry.Color",
+          "c5.NewItem"
+        ],
+        [
+          "c4.then",
+          "v5.execute"
+        ],
+        [
+          "v5.then",
+          "c5.execute"
+        ],
+        [
+          "tu.ReturnValue",
+          "ou6.A"
+        ],
+        [
+          "tw.ReturnValue",
+          "ow6.A"
+        ],
+        [
+          "ou6.ReturnValue",
+          "o6.A"
+        ],
+        [
+          "ow6.ReturnValue",
+          "o6.B"
+        ],
+        [
+          "entry.End",
+          "p6.A"
+        ],
+        [
+          "o6.ReturnValue",
+          "p6.B"
+        ],
+        [
+          "getVertices.Vertices",
+          "v6.TargetArray"
+        ],
+        [
+          "p6.ReturnValue",
+          "v6.NewItem"
+        ],
+        [
+          "getColors.Colors",
+          "c6.TargetArray"
+        ],
+        [
+          "entry.Color",
+          "c6.NewItem"
+        ],
+        [
+          "c5.then",
+          "v6.execute"
+        ],
+        [
+          "v6.then",
+          "c6.execute"
+        ],
+        [
+          "tu.ReturnValue",
+          "ou7.A"
+        ],
+        [
+          "tw.ReturnValue",
+          "ow7.A"
+        ],
+        [
+          "ou7.ReturnValue",
+          "o7.A"
+        ],
+        [
+          "ow7.ReturnValue",
+          "o7.B"
+        ],
+        [
+          "entry.End",
+          "p7.A"
+        ],
+        [
+          "o7.ReturnValue",
+          "p7.B"
+        ],
+        [
+          "getVertices.Vertices",
+          "v7.TargetArray"
+        ],
+        [
+          "p7.ReturnValue",
+          "v7.NewItem"
+        ],
+        [
+          "getColors.Colors",
+          "c7.TargetArray"
+        ],
+        [
+          "entry.Color",
+          "c7.NewItem"
+        ],
+        [
+          "c6.then",
+          "v7.execute"
+        ],
+        [
+          "v7.then",
+          "c7.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t0.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i0.A"
+        ],
+        [
+          "i0.ReturnValue",
+          "t0.NewItem"
+        ],
+        [
+          "c7.then",
+          "t0.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t1.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i1.A"
+        ],
+        [
+          "i1.ReturnValue",
+          "t1.NewItem"
+        ],
+        [
+          "t0.then",
+          "t1.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t2.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i2.A"
+        ],
+        [
+          "i2.ReturnValue",
+          "t2.NewItem"
+        ],
+        [
+          "t1.then",
+          "t2.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t3.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i3.A"
+        ],
+        [
+          "i3.ReturnValue",
+          "t3.NewItem"
+        ],
+        [
+          "t2.then",
+          "t3.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t4.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i4.A"
+        ],
+        [
+          "i4.ReturnValue",
+          "t4.NewItem"
+        ],
+        [
+          "t3.then",
+          "t4.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t5.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i5.A"
+        ],
+        [
+          "i5.ReturnValue",
+          "t5.NewItem"
+        ],
+        [
+          "t4.then",
+          "t5.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t6.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i6.A"
+        ],
+        [
+          "i6.ReturnValue",
+          "t6.NewItem"
+        ],
+        [
+          "t5.then",
+          "t6.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t7.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i7.A"
+        ],
+        [
+          "i7.ReturnValue",
+          "t7.NewItem"
+        ],
+        [
+          "t6.then",
+          "t7.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t8.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i8.A"
+        ],
+        [
+          "i8.ReturnValue",
+          "t8.NewItem"
+        ],
+        [
+          "t7.then",
+          "t8.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t9.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i9.A"
+        ],
+        [
+          "i9.ReturnValue",
+          "t9.NewItem"
+        ],
+        [
+          "t8.then",
+          "t9.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t10.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i10.A"
+        ],
+        [
+          "i10.ReturnValue",
+          "t10.NewItem"
+        ],
+        [
+          "t9.then",
+          "t10.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t11.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i11.A"
+        ],
+        [
+          "i11.ReturnValue",
+          "t11.NewItem"
+        ],
+        [
+          "t10.then",
+          "t11.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t12.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i12.A"
+        ],
+        [
+          "i12.ReturnValue",
+          "t12.NewItem"
+        ],
+        [
+          "t11.then",
+          "t12.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t13.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i13.A"
+        ],
+        [
+          "i13.ReturnValue",
+          "t13.NewItem"
+        ],
+        [
+          "t12.then",
+          "t13.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t14.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i14.A"
+        ],
+        [
+          "i14.ReturnValue",
+          "t14.NewItem"
+        ],
+        [
+          "t13.then",
+          "t14.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t15.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i15.A"
+        ],
+        [
+          "i15.ReturnValue",
+          "t15.NewItem"
+        ],
+        [
+          "t14.then",
+          "t15.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t16.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i16.A"
+        ],
+        [
+          "i16.ReturnValue",
+          "t16.NewItem"
+        ],
+        [
+          "t15.then",
+          "t16.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t17.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i17.A"
+        ],
+        [
+          "i17.ReturnValue",
+          "t17.NewItem"
+        ],
+        [
+          "t16.then",
+          "t17.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t18.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i18.A"
+        ],
+        [
+          "i18.ReturnValue",
+          "t18.NewItem"
+        ],
+        [
+          "t17.then",
+          "t18.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t19.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i19.A"
+        ],
+        [
+          "i19.ReturnValue",
+          "t19.NewItem"
+        ],
+        [
+          "t18.then",
+          "t19.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t20.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i20.A"
+        ],
+        [
+          "i20.ReturnValue",
+          "t20.NewItem"
+        ],
+        [
+          "t19.then",
+          "t20.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t21.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i21.A"
+        ],
+        [
+          "i21.ReturnValue",
+          "t21.NewItem"
+        ],
+        [
+          "t20.then",
+          "t21.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t22.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i22.A"
+        ],
+        [
+          "i22.ReturnValue",
+          "t22.NewItem"
+        ],
+        [
+          "t21.then",
+          "t22.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t23.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i23.A"
+        ],
+        [
+          "i23.ReturnValue",
+          "t23.NewItem"
+        ],
+        [
+          "t22.then",
+          "t23.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t24.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i24.A"
+        ],
+        [
+          "i24.ReturnValue",
+          "t24.NewItem"
+        ],
+        [
+          "t23.then",
+          "t24.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t25.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i25.A"
+        ],
+        [
+          "i25.ReturnValue",
+          "t25.NewItem"
+        ],
+        [
+          "t24.then",
+          "t25.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t26.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i26.A"
+        ],
+        [
+          "i26.ReturnValue",
+          "t26.NewItem"
+        ],
+        [
+          "t25.then",
+          "t26.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t27.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i27.A"
+        ],
+        [
+          "i27.ReturnValue",
+          "t27.NewItem"
+        ],
+        [
+          "t26.then",
+          "t27.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t28.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i28.A"
+        ],
+        [
+          "i28.ReturnValue",
+          "t28.NewItem"
+        ],
+        [
+          "t27.then",
+          "t28.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t29.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i29.A"
+        ],
+        [
+          "i29.ReturnValue",
+          "t29.NewItem"
+        ],
+        [
+          "t28.then",
+          "t29.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t30.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i30.A"
+        ],
+        [
+          "i30.ReturnValue",
+          "t30.NewItem"
+        ],
+        [
+          "t29.then",
+          "t30.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t31.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i31.A"
+        ],
+        [
+          "i31.ReturnValue",
+          "t31.NewItem"
+        ],
+        [
+          "t30.then",
+          "t31.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t32.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i32.A"
+        ],
+        [
+          "i32.ReturnValue",
+          "t32.NewItem"
+        ],
+        [
+          "t31.then",
+          "t32.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t33.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i33.A"
+        ],
+        [
+          "i33.ReturnValue",
+          "t33.NewItem"
+        ],
+        [
+          "t32.then",
+          "t33.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t34.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i34.A"
+        ],
+        [
+          "i34.ReturnValue",
+          "t34.NewItem"
+        ],
+        [
+          "t33.then",
+          "t34.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t35.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i35.A"
+        ],
+        [
+          "i35.ReturnValue",
+          "t35.NewItem"
+        ],
+        [
+          "t34.then",
+          "t35.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t36.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i36.A"
+        ],
+        [
+          "i36.ReturnValue",
+          "t36.NewItem"
+        ],
+        [
+          "t35.then",
+          "t36.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t37.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i37.A"
+        ],
+        [
+          "i37.ReturnValue",
+          "t37.NewItem"
+        ],
+        [
+          "t36.then",
+          "t37.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t38.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i38.A"
+        ],
+        [
+          "i38.ReturnValue",
+          "t38.NewItem"
+        ],
+        [
+          "t37.then",
+          "t38.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t39.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i39.A"
+        ],
+        [
+          "i39.ReturnValue",
+          "t39.NewItem"
+        ],
+        [
+          "t38.then",
+          "t39.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t40.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i40.A"
+        ],
+        [
+          "i40.ReturnValue",
+          "t40.NewItem"
+        ],
+        [
+          "t39.then",
+          "t40.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t41.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i41.A"
+        ],
+        [
+          "i41.ReturnValue",
+          "t41.NewItem"
+        ],
+        [
+          "t40.then",
+          "t41.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t42.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i42.A"
+        ],
+        [
+          "i42.ReturnValue",
+          "t42.NewItem"
+        ],
+        [
+          "t41.then",
+          "t42.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t43.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i43.A"
+        ],
+        [
+          "i43.ReturnValue",
+          "t43.NewItem"
+        ],
+        [
+          "t42.then",
+          "t43.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t44.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i44.A"
+        ],
+        [
+          "i44.ReturnValue",
+          "t44.NewItem"
+        ],
+        [
+          "t43.then",
+          "t44.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t45.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i45.A"
+        ],
+        [
+          "i45.ReturnValue",
+          "t45.NewItem"
+        ],
+        [
+          "t44.then",
+          "t45.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t46.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i46.A"
+        ],
+        [
+          "i46.ReturnValue",
+          "t46.NewItem"
+        ],
+        [
+          "t45.then",
+          "t46.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t47.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i47.A"
+        ],
+        [
+          "i47.ReturnValue",
+          "t47.NewItem"
+        ],
+        [
+          "t46.then",
+          "t47.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t48.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i48.A"
+        ],
+        [
+          "i48.ReturnValue",
+          "t48.NewItem"
+        ],
+        [
+          "t47.then",
+          "t48.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t49.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i49.A"
+        ],
+        [
+          "i49.ReturnValue",
+          "t49.NewItem"
+        ],
+        [
+          "t48.then",
+          "t49.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t50.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i50.A"
+        ],
+        [
+          "i50.ReturnValue",
+          "t50.NewItem"
+        ],
+        [
+          "t49.then",
+          "t50.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t51.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i51.A"
+        ],
+        [
+          "i51.ReturnValue",
+          "t51.NewItem"
+        ],
+        [
+          "t50.then",
+          "t51.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t52.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i52.A"
+        ],
+        [
+          "i52.ReturnValue",
+          "t52.NewItem"
+        ],
+        [
+          "t51.then",
+          "t52.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t53.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i53.A"
+        ],
+        [
+          "i53.ReturnValue",
+          "t53.NewItem"
+        ],
+        [
+          "t52.then",
+          "t53.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t54.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i54.A"
+        ],
+        [
+          "i54.ReturnValue",
+          "t54.NewItem"
+        ],
+        [
+          "t53.then",
+          "t54.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t55.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i55.A"
+        ],
+        [
+          "i55.ReturnValue",
+          "t55.NewItem"
+        ],
+        [
+          "t54.then",
+          "t55.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t56.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i56.A"
+        ],
+        [
+          "i56.ReturnValue",
+          "t56.NewItem"
+        ],
+        [
+          "t55.then",
+          "t56.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t57.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i57.A"
+        ],
+        [
+          "i57.ReturnValue",
+          "t57.NewItem"
+        ],
+        [
+          "t56.then",
+          "t57.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t58.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i58.A"
+        ],
+        [
+          "i58.ReturnValue",
+          "t58.NewItem"
+        ],
+        [
+          "t57.then",
+          "t58.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t59.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i59.A"
+        ],
+        [
+          "i59.ReturnValue",
+          "t59.NewItem"
+        ],
+        [
+          "t58.then",
+          "t59.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t60.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i60.A"
+        ],
+        [
+          "i60.ReturnValue",
+          "t60.NewItem"
+        ],
+        [
+          "t59.then",
+          "t60.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t61.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i61.A"
+        ],
+        [
+          "i61.ReturnValue",
+          "t61.NewItem"
+        ],
+        [
+          "t60.then",
+          "t61.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t62.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i62.A"
+        ],
+        [
+          "i62.ReturnValue",
+          "t62.NewItem"
+        ],
+        [
+          "t61.then",
+          "t62.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t63.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i63.A"
+        ],
+        [
+          "i63.ReturnValue",
+          "t63.NewItem"
+        ],
+        [
+          "t62.then",
+          "t63.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t64.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i64.A"
+        ],
+        [
+          "i64.ReturnValue",
+          "t64.NewItem"
+        ],
+        [
+          "t63.then",
+          "t64.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t65.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i65.A"
+        ],
+        [
+          "i65.ReturnValue",
+          "t65.NewItem"
+        ],
+        [
+          "t64.then",
+          "t65.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t66.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i66.A"
+        ],
+        [
+          "i66.ReturnValue",
+          "t66.NewItem"
+        ],
+        [
+          "t65.then",
+          "t66.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t67.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i67.A"
+        ],
+        [
+          "i67.ReturnValue",
+          "t67.NewItem"
+        ],
+        [
+          "t66.then",
+          "t67.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t68.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i68.A"
+        ],
+        [
+          "i68.ReturnValue",
+          "t68.NewItem"
+        ],
+        [
+          "t67.then",
+          "t68.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t69.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i69.A"
+        ],
+        [
+          "i69.ReturnValue",
+          "t69.NewItem"
+        ],
+        [
+          "t68.then",
+          "t69.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t70.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i70.A"
+        ],
+        [
+          "i70.ReturnValue",
+          "t70.NewItem"
+        ],
+        [
+          "t69.then",
+          "t70.execute"
+        ],
+        [
+          "getTriangles.Triangles",
+          "t71.TargetArray"
+        ],
+        [
+          "first.Base",
+          "i71.A"
+        ],
+        [
+          "i71.ReturnValue",
+          "t71.NewItem"
+        ],
+        [
+          "t70.then",
+          "t71.execute"
+        ]
+      ]
+    },
+    {
+      "name": "CommitGuides",
+      "inputs": [
+        {
+          "name": "Material",
+          "type": "object:/Script/Engine.MaterialInterface"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getMesh",
+          "kind": "get",
+          "var": "Mesh"
+        },
+        {
+          "id": "getVertices",
+          "kind": "get",
+          "var": "Vertices"
+        },
+        {
+          "id": "getTriangles",
+          "kind": "get",
+          "var": "Triangles"
+        },
+        {
+          "id": "getColors",
+          "kind": "get",
+          "var": "Colors"
+        },
+        {
+          "id": "section",
+          "kind": "call",
+          "function": "/Script/ProceduralMeshComponent.ProceduralMeshComponent:CreateMeshSection_LinearColor",
+          "defaults": {
+            "SectionIndex": "0",
+            "bCreateCollision": "false",
+            "bSRGBConversion": "false"
+          }
+        },
+        {
+          "id": "material",
+          "kind": "call",
+          "function": "/Script/Engine.MeshComponent:SetMaterial",
+          "defaults": {
+            "ElementIndex": "0"
+          }
+        },
+        {
+          "id": "show",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:SetActorHiddenInGame",
+          "defaults": {
+            "bNewHidden": "false"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getMesh.Mesh",
+          "section.self"
+        ],
+        [
+          "getVertices.Vertices",
+          "section.Vertices"
+        ],
+        [
+          "getTriangles.Triangles",
+          "section.Triangles"
+        ],
+        [
+          "getColors.Colors",
+          "section.VertexColors"
+        ],
+        [
+          "getMesh.Mesh",
+          "material.self"
+        ],
+        [
+          "entry.Material",
+          "material.Material"
+        ],
+        [
+          "entry.then",
+          "section.execute"
+        ],
+        [
+          "section.then",
+          "material.execute"
+        ],
+        [
+          "material.then",
+          "show.execute"
+        ]
+      ]
+    },
+    {
+      "name": "HideGuides",
+      "nodes": [
+        {
+          "id": "getMesh",
+          "kind": "get",
+          "var": "Mesh"
+        },
+        {
+          "id": "wipe",
+          "kind": "call",
+          "function": "/Script/ProceduralMeshComponent.ProceduralMeshComponent:ClearAllMeshSections",
+          "defaults": {}
+        },
+        {
+          "id": "hide",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:SetActorHiddenInGame",
+          "defaults": {
+            "bNewHidden": "true"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getMesh.Mesh",
+          "wipe.self"
+        ],
+        [
+          "entry.then",
+          "wipe.execute"
+        ],
+        [
+          "wipe.then",
+          "hide.execute"
+        ]
+      ]
+    }
+  ]
+}

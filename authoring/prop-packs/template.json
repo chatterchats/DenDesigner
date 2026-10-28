@@ -18,5 +18,12 @@
       "tags": "chair furniture",
       "description": ""
     }
+  ],
+  "assets": [
+    {
+      "id": "chair-mesh",
+      "path": "/MyFurniture/Meshes/SM_Chair.SM_Chair",
+      "kind": "mesh"
+    }
   ]
 }

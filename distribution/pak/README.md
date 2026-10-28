@@ -29,7 +29,9 @@ scope covers build and package checks. Release notes describe the in-game testin
    SWZeroCompany/Content/Paks/~mods/DenDesigner/zcom-mod.json
    ```
 
-4. Load your campaign and enter the Den. Press **Ctrl+Home** to open Den Designer.
+4. Load your campaign and enter the Den. Interact with the office console to **Open Den Designer**,
+   or press **Ctrl+Home** from anywhere in the Den. The console shows the game's edit icon at a
+   distance, then your interaction key and **OPEN DEN DESIGNER** when nearby.
 
 Install all three files from the same version. Close the game before replacing them on an update.
 Keep one copy of each; renamed copies from a mod manager can still be loaded by the game.
@@ -41,7 +43,16 @@ Keep one copy of each; renamed copies from a mod manager can still be loaded by 
 - Click a prop to select it. Choose Select, Move, Rotate or Scale on the menu bar, or press T to
   cycle them; Select hides the gizmo. Axis and plane handles constrain the edit. The inspector on
   the right shows the selected prop's position, rotation and scale; its fields accept values with Enter.
+- Move and Scale gizmos sit at the prop's bounds centre. Beside the rotation fields, click **Pivot** to
+  cycle **Centre → Bottom → Top → Original**, or choose **Settings → Rotation → Rotate around**.
+  The rotation rings mark that point; numeric angles and Q/E or wheel turns use it too. Bottom and Top
+  follow the prop's local vertical axis when tilted. Original uses the mesh's authored origin.
+  Changing the pivot moves the rotation gizmo; the prop stays in place. The choice is saved between sessions.
 - Drag along a surface; Shift-drag moves vertically. Q/E or the wheel rotate. Use +/− to scale.
+- Moving a prop near another snaps it flush against it, lines up its edges or centre, or (with
+  Shift) stacks it on top; sideways and front-to-back can follow different neighbours. Guide lines
+  and a label show the snap, which reaches further when the camera is further away. Hold Alt to place freely, or
+  turn SNAP off on the menu bar. Settings set the default, the guides and the snap distance.
 - C duplicates, X stores, and Z/Y undo or redo. The Storeroom restores stored props without undo.
 - Catalog, Storeroom, Compositions and Layouts open from the tabs on the left; choose the open tab
   again to close it.
@@ -54,6 +65,64 @@ Keep one copy of each; renamed copies from a mod manager can still be loaded by 
 - Settings contains camera speeds, background-task toggles and key bindings; it opens in place of
   the inspector. Help displays the effective controls. F9 is reserved because it conflicts with an observed load/mod action.
 - Save commits the layout. Done or the opening shortcut exits; unsaved changes require a choice.
+
+## Default controls
+
+These are the defaults; **Help** shows your effective editor bindings.
+
+| Control | Action |
+|---|---|
+| Ctrl+Home | Open the editor or request exit. The office console also opens it. |
+| WASD; Space / Ctrl | Fly horizontally; rise / descend. |
+| Hold right mouse | Look around. |
+| Shift | Fast flight; fine wheel turns; height movement during a prop drag. |
+| Left click / drag | Select / move along a surface. |
+| Shift-click during placement | Place additional copies of a prop or composition. |
+| Wheel or Q/E | Rotate the selection or placement preview. |
+| +/−, including keypad | Scale uniformly. |
+| Arrows; Page Up/Down | Nudge horizontally; nudge vertically. |
+| T | Cycle Select, Move, Rotate and Scale tools. |
+| F | Frame the selection in the camera. |
+| C | Duplicate the selection. |
+| R | Reset an existing scenery edit; straighten/reset scale on a placed prop, keeping its yaw. |
+| X or Delete | Store the selection. |
+| Z / Y | Undo / redo. |
+| G | Cycle grid steps: Off, 5, 10, 25 or 50 cm. |
+| Alt, held | Bypass nearby-prop snapping. Grid snapping remains independent. |
+| Tab / H / L | Toggle Catalog / Storeroom / Layouts. |
+| Esc | Cancel the current action or go back. |
+
+Nudges use the grid step, or 5 cm when the grid is off. Resetting an existing scenery edit
+restores its captured baseline. Storing a placed prop moves it to the Storeroom; storing existing
+scenery hides it through the saved layout. The Storeroom has search and Restore all. Its unavailable
+list also lets you forget an unresolved edit; Undo can restore that entry in the active session.
+
+## Settings
+
+Settings save automatically and apply immediately. **Reset settings** restores defaults.
+
+| Setting | Default | Range/choices |
+|---|---|---|
+| Flight speed | 900 cm/s | 200–3000 cm/s |
+| Fast flight multiplier | 3× | 1–8× |
+| Look sensitivity | 2.5 | 0.5–10 |
+| Snap to nearby props | On | On / Off |
+| Snapping guides | On | On / Off |
+| Close-up snap distance | 8 cm | 2–30 cm |
+| Rotate around | Centre | Centre / Bottom / Top / Original |
+| Draft autosave | On | On / Off |
+| Generate thumbnails | On | On / Off |
+| Open editor | Ctrl+Home | Supported key plus Ctrl, Shift, Alt or no modifier |
+
+Click a keyboard binding and press its replacement; Esc cancels capture. Each configurable action
+needs its own key, and F9 is reserved. Rebinding fast flight also changes the key used for fine
+wheel turns and height dragging. Mouse controls, Alt's nearby-snap bypass, Esc, Delete, arrows,
+Page Up/Down and +/− remain fixed. Keyboard and mouse are required for editing.
+
+Grid, Range and the selection filters are on the menu bar. Range cycles 10, 20, 40 and 100 m.
+Initial preferences have a 20 m range, grid Off, Floors On, Walls Off and Structure Off. The Snap
+button changes nearby-prop snapping for the current session; Settings store its default. Floors
+and Walls remain independent of Structure.
 
 ## Prop packs
 
@@ -104,6 +173,8 @@ This feature is available in the pak edition only.
 
 The Home layout is shared across campaigns. Layouts can give the current campaign its own copy,
 return it to Home, or save/load named presets. Stored props are part of a layout and its presets.
+Loading a preset replaces the working layout; **Save** commits the layout you want to use.
+The appropriate saved layout applies when the Den loads and after mission return.
 
 Den Designer writes its own slots under:
 
@@ -127,19 +198,24 @@ deployed it. If you still have an older flat installation, remove its three `Den
 from `Content/Paks/~mods` too. Keep the mod's Saved directories
 if you might reinstall. No campaign-save repair is needed.
 
-## Verification
+## Compatibility and editing limits
 
-Den Designer 1.0.0 targets Steam build 25898267, listed in `zcom-mod.json`. It adds compositions
-and prop packs to the 0.7.0 runtime, which passed full standalone regression. Use the archive
-manifest to identify the build and the release notes for its in-game test coverage.
+The current runtime targets Steam build **25898267**, listed in `zcom-mod.json`. Check the archive
+manifest for its exact version. Other builds and the EA App release are unverified. Build/package
+verification and compiled Blueprint checks are separate from in-game testing; release notes record
+the latter.
 
-The release regression exercises the editor with UE4SS disabled, including automatic startup,
-selection, placement, numeric transforms, all 16 gizmo handles, surface and height dragging,
-Storeroom, history, preferences, layouts/presets, draft recovery and thumbnails.
-The mission-return check uses a separate test plugin to trigger the game's mission-success
-sequence; that plugin is not included. The unreleased Tidy Bar preset is not included.
+The editor supports eligible visible static-mesh components in the Den. Animated characters,
+individual instances in instanced-mesh components, protected interactive/gameplay objects and
+unsupported objects supplied by other mods are outside its selection scope. Rejected picks report
+why they cannot be edited. Placed catalog meshes are decorations and do not acquire the original
+object's gameplay interactions or scripts. The editor's interface text is in English.
 
-The mod edits visible static-mesh components. Animated characters and individual instances in
-instanced-mesh components remain outside the supported editor scope; unsupported picks are
-reported rather than saved as edits. Back up your mod data before game updates: changed game
-assets can leave unavailable entries, which remain listed for review in the Storeroom.
+Back up your mod data before game updates or changing your mod setup. Changes to game objects,
+asset paths or streaming can affect saved edits; unavailable entries remain listed in the
+Storeroom. Compatible prop packs are the supported route for independent mesh content.
+
+For a problem report, include the game build, Den Designer version, other mods/prop packs, steps
+to reproduce, on-screen feedback and a screenshot or recording where useful. If produced, the game
+log is `%LOCALAPPDATA%\SWZeroCompany\Saved\Logs\SWZeroCompany.log`. Logs may include local paths;
+review them before sharing.

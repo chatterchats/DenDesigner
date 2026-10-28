@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "community.den-designer",
   "name": "Den Designer",
-  "version": "1.1.0-preview.6",
+  "version": "1.1.0-preview.23",
   "author": "Chats",
   "description": "Make the Den your own. Place props from a searchable thumbnail catalog, rearrange existing scenery, and fine-tune your setup with 3D gizmos and numeric controls. Save shared or campaign-specific layouts, reuse compositions and presets, and restore stored props from the Storeroom. Includes independent prop-pack support, undo/redo, draft recovery, and rebindable controls. Decorations are saved separately from campaign saves. Runs entirely as a pak mod; UE4SS is not required.",
   "game": {

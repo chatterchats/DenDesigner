@@ -40,24 +40,27 @@ KEY_NAMES = [*'ABCDEFGHIJKLMNOPQRSTUVWXYZ', *DIGITS, *['NumPad'+x for x in DIGIT
              'SpaceBar', 'End', 'Home', 'Insert', 'Multiply', 'Decimal', 'Divide', 'Semicolon',
              'Comma', 'Period', 'Slash', 'Tilde', 'LeftBracket', 'Backslash', 'RightBracket',
              'Apostrophe', *MODIFIERS]
-# Alt is a fixed scale modifier. Other fixed editing keys are absent from KEY_NAMES.
+# Alt is the fixed neighbour-snap bypass. Other fixed editing keys are absent from KEY_NAMES.
 # F9 collided with an existing load/mod action during the OS-input regression.
 # Keep it decodable for old preferences, but reject it as a new assignment.
 RESERVED_KEYS = {'F9'}
 EDITOR_KEYS = [key for key in KEY_NAMES if key not in ('LeftAlt', 'RightAlt') and key not in RESERVED_KEYS]
 TOGGLE_KEYS = [key for key in KEY_NAMES if key not in MODIFIERS and key not in RESERVED_KEYS]
-NUMBERS = {'fly_speed': ('900', 200, 3000), 'fast_multiplier': ('3', 1, 8), 'look_speed': ('2.5', .5, 10)}
+NUMBERS = {'fly_speed': ('900', 200, 3000), 'fast_multiplier': ('3', 1, 8), 'look_speed': ('2.5', .5, 10), 'snap_distance': ('8', 2, 30)}
 CHOICES = {
     'toggle_key': ('Home', TOGGLE_KEYS),
     'toggle_modifier': ('ctrl', ['ctrl', 'shift', 'alt', 'none']),
     'snap': ('0', ['0', '5', '10', '25', '50']),
     'reach': ('2000', ['1000', '2000', '4000', '10000']),
     'gimbal': ('move', ['move', 'rotate', 'scale', 'off']),
+    'rotation_pivot': ('centre', ['centre', 'bottom', 'top', 'origin']),
     'unlock_structure': ('false', ['false', 'true']),
     'select_floors': ('true', ['false', 'true']),
     'select_walls': ('false', ['false', 'true']),
     'autosave': ('true', ['false', 'true']),
     'thumbnails': ('true', ['false', 'true']),
+    'neighbour_snap': ('true', ['false', 'true']),
+    'snap_guides': ('true', ['false', 'true']),
     **{key: (default, EDITOR_KEYS) for key, _, default, _ in BINDINGS},
 }
 DEFAULTS = {**{key: row[0] for key, row in NUMBERS.items()}, **{key: row[0] for key, row in CHOICES.items()}}

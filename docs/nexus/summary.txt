@@ -1,0 +1,1 @@
+Make the Den your own with an in-game decoration editor. Place props, rearrange scenery, snap objects into place, save reusable groups and layouts, and add compatible prop packs. Includes undo/redo, a Storeroom and draft recovery. No UE4SS required.

@@ -261,5 +261,6 @@ def build(job):
     run_tool([str(pak),str(target/(name+'_P.pak')),'-create='+str(response),'-platform='+platform,
               '-compressionformats=Oodle','-compresslevel=4','-compressmethod=Kraken'],output/'pak.log')
     (pending/'README.txt').write_text(f'Den Designer prop pack: {doc["title"]}\nRequires Den Designer 0.9.0 or later. Close the game, then copy Content into SWZeroCompany. Keep all three containers together. Test in game before sharing.\n',encoding='utf-8')
+    model.atomic_json(target/(name+'.pack.json'),model.sharing_manifest(doc))
     pending.rename(output/'Export')
     return str(output/'Export')

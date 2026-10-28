@@ -11,6 +11,9 @@ def run(unreal,fixture,field,field_name,check):
     rows=lambda obj:list(obj.get_editor_property('Mappings'))
     original=rows(template)
     def key_name(row):return codec.call_method('NameFromKey',(row.key,))[0]
+    wheel=[row for row in original if fixture.call_method('IsWheelKey',(row.key,))]
+    check([row.action.get_name() for row in wheel]==['IA_Den_RotateFine','IA_Den_Rotate'],
+          'wheel reaches fine and normal rotation only; scaling cannot consume plain wheel input')
     def contents_equal(a,b):
         return a.action==b.action and fixture.call_method('SameInputKeys',(a.key,b.key)) and list(a.modifiers)==list(b.modifiers) and list(a.triggers)==list(b.triggers)
     first,accepted,defaults=builder.call_method('BuildEditorContext',(doc,))

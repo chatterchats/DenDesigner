@@ -35,12 +35,13 @@ def change():
     set_value(g,'resetstatus','SettingsStatus','resetall.Status');set_value(g,'savestatus','SettingsStatus','save.Status')
     branch(g,'success',call(g,'ok',KML+':EqualEqual_IntInt',{'A':get(g,'SettingsStatus')},B=1))
     # A camera/key change must not reset unsaved quickbar choices for this session.
-    fields=[('GridStep','double'),('GridIndex','int'),('ReachCm','double'),('ReachIndex','int'),('StructureEnabled','bool'),('FloorsEnabled','bool'),('WallsEnabled','bool'),('GizmoMode','int')]
+    fields=[('GridStep','double'),('GridIndex','int'),('ReachCm','double'),('ReachIndex','int'),('StructureEnabled','bool'),('FloorsEnabled','bool'),('WallsEnabled','bool'),('GizmoMode','int'),('SnapEnabled','bool')]
     previous='success'
     for field,kind in fields:
         set_value(g,'keep'+field,'local:Old'+field,get(g,field));g.chain(previous,'keep'+field);previous='keep'+field
     g.call('read','self:ReadEditorPreferences');g.call('apply','self:ApplyEditorPreferences');branch(g,'restore','entry.Reset')
-    g.chain(previous,'read','apply','restore');previous='restore.else'
+    g.call('enddrag','self:EndSelectionDrag',Commit='false')
+    g.chain(previous,'enddrag','read','apply','restore');previous='restore.else'
     for field,kind in fields:
         g.get('old'+field,'local:Old'+field);set_value(g,'restore'+field,field,'old'+field+'.Old'+field)
         g.chain(previous,'restore'+field);previous='restore'+field
@@ -48,7 +49,7 @@ def change():
     branch(g,'mapping',needsmapping);g.call('install','self:InstallEditorMappings');branch(g,'installed','install.Accepted')
     g.set('saved','SettingsMessage','Settings saved.');g.set('mappingfailure','SettingsMessage','Settings saved. Controls could not be updated; close and reopen the editor to retry.')
     g.chain(previous,'mapping','install','installed','saved');g.chain('restore','mapping');g.chain('mapping.else','saved');g.chain('installed.else','mappingfailure','refresh')
-    g.call('help','self:RefreshEditorHelp');g.call('refresh','self:RefreshSettingsPanel');g.chain('saved','help','refresh')
+    g.call('help','self:RefreshEditorHelp');g.call('fields','self:RefreshTransformFields');g.call('refresh','self:RefreshSettingsPanel');g.chain('saved','help','fields','refresh')
     branch(g,'invalid',call(g,'invalidstatus',KML+':EqualEqual_IntInt',{'A':get(g,'SettingsStatus')},B=7))
     g.set('rejected','SettingsMessage','That key is reserved, already assigned, or unsupported. Numeric values must stay within the displayed range.')
     g.set('failure','SettingsMessage','Settings could not be saved. Existing preferences were preserved; check storage and try again.')
@@ -80,19 +81,26 @@ def help_text():
     g.set('start','local:Body','Hold right mouse to look. Left mouse selects and drags.\nMouse wheel rotates; the fast-flight key makes fine turns or lifts while dragging.\n+/− scale. Arrows and Page Up/Down nudge. Esc goes back.\n\n')
     g.chain('entry','valid','codec','cast','start');previous='start'
     for i,(key,_,default,label) in enumerate(BINDINGS):
-        n='key'+str(i);method(g,n+'read',DOCUMENT,'ReadPreference',get(g,'PreferencesDocument'),Key=key)
-        branch(g,n+'fallback',get(g,'BindingsDefaulted'))
-        g.set(n+'default','local:CurrentKey',default);set_value(g,n+'saved','local:CurrentKey',n+'read.Value')
-        g.get(n+'current','local:CurrentKey');method(g,n+'key',CODEC,'KeyFromName','cast.AsBP Den Key Names',{'Name':n+'current.CurrentKey'})
-        method(g,n+'label',CODEC,'NameFromKey','cast.AsBP Den Key Names',{'Key':n+'key.Key'})
-        name=call(g,n+'string','/Script/Engine.KismetTextLibrary:Conv_TextToString',{'InText':n+'label.Label'})
-        line=call(g,n+'line',STR+'Concat_StrStr',{'B':name},A=label+' · ')
-        line=call(g,n+'newline',STR+'Concat_StrStr',{'A':line},B='\n')
-        g.get(n+'body','local:Body');set_value(g,n+'append','local:Body',call(g,n+'join',STR+'Concat_StrStr',{'A':n+'body.Body','B':line}))
-        g.chain(previous,n+'read',n+'fallback',n+'default',n+'key',n+'label',n+'append');g.chain(n+'fallback.else',n+'saved',n+'key');previous=n+'append'
+        n='key'+str(i);g.call(n,'self:BuildEditorHelpLine',Key=key,Default=default,Label=label)
+        g.wire(('cast.AsBP Den Key Names',n+'.Codec'));g.get(n+'body','local:Body')
+        set_value(g,n+'append','local:Body',call(g,n+'join',STR+'Concat_StrStr',{'A':n+'body.Body','B':n+'.Line'}))
+        g.chain(previous,n,n+'append');previous=n+'append'
     g.get('body','local:Body');call(g,'show','/Script/UMG.TextBlock:SetText',{'self':widget(g,'help','Toolbar','HelpText'),'InText':'body.Body'})
     g.chain(previous,'show');return g.function('RefreshEditorHelp',locals=[v('Body','string'),v('CurrentKey','string')])
 
 
+def help_line():
+    from runtime_key_names import CODEC
+    g=Graph();method(g,'read',DOCUMENT,'ReadPreference',get(g,'PreferencesDocument'),{'Key':'entry.Key'})
+    branch(g,'fallback',get(g,'BindingsDefaulted'));set_value(g,'default','local:HelpKeyValue','entry.Default');set_value(g,'saved','local:HelpKeyValue','read.Value')
+    g.get('current','local:HelpKeyValue');method(g,'key',CODEC,'KeyFromName','entry.Codec',{'Name':'current.HelpKeyValue'})
+    method(g,'label',CODEC,'NameFromKey','entry.Codec',{'Key':'key.Key'})
+    name=call(g,'string','/Script/Engine.KismetTextLibrary:Conv_TextToString',{'InText':'label.Label'})
+    prefix=call(g,'prefix',STR+'Concat_StrStr',{'A':'entry.Label'},B=' · ')
+    line=call(g,'line',STR+'Concat_StrStr',{'A':prefix,'B':name});line=call(g,'newline',STR+'Concat_StrStr',{'A':line},B='\n')
+    g.wire((line,'result.Line'));g.chain('entry','read','fallback','default','key','label','result');g.chain('fallback.else','saved','key')
+    return g.function('BuildEditorHelpLine',inputs=[v('Key','string'),v('Default','string'),v('Label','string'),v('Codec','object:'+CODEC)],outputs=[v('Line','string')],locals=[v('HelpKeyValue','string')])
+
+
 def variables():return [v('SettingsMessage','string'),v('SettingsStatus','int')]
-def functions():return [refresh(),changed(),change(),cycle(),help_text()]
+def functions():return [refresh(),changed(),change(),cycle(),help_line(),help_text()]

@@ -45,10 +45,20 @@ def run(unreal,host,rig,bus,get,check,helper,field):
     command('setting_cycle','toggle_modifier')
     check(value('toggle_modifier')=='shift','open-editor modifier cycles through validated values')
     check(tuple(get(host,k) for k in fields)==before,'key and background settings also preserve quickbar state')
+    command('rotation_pivot')
+    check(value('rotation_pivot')=='bottom' and get(host,'RotationPivot')=='bottom',
+          'inspector pivot cycle persists and applies the bottom anchor')
+    command('setting_cycle','rotation_pivot')
+    check(value('rotation_pivot')=='top' and get(host,'RotationPivot')=='top',
+          'Settings cycles the same persisted rotation pivot as the inspector')
+    command('setting:fly_speed','1300')
+    check(value('rotation_pivot')=='top' and get(host,'RotationPivot')=='top',
+          'changing another setting preserves the saved rotation anchor')
     command('settings_close')
     check(get(host,'ActivePanel')=='' and get(host,'Editing'),'Settings closes without closing the editor')
     command('settings_reset')
     check(get(host,'SettingsStatus')==1 and value('key_forward')=='W' and get(rig,'Speed')==900 and get(host,'DraftEnabled') and get(host,'ThumbnailsEnabled'),
           'reset defaults restores persisted settings and applies them to the current editor')
+    check(get(host,'RotationPivot')=='centre', 'reset settings restores the bounds-centre rotation anchor')
     check(get(host,'GridStep')==0 and get(host,'ReachCm')==2000 and get(host,'FloorsEnabled') and not get(host,'StructureEnabled') and not get(host,'WallsEnabled') and get(host,'GizmoMode')==1,
           'explicit reset also restores quickbar defaults')

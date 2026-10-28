@@ -278,6 +278,332 @@
                           },
                           {
                             "class": "/Script/UMG.TextBlock",
+                            "name": "Snapping",
+                            "props": {
+                              "Text": "Snapping",
+                              "Font.Size": 13,
+                              "ColorAndOpacity": "(SpecifiedColor=(R=0.386,G=0.423,B=0.479,A=1),ColorUseRule=UseColor_Specified)",
+                              "TextTransformPolicy": "ToUpper"
+                            },
+                            "variable": true,
+                            "slot": {
+                              "Padding": "(Left=0,Top=18,Right=0,Bottom=6)"
+                            }
+                          },
+                          {
+                            "class": "/Script/UMG.HorizontalBox",
+                            "name": "Row_neighbour_snap",
+                            "slot": {
+                              "Padding": "(Left=0,Top=6,Right=0,Bottom=6)"
+                            },
+                            "children": [
+                              {
+                                "class": "/Script/UMG.TextBlock",
+                                "name": "Label_neighbour_snap",
+                                "props": {
+                                  "Text": "Snap to nearby props",
+                                  "Font.Size": 13,
+                                  "ColorAndOpacity": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
+                                  "AutoWrapText": "true"
+                                },
+                                "variable": true,
+                                "slot": {
+                                  "Size": "(SizeRule=Fill,Value=1)",
+                                  "VerticalAlignment": "VAlign_Center",
+                                  "Padding": "(Left=0,Top=0,Right=12,Bottom=0)"
+                                }
+                              },
+                              {
+                                "class": "/Script/UMG.SizeBox",
+                                "name": "Width_neighbour_snap",
+                                "props": {
+                                  "WidthOverride": 124,
+                                  "bOverride_WidthOverride": "true"
+                                },
+                                "children": [
+                                  {
+                                    "class": "/Script/UMG.Button",
+                                    "name": "Field_neighbour_snap",
+                                    "variable": true,
+                                    "props": {
+                                      "BackgroundColor": "(R=1,G=1,B=1,A=1)",
+                                      "IsFocusable": "false",
+                                      "WidgetStyle.Normal.DrawAs": "RoundedBox",
+                                      "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.04))",
+                                      "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.16)),Width=1.0,RoundingType=FixedRadius)",
+                                      "WidgetStyle.Hovered.DrawAs": "RoundedBox",
+                                      "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.09))",
+                                      "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.6)),Width=1.0,RoundingType=FixedRadius)",
+                                      "WidgetStyle.Pressed.DrawAs": "RoundedBox",
+                                      "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=0,G=0,B=0,A=0.2))",
+                                      "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.6)),Width=1.0,RoundingType=FixedRadius)",
+                                      "WidgetStyle.Disabled.DrawAs": "RoundedBox",
+                                      "WidgetStyle.Disabled.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.04))",
+                                      "WidgetStyle.Disabled.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.16)),Width=1.0,RoundingType=FixedRadius)",
+                                      "WidgetStyle.NormalPadding": "(Left=12,Top=7,Right=12,Bottom=7)",
+                                      "WidgetStyle.PressedPadding": "(Left=12,Top=8,Right=12,Bottom=6)"
+                                    },
+                                    "slot": {
+                                      "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+                                    },
+                                    "children": [
+                                      {
+                                        "class": "/Script/UMG.TextBlock",
+                                        "name": "Field_neighbour_snapLabel",
+                                        "props": {
+                                          "Text": "",
+                                          "Font.Size": 13,
+                                          "ColorAndOpacity": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
+                                          "TextTransformPolicy": "ToUpper",
+                                          "Justification": "Center"
+                                        },
+                                        "variable": true,
+                                        "slot": {
+                                          "HorizontalAlignment": "HAlign_Center",
+                                          "VerticalAlignment": "VAlign_Center"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "class": "/Script/UMG.HorizontalBox",
+                            "name": "Row_snap_guides",
+                            "slot": {
+                              "Padding": "(Left=0,Top=6,Right=0,Bottom=6)"
+                            },
+                            "children": [
+                              {
+                                "class": "/Script/UMG.TextBlock",
+                                "name": "Label_snap_guides",
+                                "props": {
+                                  "Text": "Show snapping guides",
+                                  "Font.Size": 13,
+                                  "ColorAndOpacity": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
+                                  "AutoWrapText": "true"
+                                },
+                                "variable": true,
+                                "slot": {
+                                  "Size": "(SizeRule=Fill,Value=1)",
+                                  "VerticalAlignment": "VAlign_Center",
+                                  "Padding": "(Left=0,Top=0,Right=12,Bottom=0)"
+                                }
+                              },
+                              {
+                                "class": "/Script/UMG.SizeBox",
+                                "name": "Width_snap_guides",
+                                "props": {
+                                  "WidthOverride": 124,
+                                  "bOverride_WidthOverride": "true"
+                                },
+                                "children": [
+                                  {
+                                    "class": "/Script/UMG.Button",
+                                    "name": "Field_snap_guides",
+                                    "variable": true,
+                                    "props": {
+                                      "BackgroundColor": "(R=1,G=1,B=1,A=1)",
+                                      "IsFocusable": "false",
+                                      "WidgetStyle.Normal.DrawAs": "RoundedBox",
+                                      "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.04))",
+                                      "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.16)),Width=1.0,RoundingType=FixedRadius)",
+                                      "WidgetStyle.Hovered.DrawAs": "RoundedBox",
+                                      "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.09))",
+                                      "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.6)),Width=1.0,RoundingType=FixedRadius)",
+                                      "WidgetStyle.Pressed.DrawAs": "RoundedBox",
+                                      "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=0,G=0,B=0,A=0.2))",
+                                      "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.6)),Width=1.0,RoundingType=FixedRadius)",
+                                      "WidgetStyle.Disabled.DrawAs": "RoundedBox",
+                                      "WidgetStyle.Disabled.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.04))",
+                                      "WidgetStyle.Disabled.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.16)),Width=1.0,RoundingType=FixedRadius)",
+                                      "WidgetStyle.NormalPadding": "(Left=12,Top=7,Right=12,Bottom=7)",
+                                      "WidgetStyle.PressedPadding": "(Left=12,Top=8,Right=12,Bottom=6)"
+                                    },
+                                    "slot": {
+                                      "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+                                    },
+                                    "children": [
+                                      {
+                                        "class": "/Script/UMG.TextBlock",
+                                        "name": "Field_snap_guidesLabel",
+                                        "props": {
+                                          "Text": "",
+                                          "Font.Size": 13,
+                                          "ColorAndOpacity": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
+                                          "TextTransformPolicy": "ToUpper",
+                                          "Justification": "Center"
+                                        },
+                                        "variable": true,
+                                        "slot": {
+                                          "HorizontalAlignment": "HAlign_Center",
+                                          "VerticalAlignment": "VAlign_Center"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "class": "/Script/UMG.HorizontalBox",
+                            "name": "Row_snap_distance",
+                            "slot": {
+                              "Padding": "(Left=0,Top=6,Right=0,Bottom=6)"
+                            },
+                            "children": [
+                              {
+                                "class": "/Script/UMG.TextBlock",
+                                "name": "Label_snap_distance",
+                                "props": {
+                                  "Text": "Snap distance up close \u00b7 2\u201330 cm",
+                                  "Font.Size": 13,
+                                  "ColorAndOpacity": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
+                                  "AutoWrapText": "true"
+                                },
+                                "variable": true,
+                                "slot": {
+                                  "Size": "(SizeRule=Fill,Value=1)",
+                                  "VerticalAlignment": "VAlign_Center",
+                                  "Padding": "(Left=0,Top=0,Right=12,Bottom=0)"
+                                }
+                              },
+                              {
+                                "class": "/Script/UMG.SizeBox",
+                                "name": "Width_snap_distance",
+                                "props": {
+                                  "WidthOverride": 124,
+                                  "bOverride_WidthOverride": "true"
+                                },
+                                "children": [
+                                  {
+                                    "class": "/Script/UMG.EditableTextBox",
+                                    "name": "Field_snap_distance",
+                                    "variable": true,
+                                    "props": {
+                                      "WidgetStyle.ForegroundColor": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
+                                      "WidgetStyle.FocusedForegroundColor": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
+                                      "WidgetStyle.TextStyle.ColorAndOpacity": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
+                                      "WidgetStyle.TextStyle.Font.Size": 14,
+                                      "WidgetStyle.Padding": "(Left=12,Top=8,Right=10,Bottom=8)",
+                                      "WidgetStyle.BackgroundImageNormal.DrawAs": "RoundedBox",
+                                      "WidgetStyle.BackgroundImageNormal.TintColor": "(SpecifiedColor=(R=0,G=0,B=0,A=0.35))",
+                                      "WidgetStyle.BackgroundImageNormal.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.12)),Width=1.0,RoundingType=FixedRadius)",
+                                      "WidgetStyle.BackgroundImageHovered.DrawAs": "RoundedBox",
+                                      "WidgetStyle.BackgroundImageHovered.TintColor": "(SpecifiedColor=(R=0,G=0,B=0,A=0.35))",
+                                      "WidgetStyle.BackgroundImageHovered.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.2)),Width=1.0,RoundingType=FixedRadius)",
+                                      "WidgetStyle.BackgroundImageFocused.DrawAs": "RoundedBox",
+                                      "WidgetStyle.BackgroundImageFocused.TintColor": "(SpecifiedColor=(R=0,G=0,B=0,A=0.35))",
+                                      "WidgetStyle.BackgroundImageFocused.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.8)),Width=1.0,RoundingType=FixedRadius)",
+                                      "WidgetStyle.BackgroundImageReadOnly.DrawAs": "RoundedBox",
+                                      "WidgetStyle.BackgroundImageReadOnly.TintColor": "(SpecifiedColor=(R=0,G=0,B=0,A=0.35))",
+                                      "WidgetStyle.BackgroundImageReadOnly.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.12)),Width=1.0,RoundingType=FixedRadius)",
+                                      "HintText": "",
+                                      "SelectAllTextWhenFocused": "true"
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "class": "/Script/UMG.TextBlock",
+                            "name": "Rotation",
+                            "props": {
+                              "Text": "Rotation",
+                              "Font.Size": 13,
+                              "ColorAndOpacity": "(SpecifiedColor=(R=0.386,G=0.423,B=0.479,A=1),ColorUseRule=UseColor_Specified)",
+                              "TextTransformPolicy": "ToUpper"
+                            },
+                            "variable": true,
+                            "slot": {
+                              "Padding": "(Left=0,Top=18,Right=0,Bottom=6)"
+                            }
+                          },
+                          {
+                            "class": "/Script/UMG.HorizontalBox",
+                            "name": "Row_rotation_pivot",
+                            "slot": {
+                              "Padding": "(Left=0,Top=6,Right=0,Bottom=6)"
+                            },
+                            "children": [
+                              {
+                                "class": "/Script/UMG.TextBlock",
+                                "name": "Label_rotation_pivot",
+                                "props": {
+                                  "Text": "Rotate around",
+                                  "Font.Size": 13,
+                                  "ColorAndOpacity": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
+                                  "AutoWrapText": "true"
+                                },
+                                "variable": true,
+                                "slot": {
+                                  "Size": "(SizeRule=Fill,Value=1)",
+                                  "VerticalAlignment": "VAlign_Center",
+                                  "Padding": "(Left=0,Top=0,Right=12,Bottom=0)"
+                                }
+                              },
+                              {
+                                "class": "/Script/UMG.SizeBox",
+                                "name": "Width_rotation_pivot",
+                                "props": {
+                                  "WidthOverride": 124,
+                                  "bOverride_WidthOverride": "true"
+                                },
+                                "children": [
+                                  {
+                                    "class": "/Script/UMG.Button",
+                                    "name": "Field_rotation_pivot",
+                                    "variable": true,
+                                    "props": {
+                                      "BackgroundColor": "(R=1,G=1,B=1,A=1)",
+                                      "IsFocusable": "false",
+                                      "WidgetStyle.Normal.DrawAs": "RoundedBox",
+                                      "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.04))",
+                                      "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.16)),Width=1.0,RoundingType=FixedRadius)",
+                                      "WidgetStyle.Hovered.DrawAs": "RoundedBox",
+                                      "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.09))",
+                                      "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.6)),Width=1.0,RoundingType=FixedRadius)",
+                                      "WidgetStyle.Pressed.DrawAs": "RoundedBox",
+                                      "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=0,G=0,B=0,A=0.2))",
+                                      "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.6)),Width=1.0,RoundingType=FixedRadius)",
+                                      "WidgetStyle.Disabled.DrawAs": "RoundedBox",
+                                      "WidgetStyle.Disabled.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.04))",
+                                      "WidgetStyle.Disabled.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.16)),Width=1.0,RoundingType=FixedRadius)",
+                                      "WidgetStyle.NormalPadding": "(Left=12,Top=7,Right=12,Bottom=7)",
+                                      "WidgetStyle.PressedPadding": "(Left=12,Top=8,Right=12,Bottom=6)"
+                                    },
+                                    "slot": {
+                                      "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+                                    },
+                                    "children": [
+                                      {
+                                        "class": "/Script/UMG.TextBlock",
+                                        "name": "Field_rotation_pivotLabel",
+                                        "props": {
+                                          "Text": "",
+                                          "Font.Size": 13,
+                                          "ColorAndOpacity": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
+                                          "TextTransformPolicy": "ToUpper",
+                                          "Justification": "Center"
+                                        },
+                                        "variable": true,
+                                        "slot": {
+                                          "HorizontalAlignment": "HAlign_Center",
+                                          "VerticalAlignment": "VAlign_Center"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "class": "/Script/UMG.TextBlock",
                             "name": "Background",
                             "props": {
                               "Text": "Background tasks",
@@ -2180,6 +2506,25 @@
           "defaults": {}
         },
         {
+          "id": "snap_distanceread",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "snap_distance"
+          }
+        },
+        {
+          "id": "getField_snap_distance",
+          "kind": "get",
+          "var": "Field_snap_distance"
+        },
+        {
+          "id": "snap_distanceshow",
+          "kind": "call",
+          "function": "/Script/UMG.EditableTextBox:SetText",
+          "defaults": {}
+        },
+        {
           "id": "autosaveread",
           "kind": "call",
           "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
@@ -2391,6 +2736,220 @@
           "function": "/Script/UMG.TextBlock:SetText",
           "defaults": {
             "InText": "None"
+          }
+        },
+        {
+          "id": "neighbour_snapread",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "neighbour_snap"
+          }
+        },
+        {
+          "id": "neighbour_snapdone",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "neighbour_snap0eq",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "false"
+          }
+        },
+        {
+          "id": "neighbour_snap0",
+          "kind": "branch"
+        },
+        {
+          "id": "getField_neighbour_snapLabel",
+          "kind": "get",
+          "var": "Field_neighbour_snapLabel"
+        },
+        {
+          "id": "neighbour_snap0show",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {
+            "InText": "Off"
+          }
+        },
+        {
+          "id": "neighbour_snap1eq",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "true"
+          }
+        },
+        {
+          "id": "neighbour_snap1",
+          "kind": "branch"
+        },
+        {
+          "id": "neighbour_snap1show",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {
+            "InText": "On"
+          }
+        },
+        {
+          "id": "snap_guidesread",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "snap_guides"
+          }
+        },
+        {
+          "id": "snap_guidesdone",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "snap_guides0eq",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "false"
+          }
+        },
+        {
+          "id": "snap_guides0",
+          "kind": "branch"
+        },
+        {
+          "id": "getField_snap_guidesLabel",
+          "kind": "get",
+          "var": "Field_snap_guidesLabel"
+        },
+        {
+          "id": "snap_guides0show",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {
+            "InText": "Off"
+          }
+        },
+        {
+          "id": "snap_guides1eq",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "true"
+          }
+        },
+        {
+          "id": "snap_guides1",
+          "kind": "branch"
+        },
+        {
+          "id": "snap_guides1show",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {
+            "InText": "On"
+          }
+        },
+        {
+          "id": "rotation_pivotread",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "rotation_pivot"
+          }
+        },
+        {
+          "id": "rotation_pivotdone",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "rotation_pivot0eq",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "centre"
+          }
+        },
+        {
+          "id": "rotation_pivot0",
+          "kind": "branch"
+        },
+        {
+          "id": "getField_rotation_pivotLabel",
+          "kind": "get",
+          "var": "Field_rotation_pivotLabel"
+        },
+        {
+          "id": "rotation_pivot0show",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {
+            "InText": "Centre"
+          }
+        },
+        {
+          "id": "rotation_pivot1eq",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "bottom"
+          }
+        },
+        {
+          "id": "rotation_pivot1",
+          "kind": "branch"
+        },
+        {
+          "id": "rotation_pivot1show",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {
+            "InText": "Bottom"
+          }
+        },
+        {
+          "id": "rotation_pivot2eq",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "top"
+          }
+        },
+        {
+          "id": "rotation_pivot2",
+          "kind": "branch"
+        },
+        {
+          "id": "rotation_pivot2show",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {
+            "InText": "Top"
+          }
+        },
+        {
+          "id": "rotation_pivot3eq",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "origin"
+          }
+        },
+        {
+          "id": "rotation_pivot3",
+          "kind": "branch"
+        },
+        {
+          "id": "rotation_pivot3show",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {
+            "InText": "Original"
           }
         },
         {
@@ -3138,10 +3697,30 @@
         ],
         [
           "entry.Document",
-          "autosaveread.self"
+          "snap_distanceread.self"
         ],
         [
           "look_speedshow.then",
+          "snap_distanceread.execute"
+        ],
+        [
+          "getField_snap_distance.Field_snap_distance",
+          "snap_distanceshow.self"
+        ],
+        [
+          "snap_distanceread.Value",
+          "snap_distanceshow.InText"
+        ],
+        [
+          "snap_distanceread.then",
+          "snap_distanceshow.execute"
+        ],
+        [
+          "entry.Document",
+          "autosaveread.self"
+        ],
+        [
+          "snap_distanceshow.then",
           "autosaveread.execute"
         ],
         [
@@ -3366,10 +3945,238 @@
         ],
         [
           "entry.Document",
-          "toggle_keyread.self"
+          "neighbour_snapread.self"
         ],
         [
           "toggle_modifierdone.then_0",
+          "neighbour_snapread.execute"
+        ],
+        [
+          "neighbour_snapread.Value",
+          "neighbour_snap0eq.A"
+        ],
+        [
+          "neighbour_snap0eq.ReturnValue",
+          "neighbour_snap0.Condition"
+        ],
+        [
+          "getField_neighbour_snapLabel.Field_neighbour_snapLabel",
+          "neighbour_snap0show.self"
+        ],
+        [
+          "neighbour_snapread.then",
+          "neighbour_snap0.execute"
+        ],
+        [
+          "neighbour_snap0.then",
+          "neighbour_snap0show.execute"
+        ],
+        [
+          "neighbour_snap0show.then",
+          "neighbour_snapdone.execute"
+        ],
+        [
+          "neighbour_snapread.Value",
+          "neighbour_snap1eq.A"
+        ],
+        [
+          "neighbour_snap1eq.ReturnValue",
+          "neighbour_snap1.Condition"
+        ],
+        [
+          "getField_neighbour_snapLabel.Field_neighbour_snapLabel",
+          "neighbour_snap1show.self"
+        ],
+        [
+          "neighbour_snap0.else",
+          "neighbour_snap1.execute"
+        ],
+        [
+          "neighbour_snap1.then",
+          "neighbour_snap1show.execute"
+        ],
+        [
+          "neighbour_snap1show.then",
+          "neighbour_snapdone.execute"
+        ],
+        [
+          "neighbour_snap1.else",
+          "neighbour_snapdone.execute"
+        ],
+        [
+          "entry.Document",
+          "snap_guidesread.self"
+        ],
+        [
+          "neighbour_snapdone.then_0",
+          "snap_guidesread.execute"
+        ],
+        [
+          "snap_guidesread.Value",
+          "snap_guides0eq.A"
+        ],
+        [
+          "snap_guides0eq.ReturnValue",
+          "snap_guides0.Condition"
+        ],
+        [
+          "getField_snap_guidesLabel.Field_snap_guidesLabel",
+          "snap_guides0show.self"
+        ],
+        [
+          "snap_guidesread.then",
+          "snap_guides0.execute"
+        ],
+        [
+          "snap_guides0.then",
+          "snap_guides0show.execute"
+        ],
+        [
+          "snap_guides0show.then",
+          "snap_guidesdone.execute"
+        ],
+        [
+          "snap_guidesread.Value",
+          "snap_guides1eq.A"
+        ],
+        [
+          "snap_guides1eq.ReturnValue",
+          "snap_guides1.Condition"
+        ],
+        [
+          "getField_snap_guidesLabel.Field_snap_guidesLabel",
+          "snap_guides1show.self"
+        ],
+        [
+          "snap_guides0.else",
+          "snap_guides1.execute"
+        ],
+        [
+          "snap_guides1.then",
+          "snap_guides1show.execute"
+        ],
+        [
+          "snap_guides1show.then",
+          "snap_guidesdone.execute"
+        ],
+        [
+          "snap_guides1.else",
+          "snap_guidesdone.execute"
+        ],
+        [
+          "entry.Document",
+          "rotation_pivotread.self"
+        ],
+        [
+          "snap_guidesdone.then_0",
+          "rotation_pivotread.execute"
+        ],
+        [
+          "rotation_pivotread.Value",
+          "rotation_pivot0eq.A"
+        ],
+        [
+          "rotation_pivot0eq.ReturnValue",
+          "rotation_pivot0.Condition"
+        ],
+        [
+          "getField_rotation_pivotLabel.Field_rotation_pivotLabel",
+          "rotation_pivot0show.self"
+        ],
+        [
+          "rotation_pivotread.then",
+          "rotation_pivot0.execute"
+        ],
+        [
+          "rotation_pivot0.then",
+          "rotation_pivot0show.execute"
+        ],
+        [
+          "rotation_pivot0show.then",
+          "rotation_pivotdone.execute"
+        ],
+        [
+          "rotation_pivotread.Value",
+          "rotation_pivot1eq.A"
+        ],
+        [
+          "rotation_pivot1eq.ReturnValue",
+          "rotation_pivot1.Condition"
+        ],
+        [
+          "getField_rotation_pivotLabel.Field_rotation_pivotLabel",
+          "rotation_pivot1show.self"
+        ],
+        [
+          "rotation_pivot0.else",
+          "rotation_pivot1.execute"
+        ],
+        [
+          "rotation_pivot1.then",
+          "rotation_pivot1show.execute"
+        ],
+        [
+          "rotation_pivot1show.then",
+          "rotation_pivotdone.execute"
+        ],
+        [
+          "rotation_pivotread.Value",
+          "rotation_pivot2eq.A"
+        ],
+        [
+          "rotation_pivot2eq.ReturnValue",
+          "rotation_pivot2.Condition"
+        ],
+        [
+          "getField_rotation_pivotLabel.Field_rotation_pivotLabel",
+          "rotation_pivot2show.self"
+        ],
+        [
+          "rotation_pivot1.else",
+          "rotation_pivot2.execute"
+        ],
+        [
+          "rotation_pivot2.then",
+          "rotation_pivot2show.execute"
+        ],
+        [
+          "rotation_pivot2show.then",
+          "rotation_pivotdone.execute"
+        ],
+        [
+          "rotation_pivotread.Value",
+          "rotation_pivot3eq.A"
+        ],
+        [
+          "rotation_pivot3eq.ReturnValue",
+          "rotation_pivot3.Condition"
+        ],
+        [
+          "getField_rotation_pivotLabel.Field_rotation_pivotLabel",
+          "rotation_pivot3show.self"
+        ],
+        [
+          "rotation_pivot2.else",
+          "rotation_pivot3.execute"
+        ],
+        [
+          "rotation_pivot3.then",
+          "rotation_pivot3show.execute"
+        ],
+        [
+          "rotation_pivot3show.then",
+          "rotation_pivotdone.execute"
+        ],
+        [
+          "rotation_pivot3.else",
+          "rotation_pivotdone.execute"
+        ],
+        [
+          "entry.Document",
+          "toggle_keyread.self"
+        ],
+        [
+          "rotation_pivotdone.then_0",
           "toggle_keyread.execute"
         ],
         [
@@ -4516,7 +5323,7 @@
         {
           "id": "font6widget",
           "kind": "get",
-          "var": "Background"
+          "var": "Snapping"
         },
         {
           "id": "font6set",
@@ -4552,7 +5359,7 @@
         {
           "id": "font7widget",
           "kind": "get",
-          "var": "Label_autosave"
+          "var": "Label_neighbour_snap"
         },
         {
           "id": "font7set",
@@ -4588,7 +5395,7 @@
         {
           "id": "font8widget",
           "kind": "get",
-          "var": "Field_autosaveLabel"
+          "var": "Field_neighbour_snapLabel"
         },
         {
           "id": "font8set",
@@ -4624,7 +5431,7 @@
         {
           "id": "font9widget",
           "kind": "get",
-          "var": "Label_thumbnails"
+          "var": "Label_snap_guides"
         },
         {
           "id": "font9set",
@@ -4660,7 +5467,7 @@
         {
           "id": "font10widget",
           "kind": "get",
-          "var": "Field_thumbnailsLabel"
+          "var": "Field_snap_guidesLabel"
         },
         {
           "id": "font10set",
@@ -4671,7 +5478,7 @@
         {
           "id": "font11",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font11check",
@@ -4688,15 +5495,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Bold",
+            "TypefaceFontName": "Medium",
             "Size": "13",
-            "LetterSpacing": "120"
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font11widget",
           "kind": "get",
-          "var": "Opening"
+          "var": "Label_snap_distance"
         },
         {
           "id": "font11set",
@@ -4707,7 +5514,7 @@
         {
           "id": "font12",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font12check",
@@ -4724,15 +5531,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Medium",
+            "TypefaceFontName": "Bold",
             "Size": "13",
-            "LetterSpacing": "0"
+            "LetterSpacing": "120"
           }
         },
         {
           "id": "font12widget",
           "kind": "get",
-          "var": "Label_toggle_modifier"
+          "var": "Rotation"
         },
         {
           "id": "font12set",
@@ -4743,7 +5550,7 @@
         {
           "id": "font13",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font13check",
@@ -4762,13 +5569,13 @@
           "defaults": {
             "TypefaceFontName": "Medium",
             "Size": "13",
-            "LetterSpacing": "70"
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font13widget",
           "kind": "get",
-          "var": "Field_toggle_modifierLabel"
+          "var": "Label_rotation_pivot"
         },
         {
           "id": "font13set",
@@ -4779,7 +5586,7 @@
         {
           "id": "font14",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font14check",
@@ -4798,13 +5605,13 @@
           "defaults": {
             "TypefaceFontName": "Medium",
             "Size": "13",
-            "LetterSpacing": "0"
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font14widget",
           "kind": "get",
-          "var": "Label_toggle_key"
+          "var": "Field_rotation_pivotLabel"
         },
         {
           "id": "font14set",
@@ -4840,7 +5647,7 @@
         {
           "id": "font15widget",
           "kind": "get",
-          "var": "Bindings"
+          "var": "Background"
         },
         {
           "id": "font15set",
@@ -4868,15 +5675,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Regular",
-            "Size": "12",
+            "TypefaceFontName": "Medium",
+            "Size": "13",
             "LetterSpacing": "0"
           }
         },
         {
           "id": "font16widget",
           "kind": "get",
-          "var": "CaptureHint"
+          "var": "Label_autosave"
         },
         {
           "id": "font16set",
@@ -4887,7 +5694,7 @@
         {
           "id": "font17",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font17check",
@@ -4906,13 +5713,13 @@
           "defaults": {
             "TypefaceFontName": "Medium",
             "Size": "13",
-            "LetterSpacing": "0"
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font17widget",
           "kind": "get",
-          "var": "Label_key_forward"
+          "var": "Field_autosaveLabel"
         },
         {
           "id": "font17set",
@@ -4948,7 +5755,7 @@
         {
           "id": "font18widget",
           "kind": "get",
-          "var": "Label_key_back"
+          "var": "Label_thumbnails"
         },
         {
           "id": "font18set",
@@ -4959,7 +5766,7 @@
         {
           "id": "font19",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font19check",
@@ -4978,13 +5785,13 @@
           "defaults": {
             "TypefaceFontName": "Medium",
             "Size": "13",
-            "LetterSpacing": "0"
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font19widget",
           "kind": "get",
-          "var": "Label_key_left"
+          "var": "Field_thumbnailsLabel"
         },
         {
           "id": "font19set",
@@ -4995,7 +5802,7 @@
         {
           "id": "font20",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font20check",
@@ -5012,15 +5819,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Medium",
+            "TypefaceFontName": "Bold",
             "Size": "13",
-            "LetterSpacing": "0"
+            "LetterSpacing": "120"
           }
         },
         {
           "id": "font20widget",
           "kind": "get",
-          "var": "Label_key_right"
+          "var": "Opening"
         },
         {
           "id": "font20set",
@@ -5056,7 +5863,7 @@
         {
           "id": "font21widget",
           "kind": "get",
-          "var": "Label_key_up"
+          "var": "Label_toggle_modifier"
         },
         {
           "id": "font21set",
@@ -5067,7 +5874,7 @@
         {
           "id": "font22",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font22check",
@@ -5086,13 +5893,13 @@
           "defaults": {
             "TypefaceFontName": "Medium",
             "Size": "13",
-            "LetterSpacing": "0"
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font22widget",
           "kind": "get",
-          "var": "Label_key_down"
+          "var": "Field_toggle_modifierLabel"
         },
         {
           "id": "font22set",
@@ -5128,7 +5935,7 @@
         {
           "id": "font23widget",
           "kind": "get",
-          "var": "Label_key_fast"
+          "var": "Label_toggle_key"
         },
         {
           "id": "font23set",
@@ -5139,7 +5946,7 @@
         {
           "id": "font24",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font24check",
@@ -5156,15 +5963,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Medium",
+            "TypefaceFontName": "Bold",
             "Size": "13",
-            "LetterSpacing": "0"
+            "LetterSpacing": "120"
           }
         },
         {
           "id": "font24widget",
           "kind": "get",
-          "var": "Label_key_turn_left"
+          "var": "Bindings"
         },
         {
           "id": "font24set",
@@ -5192,15 +5999,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "13",
+            "TypefaceFontName": "Regular",
+            "Size": "12",
             "LetterSpacing": "0"
           }
         },
         {
           "id": "font25widget",
           "kind": "get",
-          "var": "Label_key_turn_right"
+          "var": "CaptureHint"
         },
         {
           "id": "font25set",
@@ -5236,7 +6043,7 @@
         {
           "id": "font26widget",
           "kind": "get",
-          "var": "Label_key_store"
+          "var": "Label_key_forward"
         },
         {
           "id": "font26set",
@@ -5272,7 +6079,7 @@
         {
           "id": "font27widget",
           "kind": "get",
-          "var": "Label_key_copy"
+          "var": "Label_key_back"
         },
         {
           "id": "font27set",
@@ -5308,7 +6115,7 @@
         {
           "id": "font28widget",
           "kind": "get",
-          "var": "Label_key_undo"
+          "var": "Label_key_left"
         },
         {
           "id": "font28set",
@@ -5344,7 +6151,7 @@
         {
           "id": "font29widget",
           "kind": "get",
-          "var": "Label_key_redo"
+          "var": "Label_key_right"
         },
         {
           "id": "font29set",
@@ -5380,7 +6187,7 @@
         {
           "id": "font30widget",
           "kind": "get",
-          "var": "Label_key_focus"
+          "var": "Label_key_up"
         },
         {
           "id": "font30set",
@@ -5416,7 +6223,7 @@
         {
           "id": "font31widget",
           "kind": "get",
-          "var": "Label_key_reset"
+          "var": "Label_key_down"
         },
         {
           "id": "font31set",
@@ -5452,7 +6259,7 @@
         {
           "id": "font32widget",
           "kind": "get",
-          "var": "Label_key_snap"
+          "var": "Label_key_fast"
         },
         {
           "id": "font32set",
@@ -5488,7 +6295,7 @@
         {
           "id": "font33widget",
           "kind": "get",
-          "var": "Label_key_catalog"
+          "var": "Label_key_turn_left"
         },
         {
           "id": "font33set",
@@ -5524,7 +6331,7 @@
         {
           "id": "font34widget",
           "kind": "get",
-          "var": "Label_key_storeroom"
+          "var": "Label_key_turn_right"
         },
         {
           "id": "font34set",
@@ -5560,7 +6367,7 @@
         {
           "id": "font35widget",
           "kind": "get",
-          "var": "Label_key_layouts"
+          "var": "Label_key_store"
         },
         {
           "id": "font35set",
@@ -5596,7 +6403,7 @@
         {
           "id": "font36widget",
           "kind": "get",
-          "var": "Label_key_gimbal"
+          "var": "Label_key_copy"
         },
         {
           "id": "font36set",
@@ -5624,15 +6431,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Regular",
-            "Size": "12",
+            "TypefaceFontName": "Medium",
+            "Size": "13",
             "LetterSpacing": "0"
           }
         },
         {
           "id": "font37widget",
           "kind": "get",
-          "var": "FixedHint"
+          "var": "Label_key_undo"
         },
         {
           "id": "font37set",
@@ -5660,15 +6467,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Regular",
-            "Size": "12",
+            "TypefaceFontName": "Medium",
+            "Size": "13",
             "LetterSpacing": "0"
           }
         },
         {
           "id": "font38widget",
           "kind": "get",
-          "var": "Message"
+          "var": "Label_key_redo"
         },
         {
           "id": "font38set",
@@ -5679,7 +6486,7 @@
         {
           "id": "font39",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font39check",
@@ -5698,13 +6505,13 @@
           "defaults": {
             "TypefaceFontName": "Medium",
             "Size": "13",
-            "LetterSpacing": "70"
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font39widget",
           "kind": "get",
-          "var": "ResetSettingsLabel"
+          "var": "Label_key_focus"
         },
         {
           "id": "font39set",
@@ -5715,7 +6522,7 @@
         {
           "id": "font40",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font40check",
@@ -5734,16 +6541,340 @@
           "defaults": {
             "TypefaceFontName": "Medium",
             "Size": "13",
-            "LetterSpacing": "70"
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font40widget",
           "kind": "get",
-          "var": "CloseSettingsLabel"
+          "var": "Label_key_reset"
         },
         {
           "id": "font40set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font41",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+        },
+        {
+          "id": "font41check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font41valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font41info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Medium",
+            "Size": "13",
+            "LetterSpacing": "0"
+          }
+        },
+        {
+          "id": "font41widget",
+          "kind": "get",
+          "var": "Label_key_snap"
+        },
+        {
+          "id": "font41set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font42",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+        },
+        {
+          "id": "font42check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font42valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font42info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Medium",
+            "Size": "13",
+            "LetterSpacing": "0"
+          }
+        },
+        {
+          "id": "font42widget",
+          "kind": "get",
+          "var": "Label_key_catalog"
+        },
+        {
+          "id": "font42set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font43",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+        },
+        {
+          "id": "font43check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font43valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font43info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Medium",
+            "Size": "13",
+            "LetterSpacing": "0"
+          }
+        },
+        {
+          "id": "font43widget",
+          "kind": "get",
+          "var": "Label_key_storeroom"
+        },
+        {
+          "id": "font43set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font44",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+        },
+        {
+          "id": "font44check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font44valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font44info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Medium",
+            "Size": "13",
+            "LetterSpacing": "0"
+          }
+        },
+        {
+          "id": "font44widget",
+          "kind": "get",
+          "var": "Label_key_layouts"
+        },
+        {
+          "id": "font44set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font45",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+        },
+        {
+          "id": "font45check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font45valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font45info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Medium",
+            "Size": "13",
+            "LetterSpacing": "0"
+          }
+        },
+        {
+          "id": "font45widget",
+          "kind": "get",
+          "var": "Label_key_gimbal"
+        },
+        {
+          "id": "font45set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font46",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+        },
+        {
+          "id": "font46check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font46valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font46info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Regular",
+            "Size": "12",
+            "LetterSpacing": "0"
+          }
+        },
+        {
+          "id": "font46widget",
+          "kind": "get",
+          "var": "FixedHint"
+        },
+        {
+          "id": "font46set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font47",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+        },
+        {
+          "id": "font47check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font47valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font47info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Regular",
+            "Size": "12",
+            "LetterSpacing": "0"
+          }
+        },
+        {
+          "id": "font47widget",
+          "kind": "get",
+          "var": "Message"
+        },
+        {
+          "id": "font47set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font48",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+        },
+        {
+          "id": "font48check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font48valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font48info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Medium",
+            "Size": "13",
+            "LetterSpacing": "70"
+          }
+        },
+        {
+          "id": "font48widget",
+          "kind": "get",
+          "var": "ResetSettingsLabel"
+        },
+        {
+          "id": "font48set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font49",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+        },
+        {
+          "id": "font49check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font49valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font49info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Medium",
+            "Size": "13",
+            "LetterSpacing": "70"
+          }
+        },
+        {
+          "id": "font49widget",
+          "kind": "get",
+          "var": "CloseSettingsLabel"
+        },
+        {
+          "id": "font49set",
           "kind": "call",
           "function": "/Script/UMG.TextBlock:SetFont",
           "defaults": {}
@@ -5991,7 +7122,7 @@
           "font6info.FontObject"
         ],
         [
-          "font6widget.Background",
+          "font6widget.Snapping",
           "font6set.self"
         ],
         [
@@ -6027,7 +7158,7 @@
           "font7info.FontObject"
         ],
         [
-          "font7widget.Label_autosave",
+          "font7widget.Label_neighbour_snap",
           "font7set.self"
         ],
         [
@@ -6063,7 +7194,7 @@
           "font8info.FontObject"
         ],
         [
-          "font8widget.Field_autosaveLabel",
+          "font8widget.Field_neighbour_snapLabel",
           "font8set.self"
         ],
         [
@@ -6099,7 +7230,7 @@
           "font9info.FontObject"
         ],
         [
-          "font9widget.Label_thumbnails",
+          "font9widget.Label_snap_guides",
           "font9set.self"
         ],
         [
@@ -6135,7 +7266,7 @@
           "font10info.FontObject"
         ],
         [
-          "font10widget.Field_thumbnailsLabel",
+          "font10widget.Field_snap_guidesLabel",
           "font10set.self"
         ],
         [
@@ -6159,7 +7290,7 @@
           "font11.self"
         ],
         [
-          "font11.SecondaryFont",
+          "font11.PrimaryFont",
           "font11check.Object"
         ],
         [
@@ -6167,11 +7298,11 @@
           "font11valid.Condition"
         ],
         [
-          "font11.SecondaryFont",
+          "font11.PrimaryFont",
           "font11info.FontObject"
         ],
         [
-          "font11widget.Opening",
+          "font11widget.Label_snap_distance",
           "font11set.self"
         ],
         [
@@ -6195,7 +7326,7 @@
           "font12.self"
         ],
         [
-          "font12.PrimaryFont",
+          "font12.SecondaryFont",
           "font12check.Object"
         ],
         [
@@ -6203,11 +7334,11 @@
           "font12valid.Condition"
         ],
         [
-          "font12.PrimaryFont",
+          "font12.SecondaryFont",
           "font12info.FontObject"
         ],
         [
-          "font12widget.Label_toggle_modifier",
+          "font12widget.Rotation",
           "font12set.self"
         ],
         [
@@ -6231,7 +7362,7 @@
           "font13.self"
         ],
         [
-          "font13.SecondaryFont",
+          "font13.PrimaryFont",
           "font13check.Object"
         ],
         [
@@ -6239,11 +7370,11 @@
           "font13valid.Condition"
         ],
         [
-          "font13.SecondaryFont",
+          "font13.PrimaryFont",
           "font13info.FontObject"
         ],
         [
-          "font13widget.Field_toggle_modifierLabel",
+          "font13widget.Label_rotation_pivot",
           "font13set.self"
         ],
         [
@@ -6267,7 +7398,7 @@
           "font14.self"
         ],
         [
-          "font14.PrimaryFont",
+          "font14.SecondaryFont",
           "font14check.Object"
         ],
         [
@@ -6275,11 +7406,11 @@
           "font14valid.Condition"
         ],
         [
-          "font14.PrimaryFont",
+          "font14.SecondaryFont",
           "font14info.FontObject"
         ],
         [
-          "font14widget.Label_toggle_key",
+          "font14widget.Field_rotation_pivotLabel",
           "font14set.self"
         ],
         [
@@ -6315,7 +7446,7 @@
           "font15info.FontObject"
         ],
         [
-          "font15widget.Bindings",
+          "font15widget.Background",
           "font15set.self"
         ],
         [
@@ -6351,7 +7482,7 @@
           "font16info.FontObject"
         ],
         [
-          "font16widget.CaptureHint",
+          "font16widget.Label_autosave",
           "font16set.self"
         ],
         [
@@ -6375,7 +7506,7 @@
           "font17.self"
         ],
         [
-          "font17.PrimaryFont",
+          "font17.SecondaryFont",
           "font17check.Object"
         ],
         [
@@ -6383,11 +7514,11 @@
           "font17valid.Condition"
         ],
         [
-          "font17.PrimaryFont",
+          "font17.SecondaryFont",
           "font17info.FontObject"
         ],
         [
-          "font17widget.Label_key_forward",
+          "font17widget.Field_autosaveLabel",
           "font17set.self"
         ],
         [
@@ -6423,7 +7554,7 @@
           "font18info.FontObject"
         ],
         [
-          "font18widget.Label_key_back",
+          "font18widget.Label_thumbnails",
           "font18set.self"
         ],
         [
@@ -6447,7 +7578,7 @@
           "font19.self"
         ],
         [
-          "font19.PrimaryFont",
+          "font19.SecondaryFont",
           "font19check.Object"
         ],
         [
@@ -6455,11 +7586,11 @@
           "font19valid.Condition"
         ],
         [
-          "font19.PrimaryFont",
+          "font19.SecondaryFont",
           "font19info.FontObject"
         ],
         [
-          "font19widget.Label_key_left",
+          "font19widget.Field_thumbnailsLabel",
           "font19set.self"
         ],
         [
@@ -6483,7 +7614,7 @@
           "font20.self"
         ],
         [
-          "font20.PrimaryFont",
+          "font20.SecondaryFont",
           "font20check.Object"
         ],
         [
@@ -6491,11 +7622,11 @@
           "font20valid.Condition"
         ],
         [
-          "font20.PrimaryFont",
+          "font20.SecondaryFont",
           "font20info.FontObject"
         ],
         [
-          "font20widget.Label_key_right",
+          "font20widget.Opening",
           "font20set.self"
         ],
         [
@@ -6531,7 +7662,7 @@
           "font21info.FontObject"
         ],
         [
-          "font21widget.Label_key_up",
+          "font21widget.Label_toggle_modifier",
           "font21set.self"
         ],
         [
@@ -6555,7 +7686,7 @@
           "font22.self"
         ],
         [
-          "font22.PrimaryFont",
+          "font22.SecondaryFont",
           "font22check.Object"
         ],
         [
@@ -6563,11 +7694,11 @@
           "font22valid.Condition"
         ],
         [
-          "font22.PrimaryFont",
+          "font22.SecondaryFont",
           "font22info.FontObject"
         ],
         [
-          "font22widget.Label_key_down",
+          "font22widget.Field_toggle_modifierLabel",
           "font22set.self"
         ],
         [
@@ -6603,7 +7734,7 @@
           "font23info.FontObject"
         ],
         [
-          "font23widget.Label_key_fast",
+          "font23widget.Label_toggle_key",
           "font23set.self"
         ],
         [
@@ -6627,7 +7758,7 @@
           "font24.self"
         ],
         [
-          "font24.PrimaryFont",
+          "font24.SecondaryFont",
           "font24check.Object"
         ],
         [
@@ -6635,11 +7766,11 @@
           "font24valid.Condition"
         ],
         [
-          "font24.PrimaryFont",
+          "font24.SecondaryFont",
           "font24info.FontObject"
         ],
         [
-          "font24widget.Label_key_turn_left",
+          "font24widget.Bindings",
           "font24set.self"
         ],
         [
@@ -6675,7 +7806,7 @@
           "font25info.FontObject"
         ],
         [
-          "font25widget.Label_key_turn_right",
+          "font25widget.CaptureHint",
           "font25set.self"
         ],
         [
@@ -6711,7 +7842,7 @@
           "font26info.FontObject"
         ],
         [
-          "font26widget.Label_key_store",
+          "font26widget.Label_key_forward",
           "font26set.self"
         ],
         [
@@ -6747,7 +7878,7 @@
           "font27info.FontObject"
         ],
         [
-          "font27widget.Label_key_copy",
+          "font27widget.Label_key_back",
           "font27set.self"
         ],
         [
@@ -6783,7 +7914,7 @@
           "font28info.FontObject"
         ],
         [
-          "font28widget.Label_key_undo",
+          "font28widget.Label_key_left",
           "font28set.self"
         ],
         [
@@ -6819,7 +7950,7 @@
           "font29info.FontObject"
         ],
         [
-          "font29widget.Label_key_redo",
+          "font29widget.Label_key_right",
           "font29set.self"
         ],
         [
@@ -6855,7 +7986,7 @@
           "font30info.FontObject"
         ],
         [
-          "font30widget.Label_key_focus",
+          "font30widget.Label_key_up",
           "font30set.self"
         ],
         [
@@ -6891,7 +8022,7 @@
           "font31info.FontObject"
         ],
         [
-          "font31widget.Label_key_reset",
+          "font31widget.Label_key_down",
           "font31set.self"
         ],
         [
@@ -6927,7 +8058,7 @@
           "font32info.FontObject"
         ],
         [
-          "font32widget.Label_key_snap",
+          "font32widget.Label_key_fast",
           "font32set.self"
         ],
         [
@@ -6963,7 +8094,7 @@
           "font33info.FontObject"
         ],
         [
-          "font33widget.Label_key_catalog",
+          "font33widget.Label_key_turn_left",
           "font33set.self"
         ],
         [
@@ -6999,7 +8130,7 @@
           "font34info.FontObject"
         ],
         [
-          "font34widget.Label_key_storeroom",
+          "font34widget.Label_key_turn_right",
           "font34set.self"
         ],
         [
@@ -7035,7 +8166,7 @@
           "font35info.FontObject"
         ],
         [
-          "font35widget.Label_key_layouts",
+          "font35widget.Label_key_store",
           "font35set.self"
         ],
         [
@@ -7071,7 +8202,7 @@
           "font36info.FontObject"
         ],
         [
-          "font36widget.Label_key_gimbal",
+          "font36widget.Label_key_copy",
           "font36set.self"
         ],
         [
@@ -7107,7 +8238,7 @@
           "font37info.FontObject"
         ],
         [
-          "font37widget.FixedHint",
+          "font37widget.Label_key_undo",
           "font37set.self"
         ],
         [
@@ -7143,7 +8274,7 @@
           "font38info.FontObject"
         ],
         [
-          "font38widget.Message",
+          "font38widget.Label_key_redo",
           "font38set.self"
         ],
         [
@@ -7167,7 +8298,7 @@
           "font39.self"
         ],
         [
-          "font39.SecondaryFont",
+          "font39.PrimaryFont",
           "font39check.Object"
         ],
         [
@@ -7175,11 +8306,11 @@
           "font39valid.Condition"
         ],
         [
-          "font39.SecondaryFont",
+          "font39.PrimaryFont",
           "font39info.FontObject"
         ],
         [
-          "font39widget.ResetSettingsLabel",
+          "font39widget.Label_key_focus",
           "font39set.self"
         ],
         [
@@ -7203,7 +8334,7 @@
           "font40.self"
         ],
         [
-          "font40.SecondaryFont",
+          "font40.PrimaryFont",
           "font40check.Object"
         ],
         [
@@ -7211,11 +8342,11 @@
           "font40valid.Condition"
         ],
         [
-          "font40.SecondaryFont",
+          "font40.PrimaryFont",
           "font40info.FontObject"
         ],
         [
-          "font40widget.CloseSettingsLabel",
+          "font40widget.Label_key_reset",
           "font40set.self"
         ],
         [
@@ -7233,6 +8364,330 @@
         [
           "font39valid.else",
           "font40valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font41.self"
+        ],
+        [
+          "font41.PrimaryFont",
+          "font41check.Object"
+        ],
+        [
+          "font41check.ReturnValue",
+          "font41valid.Condition"
+        ],
+        [
+          "font41.PrimaryFont",
+          "font41info.FontObject"
+        ],
+        [
+          "font41widget.Label_key_snap",
+          "font41set.self"
+        ],
+        [
+          "font41info.SlateFontInfo",
+          "font41set.InFontInfo"
+        ],
+        [
+          "font40set.then",
+          "font41valid.execute"
+        ],
+        [
+          "font41valid.then",
+          "font41set.execute"
+        ],
+        [
+          "font40valid.else",
+          "font41valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font42.self"
+        ],
+        [
+          "font42.PrimaryFont",
+          "font42check.Object"
+        ],
+        [
+          "font42check.ReturnValue",
+          "font42valid.Condition"
+        ],
+        [
+          "font42.PrimaryFont",
+          "font42info.FontObject"
+        ],
+        [
+          "font42widget.Label_key_catalog",
+          "font42set.self"
+        ],
+        [
+          "font42info.SlateFontInfo",
+          "font42set.InFontInfo"
+        ],
+        [
+          "font41set.then",
+          "font42valid.execute"
+        ],
+        [
+          "font42valid.then",
+          "font42set.execute"
+        ],
+        [
+          "font41valid.else",
+          "font42valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font43.self"
+        ],
+        [
+          "font43.PrimaryFont",
+          "font43check.Object"
+        ],
+        [
+          "font43check.ReturnValue",
+          "font43valid.Condition"
+        ],
+        [
+          "font43.PrimaryFont",
+          "font43info.FontObject"
+        ],
+        [
+          "font43widget.Label_key_storeroom",
+          "font43set.self"
+        ],
+        [
+          "font43info.SlateFontInfo",
+          "font43set.InFontInfo"
+        ],
+        [
+          "font42set.then",
+          "font43valid.execute"
+        ],
+        [
+          "font43valid.then",
+          "font43set.execute"
+        ],
+        [
+          "font42valid.else",
+          "font43valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font44.self"
+        ],
+        [
+          "font44.PrimaryFont",
+          "font44check.Object"
+        ],
+        [
+          "font44check.ReturnValue",
+          "font44valid.Condition"
+        ],
+        [
+          "font44.PrimaryFont",
+          "font44info.FontObject"
+        ],
+        [
+          "font44widget.Label_key_layouts",
+          "font44set.self"
+        ],
+        [
+          "font44info.SlateFontInfo",
+          "font44set.InFontInfo"
+        ],
+        [
+          "font43set.then",
+          "font44valid.execute"
+        ],
+        [
+          "font44valid.then",
+          "font44set.execute"
+        ],
+        [
+          "font43valid.else",
+          "font44valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font45.self"
+        ],
+        [
+          "font45.PrimaryFont",
+          "font45check.Object"
+        ],
+        [
+          "font45check.ReturnValue",
+          "font45valid.Condition"
+        ],
+        [
+          "font45.PrimaryFont",
+          "font45info.FontObject"
+        ],
+        [
+          "font45widget.Label_key_gimbal",
+          "font45set.self"
+        ],
+        [
+          "font45info.SlateFontInfo",
+          "font45set.InFontInfo"
+        ],
+        [
+          "font44set.then",
+          "font45valid.execute"
+        ],
+        [
+          "font45valid.then",
+          "font45set.execute"
+        ],
+        [
+          "font44valid.else",
+          "font45valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font46.self"
+        ],
+        [
+          "font46.PrimaryFont",
+          "font46check.Object"
+        ],
+        [
+          "font46check.ReturnValue",
+          "font46valid.Condition"
+        ],
+        [
+          "font46.PrimaryFont",
+          "font46info.FontObject"
+        ],
+        [
+          "font46widget.FixedHint",
+          "font46set.self"
+        ],
+        [
+          "font46info.SlateFontInfo",
+          "font46set.InFontInfo"
+        ],
+        [
+          "font45set.then",
+          "font46valid.execute"
+        ],
+        [
+          "font46valid.then",
+          "font46set.execute"
+        ],
+        [
+          "font45valid.else",
+          "font46valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font47.self"
+        ],
+        [
+          "font47.PrimaryFont",
+          "font47check.Object"
+        ],
+        [
+          "font47check.ReturnValue",
+          "font47valid.Condition"
+        ],
+        [
+          "font47.PrimaryFont",
+          "font47info.FontObject"
+        ],
+        [
+          "font47widget.Message",
+          "font47set.self"
+        ],
+        [
+          "font47info.SlateFontInfo",
+          "font47set.InFontInfo"
+        ],
+        [
+          "font46set.then",
+          "font47valid.execute"
+        ],
+        [
+          "font47valid.then",
+          "font47set.execute"
+        ],
+        [
+          "font46valid.else",
+          "font47valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font48.self"
+        ],
+        [
+          "font48.SecondaryFont",
+          "font48check.Object"
+        ],
+        [
+          "font48check.ReturnValue",
+          "font48valid.Condition"
+        ],
+        [
+          "font48.SecondaryFont",
+          "font48info.FontObject"
+        ],
+        [
+          "font48widget.ResetSettingsLabel",
+          "font48set.self"
+        ],
+        [
+          "font48info.SlateFontInfo",
+          "font48set.InFontInfo"
+        ],
+        [
+          "font47set.then",
+          "font48valid.execute"
+        ],
+        [
+          "font48valid.then",
+          "font48set.execute"
+        ],
+        [
+          "font47valid.else",
+          "font48valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font49.self"
+        ],
+        [
+          "font49.SecondaryFont",
+          "font49check.Object"
+        ],
+        [
+          "font49check.ReturnValue",
+          "font49valid.Condition"
+        ],
+        [
+          "font49.SecondaryFont",
+          "font49info.FontObject"
+        ],
+        [
+          "font49widget.CloseSettingsLabel",
+          "font49set.self"
+        ],
+        [
+          "font49info.SlateFontInfo",
+          "font49set.InFontInfo"
+        ],
+        [
+          "font48set.then",
+          "font49valid.execute"
+        ],
+        [
+          "font49valid.then",
+          "font49set.execute"
+        ],
+        [
+          "font48valid.else",
+          "font49valid.execute"
         ]
       ]
     }
@@ -7279,6 +8734,65 @@
         "function": "self:Native_Event",
         "defaults": {
           "Name": "setting:look_speed"
+        }
+      },
+      {
+        "id": "Field_neighbour_snap",
+        "kind": "bound_event",
+        "widget": "Field_neighbour_snap",
+        "delegate": "OnClicked"
+      },
+      {
+        "id": "Field_neighbour_snap_event",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "setting_cycle",
+          "Arg": "neighbour_snap"
+        }
+      },
+      {
+        "id": "Field_snap_guides",
+        "kind": "bound_event",
+        "widget": "Field_snap_guides",
+        "delegate": "OnClicked"
+      },
+      {
+        "id": "Field_snap_guides_event",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "setting_cycle",
+          "Arg": "snap_guides"
+        }
+      },
+      {
+        "id": "Field_snap_distance",
+        "kind": "bound_event",
+        "widget": "Field_snap_distance",
+        "delegate": "OnTextCommitted"
+      },
+      {
+        "id": "Field_snap_distance_event",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "setting:snap_distance"
+        }
+      },
+      {
+        "id": "Field_rotation_pivot",
+        "kind": "bound_event",
+        "widget": "Field_rotation_pivot",
+        "delegate": "OnClicked"
+      },
+      {
+        "id": "Field_rotation_pivot_event",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "setting_cycle",
+          "Arg": "rotation_pivot"
         }
       },
       {
@@ -7673,6 +9187,26 @@
       [
         "Field_look_speed.Text",
         "Field_look_speed_event.Arg"
+      ],
+      [
+        "Field_neighbour_snap.then",
+        "Field_neighbour_snap_event.execute"
+      ],
+      [
+        "Field_snap_guides.then",
+        "Field_snap_guides_event.execute"
+      ],
+      [
+        "Field_snap_distance.then",
+        "Field_snap_distance_event.execute"
+      ],
+      [
+        "Field_snap_distance.Text",
+        "Field_snap_distance_event.Arg"
+      ],
+      [
+        "Field_rotation_pivot.then",
+        "Field_rotation_pivot_event.execute"
       ],
       [
         "Field_autosave.then",

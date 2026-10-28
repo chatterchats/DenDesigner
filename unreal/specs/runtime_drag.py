@@ -13,6 +13,7 @@ from runtime_apply import get
 from runtime_pick import FACT, PICKER
 from runtime_editor_assets import BUS
 from runtime_transform import POSE, copy_entry
+from runtime_pivot import anchored_position
 
 
 def not_(g, name, source):return call(g,name,KML+':Not_PreBool',{'A':source})
@@ -59,6 +60,9 @@ def begin():
             call(g,'maxmode',KML+':LessEqual_IntInt',{'A':'entry.Mode'},B=3)]
     branch(g,'available',combine(g,'allowed',checks));g.call('read','self:ReadSelectionState');branch(g,'selected','read.Ready')
     unpack(g,'facts',FACT,get(g,'Selected'));steps=[]
+    anchor=call(g,'anchorchoice',KML+':SelectString',{'A':get(g,'RotationPivot'),'bPickA':call(g,'rotateanchor',KML+':EqualEqual_IntInt',{'A':'entry.Mode'},B=2)},B='centre')
+    g.call('anchor','self:GetComponentEditPivot');g.wire(('facts.Component','anchor.Component'),(anchor,'anchor.Anchor'))
+    set_value(g,'captureanchor','DragPivotPoint','anchor.Point');steps.append('captureanchor')
     for name,source in [('DragComponent','facts.Component'),('DragEntry','read.Value'),('DragWasPresent','read.WasPresent'),
                         ('DragDocument',get(g,'WorkingDocument')),('DragGeneration',get(g,'Generation')),
                         ('DragVersion',prop(g,'version',HISTORY,'Version',get(g,'History'))),('DragMode','entry.Mode'),
@@ -69,7 +73,8 @@ def begin():
             set_value(g,'capture'+prefix+name,prefix+name,'read.'+name);steps.append('capture'+prefix+name)
     branch(g,'picker',validity(g,'pickervalid',get(g,'Picker')));method(g,'cancelquery',PICKER,'CancelQuery',get(g,'Picker'))
     g.set('active','DragActive','true');g.set('yes','local:OK','true');finish_bool(g)
-    g.chain('entry','ready','available','read','selected',*steps,'picker','cancelquery','active','yes','result');g.chain('picker.else','active')
+    g.call('snap','self:BeginSnapDrag')
+    g.chain('entry','ready','available','read','selected','anchor',*steps,'picker','cancelquery','active','snap','yes','result');g.chain('picker.else','active')
     for pin in ['available.else','selected.else']:g.chain(pin,'result')
     return g.function('BeginSelectionDrag',inputs=[v('Mode','int')],outputs=[v('Accepted','bool')],locals=[v('OK','bool','false')])
 
@@ -77,9 +82,16 @@ def begin():
 def preview():
     g=Graph();g.call('ready','self:CanContinueSelectionDrag');branch(g,'available','ready.Ready')
     values={};checks=[]
+    rotating=call(g,'isrotating',KML+':EqualEqual_IntInt',{'A':get(g,'DragMode')},B=2)
+    scaling=call(g,'isscaling',KML+':EqualEqual_IntInt',{'A':get(g,'DragMode')},B=3)
+    newrotation=call(g,'pivotrotation',KML+':SelectRotator',{'A':'entry.Rotation','B':get(g,'DragStartRotation'),'bPickA':rotating})
+    newscale=call(g,'pivotscale',KML+':SelectVector',{'A':'entry.Scale','B':get(g,'DragStartScale'),'bPickA':scaling})
+    anchored=anchored_position(g,'anchor',get(g,'DragStartPosition'),get(g,'DragStartRotation'),get(g,'DragStartScale'),newrotation,newscale,get(g,'DragPivotPoint'))
     for index,(name,kind,_) in enumerate(POSE,1):
         chosen=call(g,'mode'+name,KML+':EqualEqual_IntInt',{'A':get(g,'DragMode')},B=index)
-        values[name]=call(g,'choose'+name,KML+(':SelectRotator' if kind=='rotator' else ':SelectVector'),{'A':'entry.'+name,'B':get(g,'DragStart'+name),'bPickA':chosen})
+        # A move snaps to neighbouring props (runtime_snap) after any grid snapping by the caller.
+        proposed='snap.Snapped' if name=='Position' else 'entry.'+name
+        values[name]=call(g,'choose'+name,KML+(':SelectRotator' if kind=='rotator' else ':SelectVector'),{'A':proposed,'B':anchored if name=='Position' else get(g,'DragStart'+name),'bPickA':chosen})
         if kind=='vector':checks.append(vector_valid(g,'valid'+name,values[name],name=='Scale'))
         else:
             call(g,'rotation',KML+':BreakRotator',{'InRot':values[name]})
@@ -90,7 +102,8 @@ def preview():
         set_value(g,'remember'+name,'DragFinal'+name,values[name]);steps.append('remember'+name)
     g.call('write','self:WriteSelectionDragPose')
     g.set('yes','local:OK','true');finish_bool(g)
-    g.chain('entry','ready','available','valid',*steps,'write','yes','result')
+    g.call('snap','self:SnapDragPosition');g.wire(('entry.Position','snap.Position'))
+    g.chain('entry','ready','available','snap','valid',*steps,'write','yes','result')
     for pin in ['available.else','valid.else']:g.chain(pin,'result')
     return g.function('PreviewSelectionDrag',inputs=[v(n,t) for n,t,_ in POSE],outputs=[v('Accepted','bool')],locals=[v('OK','bool','false')])
 
@@ -137,6 +150,8 @@ def release():
     changed=[];changes={}
     for index,(name,kind,_) in enumerate(POSE,1):
         ismode=call(g,'mode'+name,KML+':EqualEqual_IntInt',{'A':get(g,'DragMode')},B=index)
+        if name=='Position':  # turning/scaling about a bounds anchor can also move the authored origin
+            ismode=call(g,'positionmode',KML+':GreaterEqual_IntInt',{'A':get(g,'DragMode')},B=1)
         same=call(g,'same'+name,KML+(':EqualEqual_RotatorRotator' if kind=='rotator' else ':EqualEqual_VectorVector'),{'A':get(g,'DragStart'+name),'B':get(g,'DragFinal'+name)},ErrorTolerance=.0001)
         use=combine(g,'changed'+name,[ismode,not_(g,'different'+name,same)]);changed.append(use)
         changes[name]=call(g,'choose'+name,KML+(':SelectRotator' if kind=='rotator' else ':SelectVector'),{'A':get(g,'DragFinal'+name),'B':'base.'+name,'bPickA':use})
@@ -150,7 +165,7 @@ def release():
     label=call(g,'rotateorscale',KML+':SelectString',{'bPickA':rotate},A='Rotate',B='Scale')
     label=call(g,'label',KML+':SelectString',{'B':label,'bPickA':move},A='Move')
     g.call('write','self:CommitEdit');g.wire(('mutations.DragMutations','write.Mutations'),(label,'write.Label'))
-    branch(g,'written','write.Accepted');g.set('yes','local:OK','true');g.set('localchange','SelectionTransformOnly','true')
+    branch(g,'written','write.Accepted');g.set('yes','local:OK','true');g.call('localchange','self:ReuseSelectionIndex')
     # Restore before CommitEdit changes the world generation, so failure cannot
     # strand an uncommitted preview. Accepted edits reapply the preview in this
     # same call; no rendered frame sees the intermediate baseline.
@@ -158,7 +173,8 @@ def release():
     g.call('restore','self:RestoreSelectionDrag');g.set('inactive','DragActive','false')
     g.set('componentclear','DragComponent');g.set('docclear','DragDocument');g.set('entryclear','DragEntry');g.call('fields','self:RefreshTransformFields')
     finish_bool(g)
-    g.chain('entry','surface','active','commit','ready','available','changed','append','beforecommit','write','written','committedpose','yes','localchange','inactive','componentclear','docclear','entryclear','fields','result')
+    g.call('snap','self:EndSnapDrag')
+    g.chain('entry','surface','snap','active','commit','ready','available','changed','append','beforecommit','write','written','committedpose','yes','localchange','inactive','componentclear','docclear','entryclear','fields','result')
     for pin in ['commit.else','available.else','changed.else','written.else']:g.chain(pin,'restore','inactive')
     g.chain('active.else','result')
     return g.function('EndSelectionDrag',inputs=[v('Commit','bool')],outputs=[v('Accepted','bool')],locals=[v('OK','bool','false'),v('DragMutations','struct:'+MUTATION+'[]')])
@@ -172,7 +188,7 @@ def poll():
 
 def variables():
     return [v('DragActive','bool'),v('DragComponent','object:'+SMC),v('DragDocument','object:'+LAYOUT),v('DragEntry','struct:'+ENTRY),
-            v('DragWasPresent','bool'),v('DragGeneration','int'),v('DragVersion','int'),v('DragMode','int'),v('DragMobility','byte'),
+            v('DragPivotPoint','vector'),v('DragWasPresent','bool'),v('DragGeneration','int'),v('DragVersion','int'),v('DragMode','int'),v('DragMobility','byte'),
             *[v(prefix+n,t) for prefix in ['DragStart','DragFinal'] for n,t,_ in POSE]]
 
 

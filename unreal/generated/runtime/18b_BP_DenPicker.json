@@ -4423,6 +4423,1021 @@
       ]
     },
     {
+      "name": "RefreshIndexedActor",
+      "inputs": [
+        {
+          "name": "Actor",
+          "type": "object:/Script/Engine.Actor"
+        }
+      ],
+      "locals": [
+        {
+          "name": "ChangedComponentIndex",
+          "type": "int",
+          "default": "0"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "actorvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "components",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:K2_GetComponentsByClass",
+          "defaults": {
+            "ComponentClass": "/Script/Engine.StaticMeshComponent"
+          }
+        },
+        {
+          "id": "length",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "cursor",
+          "kind": "get",
+          "var": "local:ChangedComponentIndex"
+        },
+        {
+          "id": "withincheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "within",
+          "kind": "branch"
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/Script/Engine.StaticMeshComponent"
+        },
+        {
+          "id": "remove",
+          "kind": "call",
+          "function": "self:RemoveIndexedComponent",
+          "defaults": {}
+        },
+        {
+          "id": "add",
+          "kind": "call",
+          "function": "self:IndexCandidate",
+          "defaults": {}
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:ChangedComponentIndex"
+        }
+      ],
+      "links": [
+        [
+          "entry.Actor",
+          "actorvalid.Object"
+        ],
+        [
+          "actorvalid.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.Actor",
+          "components.self"
+        ],
+        [
+          "components.ReturnValue",
+          "length.TargetArray"
+        ],
+        [
+          "cursor.ChangedComponentIndex",
+          "withincheck.A"
+        ],
+        [
+          "length.ReturnValue",
+          "withincheck.B"
+        ],
+        [
+          "withincheck.ReturnValue",
+          "within.Condition"
+        ],
+        [
+          "components.ReturnValue",
+          "item.TargetArray"
+        ],
+        [
+          "cursor.ChangedComponentIndex",
+          "item.Index"
+        ],
+        [
+          "item.Item",
+          "cast.Object"
+        ],
+        [
+          "cast.AsStatic Mesh Component",
+          "remove.Component"
+        ],
+        [
+          "cast.AsStatic Mesh Component",
+          "add.Component"
+        ],
+        [
+          "cursor.ChangedComponentIndex",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.ChangedComponentIndex"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "within.execute"
+        ],
+        [
+          "within.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "remove.execute"
+        ],
+        [
+          "remove.then",
+          "add.execute"
+        ],
+        [
+          "add.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "within.execute"
+        ],
+        [
+          "cast.CastFailed",
+          "advance.execute"
+        ]
+      ]
+    },
+    {
+      "name": "PruneInvalidIndexCandidates",
+      "locals": [
+        {
+          "name": "surfacePruneIndex",
+          "type": "int"
+        },
+        {
+          "name": "boundsPruneIndex",
+          "type": "int"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getSurfaceCandidates",
+          "kind": "get",
+          "var": "SurfaceCandidates"
+        },
+        {
+          "id": "surfacelength",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "surfacelast",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "surfacestart",
+          "kind": "set",
+          "var": "local:surfacePruneIndex"
+        },
+        {
+          "id": "surfacecursor",
+          "kind": "get",
+          "var": "local:surfacePruneIndex"
+        },
+        {
+          "id": "surfacecheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "surfacewithin",
+          "kind": "branch"
+        },
+        {
+          "id": "surfaceitem",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "surfacealive",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "surfacevalid",
+          "kind": "branch"
+        },
+        {
+          "id": "surfaceremove",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Remove",
+          "defaults": {}
+        },
+        {
+          "id": "surfacenext",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "surfaceadvance",
+          "kind": "set",
+          "var": "local:surfacePruneIndex"
+        },
+        {
+          "id": "getBoundsCandidates",
+          "kind": "get",
+          "var": "BoundsCandidates"
+        },
+        {
+          "id": "boundslength",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "boundslast",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "boundsstart",
+          "kind": "set",
+          "var": "local:boundsPruneIndex"
+        },
+        {
+          "id": "boundscursor",
+          "kind": "get",
+          "var": "local:boundsPruneIndex"
+        },
+        {
+          "id": "boundscheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "boundswithin",
+          "kind": "branch"
+        },
+        {
+          "id": "boundsitem",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "boundsalive",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "boundsvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "boundsremove",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Remove",
+          "defaults": {}
+        },
+        {
+          "id": "boundsnext",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "boundsadvance",
+          "kind": "set",
+          "var": "local:boundsPruneIndex"
+        }
+      ],
+      "links": [
+        [
+          "getSurfaceCandidates.SurfaceCandidates",
+          "surfacelength.TargetArray"
+        ],
+        [
+          "surfacelength.ReturnValue",
+          "surfacelast.A"
+        ],
+        [
+          "surfacelast.ReturnValue",
+          "surfacestart.surfacePruneIndex"
+        ],
+        [
+          "surfacecursor.surfacePruneIndex",
+          "surfacecheck.A"
+        ],
+        [
+          "surfacecheck.ReturnValue",
+          "surfacewithin.Condition"
+        ],
+        [
+          "getSurfaceCandidates.SurfaceCandidates",
+          "surfaceitem.TargetArray"
+        ],
+        [
+          "surfacecursor.surfacePruneIndex",
+          "surfaceitem.Index"
+        ],
+        [
+          "surfaceitem.Item",
+          "surfacealive.Object"
+        ],
+        [
+          "surfacealive.ReturnValue",
+          "surfacevalid.Condition"
+        ],
+        [
+          "getSurfaceCandidates.SurfaceCandidates",
+          "surfaceremove.TargetArray"
+        ],
+        [
+          "surfacecursor.surfacePruneIndex",
+          "surfaceremove.IndexToRemove"
+        ],
+        [
+          "surfacecursor.surfacePruneIndex",
+          "surfacenext.A"
+        ],
+        [
+          "surfacenext.ReturnValue",
+          "surfaceadvance.surfacePruneIndex"
+        ],
+        [
+          "entry.then",
+          "surfacestart.execute"
+        ],
+        [
+          "surfacestart.then",
+          "surfacewithin.execute"
+        ],
+        [
+          "surfacewithin.then",
+          "surfacevalid.execute"
+        ],
+        [
+          "surfacevalid.then",
+          "surfaceadvance.execute"
+        ],
+        [
+          "surfaceadvance.then",
+          "surfacewithin.execute"
+        ],
+        [
+          "surfacevalid.else",
+          "surfaceremove.execute"
+        ],
+        [
+          "surfaceremove.then",
+          "surfaceadvance.execute"
+        ],
+        [
+          "getBoundsCandidates.BoundsCandidates",
+          "boundslength.TargetArray"
+        ],
+        [
+          "boundslength.ReturnValue",
+          "boundslast.A"
+        ],
+        [
+          "boundslast.ReturnValue",
+          "boundsstart.boundsPruneIndex"
+        ],
+        [
+          "boundscursor.boundsPruneIndex",
+          "boundscheck.A"
+        ],
+        [
+          "boundscheck.ReturnValue",
+          "boundswithin.Condition"
+        ],
+        [
+          "getBoundsCandidates.BoundsCandidates",
+          "boundsitem.TargetArray"
+        ],
+        [
+          "boundscursor.boundsPruneIndex",
+          "boundsitem.Index"
+        ],
+        [
+          "boundsitem.Item",
+          "boundsalive.Object"
+        ],
+        [
+          "boundsalive.ReturnValue",
+          "boundsvalid.Condition"
+        ],
+        [
+          "getBoundsCandidates.BoundsCandidates",
+          "boundsremove.TargetArray"
+        ],
+        [
+          "boundscursor.boundsPruneIndex",
+          "boundsremove.IndexToRemove"
+        ],
+        [
+          "boundscursor.boundsPruneIndex",
+          "boundsnext.A"
+        ],
+        [
+          "boundsnext.ReturnValue",
+          "boundsadvance.boundsPruneIndex"
+        ],
+        [
+          "surfacewithin.else",
+          "boundsstart.execute"
+        ],
+        [
+          "boundsstart.then",
+          "boundswithin.execute"
+        ],
+        [
+          "boundswithin.then",
+          "boundsvalid.execute"
+        ],
+        [
+          "boundsvalid.then",
+          "boundsadvance.execute"
+        ],
+        [
+          "boundsadvance.then",
+          "boundswithin.execute"
+        ],
+        [
+          "boundsvalid.else",
+          "boundsremove.execute"
+        ],
+        [
+          "boundsremove.then",
+          "boundsadvance.execute"
+        ]
+      ]
+    },
+    {
+      "name": "RefreshIndexChanges",
+      "inputs": [
+        {
+          "name": "Mutations",
+          "type": "struct:/DenDesignerGF/Runtime/ST_DenMutation[]"
+        }
+      ],
+      "locals": [
+        {
+          "name": "ChangedEntryIndex",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "RestartQuery",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getQueryPending",
+          "kind": "get",
+          "var": "QueryPending"
+        },
+        {
+          "id": "pending",
+          "kind": "set",
+          "var": "local:RestartQuery"
+        },
+        {
+          "id": "cancel",
+          "kind": "call",
+          "function": "self:CancelQuery",
+          "defaults": {}
+        },
+        {
+          "id": "prune",
+          "kind": "call",
+          "function": "self:PruneInvalidIndexCandidates",
+          "defaults": {}
+        },
+        {
+          "id": "getManager",
+          "kind": "get",
+          "var": "Manager"
+        },
+        {
+          "id": "managercheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "manager",
+          "kind": "branch"
+        },
+        {
+          "id": "length",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "cursor",
+          "kind": "get",
+          "var": "local:ChangedEntryIndex"
+        },
+        {
+          "id": "withincheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "within",
+          "kind": "branch"
+        },
+        {
+          "id": "item",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "mutation",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenMutation"
+        },
+        {
+          "id": "data",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
+        },
+        {
+          "id": "placedkind",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "placed",
+          "kind": "branch"
+        },
+        {
+          "id": "nativekind",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "native",
+          "kind": "branch"
+        },
+        {
+          "id": "placedfind",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenWorld:FindPlaced",
+          "defaults": {}
+        },
+        {
+          "id": "placedexists",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "placedfound",
+          "kind": "branch"
+        },
+        {
+          "id": "placedobjects",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenWorld:Placed"
+        },
+        {
+          "id": "placedobject",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "placedrefresh",
+          "kind": "call",
+          "function": "self:RefreshIndexedActor",
+          "defaults": {}
+        },
+        {
+          "id": "nativefind",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenWorld:FindRecord",
+          "defaults": {}
+        },
+        {
+          "id": "nativeexists",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "nativefound",
+          "kind": "branch"
+        },
+        {
+          "id": "nativeobjects",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenWorld:Records"
+        },
+        {
+          "id": "nativeobject",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "recordactor",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenVanillaRecord:Actor"
+        },
+        {
+          "id": "nativerefresh",
+          "kind": "call",
+          "function": "self:RefreshIndexedActor",
+          "defaults": {}
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:ChangedEntryIndex"
+        },
+        {
+          "id": "restart",
+          "kind": "get",
+          "var": "local:RestartQuery"
+        },
+        {
+          "id": "restartquery",
+          "kind": "branch"
+        },
+        {
+          "id": "query",
+          "kind": "call",
+          "function": "self:RequestPick",
+          "defaults": {}
+        },
+        {
+          "id": "getRayOrigin",
+          "kind": "get",
+          "var": "RayOrigin"
+        },
+        {
+          "id": "getRayDirection",
+          "kind": "get",
+          "var": "RayDirection"
+        },
+        {
+          "id": "getRayLimit",
+          "kind": "get",
+          "var": "RayLimit"
+        },
+        {
+          "id": "getQueryStructure",
+          "kind": "get",
+          "var": "QueryStructure"
+        },
+        {
+          "id": "getQueryFloors",
+          "kind": "get",
+          "var": "QueryFloors"
+        },
+        {
+          "id": "getQueryWalls",
+          "kind": "get",
+          "var": "QueryWalls"
+        }
+      ],
+      "links": [
+        [
+          "getQueryPending.QueryPending",
+          "pending.RestartQuery"
+        ],
+        [
+          "getManager.Manager",
+          "managercheck.Object"
+        ],
+        [
+          "managercheck.ReturnValue",
+          "manager.Condition"
+        ],
+        [
+          "entry.Mutations",
+          "length.TargetArray"
+        ],
+        [
+          "cursor.ChangedEntryIndex",
+          "withincheck.A"
+        ],
+        [
+          "length.ReturnValue",
+          "withincheck.B"
+        ],
+        [
+          "withincheck.ReturnValue",
+          "within.Condition"
+        ],
+        [
+          "entry.Mutations",
+          "item.TargetArray"
+        ],
+        [
+          "cursor.ChangedEntryIndex",
+          "item.Index"
+        ],
+        [
+          "item.Item",
+          "mutation.ST_DenMutation"
+        ],
+        [
+          "mutation.Value",
+          "data.ST_DenEntry"
+        ],
+        [
+          "data.Kind",
+          "placedkind.A"
+        ],
+        [
+          "placedkind.ReturnValue",
+          "placed.Condition"
+        ],
+        [
+          "data.Kind",
+          "nativekind.A"
+        ],
+        [
+          "nativekind.ReturnValue",
+          "native.Condition"
+        ],
+        [
+          "getManager.Manager",
+          "placedfind.self"
+        ],
+        [
+          "data.Key",
+          "placedfind.Key"
+        ],
+        [
+          "placedfind.Index",
+          "placedexists.A"
+        ],
+        [
+          "placedexists.ReturnValue",
+          "placedfound.Condition"
+        ],
+        [
+          "getManager.Manager",
+          "placedobjects.self"
+        ],
+        [
+          "placedobjects.Placed",
+          "placedobject.TargetArray"
+        ],
+        [
+          "placedfind.Index",
+          "placedobject.Index"
+        ],
+        [
+          "placedobject.Item",
+          "placedrefresh.Actor"
+        ],
+        [
+          "placed.then",
+          "placedfind.execute"
+        ],
+        [
+          "placedfind.then",
+          "placedfound.execute"
+        ],
+        [
+          "placedfound.then",
+          "placedrefresh.execute"
+        ],
+        [
+          "placedrefresh.then",
+          "advance.execute"
+        ],
+        [
+          "placedfound.else",
+          "advance.execute"
+        ],
+        [
+          "getManager.Manager",
+          "nativefind.self"
+        ],
+        [
+          "data.Key",
+          "nativefind.Key"
+        ],
+        [
+          "nativefind.Index",
+          "nativeexists.A"
+        ],
+        [
+          "nativeexists.ReturnValue",
+          "nativefound.Condition"
+        ],
+        [
+          "getManager.Manager",
+          "nativeobjects.self"
+        ],
+        [
+          "nativeobjects.Records",
+          "nativeobject.TargetArray"
+        ],
+        [
+          "nativefind.Index",
+          "nativeobject.Index"
+        ],
+        [
+          "nativeobject.Item",
+          "recordactor.self"
+        ],
+        [
+          "recordactor.Actor",
+          "nativerefresh.Actor"
+        ],
+        [
+          "native.then",
+          "nativefind.execute"
+        ],
+        [
+          "nativefind.then",
+          "nativefound.execute"
+        ],
+        [
+          "nativefound.then",
+          "nativerefresh.execute"
+        ],
+        [
+          "nativerefresh.then",
+          "advance.execute"
+        ],
+        [
+          "nativefound.else",
+          "advance.execute"
+        ],
+        [
+          "cursor.ChangedEntryIndex",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.ChangedEntryIndex"
+        ],
+        [
+          "restart.RestartQuery",
+          "restartquery.Condition"
+        ],
+        [
+          "getRayOrigin.RayOrigin",
+          "query.Origin"
+        ],
+        [
+          "getRayDirection.RayDirection",
+          "query.Direction"
+        ],
+        [
+          "getRayLimit.RayLimit",
+          "query.Limit"
+        ],
+        [
+          "getQueryStructure.QueryStructure",
+          "query.EditStructure"
+        ],
+        [
+          "getQueryFloors.QueryFloors",
+          "query.SelectFloors"
+        ],
+        [
+          "getQueryWalls.QueryWalls",
+          "query.SelectWalls"
+        ],
+        [
+          "entry.then",
+          "pending.execute"
+        ],
+        [
+          "pending.then",
+          "cancel.execute"
+        ],
+        [
+          "cancel.then",
+          "prune.execute"
+        ],
+        [
+          "prune.then",
+          "manager.execute"
+        ],
+        [
+          "manager.then",
+          "within.execute"
+        ],
+        [
+          "within.then",
+          "placed.execute"
+        ],
+        [
+          "placed.else",
+          "native.execute"
+        ],
+        [
+          "native.else",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "within.execute"
+        ],
+        [
+          "within.else",
+          "restartquery.execute"
+        ],
+        [
+          "restartquery.then",
+          "query.execute"
+        ]
+      ]
+    },
+    {
       "name": "BeginIndex",
       "inputs": [
         {
@@ -4637,6 +5652,78 @@
         [
           "component.then",
           "start.execute"
+        ]
+      ]
+    },
+    {
+      "name": "RemoveIndexedComponent",
+      "inputs": [
+        {
+          "name": "Component",
+          "type": "object:/Script/Engine.PrimitiveComponent"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "cast",
+          "kind": "cast",
+          "class": "/Script/Engine.StaticMeshComponent"
+        },
+        {
+          "id": "getSurfaceCandidates",
+          "kind": "get",
+          "var": "SurfaceCandidates"
+        },
+        {
+          "id": "surface",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_RemoveItem",
+          "defaults": {}
+        },
+        {
+          "id": "getBoundsCandidates",
+          "kind": "get",
+          "var": "BoundsCandidates"
+        },
+        {
+          "id": "bounds",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_RemoveItem",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "entry.Component",
+          "cast.Object"
+        ],
+        [
+          "getSurfaceCandidates.SurfaceCandidates",
+          "surface.TargetArray"
+        ],
+        [
+          "cast.AsStatic Mesh Component",
+          "surface.Item"
+        ],
+        [
+          "getBoundsCandidates.BoundsCandidates",
+          "bounds.TargetArray"
+        ],
+        [
+          "cast.AsStatic Mesh Component",
+          "bounds.Item"
+        ],
+        [
+          "entry.then",
+          "cast.execute"
+        ],
+        [
+          "cast.then",
+          "surface.execute"
+        ],
+        [
+          "surface.then",
+          "bounds.execute"
         ]
       ]
     },

@@ -74,3 +74,7 @@ Both authoring workflows fill these arrays for you. Do not rename the shared bas
   content, and avoid replacing an arrangement while its dependencies are missing.
 - Thumbnail files are keyed by mesh path. If an update changes a mesh in place, remove that
   mesh's cached PNG from `Saved/ZComDen/thumbs` to regenerate its preview.
+
+For portable sharing, manifests may declare stable mesh and material ownership in
+`assets`. See [portable sharing](../../docs/portable-sharing.md#dependencies-and-compatibility)
+for the schema, legacy mesh migration, and dependency checks.

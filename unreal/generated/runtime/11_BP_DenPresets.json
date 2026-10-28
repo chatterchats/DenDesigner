@@ -807,6 +807,16 @@
           "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:GameVersion"
         },
         {
+          "id": "sourceHasCompositionAnchor",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:HasCompositionAnchor"
+        },
+        {
+          "id": "sourceCompositionAnchor",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:CompositionAnchor"
+        },
+        {
           "id": "found",
           "kind": "call",
           "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
@@ -965,6 +975,22 @@
         [
           "sourceGameVersion.GameVersion",
           "preset.GameVersion"
+        ],
+        [
+          "entry.Document",
+          "sourceHasCompositionAnchor.self"
+        ],
+        [
+          "sourceHasCompositionAnchor.HasCompositionAnchor",
+          "preset.HasCompositionAnchor"
+        ],
+        [
+          "entry.Document",
+          "sourceCompositionAnchor.self"
+        ],
+        [
+          "sourceCompositionAnchor.CompositionAnchor",
+          "preset.CompositionAnchor"
         ],
         [
           "name.CleanName",
@@ -1195,6 +1221,16 @@
           "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:DisplayName"
         },
         {
+          "id": "setHasCompositionAnchor",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:HasCompositionAnchor"
+        },
+        {
+          "id": "setCompositionAnchor",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:CompositionAnchor"
+        },
+        {
           "id": "scope",
           "kind": "set",
           "var": "/DenDesignerGF/Runtime/BP_DenLayoutSave:Scope",
@@ -1348,6 +1384,22 @@
         ],
         [
           "cast.AsBP Den Layout Save",
+          "setHasCompositionAnchor.self"
+        ],
+        [
+          "fields.HasCompositionAnchor",
+          "setHasCompositionAnchor.HasCompositionAnchor"
+        ],
+        [
+          "cast.AsBP Den Layout Save",
+          "setCompositionAnchor.self"
+        ],
+        [
+          "fields.CompositionAnchor",
+          "setCompositionAnchor.CompositionAnchor"
+        ],
+        [
+          "cast.AsBP Den Layout Save",
           "scope.self"
         ],
         [
@@ -1384,6 +1436,14 @@
         ],
         [
           "setDisplayName.then",
+          "setHasCompositionAnchor.execute"
+        ],
+        [
+          "setHasCompositionAnchor.then",
+          "setCompositionAnchor.execute"
+        ],
+        [
+          "setCompositionAnchor.then",
           "scope.execute"
         ],
         [

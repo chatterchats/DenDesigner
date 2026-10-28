@@ -104,8 +104,10 @@ def capture():
     arr(g,'replace','Set','rows.Values',bSizeToFit='false');g.wire(('i.Cursor','replace.Index'),(localvalue,'replace.Item'));set_value(g,'nextlocal','local:Cursor',op(g,'advance2','Add_IntInt','i.Cursor',B=1))
     call(g,'create',GS+':CreateSaveGameObject',SaveGameClass=LAYOUT);g.node('cast','cast',**{'class':LAYOUT});g.wire(('create.ReturnValue','cast.Object'))
     set_value(g,'entries',LAYOUT+':Entries','rows.Values');g.wire(('cast.AsBP Den Layout Save','entries.self'));g.wire(('cast.AsBP Den Layout Save','result.Document'))
+    set_value(g,'saveanchor',LAYOUT+':CompositionAnchor','anchorout.Anchor');g.wire(('cast.AsBP Den Layout Save','saveanchor.self'))
+    g.set('hasanchor',LAYOUT+':HasCompositionAnchor','true');g.wire(('cast.AsBP Den Layout Save','hasanchor.self'))
     g.set('yes','local:OK','true');finish_bool(g,'Ready')
-    g.chain('entry','bounded','more','snapshot','valid','append');g.chain('more.else','keepanchor','reset','normalizing','replace','nextlocal','normalizing');g.chain('normalizing.else','create','cast','entries','yes','result')
+    g.chain('entry','bounded','more','snapshot','valid','append');g.chain('more.else','keepanchor','reset','normalizing','replace','nextlocal','normalizing');g.chain('normalizing.else','create','cast','entries','saveanchor','hasanchor','yes','result')
     for pin in ['bounded.else','valid.else','cast.CastFailed']:g.chain(pin,'result')
     return g.function('CaptureComposition',outputs=[v('Ready','bool'),v('Document','object:'+LAYOUT)],locals=[v('Cursor','int','0'),v('Values','struct:'+ENTRY+'[]'),v('Anchor','vector'),v('OK','bool','false')]+[v(prefix+axis,'double','1e20' if prefix=='Min' else '-1e20') for prefix in ['Min','Max'] for axis in ['X','Y','Z']])
 

@@ -87,6 +87,7 @@ the verified runtime; mismatched metadata stops packaging.
 
 ```sh
 python3 tools/build/gf_build_info.py
+python3 tools/build/verify_cooked_runtime.py
 python3 tools/build/package_gf.py
 ```
 

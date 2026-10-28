@@ -1,0 +1,9 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenConsoleIndicator",
+  "parent": "/Script/BitReactorGame.BitReactorWidgetComponent",
+  "defaults": {
+    "Lifetime": "Manual",
+    "IndicatorConfig": "(WidgetClass=\"/Game/Game/UI/Tactical/ExploreMode/Widgets/WBP_TacticalExplorePrompts.WBP_TacticalExplorePrompts_C\",bClampToScreen=True)"
+  }
+}

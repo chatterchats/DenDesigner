@@ -1,5 +1,91 @@
 # Changelog
 
+## 1.1.0-preview.23 — editor only (Community split out)
+
+- Editor changes from previews 9–18 without the Community window, bridge or publishing.
+  The Community work continues separately on the `community` branch.
+- Keeps two general fixes made during the Community previews: helper state lives in
+  BP_DenEditorState (avoids the preview.20 startup serialization crash), and packaging
+  requires every cooked export and Blueprint script to deserialize first.
+
+## 1.1.0-preview.18 — selection after adding and restoring props
+
+- Extend incremental selection updates to placement, restoration, undo and redo. Only the
+  changed props are refreshed; normal edits no longer restart a full Den scan.
+- Retain consecutive edits until their index updates are consumed, remove destroyed candidates,
+  and refresh restored no-collision props without losing a pending pick. Full-layout replacements
+  and invalidated change histories retain the complete-scan fallback.
+
+## 1.1.0-preview.17 — selection after storing props
+
+- Storing a prop with Delete/X now removes only its cached selection candidates instead of
+  restarting a scan of the entire Den. Other props remain selectable after the store finishes.
+- Index-reuse hints are tied to their world generation so Undo, restoration and later scene
+  changes still rebuild the index when needed.
+
+## 1.1.0-preview.16 — console icon fit
+
+- Shrink the office console pencil icon by 10% around a centered pivot, with centered
+  horizontal and vertical layout so the complete symbol stays in the middle of the circle.
+
+## 1.1.0-preview.15 — console label and distant icon
+
+- Supply **OPEN DEN DESIGNER** and the game's edit icon on the live interaction action. The game
+  rebuilds non-ability actions with empty presentation data, which left preview.14 showing only
+  the key and an empty distant marker despite the configured label.
+
+## 1.1.0-preview.14 — visible office console prompt
+
+- Added the native exploration indicator missing from the office console, so the game can show
+  its interaction key and **Open Den Designer** label. The indicator hides while editing and is
+  removed when the console unloads or the coordinator shuts down.
+
+## 1.1.0-preview.13 — office console interaction
+
+- The office console (`SM_HUB_ConsoleLocks_3x1`) now offers **Open Den Designer** through the
+  game's normal exploration interaction. The opening shortcut remains available.
+
+## 1.1.0-preview.12 — startup crash fix
+
+- Split panel creation into individual Blueprint functions to avoid malformed cooked bytecode in
+  `CreateEditorPanels`, which caused preview.11 to crash during game startup.
+- Retains the cursor restoration and wheel rotation fixes.
+
+## 1.1.0-preview.11 — wheel rotation fix
+
+- Removed the Alt+wheel scale binding after preview.9 testing found it scaling on plain wheel input.
+  Wheel rotates, Shift+wheel makes fine turns, and +/− (including the keypad) scales.
+
+## 1.1.0-preview.10 — cursor on editor entry
+
+- Restore the visible cursor, editor input mode and viewport focus after hiding the game HUD, then
+  retry once on a later engine frame so the cursor does not require a click to appear.
+- The deferred restore respects camera-look and text/key input focus, and is cancelled on close.
+
+## 1.1.0-preview.9 — gizmo anchors and rotation pivots
+
+- Move and Scale gizmos now sit at the prop's bounds centre, including meshes with an offset authored origin.
+- Added a rotation pivot choice: Centre (default), Bottom, Top or Original. Change it beside the inspector's
+  rotation fields or in Settings. Bottom and Top follow the prop's local vertical axis as it turns.
+- Rotation rings, numeric angles and wheel/key turns keep the chosen point fixed; the gizmo marks that point.
+  Scale handles keep the bounds centre fixed. Each edit's position and rotation/scale share one undo step.
+
+User-reported regression checks (2026-10-26): compositions save, place and generate icons; layouts save
+and apply; saving/reloading and exiting/relaunching the game preserve edits. Plain wheel incorrectly
+scaled while Shift+wheel still fine-rotated; the source fix is listed above, pending in-game retest.
+
+## 1.1.0-preview.8 — bounds snapping
+
+- Moving a prop snaps it to nearby props by their bounding boxes: flush against a side, aligned
+  edges or centres, or stacked on top with a Shift height drag. Gizmo move handles snap only
+  along their axis or plane. Grid snapping still applies first.
+- Also matches a prop's centre to a neighbour's edge and its edge to a neighbour's centre, and each axis
+  can snap to a different neighbour facing the same way (or turned 90°), for corners and rows.
+- The snap range grows with camera distance (about 10 pixels on screen), never below the snap distance.
+- Guide lines and a label beside the cursor show the snap. Hold Alt to move freely.
+- SNAP toggle on the menu bar; Settings add the default, guides and the close-up snap distance (2–30 cm, default 8).
+- Floor-sized pieces are ignored as snap targets; walls are kept for placing props against them.
+
 ## 1.1.0-preview.6 — editor UI rework
 
 - Reworked the editor UI: a menu bar with grouped tools, grid/range and selection filters; a library

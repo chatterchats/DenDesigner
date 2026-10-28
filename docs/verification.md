@@ -40,7 +40,12 @@ Before publishing a candidate:
   description, three matching containers and `modinfo.json`/`zcom-mod.json` under the single
   `Content/Paks/~mods/DenDesigner/` folder.
 - Start the game with UE4SS disabled. Enter the Den, open/close the editor, travel to a mission and
-  back, then restart. Check camera restoration and automatic layout application.
+  back, then restart. Check camera restoration and automatic layout application. Interact with the
+  office console to open the designer, close it and repeat; verify its prompt returns after mission
+  travel and follows the normal exploration interaction binding. Verify the distant edit icon and
+  the nearby **OPEN DEN DESIGNER** label, including walking away and returning. Native kit tests
+  simulate the game's blank non-ability action; its stubbed game methods cannot prove the shipped
+  view-model callbacks or rendered prompt.
 - Select placed and vanilla props; exercise floor/wall/structure switches, selection range,
   surface/height drag, numeric transforms, gizmo axis/plane/ring handles, duplication and undo/redo.
 - Search/place catalog and pack props, generate/reuse thumbnails, store/restore props, and capture,
@@ -88,3 +93,17 @@ their saved transforms; cached thumbnails retained their hashes and modification
 game data/mods were restored. This was a focused pack check; neither prop had simple collision.
 The detailed [kit compatibility report](../authoring/prop-packs/kit-compatibility.md) describes scope
 and prerequisites. Historical local outputs may have been removed during cleanup.
+
+## Cooked Blueprint startup regression — 2026-10-26
+
+Preview.11 crashed during startup while deserializing `BP_DenEditorHost.CreateEditorPanels`
+with a bad name index (`54001664/1361`). Source Blueprint compilation and all native tests passed;
+those checks did not validate the cooked script stream. An independent CUE4Parse script-data read
+reproduced the same failure, while the preview.9 archive parsed successfully. Rebuilding from an
+empty generated Content directory reproduced it, ruling out stale authored assets as the remedy.
+
+Preview.12 splits panel creation into one function per panel. All 104 cooked assets then parsed
+without script serialization errors, and all 1,241 native checks passed. The underlying engine
+serialization/fixup defect is not established. When changing generated Blueprint graphs, include
+a cooked-script deserialization check and a shipping-game startup check alongside native tests.
+Local evidence is retained under `dist/verification/preview11-crash/` and `preview12-cooked/`.

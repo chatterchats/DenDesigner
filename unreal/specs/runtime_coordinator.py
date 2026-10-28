@@ -9,6 +9,7 @@ from runtime_editor_host import HOST,PC
 from runtime_editor_assets import BUS
 from runtime_preferences import DOCUMENT
 from runtime_shortcut import SHORTCUT
+from runtime_console import CONSOLE
 
 COORDINATOR=ROOT+'BP_DenRuntimeCoordinator'
 NOTICE=ROOT+'WBP_DenStartupNotice'
@@ -93,9 +94,32 @@ def toggle():
     g=Graph();branch(g,'ready',combine(g,'available',[get(g,'Initialized'),validity(g,'host',get(g,'Host')),validity(g,'player',get(g,'Player'))]))
     branch(g,'open',prop(g,'ui',HOST,'UIOpen',get(g,'Host')))
     bus=prop(g,'bus',HOST,'InputBus',get(g,'Host'));method(g,'typing',BUS,'IsTyping',bus);branch(g,'focused','typing.Typing')
-    method(g,'close',HOST,'RequestEditorExit',get(g,'Host'));g.set('request','OpenRequested','true')
+    method(g,'close',HOST,'RequestEditorExit',get(g,'Host'));g.call('request','self:RequestEditorOpen')
     g.chain('entry','ready','open','typing','focused');g.chain('focused.else','close');g.chain('open.else','request')
     return g.function('ToggleEditor')
+
+
+def request_open():
+    g=Graph();g.node('self','self')
+    branch(g,'ready',combine(g,'available',[get(g,'Initialized'),validity(g,'host',get(g,'Host')),validity(g,'player',get(g,'Player'))]))
+    branch(g,'open',prop(g,'ui',HOST,'UIOpen',get(g,'Host')))
+    branch(g,'paused',call(g,'pausedvalue',GS+':IsGamePaused',{'WorldContextObject':'self.self'}));g.set('request','OpenRequested','true')
+    g.chain('entry','ready','open');g.chain('open.else','paused');g.chain('paused.else','request')
+    return g.function('RequestEditorOpen')
+
+
+def update_console():
+    g=Graph();g.node('self','self');branch(g,'exists',validity(g,'console',get(g,'OfficeConsole')))
+    owner=call(g,'owner','/Script/Engine.ActorComponent:GetOwner',{'self':'self.self'})
+    xf=call(g,'transform',KML+':MakeTransform',{},Scale='1,1,1')
+    pending=call(g,'spawn',GS+':BeginDeferredActorSpawnFromClass',{'WorldContextObject':'self.self','Owner':owner,'SpawnTransform':xf},ActorClass=CONSOLE,CollisionHandlingOverride='AlwaysSpawn')
+    actor=call(g,'finish',GS+':FinishSpawningActor',{'Actor':pending,'SpawnTransform':xf});g.node('cast','cast',**{'class':CONSOLE});g.wire((actor,'cast.Object'))
+    set_value(g,'remember','OfficeConsole','cast.AsBP Den Office Console')
+    enabled=call(g,'closed',KML+':Not_PreBool',{'A':prop(g,'ui',HOST,'UIOpen',get(g,'Host'))})
+    method(g,'update',CONSOLE,'UpdateConsole',get(g,'OfficeConsole'),{'Available':enabled})
+    method(g,'consume',CONSOLE,'ConsumeRequest',get(g,'OfficeConsole'));branch(g,'requested','consume.Requested');g.call('request','self:RequestEditorOpen')
+    g.chain('entry','exists','update','consume','requested','request');g.chain('exists.else','spawn','finish','cast','remember','update')
+    return g.function('UpdateOfficeConsole')
 
 
 def open_requested():
@@ -128,15 +152,17 @@ def poll():
     branch(g,'ready',combine(g,'available',[get(g,'Initialized'),validity(g,'host',get(g,'Host')),validity(g,'player',get(g,'Player'))]))
     paused=call(g,'paused',GS+':IsGamePaused',{'WorldContextObject':'self.self'});branch(g,'pause',paused)
     g.call('shortcut','self:UpdateShortcut');method(g,'pressed',SHORTCUT,'Pressed',get(g,'Shortcut'),{'Player':get(g,'Player')});branch(g,'key','pressed.Pressed');g.call('toggle','self:ToggleEditor')
-    g.call('open','self:OpenRequestedEditor');branch(g,'notice',validity(g,'noticevalid',get(g,'Notice')));branch(g,'expired',call(g,'time',KML+':GreaterEqual_DoubleDouble',{'A':clock(g,'now'),'B':get(g,'NoticeUntil')}));g.call('clear','self:ClearNotice')
-    g.chain('entry','world','ready','pause');g.chain('pause.else','shortcut','pressed','key','toggle','open','notice','expired','clear');g.chain('key.else','open')
+    g.call('console','self:UpdateOfficeConsole');g.call('open','self:OpenRequestedEditor');branch(g,'notice',validity(g,'noticevalid',get(g,'Notice')));branch(g,'expired',call(g,'time',KML+':GreaterEqual_DoubleDouble',{'A':clock(g,'now'),'B':get(g,'NoticeUntil')}));g.call('clear','self:ClearNotice')
+    g.chain('entry','world','ready','pause');g.chain('pause.else','shortcut','pressed','key','toggle','console','open','notice','expired','clear');g.chain('key.else','console')
     return g.function('Poll')
 
 
 def shutdown():
-    g=Graph();g.set('pending','OpenRequested','false');g.set('stop','Initialized','false');g.call('notice','self:ClearNotice');branch(g,'host',validity(g,'valid',get(g,'Host')))
+    g=Graph();g.set('pending','OpenRequested','false');g.set('stop','Initialized','false');g.call('notice','self:ClearNotice')
+    branch(g,'console',validity(g,'consolevalid',get(g,'OfficeConsole')));call(g,'destroyconsole',ACTOR+':K2_DestroyActor',{'self':get(g,'OfficeConsole')});g.set('consoleclear','OfficeConsole')
+    branch(g,'host',validity(g,'valid',get(g,'Host')))
     call(g,'destroy',ACTOR+':K2_DestroyActor',{'self':get(g,'Host')});g.set('clear','Host');g.set('player','Player');g.set('shortcut','Shortcut');g.set('document','ShortcutDocument')
-    g.chain('entry','pending','stop','notice','host','destroy','clear','player','shortcut','document');g.chain('host.else','clear')
+    g.chain('entry','pending','stop','notice','console','destroyconsole','consoleclear','host','destroy','clear','player','shortcut','document');g.chain('host.else','clear');g.chain('console.else','consoleclear')
     return g.function('Shutdown')
 
 
@@ -151,5 +177,5 @@ def spec():
     g=Graph();g.node('tick','event',name='ReceiveTick');g.call('poll','self:Poll');g.chain('tick','poll')
     g.node('end','event',name='ReceiveEndPlay');g.call('shutdown','self:Shutdown');g.chain('end','shutdown')
     return dict(kind='blueprint',path=COORDINATOR,parent='/Script/Engine.ActorComponent',defaults={'PrimaryComponentTick.bCanEverTick':'true','PrimaryComponentTick.bStartWithTickEnabled':'true'},
-        variables=[v('Host','object:'+HOST),v('Player','object:'+PC),v('Shortcut','object:'+SHORTCUT),v('ShortcutDocument','object:'+DOCUMENT),v('CampaignID','string'),v('ResolvedKey','string'),v('LayoutStatus','int'),v('Initialized','bool'),v('OpenRequested','bool'),v('NextWorldCheck','double'),v('Notice','object:'+NOTICE),v('NoticeUntil','double')],
-        graph=g.spec(),functions=[campaign_text(),campaign(),ensure_host(),prepare_layout(),update_shortcut(),clear_notice(),show_notice(),toggle(),open_requested(),poll_world(),poll(),shutdown()])
+        variables=[v('Host','object:'+HOST),v('OfficeConsole','object:'+CONSOLE),v('Player','object:'+PC),v('Shortcut','object:'+SHORTCUT),v('ShortcutDocument','object:'+DOCUMENT),v('CampaignID','string'),v('ResolvedKey','string'),v('LayoutStatus','int'),v('Initialized','bool'),v('OpenRequested','bool'),v('NextWorldCheck','double'),v('Notice','object:'+NOTICE),v('NoticeUntil','double')],
+        graph=g.spec(),functions=[campaign_text(),campaign(),ensure_host(),prepare_layout(),update_shortcut(),clear_notice(),show_notice(),toggle(),request_open(),update_console(),open_requested(),poll_world(),poll(),shutdown()])

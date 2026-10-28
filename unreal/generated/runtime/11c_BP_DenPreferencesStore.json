@@ -1514,6 +1514,26 @@
           "var": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:Scope"
         },
         {
+          "id": "readHasCompositionAnchor",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:HasCompositionAnchor"
+        },
+        {
+          "id": "writeHasCompositionAnchor",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:HasCompositionAnchor"
+        },
+        {
+          "id": "readCompositionAnchor",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:CompositionAnchor"
+        },
+        {
+          "id": "writeCompositionAnchor",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:CompositionAnchor"
+        },
+        {
           "id": "readCampaignID",
           "kind": "get",
           "var": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:CampaignID"
@@ -1696,6 +1716,30 @@
         [
           "readScope.Scope",
           "writeScope.Scope"
+        ],
+        [
+          "entry.Document",
+          "readHasCompositionAnchor.self"
+        ],
+        [
+          "copied.Copy",
+          "writeHasCompositionAnchor.self"
+        ],
+        [
+          "readHasCompositionAnchor.HasCompositionAnchor",
+          "writeHasCompositionAnchor.HasCompositionAnchor"
+        ],
+        [
+          "entry.Document",
+          "readCompositionAnchor.self"
+        ],
+        [
+          "copied.Copy",
+          "writeCompositionAnchor.self"
+        ],
+        [
+          "readCompositionAnchor.CompositionAnchor",
+          "writeCompositionAnchor.CompositionAnchor"
         ],
         [
           "entry.Document",
@@ -1883,6 +1927,14 @@
         ],
         [
           "writeScope.then",
+          "writeHasCompositionAnchor.execute"
+        ],
+        [
+          "writeHasCompositionAnchor.then",
+          "writeCompositionAnchor.execute"
+        ],
+        [
+          "writeCompositionAnchor.then",
           "writeCampaignID.execute"
         ],
         [
@@ -2046,6 +2098,40 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {}
+        },
+        {
+          "id": "AHasCompositionAnchor",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:HasCompositionAnchor"
+        },
+        {
+          "id": "BHasCompositionAnchor",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:HasCompositionAnchor"
+        },
+        {
+          "id": "equalHasCompositionAnchor",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_BoolBool",
+          "defaults": {}
+        },
+        {
+          "id": "ACompositionAnchor",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:CompositionAnchor"
+        },
+        {
+          "id": "BCompositionAnchor",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:CompositionAnchor"
+        },
+        {
+          "id": "equalCompositionAnchor",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_VectorVector",
+          "defaults": {
+            "ErrorTolerance": "0"
+          }
         },
         {
           "id": "ACampaignID",
@@ -2350,6 +2436,18 @@
           "defaults": {}
         },
         {
+          "id": "allfields15",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "allfields16",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
           "id": "out",
           "kind": "get",
           "var": "local:Same"
@@ -2423,6 +2521,38 @@
         [
           "BScope.Scope",
           "equalScope.B"
+        ],
+        [
+          "entry.A",
+          "AHasCompositionAnchor.self"
+        ],
+        [
+          "entry.B",
+          "BHasCompositionAnchor.self"
+        ],
+        [
+          "AHasCompositionAnchor.HasCompositionAnchor",
+          "equalHasCompositionAnchor.A"
+        ],
+        [
+          "BHasCompositionAnchor.HasCompositionAnchor",
+          "equalHasCompositionAnchor.B"
+        ],
+        [
+          "entry.A",
+          "ACompositionAnchor.self"
+        ],
+        [
+          "entry.B",
+          "BCompositionAnchor.self"
+        ],
+        [
+          "ACompositionAnchor.CompositionAnchor",
+          "equalCompositionAnchor.A"
+        ],
+        [
+          "BCompositionAnchor.CompositionAnchor",
+          "equalCompositionAnchor.B"
         ],
         [
           "entry.A",
@@ -2653,7 +2783,7 @@
           "allfields2.A"
         ],
         [
-          "equalCampaignID.ReturnValue",
+          "equalHasCompositionAnchor.ReturnValue",
           "allfields2.B"
         ],
         [
@@ -2661,7 +2791,7 @@
           "allfields3.A"
         ],
         [
-          "equalEnabled.ReturnValue",
+          "equalCompositionAnchor.ReturnValue",
           "allfields3.B"
         ],
         [
@@ -2669,7 +2799,7 @@
           "allfields4.A"
         ],
         [
-          "equalDisplayName.ReturnValue",
+          "equalCampaignID.ReturnValue",
           "allfields4.B"
         ],
         [
@@ -2677,7 +2807,7 @@
           "allfields5.A"
         ],
         [
-          "equalGameVersion.ReturnValue",
+          "equalEnabled.ReturnValue",
           "allfields5.B"
         ],
         [
@@ -2685,7 +2815,7 @@
           "allfields6.A"
         ],
         [
-          "equalRevision.ReturnValue",
+          "equalDisplayName.ReturnValue",
           "allfields6.B"
         ],
         [
@@ -2693,7 +2823,7 @@
           "allfields7.A"
         ],
         [
-          "equalContentID.ReturnValue",
+          "equalGameVersion.ReturnValue",
           "allfields7.B"
         ],
         [
@@ -2701,7 +2831,7 @@
           "allfields8.A"
         ],
         [
-          "equalWrittenAt.ReturnValue",
+          "equalRevision.ReturnValue",
           "allfields8.B"
         ],
         [
@@ -2709,7 +2839,7 @@
           "allfields9.A"
         ],
         [
-          "equalIsDraft.ReturnValue",
+          "equalContentID.ReturnValue",
           "allfields9.B"
         ],
         [
@@ -2717,7 +2847,7 @@
           "allfields10.A"
         ],
         [
-          "equalDraftBaseRevision.ReturnValue",
+          "equalWrittenAt.ReturnValue",
           "allfields10.B"
         ],
         [
@@ -2725,7 +2855,7 @@
           "allfields11.A"
         ],
         [
-          "equalDraftBaseID.ReturnValue",
+          "equalIsDraft.ReturnValue",
           "allfields11.B"
         ],
         [
@@ -2733,7 +2863,7 @@
           "allfields12.A"
         ],
         [
-          "equalEntryCount.ReturnValue",
+          "equalDraftBaseRevision.ReturnValue",
           "allfields12.B"
         ],
         [
@@ -2741,7 +2871,7 @@
           "allfields13.A"
         ],
         [
-          "equalEntries.ReturnValue",
+          "equalDraftBaseID.ReturnValue",
           "allfields13.B"
         ],
         [
@@ -2749,11 +2879,27 @@
           "allfields14.A"
         ],
         [
-          "equalWriteCompleteID.ReturnValue",
+          "equalEntryCount.ReturnValue",
           "allfields14.B"
         ],
         [
           "allfields14.ReturnValue",
+          "allfields15.A"
+        ],
+        [
+          "equalEntries.ReturnValue",
+          "allfields15.B"
+        ],
+        [
+          "allfields15.ReturnValue",
+          "allfields16.A"
+        ],
+        [
+          "equalWriteCompleteID.ReturnValue",
+          "allfields16.B"
+        ],
+        [
+          "allfields16.ReturnValue",
           "equal.Same"
         ],
         [

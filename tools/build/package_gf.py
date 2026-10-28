@@ -86,8 +86,19 @@ def archive(path, files, metadata, manifest_name="manifest.json"):
     return {"archive": str(path), "sha256": checksum, "files": len(payloads), "bytes": path.stat().st_size}
 
 
+def require_cooked(root, build):
+    evidence = root / 'dist/verification/community/cooked-runtime/report.json'
+    require(evidence.is_file(), 'Run tools/build/verify_cooked_runtime.py before packaging: cooked script verification is missing')
+    report = json.loads(evidence.read_text())
+    require(report.get('version') == build['version'] and report.get('containers') == build['containers']
+            and report.get('parsed_packages') == build['cooked_assets'] and report.get('errors') == 0
+            and report.get('script_data') is True,
+            'Cooked script verification is stale or failed; rerun tools/build/verify_cooked_runtime.py')
+
+
 def package(root=ROOT):
     build = verify(root)
+    require_cooked(root, build)
     require(not build["prototype"], "A feasibility-prototype build is not the editor package")
     version = build["version"]
     preview = "-preview." in version

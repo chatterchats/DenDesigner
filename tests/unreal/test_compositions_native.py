@@ -64,6 +64,8 @@ def run(unreal,host,bus,target,facts,get,field,field_name,check,settle,command,s
         host.call_method('ConsumePointerSelection',(second,))
         ready,document=host.call_method('CaptureComposition');check(ready and len(rows(document))==2,'capture creates a value-only composition document')
         parts=rows(document)
+        check(get(document,'HasCompositionAnchor'),'capture retains its bottom-center anchor')
+        capture_anchor=get(document,'CompositionAnchor')
         check(all(field(p,'Kind')==0 and not field(p,'HasFingerprint') and field(p,'Source')=='' for p in parts),'native sources become portable copies without level identities')
         check(near(field(parts[1],'Position')-field(parts[0],'Position'),other.get_actor_location()-target.get_actor_location()),'capture preserves relative world spacing')
         check(field(parts[1],'Scale')==other.get_actor_scale3d() and field(parts[0],'Rotation')==target.get_actor_rotation(),'capture preserves individual scale and rotation')
@@ -80,6 +82,7 @@ def run(unreal,host,bus,target,facts,get,field,field_name,check,settle,command,s
         rel=field(parts[1],'Position');check(valid and near(field(transformed,'Position'),origin+v(-rel.y*2,rel.x*2,rel.z*2)) and near(field(transformed,'Scale'),field(parts[1],'Scale')*2),'group yaw and uniform scale transform every offset around its anchor')
         emit('save_composition','Test arrangement');service=get(host,'CompositionService')
         loaded,status=service.call_method('LoadPreset',('Test arrangement',));check(status==1 and equal(rows(loaded),parts),'named composition survives native storage round trip')
+        check(get(loaded,'HasCompositionAnchor') and near(get(loaded,'CompositionAnchor'),capture_anchor),'composition anchor survives library save and reload')
         check(any(p.exists() for p in files),'compositions use their own isolated rotating save banks')
         import test_composition_thumbnails_native
         thumbnail_key=test_composition_thumbnails_native.run(unreal,host,document,get,field,check)

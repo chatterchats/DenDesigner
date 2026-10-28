@@ -20,6 +20,16 @@ def begin_index():
     return g.function('BeginIndex',inputs=[v('WorldManager','object:'+WORLD)])
 
 
+def remove_indexed_component():
+    # Store only removes eligibility: keep every other indexed candidate. The
+    # normal candidate validity/visibility checks still protect in-flight picks.
+    g=Graph();g.node('cast','cast',**{'class':SMC});g.wire(('entry.Component','cast.Object'))
+    for name,var in [('surface','SurfaceCandidates'),('bounds','BoundsCandidates')]:
+        arr(g,name,'RemoveItem',get(g,var));g.wire(('cast.AsStatic Mesh Component',name+'.Item'))
+    g.chain('entry','cast','surface','bounds')
+    return g.function('RemoveIndexedComponent',inputs=[v('Component','object:'+PRIMITIVE)])
+
+
 def index_candidate():
     g=Graph();g.call('classify','self:Classify',EditStructure='true',SelectFloors='true',SelectWalls='true');g.wire((get(g,'Manager'),'classify.Manager'),('entry.Component','classify.Component'))
     unpack(g,'facts',FACT,'classify.Facts');branch(g,'allowed','facts.Allowed')
@@ -141,4 +151,6 @@ def variables():
     return [v('Manager','object:'+WORLD),v('IndexActors','object:'+ACTOR+'[]'),v('IndexComponents','object:'+COMP+'[]'),v('SurfaceCandidates','object:'+SMC+'[]'),v('BoundsCandidates','object:'+SMC+'[]'),v('IndexActor','int'),v('IndexComponent','int','-1'),v('Indexing','bool'),v('BudgetSeconds','double','0.003'),v('MaxSteps','int','4096'),v('RayOrigin','vector'),v('RayDirection','vector'),v('RayLimit','double'),v('TraceDistance','double'),v('BestDistance','double'),v('SurfaceVolume','double'),v('QueryComponent','object:'+PRIMITIVE),v('QueryCursor','int'),v('QueryPhase','int'),v('QueryPending','bool'),v('QueryReady','bool'),v('QueryHadTrace','bool'),v('QueryStructure','bool'),v('QueryFloors','bool'),v('QueryWalls','bool'),v('QueryResult','struct:'+FACT)]
 
 
-def functions():return [begin_index(),index_candidate(),index_step(),pump(True),pump(False),cancel(),start_query(),query_candidate(),query_step()]
+def functions():
+    from runtime_pick_delta import functions as delta_functions
+    return [*delta_functions(),begin_index(),remove_indexed_component(),index_candidate(),index_step(),pump(True),pump(False),cancel(),start_query(),query_candidate(),query_step()]

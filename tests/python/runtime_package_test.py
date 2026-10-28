@@ -27,6 +27,7 @@ class RuntimePackageTests(unittest.TestCase):
         version = json.loads((self.root / 'distribution/pak/modinfo.json').read_text())['version']
         self.build = {'version': version, 'prototype': False, 'entry_point': '/Fixture/Coordinator',
                       'cooked_assets': 76}
+        self.cooked = patch('package_gf.require_cooked');self.cooked.start();self.addCleanup(self.cooked.stop)
         self.verify = patch('package_gf.verify', return_value=self.build)
         self.verify.start(); self.addCleanup(self.verify.stop)
 

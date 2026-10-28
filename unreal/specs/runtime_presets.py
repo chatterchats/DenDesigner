@@ -6,7 +6,7 @@ from runtime_store import call, branch, combine, STR, ARRAY
 def library_specs(root, layout, entry_type, struct, save_variables, store_spec, arr, unpack):
     preset=root+'ST_DenPresetValue'
     library=root+'BP_DenPresetLibrary'
-    yield '08_ST_DenPresetValue',struct(preset,[v('Name','string'),v('GameVersion','string'),v('Entries','struct:'+entry_type+'[]')])
+    yield '08_ST_DenPresetValue',struct(preset,[v('Name','string'),v('GameVersion','string'),v('HasCompositionAnchor','bool'),v('CompositionAnchor','vector'),v('Entries','struct:'+entry_type+'[]')])
     yield '09_BP_DenPresetLibrary',dict(kind='blueprint',path=library,parent='/Script/Engine.SaveGame',
                                       variables=save_variables(preset,'preset-library'))
     yield '10_BP_DenPresetStore',store_spec(root,library,'BP_DenPresetStore','AsBP Den Preset Library','Library')
@@ -121,7 +121,7 @@ def library_specs(root, layout, entry_type, struct, save_variables, store_spec, 
         same=call(g,'schemaok',KML+':EqualEqual_IntInt',{'A':'schema.SchemaVersion'},B=1)
         branch(g,'current',same)
         g.node('preset','make_struct',struct=preset)
-        for field in ['Entries','GameVersion']:
+        for field in ['Entries','GameVersion','HasCompositionAnchor','CompositionAnchor']:
             g.get('source'+field,layout+':'+field)
             g.wire(('entry.Document','source'+field+'.self'),('source'+field+'.'+field,'preset.'+field))
         g.wire(('name.CleanName','preset.Name'))
@@ -153,7 +153,7 @@ def library_specs(root, layout, entry_type, struct, save_variables, store_spec, 
         call(g,'create',GS+':CreateSaveGameObject',SaveGameClass=layout)
         g.node('cast','cast',**{'class':layout})
         g.wire(('create.ReturnValue','cast.Object'))
-        for name,field in [('Entries','Entries'),('GameVersion','GameVersion'),('DisplayName','Name')]:
+        for name,field in [('Entries','Entries'),('GameVersion','GameVersion'),('DisplayName','Name'),('HasCompositionAnchor','HasCompositionAnchor'),('CompositionAnchor','CompositionAnchor')]:
             g.set('set'+name,layout+':'+name)
             g.wire(('cast.AsBP Den Layout Save','set'+name+'.self'),('fields.'+field,'set'+name+'.'+name))
         g.set('scope',layout+':Scope','preset')
@@ -164,7 +164,7 @@ def library_specs(root, layout, entry_type, struct, save_variables, store_spec, 
         g.wire(('out.ResultDocument','result.Document'))
         g.set('missing','local:ResultStatus','0')
         g.set('failed','local:ResultStatus','7')
-        g.chain('find','exists','create','cast','setEntries','setGameVersion','setDisplayName','scope','copy','result')
+        g.chain('find','exists','create','cast','setEntries','setGameVersion','setDisplayName','setHasCompositionAnchor','setCompositionAnchor','scope','copy','result')
         g.chain('exists.else','missing','result')
         g.chain('cast.CastFailed','failed','result')
         return g.function('LoadPreset',inputs=[v('Name','string')],outputs=[v('Document','object:'+layout),v('Status','int')],

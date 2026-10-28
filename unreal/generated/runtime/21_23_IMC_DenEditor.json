@@ -110,18 +110,6 @@
       ]
     },
     {
-      "action": "/DenDesignerGF/Editor/IA_Den_Scale",
-      "key": "MouseWheelAxis",
-      "triggers": [
-        {
-          "class": "/Script/EnhancedInput.InputTriggerChordAction",
-          "props": {
-            "ChordAction": "/DenDesignerGF/Editor/IA_Den_Alt"
-          }
-        }
-      ]
-    },
-    {
       "action": "/DenDesignerGF/Editor/IA_Den_Rotate",
       "key": "MouseWheelAxis"
     },

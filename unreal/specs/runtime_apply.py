@@ -45,8 +45,9 @@ def cancel():
     g.set('job','PendingJob');g.set('mesh','ReadyMesh');clear(g,'materials','ReadyMaterials')
     g.set('fp','FPFound');clear(g,'fpcomponents','FPComponents')
     clear(g,'work','WorkItems');clear(g,'pending','RetryItems');clear(g,'nextretry','NextRetry')
+    clear(g,'indexchanges','IndexMutations');g.set('indexinvalid','IndexDeltaValid','false')
     g.set('stop','Busy','false');g.set('phase','Phase','0');bump(g,'generation','Generation')
-    g.chain('entry','valid','destroy','job','mesh','materials','fp','fpcomponents','work','pending','nextretry','stop','phase','generation')
+    g.chain('entry','valid','destroy','job','mesh','materials','fp','fpcomponents','work','pending','nextretry','indexchanges','indexinvalid','stop','phase','generation')
     g.chain('valid.else','job')
     return g.function('CancelWork')
 
@@ -55,6 +56,11 @@ def begin_batch():
     g=Graph()
     idle=call(g,'idle',KML+':Not_PreBool',{'A':get(g,'Busy')})
     branch(g,'allowed',combine(g,'allowedstart',[idle,'entry.ReplaceAll'],True))
+    set_value(g,'indexbase','local:PreviousIndexGeneration',get(g,'Generation'))
+    same=call(g,'indexsame',KML+':EqualEqual_IntInt',{'A':get(g,'IndexThroughGeneration'),'B':get(g,'Generation')})
+    incremental=call(g,'incremental',KML+':Not_PreBool',{'A':'entry.ReplaceAll'})
+    branch(g,'carry',combine(g,'carryvalid',[get(g,'IndexDeltaValid'),same,incremental]))
+    set_value(g,'carrychanges','local:PreviousIndexMutations',get(g,'IndexMutations'));set_value(g,'carrybase','local:PreviousIndexGeneration',get(g,'IndexFromGeneration'))
     g.call('cancel','self:CancelWork')
     set_value(g,'copy','WorkItems','entry.Mutations')
     reset=[]
@@ -65,10 +71,14 @@ def begin_batch():
     clear(g,'issues','Issues');set_value(g,'started','StartedAt',clock(g,'now'))
     g.set('busy','Busy','true');branch(g,'replace','entry.ReplaceAll')
     g.set('cleanup','Phase','1');g.call('refresh','self:RefreshActors');g.set('vanilla','Phase','2')
+    g.get('previousindex','local:PreviousIndexMutations');set_value(g,'indexcopy','IndexMutations','previousindex.PreviousIndexMutations')
+    arr(g,'indexappend','Append',get(g,'IndexMutations'));g.wire(('entry.Mutations','indexappend.SourceArray'))
+    g.get('previousgeneration','local:PreviousIndexGeneration');set_value(g,'indexfrom','IndexFromGeneration','previousgeneration.PreviousIndexGeneration')
+    set_value(g,'indexthrough','IndexThroughGeneration',get(g,'Generation'));g.set('indexvalid','IndexDeltaValid','true')
     g.set('yes','local:OK','true');finish_bool(g)
-    g.chain('entry','allowed','cancel','copy',*reset,'issues','started','busy','replace','cleanup','yes','result')
-    g.chain('replace.else','refresh','vanilla','yes');g.chain('allowed.else','result')
-    return g.function('BeginBatch',inputs=[v('Mutations','struct:'+MUTATION+'[]'),v('ReplaceAll','bool')],outputs=[v('Accepted','bool')],locals=[v('OK','bool','false')])
+    g.chain('entry','allowed','indexbase','carry','carrychanges','carrybase','cancel','copy',*reset,'issues','started','busy','replace','cleanup','yes','result')
+    g.chain('carry.else','cancel');g.chain('replace.else','indexcopy','indexappend','indexfrom','indexthrough','indexvalid','refresh','vanilla','yes');g.chain('allowed.else','result')
+    return g.function('BeginBatch',inputs=[v('Mutations','struct:'+MUTATION+'[]'),v('ReplaceAll','bool')],outputs=[v('Accepted','bool')],locals=[v('OK','bool','false'),v('PreviousIndexGeneration','int'),v('PreviousIndexMutations','struct:'+MUTATION+'[]')])
 
 
 def begin_layout():
@@ -106,6 +116,11 @@ def count_native():
     branch(g,'moved',combine(g,'hastransform',['data.HasPosition','data.HasRotation','data.HasScale'],True));bump(g,'moveplus','MovedCount')
     g.chain('entry','present','hidden','hiddenplus','moved','moveplus');g.chain('hidden.else','moved')
     return g.function('CountNative',inputs=[v('Value','struct:'+ENTRY),v('Present','bool')])
+
+
+def consume_index_changes():
+    g=Graph();clear(g,'clear','IndexMutations');g.set('invalid','IndexDeltaValid','false');g.chain('entry','clear','invalid')
+    return g.function('ConsumeIndexChanges')
 
 
 def finish():
@@ -321,6 +336,7 @@ def specs():
     g=Graph();g.node('tick','event',name='ReceiveTick');g.call('pump','self:Pump');g.chain('tick','pump')
     g.node('end','event',name='ReceiveEndPlay');g.call('cancel','self:CancelWork');g.call('forget','self:Forget');g.chain('end','cancel','forget')
     variables=[v('PreviewOnly','bool','false'),v('Busy','bool','false'),v('Phase','int','0'),v('Generation','int','0'),v('WorkItems','struct:'+MUTATION+'[]'),
+        v('IndexMutations','struct:'+MUTATION+'[]'),v('IndexDeltaValid','bool'),v('IndexFromGeneration','int','-1'),v('IndexThroughGeneration','int','-1'),
         v('RetryItems','struct:'+MUTATION+'[]'),v('NextRetry','struct:'+MUTATION+'[]'),v('Issues','struct:'+ISSUE+'[]'),
         v('CurrentEntry','struct:'+ENTRY),v('PendingJob','object:'+JOB),v('ReadyMesh','object:'+MESH),v('ReadyMaterials','object:'+MATERIAL+'[]'),
         v('MaxSteps','int','32'),v('BudgetSeconds','double','0.004'),v('MaxRetries','int','8'),v('RetryInterval','double','1.5'),v('AssetTimeout','double','30')]
@@ -329,6 +345,6 @@ def specs():
     variables += refind_variables()
     yield '17_BP_DenApply',dict(kind='blueprint',path=APPLY,parent=WORLD,variables=variables,
         defaults={'PrimaryActorTick.bCanEverTick':'true','PrimaryActorTick.bStartWithTickEnabled':'true'},graph=g.spec(),
-        functions=[cancel(),begin_batch(),begin_layout(),issue(),count_native(),finish(),cleanup_step(),drop_retry(),native_step(),
+        functions=[cancel(),begin_batch(),begin_layout(),issue(),count_native(),consume_index_changes(),finish(),cleanup_step(),drop_retry(),native_step(),
                    schedule_retry(),wait_retry(),native_step(True),refind_prepare(),refind_consider(),refind_finish(),refind_scan(),start_asset(),release_asset(),advance_placed(),
                    placed_step(),wait_asset(),material_step(),wait_asset(True),step(),pump()])

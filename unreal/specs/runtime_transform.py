@@ -9,9 +9,10 @@ from runtime_store import call, branch, combine, STR
 from runtime_world import SCENE, RECORD, set_value, validity, finish_bool, vector_valid
 from runtime_session import prop, method
 from runtime_apply import get
-from runtime_pick import FACT
+from runtime_pick import FACT, PICKER
 from runtime_editor_assets import RIG
 from runtime_editor_host import widget, text
+from runtime_pivot import PIVOTS, anchored_position
 
 ENTRY_FIELDS=['Kind','Key','Mesh','Position','Rotation','Scale','HasPosition','HasRotation','HasScale','Hidden','CollisionMode','Materials','Source','HasFingerprint','FingerprintMesh','FingerprintPosition']
 POSE=[('Position','vector','K2_GetComponentLocation'),('Rotation','rotator','K2_GetComponentRotation'),('Scale','vector','K2_GetComponentScale')]
@@ -55,13 +56,21 @@ def read_selection():
 def commit_pose():
     g=Graph();g.call('ready','self:CanEdit');branch(g,'available',combine(g,'availablecheck',['ready.Ready',call(g,'notdragging',KML+':Not_PreBool',{'A':get(g,'DragActive')})]));g.call('read','self:ReadSelectionState');branch(g,'selected','read.Ready')
     unpack(g,'base',ENTRY,'read.Value');changes={};changed=[];checks=[]
+    unpack(g,'facts',FACT,get(g,'Selected'))
+    g.call('anchor','self:GetComponentEditPivot');g.wire(('facts.Component','anchor.Component'),(get(g,'RotationPivot'),'anchor.Anchor'))
+    anchored=anchored_position(g,'pivot','read.Position','read.Rotation','read.Scale','entry.Rotation','read.Scale','anchor.Point')
+    compensate=combine(g,'compensate',['entry.ChangeRotation',call(g,'noposition',KML+':Not_PreBool',{'A':'entry.ChangePosition'})])
+    position=call(g,'requestedposition',KML+':SelectVector',{'A':anchored,'B':'entry.Position','bPickA':compensate})
+    shifts=call(g,'shifted',KML+':NotEqual_VectorVector',{'A':anchored,'B':'read.Position'},ErrorTolerance=.0001)
+    useposition=combine(g,'useposition',['entry.ChangePosition',combine(g,'pivotmoved',[compensate,shifts])],True)
     for name,kind,_ in POSE:
-        use='entry.Change'+name
-        same=call(g,'same'+name,KML+(':EqualEqual_RotatorRotator' if kind=='rotator' else ':EqualEqual_VectorVector'),{'A':'entry.'+name,'B':'read.'+name},ErrorTolerance=.0001)
+        use=useposition if name=='Position' else 'entry.Change'+name
+        proposed=position if name=='Position' else 'entry.'+name
+        same=call(g,'same'+name,KML+(':EqualEqual_RotatorRotator' if kind=='rotator' else ':EqualEqual_VectorVector'),{'A':proposed,'B':'read.'+name},ErrorTolerance=.0001)
         different=call(g,'diff'+name,KML+':Not_PreBool',{'A':same});changed.append(combine(g,'changed'+name,[use,different]))
-        changes[name]=call(g,'select'+name,KML+(':SelectRotator' if kind=='rotator' else ':SelectVector'),{'A':'entry.'+name,'B':'base.'+name,'bPickA':use})
+        changes[name]=call(g,'select'+name,KML+(':SelectRotator' if kind=='rotator' else ':SelectVector'),{'A':proposed,'B':'base.'+name,'bPickA':use})
         changes['Has'+name]=combine(g,'flag'+name,['base.Has'+name,use],True)
-        if kind=='vector':valid=vector_valid(g,'valid'+name,'entry.'+name,name=='Scale')
+        if kind=='vector':valid=vector_valid(g,'valid'+name,proposed,name=='Scale')
         else:
             call(g,'rotation',KML+':BreakRotator',{'InRot':'entry.Rotation'});parts=[]
             for axis in ['Pitch','Yaw','Roll']:
@@ -78,8 +87,8 @@ def commit_pose():
     nonempty=call(g,'merge',STR+'NotEqual_StrStr',{'A':'entry.MergeKey'},B='')
     mergekey=call(g,'choosekey',KML+':SelectString',{'A':key,'bPickA':nonempty},B='')
     g.call('commit','self:CommitEdit');g.wire(('mutations.Mutations','commit.Mutations'),('entry.Label','commit.Label'),(mergekey,'commit.MergeKey'))
-    set_value(g,'ok','local:OK','commit.Accepted');branch(g,'committed','commit.Accepted');g.set('localchange','SelectionTransformOnly','true');g.set('clear','SelectionMessage','');g.set('invalid','SelectionMessage','Enter a finite transform within the supported range.')
-    finish_bool(g);g.chain('entry','ready','available','read','selected','valid','changed','append','commit','ok','committed','localchange','clear','result');g.chain('valid.else','invalid','result')
+    set_value(g,'ok','local:OK','commit.Accepted');branch(g,'committed','commit.Accepted');g.call('localchange','self:ReuseSelectionIndex');g.set('clear','SelectionMessage','');g.set('invalid','SelectionMessage','Enter a finite transform within the supported range.')
+    finish_bool(g);g.chain('entry','ready','available','read','selected','anchor','valid','changed','append','commit','ok','committed','localchange','clear','result');g.chain('valid.else','invalid','result')
     for pin in ['available.else','selected.else','changed.else','committed.else']:g.chain(pin,'result')
     return g.function('CommitSelectionPose',inputs=[*[v(n,t) for n,t,_ in POSE],*[v('Change'+n,'bool') for n,_,_ in POSE],v('Label','string'),v('MergeKey','string')],outputs=[v('Accepted','bool')],locals=[v('OK','bool','false'),v('Mutations','struct:'+MUTATION+'[]')])
 
@@ -111,14 +120,14 @@ def number():
     return g.function('ParseTransformNumber',inputs=[v('Text','string')],outputs=[v('Valid','bool'),v('Value','double')],locals=[v('OK','bool','false'),v('ParsedValue','double')])
 
 
-def numeric():
+def numeric(axis):
     g=Graph();g.call('parse','self:ParseTransformNumber');g.wire(('entry.Text','parse.Text'));branch(g,'parsed','parse.Valid')
     g.call('read','self:ReadSelectionState');branch(g,'selected','read.Ready')
     call(g,'position',KML+':BreakVector',{'InVec':'read.Position'});call(g,'rotation',KML+':BreakRotator',{'InRot':'read.Rotation'});call(g,'scale',KML+':BreakVector',{'InVec':'read.Scale'})
     g.set('clearvalidation','SelectionMessage','')
     g.chain('selected','clearvalidation')
     previous='clearvalidation'
-    for field in ['X','Y','Z','Pitch','Yaw','Roll','Scale']:
+    for field in [axis]:
         branch(g,'field'+field,call(g,'name'+field,STR+'EqualEqual_StrStr',{'A':'entry.Field'},B=field))
         group='Position' if field in ['X','Y','Z'] else 'Scale' if field=='Scale' else 'Rotation'
         if group=='Position':value=call(g,'value'+field,KML+':MakeVector',{axis:'parse.Value' if axis==field else 'position.'+axis for axis in ['X','Y','Z']})
@@ -142,6 +151,14 @@ def numeric():
         g.chain('unchanged'+field+'.else','commit'+field);previous='field'+field+'.else'
     g.set('invalid','SelectionMessage','Enter a number between -10000000 and 10000000.');g.call('refresh','self:RefreshTransformFields');g.call('feedback','self:RefreshEditorUI')
     g.chain('entry','parse','parsed','read','selected');g.chain('parsed.else','invalid','refresh','feedback')
+    return g.function('SetSelectionField'+axis,inputs=[v('Field','string'),v('Text','string')])
+
+
+def numeric_dispatch():
+    g=Graph();previous='entry'
+    for axis in ['X','Y','Z','Pitch','Yaw','Roll','Scale']:
+        branch(g,axis,call(g,axis+'name',STR+'EqualEqual_StrStr',{'A':'entry.Field'},B=axis))
+        g.call(axis+'apply','self:SetSelectionField'+axis,Field=axis);g.wire(('entry.Text',axis+'apply.Text'));g.chain(previous,axis,axis+'apply');previous=axis+'.else'
     return g.function('SetSelectionField',inputs=[v('Field','string'),v('Text','string')])
 
 
@@ -182,8 +199,11 @@ def store_selection():
     for name,value in [('stored',stored),('hidden',hidden)]:
         g.node(name+'mutation','make_struct',struct=MUTATION,defaults={'Present':'true'});g.wire((value,name+'mutation.Value'))
         arr(g,name+'add','Add','mutations.SelectionMutations');g.wire((name+'mutation.ST_DenMutation',name+'add.NewItem'))
+    unpack(g,'picked',FACT,get(g,'Selected'))
     g.call('commit','self:CommitEdit',Label='Store');g.wire(('mutations.SelectionMutations','commit.Mutations'));branch(g,'accepted','commit.Accepted');g.call('clear','self:ClearSelection')
-    g.chain('entry','ready','available','read','selected','placed','removeadd','storedadd','commit','accepted','clear');g.chain('placed.else','hiddenadd','commit')
+    branch(g,'picker',validity(g,'pickervalid',get(g,'Picker')))
+    method(g,'prune',PICKER,'RemoveIndexedComponent',get(g,'Picker'),{'Component':'picked.Component'});g.call('reuse','self:ReuseSelectionIndex')
+    g.chain('entry','ready','available','read','selected','placed','removeadd','storedadd','commit','accepted','picker','prune','reuse','clear');g.chain('picker.else','clear');g.chain('placed.else','hiddenadd','commit')
     return g.function('StoreSelection',locals=[v('SelectionMutations','struct:'+MUTATION+'[]')])
 
 
@@ -208,8 +228,14 @@ def refresh_fields():
         label=format_number(g,'format'+field,source)
         box=widget(g,'box'+field,'Inspector','Field'+field);call(g,'write'+field,'/Script/UMG.EditableTextBox:SetText',{'self':box,'InText':label})
         g.chain(previous,'write'+field);previous='write'+field
+    # The inspector's button cycles the same persisted setting as Settings.
+    caption=get(g,'RotationPivot')
+    for anchor,label in PIVOTS:
+        match=call(g,'pivotis'+anchor,STR+'EqualEqual_StrStr',{'A':get(g,'RotationPivot')},B=anchor)
+        caption=call(g,'pivotlabel'+anchor,KML+':SelectString',{'B':caption,'bPickA':match},A='Pivot: '+label)
+    text(g,'pivotcaption','Inspector','RotationPivotLabel',value=caption);g.chain(previous,'pivotcaption')
     g.chain('entry','inspector','read','selected')
     return g.function('RefreshTransformFields')
 
 
-def functions():return [read_selection(),commit_pose(),decimal(),number(),numeric(),adjust('Rotate'),adjust('Scale'),adjust('Nudge'),store_selection(),reset_selection(),refresh_fields()]
+def functions():return [read_selection(),commit_pose(),decimal(),number(),numeric_dispatch(),*[numeric(axis) for axis in ['X','Y','Z','Pitch','Yaw','Roll','Scale']],adjust('Rotate'),adjust('Scale'),adjust('Nudge'),store_selection(),reset_selection(),refresh_fields()]

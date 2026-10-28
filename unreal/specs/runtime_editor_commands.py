@@ -153,7 +153,7 @@ def handle():
     held=call(g,'held',KML+':Greater_DoubleDouble',{'A':'event.Scalar'},B=.5);g.call('looking','self:SetLooking');g.wire((held,'looking.Held'))
     previous='look.else'
     commands=[('confirm_save','EditorConfirmSave',{}),('confirm_discard','EditorConfirmDiscard',{}),('confirm_cancel','EditorConfirmCancel',{}),('back','EditorBack',{})]
-    normal=[('compositions','ToggleEditorPanel',{'Name':'compositions'}),('composition_select','ToggleCompositionSelection',{}),('composition_clear','ClearCompositionSelection',{}),('settings','ToggleEditorPanel',{'Name':'settings'}),('settings_close','SetEditorPanel',{'Name':''}),('settings_reset','ChangeEditorSetting',{'Reset':'true'}),('catalog','ToggleEditorPanel',{'Name':'catalog'}),('layouts','ToggleEditorPanel',{'Name':'layouts'}),('storeroom','ToggleEditorPanel',{'Name':'storeroom'}),('help','ToggleEditorHelp',{}),('snap','CycleEditorGrid',{}),('reach','CycleEditorReach',{}),('numeric_done','FocusEditorViewport',{}),('mode_select','SetGizmoMode',{'Mode':0}),('mode_move','SetGizmoMode',{'Mode':1}),('mode_rotate','SetGizmoMode',{'Mode':2}),('mode_scale','SetGizmoMode',{'Mode':3}),('gimbal','CycleGizmoMode',{})]
+    normal=[('rotation_pivot','CycleEditorSetting',{'Key':'rotation_pivot'}),('compositions','ToggleEditorPanel',{'Name':'compositions'}),('composition_select','ToggleCompositionSelection',{}),('composition_clear','ClearCompositionSelection',{}),('settings','ToggleEditorPanel',{'Name':'settings'}),('settings_close','SetEditorPanel',{'Name':''}),('settings_reset','ChangeEditorSetting',{'Reset':'true'}),('catalog','ToggleEditorPanel',{'Name':'catalog'}),('layouts','ToggleEditorPanel',{'Name':'layouts'}),('storeroom','ToggleEditorPanel',{'Name':'storeroom'}),('help','ToggleEditorHelp',{}),('snap','CycleEditorGrid',{}),('reach','CycleEditorReach',{}),('numeric_done','FocusEditorViewport',{}),('mode_select','SetGizmoMode',{'Mode':0}),('mode_move','SetGizmoMode',{'Mode':1}),('mode_rotate','SetGizmoMode',{'Mode':2}),('mode_scale','SetGizmoMode',{'Mode':3}),('gimbal','CycleGizmoMode',{})]
     for i,(name,fn,defaults) in enumerate(commands+normal):
         if i==len(commands):
             branch(g,'modal',call(g,'ismodal',KML+':Greater_IntInt',{'A':get(g,'ConfirmMode')},B=0));g.chain(previous,'modal');branch(g,'select',call(g,'selectname',STR+'EqualEqual_StrStr',{'A':'event.EventName'},B='select'));g.call('pick','self:GizmoPointerButton');g.wire(('event.Scalar','pick.Value'));branch(g,'placing',get(g,'PlacementActive'));g.call('place','self:PlacementPointerButton');g.wire(('event.Scalar','place.Value'));branch(g,'composing',get(g,'CompositionPlacing'));g.call('composeclick','self:CompositionPointerButton');g.wire(('event.Scalar','composeclick.Value'));g.chain('modal.else','select','composing','composeclick');g.chain('composing.else','placing','place');g.chain('placing.else','pick');previous='select.else'
@@ -197,6 +197,9 @@ def handle():
         method(g,node+'cancel',PICKER,'CancelQuery',get(g,'Picker'))
         g.call(node+'validate','self:RevalidateSelection')
         g.chain(previous,node,node+'set',node+'picker',node+'cancel',node+'validate');previous=node+'.else'
+    # Session toggle; Settings hold the default.
+    branch(g,'magnet',call(g,'magnetname',STR+'EqualEqual_StrStr',{'A':'event.EventName'},B='neighbour_snap'))
+    set_value(g,'magnettoggle','SnapEnabled',call(g,'magnetnot',KML+':Not_PreBool',{'A':get(g,'SnapEnabled')}));g.chain(previous,'magnet','magnettoggle');previous='magnet.else'
     set_value(g,'unhandled','LastUnhandled','event.EventName');bump(g,'count','UnhandledCommands');g.chain(previous,'unhandled','count')
     g.chain('entry','look','looking')
     return g.function('HandleEditorEvent',inputs=[v('Event','struct:'+EVENT)])
@@ -239,7 +242,7 @@ def refresh():
     branch(g,'gridoff',call(g,'zero',KML+':EqualEqual_DoubleDouble',{'A':get(g,'GridStep')},B=0))
     text(g,'offlabel','Toolbar','SnapLabel',constant='Off');g.node('aftergrid','sequence',outputs=1);g.chain(previous,'gridoff','offlabel','aftergrid');g.chain('gridoff.else','aftergrid');previous='aftergrid.then_0'
     # Grid and the selection filters are toggles; the library tabs show the open panel.
-    toggles=[('Snap',call(g,'gridon',KML+':NotEqual_DoubleDouble',{'A':get(g,'GridStep')},B=0)),
+    toggles=[('Magnet',get(g,'SnapEnabled')),('Snap',call(g,'gridon',KML+':NotEqual_DoubleDouble',{'A':get(g,'GridStep')},B=0)),
              ('Floors',get(g,'FloorsEnabled')),('Walls',get(g,'WallsEnabled')),('Lock',get(g,'StructureEnabled'))]
     toggles+=[(button,call(g,'tab'+button,STR+'EqualEqual_StrStr',{'A':get(g,'ActivePanel')},B=name)) for button,_,name,_ in editor.LIBRARY]
     for button,on in toggles:

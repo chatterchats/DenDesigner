@@ -52,8 +52,9 @@ python3 - "$folder/Authoring/pack.json" "$work" <<'PYMANIFEST'
 import json,sys
 from pathlib import Path
 sys.path.insert(0,'tools/prop_packs')
-from prop_pack import descriptor,validate
+from prop_pack import descriptor,validate,sharing_manifest
 manifest,work=sys.argv[1:];doc=validate(json.loads(Path(manifest).read_text()));name=doc['plugin'];runtime=descriptor(doc)
+Path(work,f'{name}.pack.json').write_text(json.dumps(sharing_manifest(doc),indent=2)+'\n')
 Path(work,f'{name}.uplugin').write_text(json.dumps(runtime,indent=2)+'\n')
 Path(work,f'{name}.upluginmanifest').write_text(json.dumps({'Contents':[{'File':f'../../../SWZeroCompany/Plugins/GameFeatures/{name}/{name}.uplugin','Descriptor':runtime}]},indent=2)+'\n')
 PYMANIFEST
@@ -71,9 +72,10 @@ from pathlib import Path
 name,manifest,listing=sys.argv[1:];doc=json.loads(Path(manifest).read_text());text=Path(listing).read_text()
 entries=re.findall(r'Display: "([^"]+)" offset:',text)
 assert entries and all(x=='<ContainerHeader>' or any(x.startswith(f'../../../SWZeroCompany/{location}/{name}/') for location in ('Mods','Plugins','Plugins/GameFeatures')) for x in entries),'Pack contains assets outside its own namespace'
-for asset in [name,'BP_PropPack']+[x['mesh'].split('.')[-1] for x in doc['props']]:
+for asset in [name,'BP_PropPack']+[x['mesh'].split('.')[-1] for x in doc['props']]+[x['path'].split('.')[-1] for x in doc.get('assets',[])]:
     assert f'/{asset}.uasset"' in text,'Missing '+asset
 print('Verified independent pack:',name,len(entries),'cooked entries')
 PY
+cp "$work/$name.pack.json" "$out/$name.pack.json"
 (cd "$out" && sha256sum "${name}_P".*) > "$build_root/SHA256SUMS"
 echo "Pack ready in $out"

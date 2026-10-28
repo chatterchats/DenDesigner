@@ -67,13 +67,13 @@ MAPPINGS = [
     {"action": "IA_Den_Fast", "key": "LeftShift"},
     {"action": "IA_Den_Alt", "key": "LeftAlt"},
     {"action": "IA_Den_Select", "key": "LeftMouseButton"},
-    # Chorded wheel mappings come first: they block the plain wheel mapping listed after them.
+    # Fine rotation blocks plain rotation while the fast-flight key is held.
+    # Keep scaling on +/- only: the Alt+wheel scale chord has fired without Alt in game.
     {"action": "IA_Den_RotateFine", "key": "MouseWheelAxis", "triggers": [chord("IA_Den_Fast")]},
-    {"action": "IA_Den_Scale", "key": "MouseWheelAxis", "triggers": [chord("IA_Den_Alt")]},
     {"action": "IA_Den_Rotate", "key": "MouseWheelAxis"},
     {"action": "IA_Den_Rotate", "key": "Q", "modifiers": [negate()], "triggers": [repeat(ROTATE_REPEAT)]},
     {"action": "IA_Den_Rotate", "key": "E", "triggers": [repeat(ROTATE_REPEAT)]},
-    # Alt+wheel didn't scale in game (2026-10-18), so +/- (and the keypad's) scale too.
+    # +/- and their keypad equivalents scale, with repeat while held.
     {"action": "IA_Den_Scale", "key": "Equals", "triggers": [repeat(ROTATE_REPEAT)]},
     {"action": "IA_Den_Scale", "key": "Hyphen", "modifiers": [negate()], "triggers": [repeat(ROTATE_REPEAT)]},
     {"action": "IA_Den_Scale", "key": "Add", "triggers": [repeat(ROTATE_REPEAT)]},
@@ -157,6 +157,12 @@ def rig():
     node("fastkey", "input_action", action=ROOT + "IA_Den_Fast")
     node("fast_on", "set", var="bFast", defaults={"bFast": "true"})
     node("fast_off", "set", var="bFast", defaults={"bFast": "false"})
+    # Alt: held, a move ignores neighbour snapping (runtime_snap reads bAlt).
+    node("altkey", "input_action", action=ROOT + "IA_Den_Alt")
+    node("alt_on", "set", var="bAlt", defaults={"bAlt": "true"})
+    node("alt_off", "set", var="bAlt", defaults={"bAlt": "false"})
+    link("altkey.Started", "alt_on.execute")
+    link("altkey.Completed", "alt_off.execute")
     link("fastkey.Started", "fast_on.execute")
     link("fastkey.Completed", "fast_off.execute")
 
@@ -189,6 +195,7 @@ def rig():
         "kind": "blueprint", "path": ROOT + "BP_DenEditorRig", "parent": "/Script/Engine.CameraActor",
         "variables": [
             {"name": "bFast", "type": "bool", "default": "false"},
+            {"name": "bAlt", "type": "bool", "default": "false"},
             {"name": "Speed", "type": "float", "default": "900.0"},
             {"name": "FastMultiplier", "type": "float", "default": "3.0"},
             {"name": "LookRate", "type": "float", "default": "2.5"},
@@ -327,7 +334,7 @@ LIBRARY = [("Catalog", "Catalog", "catalog", "catalog"), ("Storeroom", "Storeroo
            ("Compositions", "Compositions", "compositions", "compositions"), ("Layouts", "Layouts", "layouts", "layouts")]
 TOOLS = [("SelectMode", "Select", "mode_select", "select"), ("Move", "Move", "mode_move", "move"),
          ("Rotate", "Rotate", "mode_rotate", "rotate"), ("ScaleMode", "Scale", "mode_scale", "scale")]
-QUICK_CONTROLS = [("Snap", "Off", "snap", "grid"), ("Reach", "20 m", "reach", "range")]
+QUICK_CONTROLS = [("Magnet", "Snap", "neighbour_snap", "magnet"), ("Snap", "Off", "snap", "grid"), ("Reach", "20 m", "reach", "range")]
 LAYERS = [("Floors", "Floors", "floors", "floors"), ("Walls", "Walls", "walls", "walls"), ("Lock", "Structure", "lock", "structure")]
 # Icon-only buttons: (widget name, event, icon, tooltip).
 MENU = [("Undo", "undo", "undo", "Undo"), ("Redo", "redo", "redo", "Redo"),
@@ -335,7 +342,8 @@ MENU = [("Undo", "undo", "undo", "Undo"), ("Redo", "redo", "redo", "Redo"),
 CONFIRM = [("ConfirmSave", "Save", "confirm_save", "primary"), ("ConfirmDiscard", "Discard", "confirm_discard", "outline"),
            ("ConfirmCancel", "Keep editing", "confirm_cancel", "ghost")]
 # Status bar reminders of the fixed controls; rebindable keys are listed under Help.
-SHORTCUTS = [("Drag", "LMB drag", "Move on surface"), ("Height", "Shift", "Height"), ("Turn", "Wheel", "Rotate"), ("Back", "Esc", "Back")]
+SHORTCUTS = [("Drag", "LMB drag", "Move on surface"), ("Height", "Shift", "Height"), ("Free", "Alt", "No snapping"),
+             ("Turn", "Wheel", "Rotate"), ("Back", "Esc", "Back")]
 
 
 def text(name, value, size, color=WHITE, variable=True, slot=None, wrap=False, role=None):
@@ -480,6 +488,11 @@ def toolbar():
                          slot={"Size": "(SizeRule=Fill,Value=1)", "VerticalAlignment": "VAlign_Center"}),
                     *[shortcut(*item) for item in SHORTCUTS]]}]}
     # Messages may quote a long preset or composition name: wrap them rather than widen the dialog.
+    # Placed beside the cursor by RefreshSnapBadge while a neighbour snap holds.
+    badge = {"class": "/Script/UMG.Border", "name": "SnapBadge", "variable": True,
+             "props": dict(surface(PANEL, rgba(*ACCENT, 0.5), 4, "(Left=8,Top=4,Right=8,Bottom=4)"), Visibility="Collapsed"),
+             "slot": {"LayoutData": "(Offsets=(Left=0,Top=0,Right=0,Bottom=0))", "bAutoSize": "true"},
+             "children": [label("SnapBadgeText", "", 13, GOLD)]}
     confirm_text = text("ConfirmText", "", 14, DIM, variable=True, wrap=True, slot={"Padding": "(Left=0,Top=8,Right=0,Bottom=14)"})
     confirm_text["props"].update(WrapTextAt=560, WrappingPolicy="AllowPerCharacterWrapping")
     confirm = {"class": "/Script/UMG.Border", "name": "Confirm", "variable": True,
@@ -501,7 +514,7 @@ def toolbar():
         links.append([name + ".then", name + "_event.execute"])
     return {
         "kind": "widget", "path": ROOT + "WBP_DenToolbar",
-        "tree": {"class": "/Script/UMG.CanvasPanel", "name": "Root", "children": [panel, tabs, feedback, help_panel, confirm]},
+        "tree": {"class": "/Script/UMG.CanvasPanel", "name": "Root", "children": [panel, tabs, feedback, badge, help_panel, confirm]},
         "functions": [{"name": "Native_Event", "inputs": [{"name": "Name", "type": "string"}, {"name": "Arg", "type": "string"}]}],
         "graph": {"nodes": nodes, "links": links},
     }
@@ -864,6 +877,11 @@ def transform():
         if title.startswith("Position"):  # world coordinates can be long: one full-width row per axis
             groups += [row("Fields" + name, [axis_field(name, 0)], "(Left=0,Top=0,Right=0,Bottom=6)") for name, _ in fields]
             continue
+        if title.startswith("Rotation"):
+            pivot = button("RotationPivot", "Pivot: Centre", 13)
+            pivot["props"]["ToolTipText"] = "Rotate around the bottom, centre or top of the prop. Original uses the mesh's authored origin."
+            groups.append(pivot)
+            g.click("RotationPivot", "rotation_pivot")
         cells = [axis_field(name) for name, _ in fields]
         if len(cells) == 1:  # keep a single field the width of one column
             cells += [{"class": "/Script/UMG.Spacer", "name": "ScaleGap", "slot": {"Size": "(SizeRule=Fill,Value=2)"}}]

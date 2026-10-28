@@ -11,8 +11,11 @@ from runtime_apply import get
 PATH='/DenDesignerGF/Editor/WBP_DenSettings'
 CHORD='/Script/Slate.InputChord'
 SELECTOR='/Script/UMG.InputKeySelector'
-NUMERIC_LABELS={'fly_speed':'Flight speed · 200–3000 cm/s','fast_multiplier':'Fast flight multiplier · 1–8','look_speed':'Look sensitivity · 0.5–10'}
-CHOICE_LABELS={'autosave':'Draft autosave','thumbnails':'Generate thumbnails','toggle_modifier':'Open editor modifier'}
+NUMERIC_LABELS={'fly_speed':'Flight speed · 200–3000 cm/s','fast_multiplier':'Fast flight multiplier · 1–8','look_speed':'Look sensitivity · 0.5–10',
+                'snap_distance':'Snap distance up close · 2–30 cm'}
+CHOICE_LABELS={'autosave':'Draft autosave','thumbnails':'Generate thumbnails','toggle_modifier':'Open editor modifier',
+               'neighbour_snap':'Snap to nearby props','snap_guides':'Show snapping guides','rotation_pivot':'Rotate around'}
+CAMERA=['fly_speed','fast_multiplier','look_speed']
 KEY_LABELS={'toggle_key':'Open editor key',**{key:label for key,_,_,label in BINDINGS}}
 
 
@@ -37,7 +40,7 @@ def refresh():
             from runtime_store import STR
             for i,value in enumerate(values):
                 n=key+str(i);branch(g,n,call(g,n+'eq',STR+'EqualEqual_StrStr',{'A':key+'read.Value'},B=value))
-                label={'true':'On','false':'Off','ctrl':'Ctrl','shift':'Shift','alt':'Alt','none':'None'}.get(value,value)
+                label={'true':'On','false':'Off','ctrl':'Ctrl','shift':'Shift','alt':'Alt','none':'None','centre':'Centre','bottom':'Bottom','top':'Top','origin':'Original'}.get(value,value)
                 call(g,n+'show','/Script/UMG.TextBlock:SetText',{'self':get(g,'Field_'+key+'Label')},InText=label)
                 g.chain(previous,n,n+'show',key+'done');previous=n+'.else'
             g.chain(previous,key+'done');previous=key+'done.then_0';continue
@@ -64,12 +67,20 @@ def spec():
         title=editor.text('Label_'+key,label,13,wrap=True,slot={'Size':'(SizeRule=Fill,Value=1)','VerticalAlignment':'VAlign_Center','Padding':'(Left=0,Top=0,Right=12,Bottom=0)'})
         box={'class':'/Script/UMG.SizeBox','name':'Width_'+key,'props':{'WidthOverride':124,'bOverride_WidthOverride':'true'},'children':[field]}
         rows.append(editor.row('Row_'+key,[title,box]))
-    heading('Camera','Camera')
-    for key,label in NUMERIC_LABELS.items():
-        row(key,label,editor.box('Field_'+key,'',select_all=True));g.commit('Field_'+key,'setting:'+key)
-    heading('Background','Background tasks')
-    for key in ['autosave','thumbnails']:
+    def number(key):
+        row(key,NUMERIC_LABELS[key],editor.box('Field_'+key,'',select_all=True));g.commit('Field_'+key,'setting:'+key)
+    def choice(key):
         row(key,CHOICE_LABELS[key],editor.button('Field_'+key,''));g.click('Field_'+key,'setting_cycle');g.nodes[-1]['defaults']['Arg']=key
+    heading('Camera','Camera')
+    for key in CAMERA:number(key)
+    # The menu bar's SNAP toggle starts each session from "Snap to nearby props"; Alt skips snapping while held.
+    heading('Snapping','Snapping')
+    for key in ['neighbour_snap','snap_guides']:choice(key)
+    number('snap_distance')
+    heading('Rotation','Rotation')
+    choice('rotation_pivot')
+    heading('Background','Background tasks')
+    for key in ['autosave','thumbnails']:choice(key)
     heading('Opening','Open editor')
     row('toggle_modifier',CHOICE_LABELS['toggle_modifier'],editor.button('Field_toggle_modifier',''))
     g.click('Field_toggle_modifier','setting_cycle');g.nodes[-1]['defaults']['Arg']='toggle_modifier'

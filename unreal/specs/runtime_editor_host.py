@@ -44,23 +44,35 @@ def style_toggle(g,node,panel,button,on):
     return node
 
 
-def create_panels():
+def create_panel(var,cls,order):
+    """Avoid the malformed cooked bytecode seen with the combined creation/cast graph."""
     from runtime_editor_assets import text_fields
     g=Graph();g.node('self','self');previous='entry'
-    for var,cls,order in PANELS:
-        obj=call(g,'create'+var,WBL+':Create',{'WorldContextObject':'self.self','OwningPlayer':get(g,'EditorController')},WidgetType=UIROOT+cls)
-        g.node('cast'+var,'cast',**{'class':UIROOT+cls});g.wire((obj,'cast'+var+'.Object'))
-        castpin='cast'+var+'.As'+{'WBP_DenToolbar':'WBP Den Toolbar','WBP_DenTransform':'WBP Den Transform','WBP_DenCatalog':'WBP Den Catalog','WBP_DenLayouts':'WBP Den Layouts','WBP_DenStoreroom':'WBP Den Storeroom','WBP_DenSettings':'WBP Den Settings','WBP_DenCompositions':'WBP Den Compositions'}[cls]
-        set_value(g,'save'+var,var,castpin)
-        set_value(g,'bus'+var,UIROOT+cls+':EditorBus',get(g,'InputBus'));g.wire((get(g,var),'bus'+var+'.self'))
-        call(g,'show'+var,USERWIDGET+':AddToViewport',{'self':get(g,var)},ZOrder=order)
-        visibility(g,'visible'+var,get(g,var),'SelfHitTestInvisible' if var in ['Toolbar','Inspector'] else 'Collapsed')
-        g.chain(previous,'create'+var,'cast'+var,'save'+var,'bus'+var,'show'+var,'visible'+var)
-        g.chain('cast'+var+'.CastFailed','result');previous='visible'+var
-        for field in text_fields(cls):
-            name='register'+var+field
-            method(g,name,BUS,'RegisterTextInput',get(g,'InputBus'),{'Widget':widget(g,name+'widget',var,field)})
-            g.chain(previous,name);previous=name
+    obj=call(g,'create'+var,WBL+':Create',{'WorldContextObject':'self.self','OwningPlayer':get(g,'EditorController')},WidgetType=UIROOT+cls)
+    g.node('cast'+var,'cast',**{'class':UIROOT+cls});g.wire((obj,'cast'+var+'.Object'))
+    castpin='cast'+var+'.As'+{'WBP_DenToolbar':'WBP Den Toolbar','WBP_DenTransform':'WBP Den Transform','WBP_DenCatalog':'WBP Den Catalog','WBP_DenLayouts':'WBP Den Layouts','WBP_DenStoreroom':'WBP Den Storeroom','WBP_DenSettings':'WBP Den Settings','WBP_DenCompositions':'WBP Den Compositions'}[cls]
+    set_value(g,'save'+var,var,castpin)
+    set_value(g,'bus'+var,UIROOT+cls+':EditorBus',get(g,'InputBus'));g.wire((get(g,var),'bus'+var+'.self'))
+    call(g,'show'+var,USERWIDGET+':AddToViewport',{'self':get(g,var)},ZOrder=order)
+    visibility(g,'visible'+var,get(g,var),'SelfHitTestInvisible' if var in ['Toolbar','Inspector'] else 'Collapsed')
+    g.chain(previous,'create'+var,'cast'+var,'save'+var,'bus'+var,'show'+var,'visible'+var)
+    g.chain('cast'+var+'.CastFailed','result');previous='visible'+var
+    for field in text_fields(cls):
+        name='register'+var+field
+        method(g,name,BUS,'RegisterTextInput',get(g,'InputBus'),{'Widget':widget(g,name+'widget',var,field)})
+        g.chain(previous,name);previous=name
+    g.set('yes','local:OK','true');finish_bool(g)
+    g.chain(previous,'yes','result')
+    return g.function('Create'+var+'Panel',outputs=[v('Accepted','bool')],locals=[v('OK','bool','false')])
+
+
+def create_panels():
+    g=Graph();previous='entry'
+    for var,_,_ in PANELS:
+        g.call('create'+var,'self:Create'+var+'Panel')
+        branch(g,'accepted'+var,'create'+var+'.Accepted')
+        g.chain(previous,'create'+var,'accepted'+var)
+        g.chain('accepted'+var+'.else','result');previous='accepted'+var
     g.call('help','self:RefreshEditorHelp')
     g.set('yes','local:OK','true');finish_bool(g)
     g.chain(previous,'help','yes','result')
@@ -105,9 +117,9 @@ def mount():
     branch(g,'accepted',call(g,'match',KML+':EqualEqual_ObjectObject',{'A':current,'B':get(g,'EditorRig')}))
     call(g,'mode',WBL+':SetInputMode_GameAndUIEx',{'PlayerController':'entry.Player'},InMouseLockMode='DoNotLock',bHideCursorDuringCapture='false',bFlushInput='false')
     g.set('open','UIOpen','true');g.set('fontindex','FontIndex','0');g.set('confirmreset','ConfirmMode','0');g.set('panelreset','ActivePanel','');g.set('helpreset','HelpOpen','false')
-    g.call('selection','self:InitializeSelection');g.call('gizmo','self:InitializeEditorGizmo');g.call('refresh','self:RefreshEditorUI');g.call('recovery','self:OfferRecovery');g.call('hud','self:HideGameHUD');g.set('yes','local:OK','true');finish_bool(g)
+    g.call('selection','self:InitializeSelection');g.call('gizmo','self:InitializeEditorGizmo');g.call('refresh','self:RefreshEditorUI');g.call('recovery','self:OfferRecovery');g.call('entryinput','self:FinishEditorEntry');g.set('yes','local:OK','true');finish_bool(g)
     g.call('cleanup','self:DetachEditor',RestoreView='true')
-    g.chain('entry','available','level','den','camera','subcast','subsave','player','viewcopy',*capture,'captured','buscreate','buscast','bussave','spawn','finish','rigcast','rigsave','rigbus','preferences','applypreferences','panels','created','startbus','enable','mapping','mapped',*setters,'target','accepted','mode','open','fontindex','confirmreset','panelreset','helpreset','selection','gizmo','refresh','recovery','hud','yes','result')
+    g.chain('entry','available','level','den','camera','subcast','subsave','player','viewcopy',*capture,'captured','buscreate','buscast','bussave','spawn','finish','rigcast','rigsave','rigbus','preferences','applypreferences','panels','created','startbus','enable','mapping','mapped',*setters,'target','accepted','mode','open','fontindex','confirmreset','panelreset','helpreset','selection','gizmo','refresh','recovery','entryinput','yes','result')
     for pin in ['available.else','den.else','camera.else','subcast.CastFailed']:g.chain(pin,'result')
     for pin in ['buscast.CastFailed','rigcast.CastFailed','created.else','mapped.else','accepted.else']:g.chain(pin,'cleanup','result')
     return g.function('MountEditor',inputs=[v('Player','object:'+PC)],outputs=[v('Accepted','bool')],locals=[v('OK','bool','false')])
@@ -140,6 +152,7 @@ def detach():
     tail=[]
     for var in ['EditorController','PreviousView','InputSubsystem','InputBus']:
         g.set('clear'+var,var);tail.append('clear'+var)
+    g.set('clearretry','PointerRestoreFrame','-1');tail.append('clearretry')
     for var in ['UIOpen','ControllerCaptured','Looking']:
         g.set('stop'+var,var,'false');tail.append('stop'+var)
     g.chain(previous,*tail)
@@ -181,6 +194,46 @@ def game_hud(hide):
     return g.function('HideGameHUD' if hide else 'RestoreGameHUD')
 
 
+def restore_pointer():
+    """Reclaim focus/capture after the game's HUD transition, before the first click."""
+    g=Graph()
+    available=combine(g,'ready',[get(g,'UIOpen'),validity(g,'player',get(g,'EditorController')),
+                                  validity(g,'bus',get(g,'InputBus')),
+                                  call(g,'notlooking',KML+':Not_PreBool',{'A':get(g,'Looking')})])
+    branch(g,'available',available)
+    method(g,'typing',BUS,'IsTyping',get(g,'InputBus'));branch(g,'typingcheck','typing.Typing')
+    g.set('show',PC+':bShowMouseCursor','true');g.wire((get(g,'EditorController'),'show.self'))
+    call(g,'mode',WBL+':SetInputMode_GameAndUIEx',{'PlayerController':get(g,'EditorController')},
+         InMouseLockMode='DoNotLock',bHideCursorDuringCapture='false',bFlushInput='false')
+    # Viewport focus requires a mounted local player. Headless fixtures have no Slate application/subsystem.
+    branch(g,'viewport',validity(g,'localsubsystem',get(g,'InputSubsystem')))
+    call(g,'focus',WBL+':SetFocusToGameViewport')
+    g.chain('entry','available','typing','typingcheck');g.chain('typingcheck.else','show','mode','viewport','focus')
+    return g.function('RestoreEditorPointer')
+
+
+def finish_entry():
+    # HUD changes can hide the cursor/reset CommonUI input state. Apply the editor's pointer setup afterwards.
+    # Retry once on a later engine frame: the host may already tick in the same frame as MountEditor.
+    g=Graph();g.call('hud','self:HideGameHUD');g.call('pointer','self:RestoreEditorPointer')
+    frame=call(g,'frame',KSL+':GetFrameCount')
+    set_value(g,'later','PointerRestoreFrame',call(g,'next',KML+':Add_Int64Int64',{'A':frame},B=1))
+    g.chain('entry','hud','pointer','later')
+    return g.function('FinishEditorEntry')
+
+
+def poll_pointer():
+    g=Graph();pending=call(g,'pending',KML+':GreaterEqual_Int64Int64',{'A':get(g,'PointerRestoreFrame')},B=0)
+    branch(g,'pendingcheck',pending);branch(g,'open',get(g,'UIOpen'))
+    due=call(g,'due',KML+':GreaterEqual_Int64Int64',{'A':call(g,'frame',KSL+':GetFrameCount'),'B':get(g,'PointerRestoreFrame')})
+    branch(g,'duecheck',due)
+    # Consume first; typing or held RMB skips the retry without leaving a perpetual focus override.
+    g.set('consume','PointerRestoreFrame','-1');g.call('restore','self:RestoreEditorPointer')
+    g.set('cancel','PointerRestoreFrame','-1')
+    g.chain('entry','pendingcheck','open','duecheck','consume','restore');g.chain('open.else','cancel')
+    return g.function('PollEditorPointer')
+
+
 def keep_camera():
     g=Graph();branch(g,'open',combine(g,'valid',[get(g,'UIOpen'),validity(g,'player',get(g,'EditorController')),validity(g,'rig',get(g,'EditorRig'))]))
     current=call(g,'current',PC+':GetViewTarget',{'self':get(g,'EditorController')})
@@ -190,7 +243,7 @@ def keep_camera():
     return g.function('KeepEditorCamera')
 
 
-def spec():
+def full_spec():
     from runtime_compositions import functions as composition_functions, variables as composition_variables
     from runtime_composition_library import functions as composition_library_functions, variables as composition_library_variables
     from runtime_composition_preview import functions as composition_preview_functions, variables as composition_preview_variables
@@ -198,6 +251,7 @@ def spec():
     from runtime_editor_fonts import functions as font_functions
     from runtime_selection import functions as selection_functions, variables as selection_variables
     from runtime_transform import functions as transform_functions
+    from runtime_pivot import functions as pivot_functions
     from runtime_edit_queue import functions as queue_functions, variables as queue_variables
     from runtime_drag import functions as drag_functions, variables as drag_variables
     from runtime_gizmo_controller import functions as gizmo_functions, variables as gizmo_variables
@@ -212,15 +266,42 @@ def spec():
     from runtime_preference_ui import functions as preference_functions, variables as preference_variables
     from runtime_settings_ui import functions as settings_functions, variables as settings_variables
     from runtime_input_ui import functions as input_functions, variables as input_variables
+    from runtime_snap import functions as snap_functions, variables as snap_variables
     g=Graph();g.node('tick','event',name='ReceiveTick')
-    for name,fn in [('pump','Pump'),('draft','PollDraft'),('events','ProcessEditorEvents'),('catalog','PollCatalogUI'),('storeroom','PollStoreroomUI'),('thumbnails','PollThumbnailUI'),('placement','PollPlacement'),('compositionpreview','PollCompositionPreview'),('drag','PollSelectionDrag'),('selection','PollSelection'),('copy','PollCopiedSelection'),('surface','PollSurfaceDrag'),('gizmo','PollEditorGizmo'),('edits','PumpEditorMutations'),('camera','KeepEditorCamera'),('fonts','PollEditorFonts'),('refresh','PollEditorUI')]:g.call(name,'self:'+fn)
-    g.chain('tick','pump','draft','events','catalog','storeroom','thumbnails','placement','compositionpreview','drag','selection','copy','surface','gizmo','edits','camera','fonts','refresh')
+    for name,fn in [('pump','Pump'),('draft','PollDraft'),('events','ProcessEditorEvents'),('catalog','PollCatalogUI'),('storeroom','PollStoreroomUI'),('thumbnails','PollThumbnailUI'),('placement','PollPlacement'),('compositionpreview','PollCompositionPreview'),('drag','PollSelectionDrag'),('selection','PollSelection'),('copy','PollCopiedSelection'),('surface','PollSurfaceDrag'),('gizmo','PollEditorGizmo'),('edits','PumpEditorMutations'),('camera','KeepEditorCamera'),('pointer','PollEditorPointer'),('fonts','PollEditorFonts'),('refresh','PollEditorUI')]:g.call(name,'self:'+fn)
+    g.chain('tick','pump','draft','events','catalog','storeroom','thumbnails','placement','compositionpreview','drag','selection','copy','surface','gizmo','edits','camera','pointer','fonts','refresh')
     g.node('end','event',name='ReceiveEndPlay');g.call('flush','self:FlushDraft');g.set('close','Editing','false')
     g.call('detach','self:DetachEditor',RestoreView='false');g.call('cancel','self:CancelWork');g.call('forget','self:Forget');g.chain('end','flush','close','detach','cancel','forget')
     variables=[v('EditorController','object:'+PC),v('PreviousView','object:'+ACTOR),v('EditorRig','object:'+RIG),v('InputSubsystem','object:'+SUB),v('InputBus','object:'+BUS),
-        v('FontJob','object:'+JOB),v('FontRequestAt','double'),v('FontIndex','int'),v('UIOpen','bool'),v('ControllerCaptured','bool'),v('PreviousCursor','bool'),v('PreviousClicks','bool'),v('PreviousHover','bool'),
+        v('FontJob','object:'+JOB),v('FontRequestAt','double'),v('FontIndex','int'),v('UIOpen','bool'),v('ControllerCaptured','bool'),v('PreviousCursor','bool'),v('PointerRestoreFrame','int64','-1'),v('PreviousClicks','bool'),v('PreviousHover','bool'),
         v('Looking','bool'),v('ActivePanel','string'),v('HelpOpen','bool'),v('ConfirmMode','int'),v('GridIndex','int'),v('ReachIndex','int','1'),v('GridStep','double','0'),v('ReachCm','double','2000'),
-        v('StructureEnabled','bool','false'),v('FloorsEnabled','bool','true'),v('WallsEnabled','bool','false'),v('LastUIBusy','bool'),v('LastUIDraftStatus','int','-1'),v('UnhandledCommands','int'),v('LastUnhandled','string'),v('HUDHidden','bool')]
-    variables += composition_variables()+composition_library_variables()+composition_preview_variables()+selection_variables()+queue_variables()+drag_variables()+gizmo_variables()+surface_variables()+copy_variables()+catalog_variables()+placement_variables()+thumbnail_variables()+storeroom_variables()+layout_ui_variables()+scope_ui_variables()+preference_variables()+input_variables()+settings_variables()
+        v('StructureEnabled','bool','false'),v('FloorsEnabled','bool','true'),v('WallsEnabled','bool','false'),v('LastUIBusy','bool'),v('LastUIDraftStatus','int','-1'),v('UnhandledCommands','int'),v('LastUnhandled','string'),v('HUDHidden','bool'),v('RotationPivot','string','centre')]
+    variables += composition_variables()+composition_library_variables()+composition_preview_variables()+selection_variables()+queue_variables()+drag_variables()+gizmo_variables()+surface_variables()+copy_variables()+catalog_variables()+placement_variables()+thumbnail_variables()+storeroom_variables()+layout_ui_variables()+scope_ui_variables()+preference_variables()+input_variables()+settings_variables()+snap_variables()
     variables += [v(var,'object:'+UIROOT+cls) for var,cls,_ in PANELS]
-    return dict(kind='blueprint',path=HOST,parent=SESSION,variables=variables,graph=g.spec(),functions=[create_panels(),mount(),detach(),look(),game_hud(True),game_hud(False),keep_camera(),*composition_functions(),*composition_library_functions(),*composition_preview_functions(),*command_functions(),*font_functions(),*selection_functions(),*transform_functions(),*queue_functions(),*drag_functions(),*gizmo_functions(),*surface_functions(),*copy_functions(),*catalog_functions(),*placement_functions(),*thumbnail_functions(),*storeroom_functions(),*layout_ui_functions(),*scope_ui_functions(),*preference_functions(),*input_functions(),*settings_functions()])
+    return dict(kind='blueprint',path=HOST,parent=SESSION,variables=variables,graph=g.spec(),functions=[*[create_panel(*panel) for panel in PANELS],create_panels(),mount(),detach(),look(),game_hud(True),game_hud(False),restore_pointer(),finish_entry(),poll_pointer(),keep_camera(),*composition_functions(),*composition_library_functions(),*composition_preview_functions(),*command_functions(),*font_functions(),*selection_functions(),*transform_functions(),*pivot_functions(),*queue_functions(),*drag_functions(),*gizmo_functions(),*surface_functions(),*copy_functions(),*catalog_functions(),*placement_functions(),*thumbnail_functions(),*storeroom_functions(),*layout_ui_functions(),*scope_ui_functions(),*preference_functions(),*input_functions(),*settings_functions(),*snap_functions()])
+
+
+EDITOR_BASE=ROOT+'BP_DenEditorState'
+
+
+def split_specs():
+    """Keep cooked field/script tables bounded by separating leaf helpers/state.
+
+    All state lives on the base. A helper can move only when every self call is
+    already inherited from Session; editor behavior remains on the host.
+    """
+    import json
+    host=full_spec();functions={fn['name']:fn for fn in host['functions']}
+    leaf={name for name,fn in functions.items()
+          if '/BP_DenEditorHost' not in json.dumps(fn)
+          and all(not node.get('function','').startswith('self:')
+                  or node['function'][5:] not in functions for node in fn['nodes'])}
+    base=dict(kind='blueprint',path=EDITOR_BASE,parent=SESSION,variables=host['variables'],
+              graph={'nodes':[],'links':[]},functions=[fn for fn in host['functions'] if fn['name'] in leaf])
+    host['parent']=EDITOR_BASE;host['variables']=[]
+    host['functions']=[fn for fn in host['functions'] if fn['name'] not in leaf]
+    return base,host
+
+
+def spec():return split_specs()[1]
+def state_spec():return split_specs()[0]

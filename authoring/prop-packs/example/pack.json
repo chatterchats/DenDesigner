@@ -28,5 +28,17 @@
       "collision": true,
       "tags": "halloween pumpkin ornament decoration"
     }
+  ],
+  "assets": [
+    {
+      "id": "pumpkin-mesh",
+      "path": "/DenPropsExample/Props/SM_Pumpkin.SM_Pumpkin",
+      "kind": "mesh"
+    },
+    {
+      "id": "jack-o-lantern-mesh",
+      "path": "/DenPropsExample/Props/SM_JackOLantern.SM_JackOLantern",
+      "kind": "mesh"
+    }
   ]
 }

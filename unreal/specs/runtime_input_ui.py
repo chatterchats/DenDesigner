@@ -34,16 +34,18 @@ def install():
     g.call('looking','self:SetLooking',Held='false');g.call('drag','self:EndSelectionDrag',Commit='false');g.call('release','self:ReleaseEditorMappings')
     set_value(g,'remember','EditorMappingContext','build.Context');set_value(g,'fallback','BindingsDefaulted','build.UsedDefaults')
     g.set('fast',RIG+':bFast','false');g.wire((get(g,'EditorRig'),'fast.self'))
+    g.set('alt',RIG+':bAlt','false');g.wire((get(g,'EditorRig'),'alt.self'))
     call(g,'add',SUBINTERFACE+':AddMappingContext',{'self':get(g,'InputSubsystem'),'MappingContext':get(g,'EditorMappingContext')},Priority=1000000,Options='(bIgnoreAllPressedKeysUntilRelease=True,bForceImmediately=True)')
     g.call('help','self:RefreshEditorHelp');g.set('yes','local:OK','true');finish_bool(g)
-    g.chain('entry','valid','build','accepted','looking','drag','release','remember','fallback','fast','add','help','yes','result')
+    g.chain('entry','valid','build','accepted','looking','drag','release','remember','fallback','fast','alt','add','help','yes','result')
     for pin in ['valid.else','accepted.else']:g.chain(pin,'result')
     return g.function('InstallEditorMappings',outputs=[v('Accepted','bool')],locals=[v('OK','bool','false')])
 
 
 def apply_preferences():
     g=Graph();branch(g,'valid',validity(g,'doc',get(g,'PreferencesDocument')));previous='valid'
-    for key,field in [('unlock_structure','StructureEnabled'),('select_floors','FloorsEnabled'),('select_walls','WallsEnabled'),('autosave','DraftEnabled'),('thumbnails','ThumbnailsEnabled')]:
+    for key,field in [('unlock_structure','StructureEnabled'),('select_floors','FloorsEnabled'),('select_walls','WallsEnabled'),('autosave','DraftEnabled'),('thumbnails','ThumbnailsEnabled'),
+                      ('neighbour_snap','SnapEnabled'),('snap_guides','SnapGuidesEnabled')]:
         method(g,key,DOCUMENT,'ReadPreference',get(g,'PreferencesDocument'),Key=key)
         set_value(g,key+'apply',field,call(g,key+'value',STR+'EqualEqual_StrStr',{'A':key+'.Value'},B='true'))
         g.chain(previous,key,key+'apply');previous=key+'apply'
@@ -55,6 +57,9 @@ def apply_preferences():
             ident=key+str(i);branch(g,ident,call(g,ident+'same',STR+'EqualEqual_StrStr',{'A':key+'.Value'},B=value))
             g.set(ident+'index',index,str(i));g.chain(previous,ident,ident+'index',key+'done');previous=ident+'.else'
         g.chain(previous,key+'done');previous=key+'done.then_0'
+    method(g,'rotationpivot',DOCUMENT,'ReadPreference',get(g,'PreferencesDocument'),Key='rotation_pivot')
+    set_value(g,'rotationpivotapply','RotationPivot','rotationpivot.Value')
+    g.chain(previous,'rotationpivot','rotationpivotapply');previous='rotationpivotapply'
     method(g,'mode',DOCUMENT,'ReadPreference',get(g,'PreferencesDocument'),Key='gimbal');g.chain(previous,'mode');previous='mode';g.node('modedone','sequence',outputs=1)
     for i,value in enumerate(['off','move','rotate','scale']):
         ident='mode'+str(i);branch(g,ident,call(g,ident+'same',STR+'EqualEqual_StrStr',{'A':'mode.Value'},B=value));g.set(ident+'apply','GizmoMode',str(i))
@@ -64,6 +69,10 @@ def apply_preferences():
     method(g,'openingkey',DOCUMENT,'ReadPreference',get(g,'PreferencesDocument'),Key='toggle_key')
     method(g,'openingconfigure',RIG,'ConfigureOpeningKey',get(g,'EditorRig'),{'Name':'openingkey.Value'})
     g.chain(previous,'openingkey','openingconfigure');previous='openingconfigure'
+    method(g,'snapdistance',DOCUMENT,'ReadPreference',get(g,'PreferencesDocument'),Key='snap_distance')
+    g.call('snapdistanceparse','self:ParseTransformNumber');g.wire(('snapdistance.Value','snapdistanceparse.Text'))
+    set_value(g,'snapdistanceapply','SnapDistance','snapdistanceparse.Value')
+    g.chain(previous,'snapdistance','snapdistanceparse','snapdistanceapply');previous='snapdistanceapply'
     for key,field in [('fly_speed','Speed'),('fast_multiplier','FastMultiplier'),('look_speed','LookRate')]:
         method(g,key,DOCUMENT,'ReadPreference',get(g,'PreferencesDocument'),Key=key)
         g.call(key+'parse','self:ParseTransformNumber');g.wire((key+'.Value',key+'parse.Text'))

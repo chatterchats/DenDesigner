@@ -408,6 +408,51 @@
                     }
                   },
                   {
+                    "class": "/Script/UMG.Button",
+                    "name": "RotationPivot",
+                    "variable": true,
+                    "props": {
+                      "BackgroundColor": "(R=1,G=1,B=1,A=1)",
+                      "IsFocusable": "false",
+                      "WidgetStyle.Normal.DrawAs": "RoundedBox",
+                      "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.04))",
+                      "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.16)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.Hovered.DrawAs": "RoundedBox",
+                      "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.09))",
+                      "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.6)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.Pressed.DrawAs": "RoundedBox",
+                      "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=0,G=0,B=0,A=0.2))",
+                      "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.6)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.Disabled.DrawAs": "RoundedBox",
+                      "WidgetStyle.Disabled.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.04))",
+                      "WidgetStyle.Disabled.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.16)),Width=1.0,RoundingType=FixedRadius)",
+                      "WidgetStyle.NormalPadding": "(Left=12,Top=7,Right=12,Bottom=7)",
+                      "WidgetStyle.PressedPadding": "(Left=12,Top=8,Right=12,Bottom=6)",
+                      "ToolTipText": "Rotate around the bottom, centre or top of the prop. Original uses the mesh's authored origin."
+                    },
+                    "slot": {
+                      "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+                    },
+                    "children": [
+                      {
+                        "class": "/Script/UMG.TextBlock",
+                        "name": "RotationPivotLabel",
+                        "props": {
+                          "Text": "Pivot: Centre",
+                          "Font.Size": 13,
+                          "ColorAndOpacity": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
+                          "TextTransformPolicy": "ToUpper",
+                          "Justification": "Center"
+                        },
+                        "variable": true,
+                        "slot": {
+                          "HorizontalAlignment": "HAlign_Center",
+                          "VerticalAlignment": "VAlign_Center"
+                        }
+                      }
+                    ]
+                  },
+                  {
                     "class": "/Script/UMG.HorizontalBox",
                     "name": "FieldsPitch",
                     "slot": {
@@ -1507,15 +1552,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Bold",
+            "TypefaceFontName": "Medium",
             "Size": "13",
-            "LetterSpacing": "120"
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font7widget",
           "kind": "get",
-          "var": "PitchLabel"
+          "var": "RotationPivotLabel"
         },
         {
           "id": "font7set",
@@ -1551,7 +1596,7 @@
         {
           "id": "font8widget",
           "kind": "get",
-          "var": "YawLabel"
+          "var": "PitchLabel"
         },
         {
           "id": "font8set",
@@ -1587,7 +1632,7 @@
         {
           "id": "font9widget",
           "kind": "get",
-          "var": "RollLabel"
+          "var": "YawLabel"
         },
         {
           "id": "font9set",
@@ -1623,7 +1668,7 @@
         {
           "id": "font10widget",
           "kind": "get",
-          "var": "GroupScale"
+          "var": "RollLabel"
         },
         {
           "id": "font10set",
@@ -1659,7 +1704,7 @@
         {
           "id": "font11widget",
           "kind": "get",
-          "var": "ScaleLabel"
+          "var": "GroupScale"
         },
         {
           "id": "font11set",
@@ -1670,7 +1715,7 @@
         {
           "id": "font12",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font12check",
@@ -1687,15 +1732,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Regular",
-            "Size": "12",
-            "LetterSpacing": "0"
+            "TypefaceFontName": "Bold",
+            "Size": "13",
+            "LetterSpacing": "120"
           }
         },
         {
           "id": "font12widget",
           "kind": "get",
-          "var": "ApplyHint"
+          "var": "ScaleLabel"
         },
         {
           "id": "font12set",
@@ -1706,7 +1751,7 @@
         {
           "id": "font13",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font13check",
@@ -1723,15 +1768,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "14",
-            "LetterSpacing": "70"
+            "TypefaceFontName": "Regular",
+            "Size": "12",
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font13widget",
           "kind": "get",
-          "var": "CopyLabel"
+          "var": "ApplyHint"
         },
         {
           "id": "font13set",
@@ -1767,7 +1812,7 @@
         {
           "id": "font14widget",
           "kind": "get",
-          "var": "StoreLabel"
+          "var": "CopyLabel"
         },
         {
           "id": "font14set",
@@ -1803,7 +1848,7 @@
         {
           "id": "font15widget",
           "kind": "get",
-          "var": "ResetLabel"
+          "var": "StoreLabel"
         },
         {
           "id": "font15set",
@@ -1839,10 +1884,46 @@
         {
           "id": "font16widget",
           "kind": "get",
-          "var": "FocusLabel"
+          "var": "ResetLabel"
         },
         {
           "id": "font16set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font17",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+        },
+        {
+          "id": "font17check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font17valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font17info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Medium",
+            "Size": "14",
+            "LetterSpacing": "70"
+          }
+        },
+        {
+          "id": "font17widget",
+          "kind": "get",
+          "var": "FocusLabel"
+        },
+        {
+          "id": "font17set",
           "kind": "call",
           "function": "/Script/UMG.TextBlock:SetFont",
           "defaults": {}
@@ -2126,7 +2207,7 @@
           "font7info.FontObject"
         ],
         [
-          "font7widget.PitchLabel",
+          "font7widget.RotationPivotLabel",
           "font7set.self"
         ],
         [
@@ -2162,7 +2243,7 @@
           "font8info.FontObject"
         ],
         [
-          "font8widget.YawLabel",
+          "font8widget.PitchLabel",
           "font8set.self"
         ],
         [
@@ -2198,7 +2279,7 @@
           "font9info.FontObject"
         ],
         [
-          "font9widget.RollLabel",
+          "font9widget.YawLabel",
           "font9set.self"
         ],
         [
@@ -2234,7 +2315,7 @@
           "font10info.FontObject"
         ],
         [
-          "font10widget.GroupScale",
+          "font10widget.RollLabel",
           "font10set.self"
         ],
         [
@@ -2270,7 +2351,7 @@
           "font11info.FontObject"
         ],
         [
-          "font11widget.ScaleLabel",
+          "font11widget.GroupScale",
           "font11set.self"
         ],
         [
@@ -2294,7 +2375,7 @@
           "font12.self"
         ],
         [
-          "font12.PrimaryFont",
+          "font12.SecondaryFont",
           "font12check.Object"
         ],
         [
@@ -2302,11 +2383,11 @@
           "font12valid.Condition"
         ],
         [
-          "font12.PrimaryFont",
+          "font12.SecondaryFont",
           "font12info.FontObject"
         ],
         [
-          "font12widget.ApplyHint",
+          "font12widget.ScaleLabel",
           "font12set.self"
         ],
         [
@@ -2330,7 +2411,7 @@
           "font13.self"
         ],
         [
-          "font13.SecondaryFont",
+          "font13.PrimaryFont",
           "font13check.Object"
         ],
         [
@@ -2338,11 +2419,11 @@
           "font13valid.Condition"
         ],
         [
-          "font13.SecondaryFont",
+          "font13.PrimaryFont",
           "font13info.FontObject"
         ],
         [
-          "font13widget.CopyLabel",
+          "font13widget.ApplyHint",
           "font13set.self"
         ],
         [
@@ -2378,7 +2459,7 @@
           "font14info.FontObject"
         ],
         [
-          "font14widget.StoreLabel",
+          "font14widget.CopyLabel",
           "font14set.self"
         ],
         [
@@ -2414,7 +2495,7 @@
           "font15info.FontObject"
         ],
         [
-          "font15widget.ResetLabel",
+          "font15widget.StoreLabel",
           "font15set.self"
         ],
         [
@@ -2450,7 +2531,7 @@
           "font16info.FontObject"
         ],
         [
-          "font16widget.FocusLabel",
+          "font16widget.ResetLabel",
           "font16set.self"
         ],
         [
@@ -2468,6 +2549,42 @@
         [
           "font15valid.else",
           "font16valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font17.self"
+        ],
+        [
+          "font17.SecondaryFont",
+          "font17check.Object"
+        ],
+        [
+          "font17check.ReturnValue",
+          "font17valid.Condition"
+        ],
+        [
+          "font17.SecondaryFont",
+          "font17info.FontObject"
+        ],
+        [
+          "font17widget.FocusLabel",
+          "font17set.self"
+        ],
+        [
+          "font17info.SlateFontInfo",
+          "font17set.InFontInfo"
+        ],
+        [
+          "font16set.then",
+          "font17valid.execute"
+        ],
+        [
+          "font17valid.then",
+          "font17set.execute"
+        ],
+        [
+          "font16valid.else",
+          "font17valid.execute"
         ]
       ]
     }
@@ -2556,6 +2673,20 @@
         "function": "self:Native_Event",
         "defaults": {
           "Name": "set_roll"
+        }
+      },
+      {
+        "id": "RotationPivot",
+        "kind": "bound_event",
+        "widget": "RotationPivot",
+        "delegate": "OnClicked"
+      },
+      {
+        "id": "RotationPivot_event",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "rotation_pivot"
         }
       },
       {
@@ -2817,6 +2948,10 @@
       [
         "FieldRoll.Text",
         "FieldRoll_event.Arg"
+      ],
+      [
+        "RotationPivot.then",
+        "RotationPivot_event.execute"
       ],
       [
         "FieldScale.then",

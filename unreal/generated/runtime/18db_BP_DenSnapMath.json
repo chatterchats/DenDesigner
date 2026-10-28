@@ -1,0 +1,2075 @@
+{
+  "kind": "blueprint",
+  "path": "/DenDesignerGF/Runtime/BP_DenSnapMath",
+  "parent": "/Script/CoreUObject.Object",
+  "functions": [
+    {
+      "name": "AxisSnap",
+      "inputs": [
+        {
+          "name": "DMin",
+          "type": "double"
+        },
+        {
+          "name": "DMax",
+          "type": "double"
+        },
+        {
+          "name": "TMin",
+          "type": "double"
+        },
+        {
+          "name": "TMax",
+          "type": "double"
+        },
+        {
+          "name": "Distance",
+          "type": "double"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Found",
+          "type": "bool"
+        },
+        {
+          "name": "Delta",
+          "type": "double"
+        },
+        {
+          "name": "Kind",
+          "type": "int"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "dsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "dmid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "0.5"
+          }
+        },
+        {
+          "id": "tsum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "tmid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {
+            "B": "0.5"
+          }
+        },
+        {
+          "id": "delta4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "kind4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectInt",
+          "defaults": {
+            "A": "4",
+            "B": "0",
+            "bPickA": "true"
+          }
+        },
+        {
+          "id": "delta5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "abs5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "bestabs5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "closer5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "best5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectFloat",
+          "defaults": {}
+        },
+        {
+          "id": "pick5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectInt",
+          "defaults": {
+            "A": "5"
+          }
+        },
+        {
+          "id": "delta1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "abs1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "bestabs1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "closer1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "best1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectFloat",
+          "defaults": {}
+        },
+        {
+          "id": "pick1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectInt",
+          "defaults": {
+            "A": "1"
+          }
+        },
+        {
+          "id": "delta3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "abs3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "bestabs3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "closer3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "best3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectFloat",
+          "defaults": {}
+        },
+        {
+          "id": "pick3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectInt",
+          "defaults": {
+            "A": "3"
+          }
+        },
+        {
+          "id": "delta2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "abs2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "bestabs2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "closer2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "best2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectFloat",
+          "defaults": {}
+        },
+        {
+          "id": "pick2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectInt",
+          "defaults": {
+            "A": "2"
+          }
+        },
+        {
+          "id": "delta6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "abs6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "bestabs6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "closer6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "best6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectFloat",
+          "defaults": {}
+        },
+        {
+          "id": "pick6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectInt",
+          "defaults": {
+            "A": "6"
+          }
+        },
+        {
+          "id": "delta7",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "abs7",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "bestabs7",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "closer7",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "best7",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectFloat",
+          "defaults": {}
+        },
+        {
+          "id": "pick7",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectInt",
+          "defaults": {
+            "A": "7"
+          }
+        },
+        {
+          "id": "delta8",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "abs8",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "bestabs8",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "closer8",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "best8",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectFloat",
+          "defaults": {}
+        },
+        {
+          "id": "pick8",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectInt",
+          "defaults": {
+            "A": "8"
+          }
+        },
+        {
+          "id": "delta9",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "abs9",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "bestabs9",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "closer9",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "best9",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectFloat",
+          "defaults": {}
+        },
+        {
+          "id": "pick9",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectInt",
+          "defaults": {
+            "A": "9"
+          }
+        },
+        {
+          "id": "distance",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "delta",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectFloat",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "kind",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectInt",
+          "defaults": {
+            "B": "0"
+          }
+        }
+      ],
+      "links": [
+        [
+          "entry.DMin",
+          "dsum.A"
+        ],
+        [
+          "entry.DMax",
+          "dsum.B"
+        ],
+        [
+          "dsum.ReturnValue",
+          "dmid.A"
+        ],
+        [
+          "entry.TMin",
+          "tsum.A"
+        ],
+        [
+          "entry.TMax",
+          "tsum.B"
+        ],
+        [
+          "tsum.ReturnValue",
+          "tmid.A"
+        ],
+        [
+          "entry.TMax",
+          "delta4.A"
+        ],
+        [
+          "entry.DMin",
+          "delta4.B"
+        ],
+        [
+          "entry.TMin",
+          "delta5.A"
+        ],
+        [
+          "entry.DMax",
+          "delta5.B"
+        ],
+        [
+          "delta5.ReturnValue",
+          "abs5.A"
+        ],
+        [
+          "delta4.ReturnValue",
+          "bestabs5.A"
+        ],
+        [
+          "abs5.ReturnValue",
+          "closer5.A"
+        ],
+        [
+          "bestabs5.ReturnValue",
+          "closer5.B"
+        ],
+        [
+          "delta5.ReturnValue",
+          "best5.A"
+        ],
+        [
+          "delta4.ReturnValue",
+          "best5.B"
+        ],
+        [
+          "closer5.ReturnValue",
+          "best5.bPickA"
+        ],
+        [
+          "kind4.ReturnValue",
+          "pick5.B"
+        ],
+        [
+          "closer5.ReturnValue",
+          "pick5.bPickA"
+        ],
+        [
+          "entry.TMin",
+          "delta1.A"
+        ],
+        [
+          "entry.DMin",
+          "delta1.B"
+        ],
+        [
+          "delta1.ReturnValue",
+          "abs1.A"
+        ],
+        [
+          "best5.ReturnValue",
+          "bestabs1.A"
+        ],
+        [
+          "abs1.ReturnValue",
+          "closer1.A"
+        ],
+        [
+          "bestabs1.ReturnValue",
+          "closer1.B"
+        ],
+        [
+          "delta1.ReturnValue",
+          "best1.A"
+        ],
+        [
+          "best5.ReturnValue",
+          "best1.B"
+        ],
+        [
+          "closer1.ReturnValue",
+          "best1.bPickA"
+        ],
+        [
+          "pick5.ReturnValue",
+          "pick1.B"
+        ],
+        [
+          "closer1.ReturnValue",
+          "pick1.bPickA"
+        ],
+        [
+          "entry.TMax",
+          "delta3.A"
+        ],
+        [
+          "entry.DMax",
+          "delta3.B"
+        ],
+        [
+          "delta3.ReturnValue",
+          "abs3.A"
+        ],
+        [
+          "best1.ReturnValue",
+          "bestabs3.A"
+        ],
+        [
+          "abs3.ReturnValue",
+          "closer3.A"
+        ],
+        [
+          "bestabs3.ReturnValue",
+          "closer3.B"
+        ],
+        [
+          "delta3.ReturnValue",
+          "best3.A"
+        ],
+        [
+          "best1.ReturnValue",
+          "best3.B"
+        ],
+        [
+          "closer3.ReturnValue",
+          "best3.bPickA"
+        ],
+        [
+          "pick1.ReturnValue",
+          "pick3.B"
+        ],
+        [
+          "closer3.ReturnValue",
+          "pick3.bPickA"
+        ],
+        [
+          "tmid.ReturnValue",
+          "delta2.A"
+        ],
+        [
+          "dmid.ReturnValue",
+          "delta2.B"
+        ],
+        [
+          "delta2.ReturnValue",
+          "abs2.A"
+        ],
+        [
+          "best3.ReturnValue",
+          "bestabs2.A"
+        ],
+        [
+          "abs2.ReturnValue",
+          "closer2.A"
+        ],
+        [
+          "bestabs2.ReturnValue",
+          "closer2.B"
+        ],
+        [
+          "delta2.ReturnValue",
+          "best2.A"
+        ],
+        [
+          "best3.ReturnValue",
+          "best2.B"
+        ],
+        [
+          "closer2.ReturnValue",
+          "best2.bPickA"
+        ],
+        [
+          "pick3.ReturnValue",
+          "pick2.B"
+        ],
+        [
+          "closer2.ReturnValue",
+          "pick2.bPickA"
+        ],
+        [
+          "entry.TMin",
+          "delta6.A"
+        ],
+        [
+          "dmid.ReturnValue",
+          "delta6.B"
+        ],
+        [
+          "delta6.ReturnValue",
+          "abs6.A"
+        ],
+        [
+          "best2.ReturnValue",
+          "bestabs6.A"
+        ],
+        [
+          "abs6.ReturnValue",
+          "closer6.A"
+        ],
+        [
+          "bestabs6.ReturnValue",
+          "closer6.B"
+        ],
+        [
+          "delta6.ReturnValue",
+          "best6.A"
+        ],
+        [
+          "best2.ReturnValue",
+          "best6.B"
+        ],
+        [
+          "closer6.ReturnValue",
+          "best6.bPickA"
+        ],
+        [
+          "pick2.ReturnValue",
+          "pick6.B"
+        ],
+        [
+          "closer6.ReturnValue",
+          "pick6.bPickA"
+        ],
+        [
+          "entry.TMax",
+          "delta7.A"
+        ],
+        [
+          "dmid.ReturnValue",
+          "delta7.B"
+        ],
+        [
+          "delta7.ReturnValue",
+          "abs7.A"
+        ],
+        [
+          "best6.ReturnValue",
+          "bestabs7.A"
+        ],
+        [
+          "abs7.ReturnValue",
+          "closer7.A"
+        ],
+        [
+          "bestabs7.ReturnValue",
+          "closer7.B"
+        ],
+        [
+          "delta7.ReturnValue",
+          "best7.A"
+        ],
+        [
+          "best6.ReturnValue",
+          "best7.B"
+        ],
+        [
+          "closer7.ReturnValue",
+          "best7.bPickA"
+        ],
+        [
+          "pick6.ReturnValue",
+          "pick7.B"
+        ],
+        [
+          "closer7.ReturnValue",
+          "pick7.bPickA"
+        ],
+        [
+          "tmid.ReturnValue",
+          "delta8.A"
+        ],
+        [
+          "entry.DMin",
+          "delta8.B"
+        ],
+        [
+          "delta8.ReturnValue",
+          "abs8.A"
+        ],
+        [
+          "best7.ReturnValue",
+          "bestabs8.A"
+        ],
+        [
+          "abs8.ReturnValue",
+          "closer8.A"
+        ],
+        [
+          "bestabs8.ReturnValue",
+          "closer8.B"
+        ],
+        [
+          "delta8.ReturnValue",
+          "best8.A"
+        ],
+        [
+          "best7.ReturnValue",
+          "best8.B"
+        ],
+        [
+          "closer8.ReturnValue",
+          "best8.bPickA"
+        ],
+        [
+          "pick7.ReturnValue",
+          "pick8.B"
+        ],
+        [
+          "closer8.ReturnValue",
+          "pick8.bPickA"
+        ],
+        [
+          "tmid.ReturnValue",
+          "delta9.A"
+        ],
+        [
+          "entry.DMax",
+          "delta9.B"
+        ],
+        [
+          "delta9.ReturnValue",
+          "abs9.A"
+        ],
+        [
+          "best8.ReturnValue",
+          "bestabs9.A"
+        ],
+        [
+          "abs9.ReturnValue",
+          "closer9.A"
+        ],
+        [
+          "bestabs9.ReturnValue",
+          "closer9.B"
+        ],
+        [
+          "delta9.ReturnValue",
+          "best9.A"
+        ],
+        [
+          "best8.ReturnValue",
+          "best9.B"
+        ],
+        [
+          "closer9.ReturnValue",
+          "best9.bPickA"
+        ],
+        [
+          "pick8.ReturnValue",
+          "pick9.B"
+        ],
+        [
+          "closer9.ReturnValue",
+          "pick9.bPickA"
+        ],
+        [
+          "best9.ReturnValue",
+          "distance.A"
+        ],
+        [
+          "distance.ReturnValue",
+          "within.A"
+        ],
+        [
+          "entry.Distance",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "result.Found"
+        ],
+        [
+          "best9.ReturnValue",
+          "delta.A"
+        ],
+        [
+          "within.ReturnValue",
+          "delta.bPickA"
+        ],
+        [
+          "delta.ReturnValue",
+          "result.Delta"
+        ],
+        [
+          "pick9.ReturnValue",
+          "kind.A"
+        ],
+        [
+          "within.ReturnValue",
+          "kind.bPickA"
+        ],
+        [
+          "kind.ReturnValue",
+          "result.Kind"
+        ],
+        [
+          "entry.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "FrameBox",
+      "inputs": [
+        {
+          "name": "Center",
+          "type": "vector"
+        },
+        {
+          "name": "Extent",
+          "type": "vector"
+        },
+        {
+          "name": "Yaw",
+          "type": "double"
+        },
+        {
+          "name": "FrameYaw",
+          "type": "double"
+        },
+        {
+          "name": "FrameOrigin",
+          "type": "vector"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "FrameCenter",
+          "type": "vector"
+        },
+        {
+          "name": "FrameExtent",
+          "type": "vector"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "frame",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeRotator",
+          "defaults": {
+            "Roll": "0",
+            "Pitch": "0"
+          }
+        },
+        {
+          "id": "relative",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_VectorVector",
+          "defaults": {}
+        },
+        {
+          "id": "unrotate",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessLess_VectorRotator",
+          "defaults": {}
+        },
+        {
+          "id": "turn",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "cos",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:DegCos",
+          "defaults": {}
+        },
+        {
+          "id": "c",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "sin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:DegSin",
+          "defaults": {}
+        },
+        {
+          "id": "s",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "extent",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakVector",
+          "defaults": {}
+        },
+        {
+          "id": "xa",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "xb",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "x",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "ya",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "yb",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "y",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "framed",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "entry.FrameYaw",
+          "frame.Yaw"
+        ],
+        [
+          "entry.Center",
+          "relative.A"
+        ],
+        [
+          "entry.FrameOrigin",
+          "relative.B"
+        ],
+        [
+          "relative.ReturnValue",
+          "unrotate.A"
+        ],
+        [
+          "frame.ReturnValue",
+          "unrotate.B"
+        ],
+        [
+          "unrotate.ReturnValue",
+          "result.FrameCenter"
+        ],
+        [
+          "entry.Yaw",
+          "turn.A"
+        ],
+        [
+          "entry.FrameYaw",
+          "turn.B"
+        ],
+        [
+          "turn.ReturnValue",
+          "cos.A"
+        ],
+        [
+          "cos.ReturnValue",
+          "c.A"
+        ],
+        [
+          "turn.ReturnValue",
+          "sin.A"
+        ],
+        [
+          "sin.ReturnValue",
+          "s.A"
+        ],
+        [
+          "entry.Extent",
+          "extent.InVec"
+        ],
+        [
+          "c.ReturnValue",
+          "xa.A"
+        ],
+        [
+          "extent.X",
+          "xa.B"
+        ],
+        [
+          "s.ReturnValue",
+          "xb.A"
+        ],
+        [
+          "extent.Y",
+          "xb.B"
+        ],
+        [
+          "xa.ReturnValue",
+          "x.A"
+        ],
+        [
+          "xb.ReturnValue",
+          "x.B"
+        ],
+        [
+          "s.ReturnValue",
+          "ya.A"
+        ],
+        [
+          "extent.X",
+          "ya.B"
+        ],
+        [
+          "c.ReturnValue",
+          "yb.A"
+        ],
+        [
+          "extent.Y",
+          "yb.B"
+        ],
+        [
+          "ya.ReturnValue",
+          "y.A"
+        ],
+        [
+          "yb.ReturnValue",
+          "y.B"
+        ],
+        [
+          "x.ReturnValue",
+          "framed.X"
+        ],
+        [
+          "y.ReturnValue",
+          "framed.Y"
+        ],
+        [
+          "extent.Z",
+          "framed.Z"
+        ],
+        [
+          "framed.ReturnValue",
+          "result.FrameExtent"
+        ],
+        [
+          "entry.then",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "SnapBoxes",
+      "inputs": [
+        {
+          "name": "DCenter",
+          "type": "vector"
+        },
+        {
+          "name": "DExtent",
+          "type": "vector"
+        },
+        {
+          "name": "TCenter",
+          "type": "vector"
+        },
+        {
+          "name": "TExtent",
+          "type": "vector"
+        },
+        {
+          "name": "Distance",
+          "type": "double"
+        },
+        {
+          "name": "Near",
+          "type": "double"
+        },
+        {
+          "name": "AllowX",
+          "type": "bool"
+        },
+        {
+          "name": "AllowY",
+          "type": "bool"
+        },
+        {
+          "name": "AllowZ",
+          "type": "bool"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Found",
+          "type": "bool"
+        },
+        {
+          "name": "Delta",
+          "type": "vector"
+        },
+        {
+          "name": "KindX",
+          "type": "int"
+        },
+        {
+          "name": "KindY",
+          "type": "int"
+        },
+        {
+          "name": "KindZ",
+          "type": "int"
+        },
+        {
+          "name": "Strength",
+          "type": "double"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "dc",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakVector",
+          "defaults": {}
+        },
+        {
+          "id": "de",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakVector",
+          "defaults": {}
+        },
+        {
+          "id": "tc",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakVector",
+          "defaults": {}
+        },
+        {
+          "id": "te",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BreakVector",
+          "defaults": {}
+        },
+        {
+          "id": "offsetX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "apartX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "reachX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "clearX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "gapX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "snapX",
+          "kind": "call",
+          "function": "self:AxisSnap",
+          "defaults": {}
+        },
+        {
+          "id": "dminX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "dmaxX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "tminX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "tmaxX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "offsetY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "apartY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "reachY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "clearY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "gapY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "snapY",
+          "kind": "call",
+          "function": "self:AxisSnap",
+          "defaults": {}
+        },
+        {
+          "id": "dminY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "dmaxY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "tminY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "tmaxY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "offsetZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "apartZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "reachZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "clearZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "gapZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMax",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "snapZ",
+          "kind": "call",
+          "function": "self:AxisSnap",
+          "defaults": {}
+        },
+        {
+          "id": "dminZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "dmaxZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "tminZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Subtract_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "tmaxZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "gaps",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {}
+        },
+        {
+          "id": "separation",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:VSize",
+          "defaults": {}
+        },
+        {
+          "id": "near",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_DoubleDouble",
+          "defaults": {}
+        },
+        {
+          "id": "nearfoundX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "foundX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "useX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectFloat",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "sizeX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "strengthX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectFloat",
+          "defaults": {
+            "B": "1000000000.0"
+          }
+        },
+        {
+          "id": "kindX",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "nearfoundY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "foundY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "useY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectFloat",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "sizeY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "strengthY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectFloat",
+          "defaults": {
+            "B": "1000000000.0"
+          }
+        },
+        {
+          "id": "kindY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "anyY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "nearfoundZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "foundZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "useZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectFloat",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "sizeZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Abs",
+          "defaults": {}
+        },
+        {
+          "id": "strengthZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectFloat",
+          "defaults": {
+            "B": "1000000000.0"
+          }
+        },
+        {
+          "id": "kindZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "anyZ",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "delta",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector",
+          "defaults": {}
+        },
+        {
+          "id": "strengthXY",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMin",
+          "defaults": {}
+        },
+        {
+          "id": "strength",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:FMin",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "entry.DCenter",
+          "dc.InVec"
+        ],
+        [
+          "entry.DExtent",
+          "de.InVec"
+        ],
+        [
+          "entry.TCenter",
+          "tc.InVec"
+        ],
+        [
+          "entry.TExtent",
+          "te.InVec"
+        ],
+        [
+          "dc.X",
+          "offsetX.A"
+        ],
+        [
+          "tc.X",
+          "offsetX.B"
+        ],
+        [
+          "offsetX.ReturnValue",
+          "apartX.A"
+        ],
+        [
+          "de.X",
+          "reachX.A"
+        ],
+        [
+          "te.X",
+          "reachX.B"
+        ],
+        [
+          "apartX.ReturnValue",
+          "clearX.A"
+        ],
+        [
+          "reachX.ReturnValue",
+          "clearX.B"
+        ],
+        [
+          "clearX.ReturnValue",
+          "gapX.A"
+        ],
+        [
+          "dc.X",
+          "dminX.A"
+        ],
+        [
+          "de.X",
+          "dminX.B"
+        ],
+        [
+          "dc.X",
+          "dmaxX.A"
+        ],
+        [
+          "de.X",
+          "dmaxX.B"
+        ],
+        [
+          "tc.X",
+          "tminX.A"
+        ],
+        [
+          "te.X",
+          "tminX.B"
+        ],
+        [
+          "tc.X",
+          "tmaxX.A"
+        ],
+        [
+          "te.X",
+          "tmaxX.B"
+        ],
+        [
+          "dminX.ReturnValue",
+          "snapX.DMin"
+        ],
+        [
+          "dmaxX.ReturnValue",
+          "snapX.DMax"
+        ],
+        [
+          "tminX.ReturnValue",
+          "snapX.TMin"
+        ],
+        [
+          "tmaxX.ReturnValue",
+          "snapX.TMax"
+        ],
+        [
+          "entry.Distance",
+          "snapX.Distance"
+        ],
+        [
+          "entry.then",
+          "snapX.execute"
+        ],
+        [
+          "dc.Y",
+          "offsetY.A"
+        ],
+        [
+          "tc.Y",
+          "offsetY.B"
+        ],
+        [
+          "offsetY.ReturnValue",
+          "apartY.A"
+        ],
+        [
+          "de.Y",
+          "reachY.A"
+        ],
+        [
+          "te.Y",
+          "reachY.B"
+        ],
+        [
+          "apartY.ReturnValue",
+          "clearY.A"
+        ],
+        [
+          "reachY.ReturnValue",
+          "clearY.B"
+        ],
+        [
+          "clearY.ReturnValue",
+          "gapY.A"
+        ],
+        [
+          "dc.Y",
+          "dminY.A"
+        ],
+        [
+          "de.Y",
+          "dminY.B"
+        ],
+        [
+          "dc.Y",
+          "dmaxY.A"
+        ],
+        [
+          "de.Y",
+          "dmaxY.B"
+        ],
+        [
+          "tc.Y",
+          "tminY.A"
+        ],
+        [
+          "te.Y",
+          "tminY.B"
+        ],
+        [
+          "tc.Y",
+          "tmaxY.A"
+        ],
+        [
+          "te.Y",
+          "tmaxY.B"
+        ],
+        [
+          "dminY.ReturnValue",
+          "snapY.DMin"
+        ],
+        [
+          "dmaxY.ReturnValue",
+          "snapY.DMax"
+        ],
+        [
+          "tminY.ReturnValue",
+          "snapY.TMin"
+        ],
+        [
+          "tmaxY.ReturnValue",
+          "snapY.TMax"
+        ],
+        [
+          "entry.Distance",
+          "snapY.Distance"
+        ],
+        [
+          "snapX.then",
+          "snapY.execute"
+        ],
+        [
+          "dc.Z",
+          "offsetZ.A"
+        ],
+        [
+          "tc.Z",
+          "offsetZ.B"
+        ],
+        [
+          "offsetZ.ReturnValue",
+          "apartZ.A"
+        ],
+        [
+          "de.Z",
+          "reachZ.A"
+        ],
+        [
+          "te.Z",
+          "reachZ.B"
+        ],
+        [
+          "apartZ.ReturnValue",
+          "clearZ.A"
+        ],
+        [
+          "reachZ.ReturnValue",
+          "clearZ.B"
+        ],
+        [
+          "clearZ.ReturnValue",
+          "gapZ.A"
+        ],
+        [
+          "dc.Z",
+          "dminZ.A"
+        ],
+        [
+          "de.Z",
+          "dminZ.B"
+        ],
+        [
+          "dc.Z",
+          "dmaxZ.A"
+        ],
+        [
+          "de.Z",
+          "dmaxZ.B"
+        ],
+        [
+          "tc.Z",
+          "tminZ.A"
+        ],
+        [
+          "te.Z",
+          "tminZ.B"
+        ],
+        [
+          "tc.Z",
+          "tmaxZ.A"
+        ],
+        [
+          "te.Z",
+          "tmaxZ.B"
+        ],
+        [
+          "dminZ.ReturnValue",
+          "snapZ.DMin"
+        ],
+        [
+          "dmaxZ.ReturnValue",
+          "snapZ.DMax"
+        ],
+        [
+          "tminZ.ReturnValue",
+          "snapZ.TMin"
+        ],
+        [
+          "tmaxZ.ReturnValue",
+          "snapZ.TMax"
+        ],
+        [
+          "entry.Distance",
+          "snapZ.Distance"
+        ],
+        [
+          "snapY.then",
+          "snapZ.execute"
+        ],
+        [
+          "gapX.ReturnValue",
+          "gaps.X"
+        ],
+        [
+          "gapY.ReturnValue",
+          "gaps.Y"
+        ],
+        [
+          "gapZ.ReturnValue",
+          "gaps.Z"
+        ],
+        [
+          "gaps.ReturnValue",
+          "separation.A"
+        ],
+        [
+          "separation.ReturnValue",
+          "near.A"
+        ],
+        [
+          "entry.Near",
+          "near.B"
+        ],
+        [
+          "near.ReturnValue",
+          "nearfoundX.A"
+        ],
+        [
+          "snapX.Found",
+          "nearfoundX.B"
+        ],
+        [
+          "entry.AllowX",
+          "foundX.A"
+        ],
+        [
+          "nearfoundX.ReturnValue",
+          "foundX.B"
+        ],
+        [
+          "snapX.Delta",
+          "useX.A"
+        ],
+        [
+          "foundX.ReturnValue",
+          "useX.bPickA"
+        ],
+        [
+          "snapX.Delta",
+          "sizeX.A"
+        ],
+        [
+          "sizeX.ReturnValue",
+          "strengthX.A"
+        ],
+        [
+          "foundX.ReturnValue",
+          "strengthX.bPickA"
+        ],
+        [
+          "snapX.Kind",
+          "kindX.A"
+        ],
+        [
+          "foundX.ReturnValue",
+          "kindX.bPickA"
+        ],
+        [
+          "kindX.ReturnValue",
+          "result.KindX"
+        ],
+        [
+          "near.ReturnValue",
+          "nearfoundY.A"
+        ],
+        [
+          "snapY.Found",
+          "nearfoundY.B"
+        ],
+        [
+          "entry.AllowY",
+          "foundY.A"
+        ],
+        [
+          "nearfoundY.ReturnValue",
+          "foundY.B"
+        ],
+        [
+          "snapY.Delta",
+          "useY.A"
+        ],
+        [
+          "foundY.ReturnValue",
+          "useY.bPickA"
+        ],
+        [
+          "snapY.Delta",
+          "sizeY.A"
+        ],
+        [
+          "sizeY.ReturnValue",
+          "strengthY.A"
+        ],
+        [
+          "foundY.ReturnValue",
+          "strengthY.bPickA"
+        ],
+        [
+          "snapY.Kind",
+          "kindY.A"
+        ],
+        [
+          "foundY.ReturnValue",
+          "kindY.bPickA"
+        ],
+        [
+          "kindY.ReturnValue",
+          "result.KindY"
+        ],
+        [
+          "foundX.ReturnValue",
+          "anyY.A"
+        ],
+        [
+          "foundY.ReturnValue",
+          "anyY.B"
+        ],
+        [
+          "near.ReturnValue",
+          "nearfoundZ.A"
+        ],
+        [
+          "snapZ.Found",
+          "nearfoundZ.B"
+        ],
+        [
+          "entry.AllowZ",
+          "foundZ.A"
+        ],
+        [
+          "nearfoundZ.ReturnValue",
+          "foundZ.B"
+        ],
+        [
+          "snapZ.Delta",
+          "useZ.A"
+        ],
+        [
+          "foundZ.ReturnValue",
+          "useZ.bPickA"
+        ],
+        [
+          "snapZ.Delta",
+          "sizeZ.A"
+        ],
+        [
+          "sizeZ.ReturnValue",
+          "strengthZ.A"
+        ],
+        [
+          "foundZ.ReturnValue",
+          "strengthZ.bPickA"
+        ],
+        [
+          "snapZ.Kind",
+          "kindZ.A"
+        ],
+        [
+          "foundZ.ReturnValue",
+          "kindZ.bPickA"
+        ],
+        [
+          "kindZ.ReturnValue",
+          "result.KindZ"
+        ],
+        [
+          "anyY.ReturnValue",
+          "anyZ.A"
+        ],
+        [
+          "foundZ.ReturnValue",
+          "anyZ.B"
+        ],
+        [
+          "anyZ.ReturnValue",
+          "result.Found"
+        ],
+        [
+          "useX.ReturnValue",
+          "delta.X"
+        ],
+        [
+          "useY.ReturnValue",
+          "delta.Y"
+        ],
+        [
+          "useZ.ReturnValue",
+          "delta.Z"
+        ],
+        [
+          "delta.ReturnValue",
+          "result.Delta"
+        ],
+        [
+          "strengthX.ReturnValue",
+          "strengthXY.A"
+        ],
+        [
+          "strengthY.ReturnValue",
+          "strengthXY.B"
+        ],
+        [
+          "strengthXY.ReturnValue",
+          "strength.A"
+        ],
+        [
+          "strengthZ.ReturnValue",
+          "strength.B"
+        ],
+        [
+          "strength.ReturnValue",
+          "result.Strength"
+        ],
+        [
+          "snapZ.then",
+          "result.execute"
+        ]
+      ]
+    }
+  ]
+}

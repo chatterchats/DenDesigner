@@ -9,6 +9,19 @@ def run(unreal,host,bus,fixture,actor,facts,get,field,field_name,check,settle,co
     def emit(name,arg=''):
         bus.call_method('Emit',(2,name,arg,0.,unreal.Vector()))
         host.call_method('ProcessEditorEvents');host.call_method('PumpEditorMutations');settle()
+    def restore_without_selection_stall(name,arg=''):
+        picker=get(host,'Picker');host.call_method('PollSelection')
+        for _ in range(2000):
+            if not get(picker,'Indexing'):break
+            picker.call_method('PumpIndex')
+        assert not get(picker,'Indexing')
+        old_steps=get(picker,'MaxSteps')
+        assert not unreal.ZComAuthoringLibrary.set_property_from_text(picker,'MaxSteps','1')
+        try:
+            emit(name,arg)
+            check(not get(picker,'Indexing'),name+' refreshes restored props without scanning the entire Den')
+        finally:
+            assert not unreal.ZComAuthoringLibrary.set_property_from_text(picker,'MaxSteps',str(old_steps))
     def listing(query=None):
         if query is not None:emit('stored_search',query)
         for _ in range(1000):
@@ -45,7 +58,7 @@ def run(unreal,host,bus,fixture,actor,facts,get,field,field_name,check,settle,co
               'search filters stored cards without hiding unavailable edits or changing restore-all scope')
         emit('restore',added_key)
         check(get(history,'Version')==before and lookup('storeroom_added',1) is not None,'obsolete card revision cannot restore a different layout entry')
-        listing('');emit('restore',card('storeroom_added'));listing()
+        listing('');restore_without_selection_stall('restore',card('storeroom_added'));listing()
         value=lookup('storeroom_added',0)
         check(value is not None and lookup('storeroom_added',1) is None and get(host,'StoreTotal')==1,
               'restore atomically transfers an added prop from stored to placed')
@@ -56,12 +69,12 @@ def run(unreal,host,bus,fixture,actor,facts,get,field,field_name,check,settle,co
               'restored prop is actually spawned at its stored transform')
         command('undo');settle();listing()
         check(lookup('storeroom_added',1) is not None and not unreal.SystemLibrary.is_valid(live),'undo restore returns the prop to storage and removes its actor')
-        emit('restore',card(actor.get_path_name()));listing();native=lookup(actor.get_path_name(),2)
+        restore_without_selection_stall('restore',card(actor.get_path_name()));listing();native=lookup(actor.get_path_name(),2)
         check(not actor.get_editor_property('hidden') and native is not None and not field(native,'Hidden') and abs(actor.get_actor_location().x-15080)<.001,
               'restoring a hidden Den prop preserves its moved position override')
         command('undo');settle();listing();check(actor.get_editor_property('hidden'),'undo native restore hides the same prop again')
         listing('unmatchable_storeroom_query');undo_count=len(get(history,'UndoSteps'))
-        emit('restore_all');listing()
+        restore_without_selection_stall('restore_all');listing()
         check(get(host,'StoreTotal')==0 and lookup('storeroom_added',0) is not None and not actor.get_editor_property('hidden') and lookup(missing_key,2) is not None,
               'Restore All restores filtered-out stored props while preserving unavailable entries')
         check(len(get(history,'UndoSteps'))==undo_count+1,'Restore All is one atomic history step')

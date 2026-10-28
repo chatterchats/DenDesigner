@@ -981,7 +981,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "toggle_key"
+            "B": "snap_distance"
           }
         },
         {
@@ -989,7 +989,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "toggle_modifier"
+            "B": "toggle_key"
           }
         },
         {
@@ -997,7 +997,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "snap"
+            "B": "toggle_modifier"
           }
         },
         {
@@ -1005,7 +1005,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "reach"
+            "B": "snap"
           }
         },
         {
@@ -1013,7 +1013,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "gimbal"
+            "B": "reach"
           }
         },
         {
@@ -1021,7 +1021,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "unlock_structure"
+            "B": "gimbal"
           }
         },
         {
@@ -1029,7 +1029,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "select_floors"
+            "B": "rotation_pivot"
           }
         },
         {
@@ -1037,7 +1037,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "select_walls"
+            "B": "unlock_structure"
           }
         },
         {
@@ -1045,7 +1045,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "autosave"
+            "B": "select_floors"
           }
         },
         {
@@ -1053,7 +1053,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "thumbnails"
+            "B": "select_walls"
           }
         },
         {
@@ -1061,7 +1061,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "key_forward"
+            "B": "autosave"
           }
         },
         {
@@ -1069,7 +1069,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "key_back"
+            "B": "thumbnails"
           }
         },
         {
@@ -1077,7 +1077,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "key_left"
+            "B": "neighbour_snap"
           }
         },
         {
@@ -1085,7 +1085,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "key_right"
+            "B": "snap_guides"
           }
         },
         {
@@ -1093,7 +1093,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "key_up"
+            "B": "key_forward"
           }
         },
         {
@@ -1101,7 +1101,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "key_down"
+            "B": "key_back"
           }
         },
         {
@@ -1109,7 +1109,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "key_fast"
+            "B": "key_left"
           }
         },
         {
@@ -1117,7 +1117,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "key_turn_left"
+            "B": "key_right"
           }
         },
         {
@@ -1125,7 +1125,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "key_turn_right"
+            "B": "key_up"
           }
         },
         {
@@ -1133,7 +1133,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "key_store"
+            "B": "key_down"
           }
         },
         {
@@ -1141,7 +1141,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "key_copy"
+            "B": "key_fast"
           }
         },
         {
@@ -1149,7 +1149,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "key_undo"
+            "B": "key_turn_left"
           }
         },
         {
@@ -1157,7 +1157,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "key_redo"
+            "B": "key_turn_right"
           }
         },
         {
@@ -1165,7 +1165,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "key_focus"
+            "B": "key_store"
           }
         },
         {
@@ -1173,7 +1173,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "key_reset"
+            "B": "key_copy"
           }
         },
         {
@@ -1181,7 +1181,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "key_snap"
+            "B": "key_undo"
           }
         },
         {
@@ -1189,7 +1189,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "key_catalog"
+            "B": "key_redo"
           }
         },
         {
@@ -1197,7 +1197,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "key_storeroom"
+            "B": "key_focus"
           }
         },
         {
@@ -1205,11 +1205,43 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "key_layouts"
+            "B": "key_reset"
           }
         },
         {
           "id": "settingkey32",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "key_snap"
+          }
+        },
+        {
+          "id": "settingkey33",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "key_catalog"
+          }
+        },
+        {
+          "id": "settingkey34",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "key_storeroom"
+          }
+        },
+        {
+          "id": "settingkey35",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "key_layouts"
+          }
+        },
+        {
+          "id": "settingkey36",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
@@ -1404,6 +1436,30 @@
         },
         {
           "id": "settingkeyany31",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany32",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany33",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany34",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "settingkeyany35",
           "kind": "call",
           "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
           "defaults": {}
@@ -1688,6 +1744,22 @@
           "settingkey32.A"
         ],
         [
+          "fields.Key",
+          "settingkey33.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey34.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey35.A"
+        ],
+        [
+          "fields.Key",
+          "settingkey36.A"
+        ],
+        [
           "settingkey0.ReturnValue",
           "settingkeyany0.A"
         ],
@@ -1945,6 +2017,38 @@
         ],
         [
           "settingkeyany31.ReturnValue",
+          "settingkeyany32.A"
+        ],
+        [
+          "settingkey33.ReturnValue",
+          "settingkeyany32.B"
+        ],
+        [
+          "settingkeyany32.ReturnValue",
+          "settingkeyany33.A"
+        ],
+        [
+          "settingkey34.ReturnValue",
+          "settingkeyany33.B"
+        ],
+        [
+          "settingkeyany33.ReturnValue",
+          "settingkeyany34.A"
+        ],
+        [
+          "settingkey35.ReturnValue",
+          "settingkeyany34.B"
+        ],
+        [
+          "settingkeyany34.ReturnValue",
+          "settingkeyany35.A"
+        ],
+        [
+          "settingkey36.ReturnValue",
+          "settingkeyany35.B"
+        ],
+        [
+          "settingkeyany35.ReturnValue",
           "setting.Condition"
         ],
         [

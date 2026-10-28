@@ -14,6 +14,16 @@
       "guid": "66df8cad-51f8-5a5d-aa2c-b9b3c30d4537"
     },
     {
+      "name": "HasCompositionAnchor",
+      "type": "bool",
+      "guid": "9f5daaa0-b2be-5350-a3dc-666e1ad11764"
+    },
+    {
+      "name": "CompositionAnchor",
+      "type": "vector",
+      "guid": "977f870c-e1ec-5fe9-9776-849212156adc"
+    },
+    {
       "name": "Entries",
       "type": "struct:/DenDesignerGF/Runtime/ST_DenEntry[]",
       "guid": "117dc38e-17bc-5d5a-868b-6972fd62da7c"

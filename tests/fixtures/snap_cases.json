@@ -1,0 +1,30 @@
+{
+  "_note": "Hand-derived bounds-snapping cases. Do not regenerate expectations from the implementation under test. Kinds: 1 align min, 2 align centre, 3 align max, 4 flush after, 5 flush before, 6/7 centre on target min/max, 8/9 min/max on target centre.",
+  "axis": [
+    {"name": "flush after", "in": [104, 154, 0, 100, 8], "found": true, "delta": -4, "kind": 4},
+    {"name": "flush before", "in": [-56, -3, 0, 100, 8], "found": true, "delta": 3, "kind": 5},
+    {"name": "align minimums", "in": [2, 40, 0, 100, 8], "found": true, "delta": -2, "kind": 1},
+    {"name": "align maximums", "in": [63, 97, 0, 100, 8], "found": true, "delta": 3, "kind": 3},
+    {"name": "align centres", "in": [30, 74, 0, 100, 8], "found": true, "delta": -2, "kind": 2},
+    {"name": "nothing within distance", "in": [20, 60, 0, 100, 8], "found": false, "delta": 0, "kind": 0},
+    {"name": "equal offsets keep the earlier kind", "in": [5, 105, 0, 100, 8], "found": true, "delta": -5, "kind": 1},
+    {"name": "exactly at the snap distance", "in": [108, 150, 0, 100, 8], "found": true, "delta": -8, "kind": 4},
+    {"name": "centre on the target's minimum", "in": [-24, 26, 0, 100, 8], "found": true, "delta": -1, "kind": 6},
+    {"name": "centre on the target's maximum", "in": [80, 118, 0, 100, 8], "found": true, "delta": 1, "kind": 7},
+    {"name": "minimum on the target's centre", "in": [47, 90, 0, 100, 8], "found": true, "delta": 3, "kind": 8},
+    {"name": "maximum on the target's centre", "in": [10, 52, 0, 100, 8], "found": true, "delta": -2, "kind": 9}
+  ],
+  "frame": [
+    {"name": "shared yaw, shifted origin", "center": [150, 20, 5], "extent": [10, 20, 30], "yaw": 0, "frame_yaw": 0, "origin": [100, 0, 0], "frame_center": [50, 20, 5], "frame_extent": [10, 20, 30]},
+    {"name": "turned frame", "center": [0, 100, 0], "extent": [10, 20, 30], "yaw": 90, "frame_yaw": 90, "origin": [0, 0, 0], "frame_center": [100, 0, 0], "frame_extent": [10, 20, 30]},
+    {"name": "quarter turn swaps extents", "center": [0, 0, 0], "extent": [10, 20, 30], "yaw": 90, "frame_yaw": 0, "origin": [0, 0, 0], "frame_center": [0, 0, 0], "frame_extent": [20, 10, 30]},
+    {"name": "eighth turn bounds the diagonal", "center": [0, 0, 0], "extent": [10, 10, 5], "yaw": 45, "frame_yaw": 0, "origin": [0, 0, 0], "frame_center": [0, 0, 0], "frame_extent": [14.142135623730951, 14.142135623730951, 5]},
+    {"name": "half turn keeps extents", "center": [0, 0, 0], "extent": [10, 20, 30], "yaw": -175, "frame_yaw": 5, "origin": [0, 0, 0], "frame_center": [0, 0, 0], "frame_extent": [10, 20, 30]}
+  ],
+  "boxes": [
+    {"name": "flush beside a crate", "d": [[79, 10, 25], [25, 25, 25]], "t": [[0, 0, 50], [50, 50, 50]], "distance": 8, "near": 100, "allow": [true, true, false], "found": true, "delta": [-4, 0, 0], "kinds": [4, 0, 0], "strength": 4},
+    {"name": "flush and edge-aligned", "d": [[79, 27, 25], [25, 25, 25]], "t": [[0, 0, 50], [50, 50, 50]], "distance": 8, "near": 100, "allow": [true, true, false], "found": true, "delta": [-4, -2, 0], "kinds": [4, 3, 0], "strength": 2},
+    {"name": "aligned but too far away", "d": [[2, 400, 25], [25, 25, 25]], "t": [[0, 0, 50], [50, 50, 50]], "distance": 8, "near": 100, "allow": [true, true, false], "found": false, "delta": [0, 0, 0], "kinds": [0, 0, 0], "strength": 1000000000.0},
+    {"name": "stack on top", "d": [[5, 0, 118], [10, 10, 15]], "t": [[0, 0, 50], [50, 50, 50]], "distance": 8, "near": 100, "allow": [false, false, true], "found": true, "delta": [0, 0, -3], "kinds": [0, 0, 4], "strength": 3}
+  ]
+}

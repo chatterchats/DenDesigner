@@ -13,6 +13,7 @@ ROOT_SLOT = 'ZComDen/Native/v1/'
 # All fields are copied and compared on readback. Adding a persisted field must
 # add it here too (Entries uses the wildcard Array_Identical implementation).
 FIELDS = {'SchemaVersion': 'int', 'StorageKey': 'string', 'Scope': 'string',
+          'HasCompositionAnchor': 'bool', 'CompositionAnchor': 'vector',
           'CampaignID': 'string', 'Enabled': 'bool', 'DisplayName': 'string', 'GameVersion': 'string',
           'Revision': 'int64', 'ContentID': 'string', 'WrittenAt': 'string', 'IsDraft': 'bool',
           'DraftBaseRevision': 'int64', 'DraftBaseID': 'string', 'EntryCount': 'int',
@@ -208,8 +209,8 @@ def same_layout(layout):
             checks.append('equal'+name+'.ReturnValue')
         else:
             fn={'string':STR+'EqualEqual_StrStr','int':KML+':EqualEqual_IntInt',
-                'int64':KML+':EqualEqual_Int64Int64','bool':KML+':EqualEqual_BoolBool'}[kind]
-            checks.append(call(g,'equal'+name,fn,{'A':'A'+name+'.'+name,'B':'B'+name+'.'+name}))
+                'vector':KML+':EqualEqual_VectorVector','int64':KML+':EqualEqual_Int64Int64','bool':KML+':EqualEqual_BoolBool'}[kind]
+            checks.append(call(g,'equal'+name,fn,{'A':'A'+name+'.'+name,'B':'B'+name+'.'+name}, **({'ErrorTolerance':0} if kind=='vector' else {})))
     g.set('equal','local:Same')
     g.wire((combine(g,'allfields',checks),'equal.Same'))
     g.get('out','local:Same')

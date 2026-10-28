@@ -14,7 +14,9 @@ def initialize():
     obj=call(g,'create',GS+':SpawnObject',{'Outer':'self.self'},ObjectClass=PICKER)
     g.node('cast','cast',**{'class':PICKER});g.wire((obj,'cast.Object'));set_value(g,'save','Picker','cast.AsBP Den Picker')
     method(g,'index',PICKER,'BeginIndex',get(g,'Picker'),{'WorldManager':'self.self'})
-    g.set('busy','SelectionWasBusy','false');set_value(g,'generation','SelectionGeneration',get(g,'Generation'));g.chain('entry','clear','create','cast','save','index','busy','generation')
+    g.call('consumeinitial','self:ConsumeIndexChanges')
+    g.set('reuseclear','SelectionIndexReusable','false');g.set('reusegeneration','SelectionIndexGeneration','-1')
+    g.set('busy','SelectionWasBusy','false');set_value(g,'generation','SelectionGeneration',get(g,'Generation'));g.chain('entry','clear','create','cast','save','index','consumeinitial','reuseclear','reusegeneration','busy','generation')
     return g.function('InitializeSelection')
 
 
@@ -59,12 +61,24 @@ def request():
     return g.function('RequestSelection',inputs=[v('Value','double')])
 
 
+def reuse_index():
+    g=Graph();g.set('reuse','SelectionIndexReusable','true');set_value(g,'generation','SelectionIndexGeneration',get(g,'Generation'))
+    g.chain('entry','reuse','generation');return g.function('ReuseSelectionIndex')
+
+
 def pump():
     g=Graph();g.node('self','self');branch(g,'open',combine(g,'available',[get(g,'UIOpen'),call(g,'notdragging',KML+':Not_PreBool',{'A':get(g,'DragActive')}),validity(g,'pickervalid',get(g,'Picker'))]))
     branch(g,'busy',get(g,'Busy'));g.set('wasbusy','SelectionWasBusy','true')
     method(g,'cancel',PICKER,'CancelQuery',get(g,'Picker'))
-    changed=call(g,'changedgeneration',KML+':NotEqual_IntInt',{'A':get(g,'SelectionGeneration'),'B':get(g,'Generation')});branch(g,'changed',combine(g,'changedcheck',[get(g,'SelectionWasBusy'),changed],True));g.call('clear','self:RevalidateSelection')
-    branch(g,'transformonly',get(g,'SelectionTransformOnly'));g.set('resettransform','SelectionTransformOnly','false');method(g,'index',PICKER,'BeginIndex',get(g,'Picker'),{'WorldManager':'self.self'});g.set('reset','SelectionWasBusy','false');set_value(g,'generation','SelectionGeneration',get(g,'Generation'))
+    changed=call(g,'changedgeneration',KML+':NotEqual_IntInt',{'A':get(g,'SelectionGeneration'),'B':get(g,'Generation')});branch(g,'changed',combine(g,'changedcheck',[get(g,'SelectionWasBusy'),changed],True));set_value(g,'indexbase','local:PreviousIndexGeneration',get(g,'SelectionGeneration'));g.call('clear','self:RevalidateSelection')
+    g.get('previousindex','local:PreviousIndexGeneration')
+    contiguous=call(g,'contiguous',KML+':EqualEqual_IntInt',{'A':get(g,'IndexFromGeneration'),'B':'previousindex.PreviousIndexGeneration'})
+    current=call(g,'currentdelta',KML+':EqualEqual_IntInt',{'A':get(g,'IndexThroughGeneration'),'B':get(g,'Generation')})
+    branch(g,'delta',combine(g,'validdelta',[get(g,'IndexDeltaValid'),contiguous,current]))
+    method(g,'refreshindex',PICKER,'RefreshIndexChanges',get(g,'Picker'),{'Mutations':get(g,'IndexMutations')})
+    g.call('consumeindex','self:ConsumeIndexChanges')
+    same=call(g,'reusegeneration',KML+':EqualEqual_IntInt',{'A':get(g,'SelectionIndexGeneration'),'B':get(g,'Generation')})
+    branch(g,'transformonly',combine(g,'reuseindex',[get(g,'SelectionIndexReusable'),same]));g.set('resettransform','SelectionIndexReusable','false');method(g,'index',PICKER,'BeginIndex',get(g,'Picker'),{'WorldManager':'self.self'});g.set('reset','SelectionWasBusy','false');set_value(g,'generation','SelectionGeneration',get(g,'Generation'))
     method(g,'pumpindex',PICKER,'PumpIndex',get(g,'Picker'));method(g,'pumpquery',PICKER,'PumpQuery',get(g,'Picker'))
     branch(g,'modal',call(g,'modalcheck',KML+':Greater_IntInt',{'A':get(g,'ConfirmMode')},B=0));method(g,'modalcancel',PICKER,'CancelQuery',get(g,'Picker'))
     branch(g,'ready',prop(g,'readyflag',PICKER,'QueryReady',get(g,'Picker')))
@@ -74,8 +88,8 @@ def pump():
     # and must not consume the same completed result on every subsequent frame.
     method(g,'consumequery',PICKER,'CancelQuery',get(g,'Picker'))
     g.call('accept','self:ConsumePointerSelection');g.wire(('cached.Result','accept.Facts'))
-    g.chain('entry','open','busy','wasbusy','cancel');g.chain('busy.else','changed','clear','transformonly','resettransform','reset','generation','pumpindex','pumpquery','modal','modalcancel');g.chain('changed.else','pumpindex');g.chain('transformonly.else','index','resettransform');g.chain('modal.else','ready','cache','consumequery','accept')
-    return g.function('PollSelection',locals=[v('Result','struct:'+FACT)])
+    g.chain('entry','open','busy','wasbusy','cancel');g.chain('busy.else','changed','indexbase','clear','delta','refreshindex','resettransform','consumeindex','reset','generation','pumpindex','pumpquery','modal','modalcancel');g.chain('changed.else','pumpindex');g.chain('delta.else','transformonly','resettransform');g.chain('transformonly.else','index','resettransform');g.chain('modal.else','ready','cache','consumequery','accept')
+    return g.function('PollSelection',locals=[v('Result','struct:'+FACT),v('PreviousIndexGeneration','int')])
 
 
 def revalidate():
@@ -102,5 +116,5 @@ def refresh():
     return g.function('RefreshSelectionUI')
 
 
-def variables():return [v('Picker','object:'+PICKER),v('Selected','struct:'+FACT),v('HasSelection','bool'),v('SelectedHadDepth','bool'),v('SelectedStencil','int'),v('SelectionMessage','string'),v('SelectionWasBusy','bool'),v('SelectionGeneration','int','-1'),v('SelectionTransformOnly','bool')]
-def functions():return [initialize(),clear_selection(),accept(),request(),pump(),revalidate(),refresh()]
+def variables():return [v('Picker','object:'+PICKER),v('Selected','struct:'+FACT),v('HasSelection','bool'),v('SelectedHadDepth','bool'),v('SelectedStencil','int'),v('SelectionMessage','string'),v('SelectionWasBusy','bool'),v('SelectionGeneration','int','-1'),v('SelectionIndexReusable','bool'),v('SelectionIndexGeneration','int','-1')]
+def functions():return [initialize(),clear_selection(),accept(),request(),reuse_index(),pump(),revalidate(),refresh()]

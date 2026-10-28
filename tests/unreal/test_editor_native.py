@@ -8,22 +8,36 @@ from pathlib import Path
 def fixture_spec():
     from graph import Graph, variable as v
     from runtime_editor_assets import BUS, EVENT, RIG, UIROOT
-    from runtime_editor_host import HOST
+    from runtime_editor_host import HOST, PC
 
     from runtime import LAYOUT,ENTRY
     from runtime_catalog import DATA
     from runtime_pick import PICKER,FACT
     functions = []
+    # PlayerControllers are runtime actors; the editor placement factory cannot place one in a level.
+    g=Graph()
+    g.call('transform','/Script/Engine.KismetMathLibrary:MakeTransform',Scale='1,1,1')
+    g.call('spawn','/Script/Engine.GameplayStatics:BeginDeferredActorSpawnFromClass',ActorClass=PC,
+           CollisionHandlingOverride='AlwaysSpawn')
+    g.wire(('entry.World','spawn.WorldContextObject'),('transform.ReturnValue','spawn.SpawnTransform'))
+    g.call('finish','/Script/Engine.GameplayStatics:FinishSpawningActor')
+    g.wire(('spawn.ReturnValue','finish.Actor'),('transform.ReturnValue','finish.SpawnTransform'),('finish.ReturnValue','result.Actor'))
+    g.chain('entry','spawn','finish','result')
+    functions.append(g.function('SpawnPointerController',inputs=[v('World','object:/Script/CoreUObject.Object')],
+                                outputs=[v('Actor','object:/Script/Engine.Actor')]))
     for owner, fields in [
-        (HOST, [('InputBus', 'object:'+BUS), ('UIOpen', 'bool'),
+        (HOST, [('InputBus', 'object:'+BUS), ('UIOpen', 'bool'), ('EditorController','object:'+PC),
+                ('PointerRestoreFrame','int64'), ('Looking','bool'),
                 ('EditorRig', 'object:'+RIG), ('LastStatus', 'int'),
                 ('LastDraftStatus', 'int'), ('GridStep', 'double'), ('PresetStorageKey','string'),('CompositionStorageKey','string'), ('ActiveCampaignID','string'), ('HomeStorageKey','string'), ('PreferencesStorageKey','string'), ('PreferencesStatus','int'),
                 ('Toolbar','object:'+UIROOT+'WBP_DenToolbar'), ('Inspector','object:'+UIROOT+'WBP_DenTransform'),
-                ('SettingsPanel','object:'+UIROOT+'WBP_DenSettings'), ('HasSelection','bool')]),
-        (RIG, [('EditorBus', 'object:'+BUS), ('OpeningInputBlocked', 'bool')]),
+                ('SettingsPanel','object:'+UIROOT+'WBP_DenSettings'), ('HasSelection','bool'),
+                ('RotationPivot','string'), ('SnapEnabled','bool'), ('SurfaceDragging','bool'), ('SurfaceVertical','bool'), ('GizmoDragKind','int'), ('GizmoDragVector','vector')]),
+        (PC, [('bShowMouseCursor','bool')]),
+        (RIG, [('EditorBus', 'object:'+BUS), ('OpeningInputBlocked', 'bool'), ('bAlt', 'bool')]),
         (DATA, [('Paths', 'string[]')]),
         (LAYOUT, [('Entries','struct:'+ENTRY+'[]')]),
-        (PICKER, [('QueryReady','bool'),('QueryPending','bool'),('QueryResult','struct:'+FACT)]),
+        (PICKER, [('QueryReady','bool'),('QueryPending','bool'),('QueryResult','struct:'+FACT),('SurfaceCandidates','object:/Script/Engine.StaticMeshComponent[]')]),
     ]:
         for field, kind in fields:
             g = Graph()
@@ -148,6 +162,19 @@ def run(unreal, root, fixture, field, field_name, check):
               and field(vector, 'Direction', EVENT).y == 1,
               'native rig sends scalar and vector input through the editor bus')
 
+        pointer_host=spawn(HOST)
+        pointer_controller=helper.call_method('SpawnPointerController',(pointer_host,))
+        spawned.append(pointer_controller)
+        import test_editor_pointer_native
+        pointer_bus=unreal.new_object(unreal.EditorAssetLibrary.load_blueprint_class(BUS))
+        try:
+            test_editor_pointer_native.run(unreal,pointer_host,pointer_controller,pointer_bus,get,set_,check)
+        finally:
+            # Other headless fixtures expect no player controller in the editor world.
+            pointer_host.call_method('DetachEditor',(False,))
+            actors.destroy_actor(pointer_controller)
+            actors.destroy_actor(pointer_host)
+
         host = spawn(HOST)
         store = unreal.new_object(unreal.EditorAssetLibrary.load_blueprint_class(root+'BP_DenLayouts'))
         for draft, count in [(False, 6), (True, 2)]:
@@ -260,6 +287,46 @@ def run(unreal, root, fixture, field, field_name, check):
                 host.call_method('PumpEditorMutations')
                 if not get(host,'Busy') and len(get(host,'EditEvents'))==0:return
             raise AssertionError('native edit queue did not settle')
+        neighbor=actors.spawn_actor_from_class(unreal.StaticMeshActor,unreal.Vector(25000,25000,25000),unreal.Rotator(),transient=True)
+        spawned.append(neighbor)
+        neighbor.static_mesh_component.set_static_mesh(unreal.load_asset('/Engine/BasicShapes/Cube'))
+        neighbor.static_mesh_component.set_collision_profile_name('BlockAll')
+        def edit_without_selection_stall(label,action):
+            host.call_method('PollSelection')
+            for _ in range(2000):
+                if not get(picker,'Indexing'):break
+                picker.call_method('PumpIndex')
+            assert not get(picker,'Indexing')
+            old_steps=get(picker,'MaxSteps')
+            assert not unreal.ZComAuthoringLibrary.set_property_from_text(picker,'MaxSteps','1')
+            try:
+                action();settle_edits()
+                check(not get(picker,'Indexing'),label+' updates changed props without restarting a Den selection scan')
+            finally:
+                assert not unreal.ZComAuthoringLibrary.set_property_from_text(picker,'MaxSteps',str(old_steps))
+        def store_without_selection_stall(label):
+            picker.call_method('BeginIndex',(host,))
+            for _ in range(2000):
+                picker.call_method('PumpIndex')
+                if not get(picker,'Indexing'):break
+            assert not get(picker,'Indexing')
+            old_steps=get(picker,'MaxSteps')
+            assert not unreal.ZComAuthoringLibrary.set_property_from_text(picker,'MaxSteps','1')
+            try:
+                command('store');settle_edits()
+                check(not get(picker,'Indexing'),label+' Store keeps the completed selection index instead of restarting a Den scan')
+            finally:
+                assert not unreal.ZComAuthoringLibrary.set_property_from_text(picker,'MaxSteps',str(old_steps))
+            # Do not pump the index: the next click must work without waiting for it.
+            picker.call_method('RequestPick',(unreal.Vector(24700,25000,25000),unreal.Vector(1,0,0),500.,True,True,True))
+            for _ in range(2000):
+                picker.call_method('PumpQuery')
+                if get(picker,'QueryReady'):break
+            picked=get(picker,'QueryResult')
+            check(get(picker,'QueryReady') and field(picked,'Allowed',root+'ST_DenPick')
+                  and field(picked,'Target',root+'ST_DenPick')==neighbor,
+                  label+' Store allows the next prop pick without a background reindex')
+            picker.call_method('CancelQuery')
         def current_entry():
             values=get(get(host,'WorkingDocument'),'Entries')
             return next(row for row in values if field(row,'Key')==target.get_path_name())
@@ -340,6 +407,14 @@ def run(unreal, root, fixture, field, field_name, check):
         check(precise.get_actor_transform()==original_pose, 'undo precision edit restores the unrounded original')
         from test_drag_native import run as test_drag
         test_drag(unreal,host,precise,precise_facts,get,field,check,settle_edits,command)
+        def spawn_at(cls, location):
+            obj = actors.spawn_actor_from_class(cls, location, unreal.Rotator(), transient=True)
+            spawned.append(obj)
+            return obj
+        from test_snap_native import run_drag as test_snap_drag
+        test_snap_drag(unreal, host, picker, spawn_at, get, set_, check)
+        from test_pivot_native import run as test_pivot
+        test_pivot(unreal, host, picker, spawn_at, get, set_, check, settle_edits, command)
         from test_gizmo_controller import run as test_gizmo_controller
         test_gizmo_controller(unreal,host,precise,precise_facts,get,field,check,settle_edits,command)
         from test_surface_native import run as test_surface
@@ -364,7 +439,7 @@ def run(unreal, root, fixture, field, field_name, check):
         placed_value.set_editor_property(field_name('Materials'),[material.get_path_name()])
         placed_value.set_editor_property(field_name('Scale'),unreal.Vector(2,3,4))
         mutation=fixture.call_method('MakeMutation',(placed_value,True))
-        host.call_method('CommitEdit',([mutation],'Add fixture',''));settle_edits()
+        edit_without_selection_stall('Adding a prop',lambda:host.call_method('CommitEdit',([mutation],'Add fixture','')))
         placed_actor=next(actor for actor in get(host,'Placed') if field(get(actor,'Current'),'Key')=='transform_placed')
         placed_component=placed_actor.get_component_by_class(unreal.StaticMeshComponent)
         placedfacts=picker.call_method('Classify',(host,placed_component,True,True,True));host.call_method('AcceptSelection',(placedfacts,))
@@ -384,11 +459,13 @@ def run(unreal, root, fixture, field, field_name, check):
               'placed reset straightens pitch and roll, keeps yaw, and restores unit scale')
         command('undo');settle_edits()
         check(abs(placed_actor.get_actor_scale3d().z-4.2)<.0001, 'placed reset is undoable')
-        command('store');settle_edits()
+        store_without_selection_stall('Placed prop')
         stored=next(row for row in get(get(host,'WorkingDocument'),'Entries') if field(row,'Key')=='transform_placed')
         check(field(stored,'Kind')==1 and not unreal.SystemLibrary.is_valid(placed_actor) and not get(host,'HasSelection'),
               'Store atomically moves a placed prop into stored data and destroys its live actor')
-        command('undo');settle_edits()
+        # An older hint cannot replace the completed batch's actual membership delta.
+        host.call_method('ReuseSelectionIndex')
+        edit_without_selection_stall('Undo Store',lambda:command('undo'))
         restored=next(actor for actor in get(host,'Placed') if field(get(actor,'Current'),'Key')=='transform_placed')
         check(restored!=placed_actor and abs(restored.get_actor_scale3d().z-4.2)<.0001,
               'Undo Store respawns the prop with its exact prior transform')
@@ -396,7 +473,7 @@ def run(unreal, root, fixture, field, field_name, check):
             command('undo');settle_edits()
         command('save');settle_edits()
         facts=picker.call_method('Classify',(host,comp,True,True,True));host.call_method('AcceptSelection',(facts,))
-        command('store');settle_edits()
+        store_without_selection_stall('Existing scenery')
         check(target.get_editor_property('hidden') and field(current_entry(),'Hidden'),
               'Store hides native objects through separate layout data')
         command('undo');settle_edits()

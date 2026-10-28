@@ -42,7 +42,31 @@ def validate(doc):
         require(type(e.get('collision')) is bool,f'props[{i}].collision must be true or false')
         label(e.get('tags',''),f'props[{i}].tags',512,False)
         label(e.get('description',''),f'props[{i}].description',256,False)
+    # Optional explicit ownership inventory; materials can belong to a pack even
+    # when they are not catalog props. IDs remain stable across asset renames.
+    if 'assets' in doc:
+        assets=doc['assets'];require(isinstance(assets,list) and len(assets)<=8192,'assets must contain at most 8192 ownership records')
+        ids=set();paths=set();meshes=set()
+        for a in assets:
+            require(isinstance(a,dict) and set(a)=={'id','path','kind'},'asset ownership requires id, path and kind')
+            label(a['id'],'asset id')
+            require(PACKID.fullmatch(a['id']) and a['id'] not in ids,'Invalid or duplicate stable asset ID');ids.add(a['id'])
+            path=a['path'];require(isinstance(path,str) and len(path)<=1023 and ASSET.fullmatch(path) and path.startswith('/'+name+'/'),'Owned asset must belong to this plugin')
+            require(path.casefold() not in paths,'Duplicate owned asset');paths.add(path.casefold())
+            require(a['kind'] in ('mesh','material'),'Owned asset kind must be mesh or material')
+            if a['kind']=='mesh':meshes.add(path.casefold())
+        require(seen<=meshes,'Explicit ownership must include every catalog mesh')
     return doc
+
+
+def sharing_manifest(doc):
+    """Allowlisted ownership sidecar shipped beside a pack's containers."""
+    import hashlib
+    validate(doc)
+    result={k:doc[k] for k in ('schema','plugin','id','title','author','version')}
+    result['props']=[{k:e[k] for k in ('name','mesh','size','collision','tags','description') if k in e} for e in doc['props']]
+    result['assets']=doc.get('assets',[dict(id='legacy-'+hashlib.sha256(e['mesh'].encode()).hexdigest(),path=e['mesh'],kind='mesh') for e in doc['props']])
+    return result
 
 
 def text(value):return json.dumps(value,ensure_ascii=False)

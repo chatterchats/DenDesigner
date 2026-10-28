@@ -508,6 +508,95 @@
                     "children": [
                       {
                         "class": "/Script/UMG.Border",
+                        "name": "MagnetBack",
+                        "variable": true,
+                        "props": {
+                          "BrushColor": "(R=1,G=1,B=1,A=0)",
+                          "Background.DrawAs": "RoundedBox",
+                          "Background.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=1))",
+                          "Background.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
+                          "Padding": "(Left=0,Top=0,Right=0,Bottom=0)"
+                        },
+                        "slot": {
+                          "Padding": "(Left=0,Top=0,Right=2,Bottom=0)",
+                          "VerticalAlignment": "VAlign_Fill"
+                        },
+                        "children": [
+                          {
+                            "class": "/Script/UMG.Button",
+                            "name": "Magnet",
+                            "variable": true,
+                            "props": {
+                              "BackgroundColor": "(R=1,G=1,B=1,A=1)",
+                              "IsFocusable": "false",
+                              "WidgetStyle.Normal.DrawAs": "RoundedBox",
+                              "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0))",
+                              "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
+                              "WidgetStyle.Hovered.DrawAs": "RoundedBox",
+                              "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.08))",
+                              "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
+                              "WidgetStyle.Pressed.DrawAs": "RoundedBox",
+                              "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.04))",
+                              "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
+                              "WidgetStyle.Disabled.DrawAs": "RoundedBox",
+                              "WidgetStyle.Disabled.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0))",
+                              "WidgetStyle.Disabled.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
+                              "WidgetStyle.NormalPadding": "(Left=10,Top=7,Right=10,Bottom=7)",
+                              "WidgetStyle.PressedPadding": "(Left=10,Top=8,Right=10,Bottom=6)"
+                            },
+                            "slot": {
+                              "HorizontalAlignment": "HAlign_Fill",
+                              "VerticalAlignment": "VAlign_Fill"
+                            },
+                            "children": [
+                              {
+                                "class": "/Script/UMG.HorizontalBox",
+                                "name": "MagnetContent",
+                                "slot": {
+                                  "HorizontalAlignment": "HAlign_Center",
+                                  "VerticalAlignment": "VAlign_Center"
+                                },
+                                "children": [
+                                  {
+                                    "class": "/Script/UMG.Image",
+                                    "name": "MagnetIcon",
+                                    "variable": true,
+                                    "props": {
+                                      "Brush.ResourceObject": "/DenDesignerGF/Editor/Icons/T_Icon_magnet",
+                                      "Brush.ImageSize": "(X=20,Y=20)",
+                                      "ColorAndOpacity": "(R=0.584,G=0.611,B=0.651,A=1)",
+                                      "Visibility": "HitTestInvisible"
+                                    },
+                                    "slot": {
+                                      "HorizontalAlignment": "HAlign_Center",
+                                      "VerticalAlignment": "VAlign_Center",
+                                      "Padding": "(Left=0,Top=0,Right=7,Bottom=0)"
+                                    }
+                                  },
+                                  {
+                                    "class": "/Script/UMG.TextBlock",
+                                    "name": "MagnetLabel",
+                                    "props": {
+                                      "Text": "Snap",
+                                      "Font.Size": 15,
+                                      "ColorAndOpacity": "(SpecifiedColor=(R=0.584,G=0.611,B=0.651,A=1),ColorUseRule=UseColor_Specified)",
+                                      "TextTransformPolicy": "ToUpper",
+                                      "Justification": "Center"
+                                    },
+                                    "variable": true,
+                                    "slot": {
+                                      "HorizontalAlignment": "HAlign_Center",
+                                      "VerticalAlignment": "VAlign_Center"
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "class": "/Script/UMG.Border",
                         "name": "SnapBack",
                         "variable": true,
                         "props": {
@@ -1871,6 +1960,57 @@
               },
               {
                 "class": "/Script/UMG.HorizontalBox",
+                "name": "Free",
+                "slot": {
+                  "Padding": "(Left=16,Top=0,Right=0,Bottom=0)",
+                  "VerticalAlignment": "VAlign_Center"
+                },
+                "children": [
+                  {
+                    "class": "/Script/UMG.Border",
+                    "name": "FreeKey",
+                    "props": {
+                      "BrushColor": "(R=1,G=1,B=1,A=1)",
+                      "Background.DrawAs": "RoundedBox",
+                      "Background.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.1))",
+                      "Background.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.16)),Width=1.0,RoundingType=FixedRadius)",
+                      "Padding": "(Left=6,Top=2,Right=6,Bottom=2)"
+                    },
+                    "slot": {
+                      "VerticalAlignment": "VAlign_Center"
+                    },
+                    "children": [
+                      {
+                        "class": "/Script/UMG.TextBlock",
+                        "name": "FreeKeyText",
+                        "props": {
+                          "Text": "Alt",
+                          "Font.Size": 12,
+                          "ColorAndOpacity": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
+                          "TextTransformPolicy": "ToUpper"
+                        },
+                        "variable": true
+                      }
+                    ]
+                  },
+                  {
+                    "class": "/Script/UMG.TextBlock",
+                    "name": "FreeText",
+                    "props": {
+                      "Text": "No snapping",
+                      "Font.Size": 13,
+                      "ColorAndOpacity": "(SpecifiedColor=(R=0.386,G=0.423,B=0.479,A=1),ColorUseRule=UseColor_Specified)"
+                    },
+                    "variable": true,
+                    "slot": {
+                      "Padding": "(Left=6,Top=0,Right=0,Bottom=0)",
+                      "VerticalAlignment": "VAlign_Center"
+                    }
+                  }
+                ]
+              },
+              {
+                "class": "/Script/UMG.HorizontalBox",
                 "name": "Turn",
                 "slot": {
                   "Padding": "(Left=16,Top=0,Right=0,Bottom=0)",
@@ -1975,6 +2115,36 @@
           }
         ],
         "variable": true
+      },
+      {
+        "class": "/Script/UMG.Border",
+        "name": "SnapBadge",
+        "variable": true,
+        "props": {
+          "BrushColor": "(R=1,G=1,B=1,A=1)",
+          "Background.DrawAs": "RoundedBox",
+          "Background.TintColor": "(SpecifiedColor=(R=0.0027,G=0.003,B=0.004,A=0.88))",
+          "Background.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.5)),Width=1.0,RoundingType=FixedRadius)",
+          "Padding": "(Left=8,Top=4,Right=8,Bottom=4)",
+          "Visibility": "Collapsed"
+        },
+        "slot": {
+          "LayoutData": "(Offsets=(Left=0,Top=0,Right=0,Bottom=0))",
+          "bAutoSize": "true"
+        },
+        "children": [
+          {
+            "class": "/Script/UMG.TextBlock",
+            "name": "SnapBadgeText",
+            "props": {
+              "Text": "",
+              "Font.Size": 13,
+              "ColorAndOpacity": "(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=1),ColorUseRule=UseColor_Specified)",
+              "TextTransformPolicy": "ToUpper"
+            },
+            "variable": true
+          }
+        ]
       },
       {
         "class": "/Script/UMG.SizeBox",
@@ -2617,7 +2787,7 @@
         {
           "id": "font6widget",
           "kind": "get",
-          "var": "SnapLabel"
+          "var": "MagnetLabel"
         },
         {
           "id": "font6set",
@@ -2653,7 +2823,7 @@
         {
           "id": "font7widget",
           "kind": "get",
-          "var": "ReachLabel"
+          "var": "SnapLabel"
         },
         {
           "id": "font7set",
@@ -2689,7 +2859,7 @@
         {
           "id": "font8widget",
           "kind": "get",
-          "var": "FloorsLabel"
+          "var": "ReachLabel"
         },
         {
           "id": "font8set",
@@ -2725,7 +2895,7 @@
         {
           "id": "font9widget",
           "kind": "get",
-          "var": "WallsLabel"
+          "var": "FloorsLabel"
         },
         {
           "id": "font9set",
@@ -2761,7 +2931,7 @@
         {
           "id": "font10widget",
           "kind": "get",
-          "var": "LockLabel"
+          "var": "WallsLabel"
         },
         {
           "id": "font10set",
@@ -2797,7 +2967,7 @@
         {
           "id": "font11widget",
           "kind": "get",
-          "var": "SaveLabel"
+          "var": "LockLabel"
         },
         {
           "id": "font11set",
@@ -2833,7 +3003,7 @@
         {
           "id": "font12widget",
           "kind": "get",
-          "var": "ExitLabel"
+          "var": "SaveLabel"
         },
         {
           "id": "font12set",
@@ -2862,14 +3032,14 @@
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
             "TypefaceFontName": "Medium",
-            "Size": "11",
+            "Size": "15",
             "LetterSpacing": "70"
           }
         },
         {
           "id": "font13widget",
           "kind": "get",
-          "var": "CatalogLabel"
+          "var": "ExitLabel"
         },
         {
           "id": "font13set",
@@ -2905,7 +3075,7 @@
         {
           "id": "font14widget",
           "kind": "get",
-          "var": "StoreroomLabel"
+          "var": "CatalogLabel"
         },
         {
           "id": "font14set",
@@ -2941,7 +3111,7 @@
         {
           "id": "font15widget",
           "kind": "get",
-          "var": "CompositionsLabel"
+          "var": "StoreroomLabel"
         },
         {
           "id": "font15set",
@@ -2977,7 +3147,7 @@
         {
           "id": "font16widget",
           "kind": "get",
-          "var": "LayoutsLabel"
+          "var": "CompositionsLabel"
         },
         {
           "id": "font16set",
@@ -2988,7 +3158,7 @@
         {
           "id": "font17",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font17check",
@@ -3006,14 +3176,14 @@
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
             "TypefaceFontName": "Medium",
-            "Size": "13",
-            "LetterSpacing": "0"
+            "Size": "11",
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font17widget",
           "kind": "get",
-          "var": "Hints"
+          "var": "LayoutsLabel"
         },
         {
           "id": "font17set",
@@ -3024,7 +3194,7 @@
         {
           "id": "font18",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font18check",
@@ -3041,15 +3211,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Bold",
-            "Size": "12",
-            "LetterSpacing": "120"
+            "TypefaceFontName": "Medium",
+            "Size": "13",
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font18widget",
           "kind": "get",
-          "var": "DragKeyText"
+          "var": "Hints"
         },
         {
           "id": "font18set",
@@ -3060,7 +3230,7 @@
         {
           "id": "font19",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font19check",
@@ -3077,15 +3247,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Regular",
-            "Size": "13",
-            "LetterSpacing": "0"
+            "TypefaceFontName": "Bold",
+            "Size": "12",
+            "LetterSpacing": "120"
           }
         },
         {
           "id": "font19widget",
           "kind": "get",
-          "var": "DragText"
+          "var": "DragKeyText"
         },
         {
           "id": "font19set",
@@ -3096,7 +3266,7 @@
         {
           "id": "font20",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font20check",
@@ -3113,15 +3283,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Bold",
-            "Size": "12",
-            "LetterSpacing": "120"
+            "TypefaceFontName": "Regular",
+            "Size": "13",
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font20widget",
           "kind": "get",
-          "var": "HeightKeyText"
+          "var": "DragText"
         },
         {
           "id": "font20set",
@@ -3132,7 +3302,7 @@
         {
           "id": "font21",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font21check",
@@ -3149,15 +3319,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Regular",
-            "Size": "13",
-            "LetterSpacing": "0"
+            "TypefaceFontName": "Bold",
+            "Size": "12",
+            "LetterSpacing": "120"
           }
         },
         {
           "id": "font21widget",
           "kind": "get",
-          "var": "HeightText"
+          "var": "HeightKeyText"
         },
         {
           "id": "font21set",
@@ -3168,7 +3338,7 @@
         {
           "id": "font22",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font22check",
@@ -3185,15 +3355,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Bold",
-            "Size": "12",
-            "LetterSpacing": "120"
+            "TypefaceFontName": "Regular",
+            "Size": "13",
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font22widget",
           "kind": "get",
-          "var": "TurnKeyText"
+          "var": "HeightText"
         },
         {
           "id": "font22set",
@@ -3204,7 +3374,7 @@
         {
           "id": "font23",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font23check",
@@ -3221,15 +3391,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Regular",
-            "Size": "13",
-            "LetterSpacing": "0"
+            "TypefaceFontName": "Bold",
+            "Size": "12",
+            "LetterSpacing": "120"
           }
         },
         {
           "id": "font23widget",
           "kind": "get",
-          "var": "TurnText"
+          "var": "FreeKeyText"
         },
         {
           "id": "font23set",
@@ -3240,7 +3410,7 @@
         {
           "id": "font24",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font24check",
@@ -3257,15 +3427,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Bold",
-            "Size": "12",
-            "LetterSpacing": "120"
+            "TypefaceFontName": "Regular",
+            "Size": "13",
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font24widget",
           "kind": "get",
-          "var": "BackKeyText"
+          "var": "FreeText"
         },
         {
           "id": "font24set",
@@ -3276,7 +3446,7 @@
         {
           "id": "font25",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font25check",
@@ -3293,15 +3463,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Regular",
-            "Size": "13",
-            "LetterSpacing": "0"
+            "TypefaceFontName": "Bold",
+            "Size": "12",
+            "LetterSpacing": "120"
           }
         },
         {
           "id": "font25widget",
           "kind": "get",
-          "var": "BackText"
+          "var": "TurnKeyText"
         },
         {
           "id": "font25set",
@@ -3312,7 +3482,7 @@
         {
           "id": "font26",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:TitleFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font26check",
@@ -3329,15 +3499,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "DmBd",
-            "Size": "20",
+            "TypefaceFontName": "Regular",
+            "Size": "13",
             "LetterSpacing": "0"
           }
         },
         {
           "id": "font26widget",
           "kind": "get",
-          "var": "HelpPanelTitle"
+          "var": "TurnText"
         },
         {
           "id": "font26set",
@@ -3348,7 +3518,7 @@
         {
           "id": "font27",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font27check",
@@ -3365,15 +3535,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "14",
-            "LetterSpacing": "0"
+            "TypefaceFontName": "Bold",
+            "Size": "12",
+            "LetterSpacing": "120"
           }
         },
         {
           "id": "font27widget",
           "kind": "get",
-          "var": "HelpText"
+          "var": "BackKeyText"
         },
         {
           "id": "font27set",
@@ -3384,7 +3554,7 @@
         {
           "id": "font28",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font28check",
@@ -3401,15 +3571,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "14",
-            "LetterSpacing": "70"
+            "TypefaceFontName": "Regular",
+            "Size": "13",
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font28widget",
           "kind": "get",
-          "var": "CloseHelpLabel"
+          "var": "BackText"
         },
         {
           "id": "font28set",
@@ -3420,7 +3590,7 @@
         {
           "id": "font29",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:TitleFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font29check",
@@ -3437,15 +3607,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "DmBd",
-            "Size": "20",
-            "LetterSpacing": "0"
+            "TypefaceFontName": "Bold",
+            "Size": "13",
+            "LetterSpacing": "120"
           }
         },
         {
           "id": "font29widget",
           "kind": "get",
-          "var": "ConfirmTitle"
+          "var": "SnapBadgeText"
         },
         {
           "id": "font29set",
@@ -3456,7 +3626,7 @@
         {
           "id": "font30",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:TitleFont"
         },
         {
           "id": "font30check",
@@ -3473,15 +3643,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Regular",
-            "Size": "14",
+            "TypefaceFontName": "DmBd",
+            "Size": "20",
             "LetterSpacing": "0"
           }
         },
         {
           "id": "font30widget",
           "kind": "get",
-          "var": "ConfirmText"
+          "var": "HelpPanelTitle"
         },
         {
           "id": "font30set",
@@ -3492,7 +3662,7 @@
         {
           "id": "font31",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font31check",
@@ -3510,14 +3680,14 @@
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
             "TypefaceFontName": "Medium",
-            "Size": "15",
-            "LetterSpacing": "70"
+            "Size": "14",
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font31widget",
           "kind": "get",
-          "var": "ConfirmSaveLabel"
+          "var": "HelpText"
         },
         {
           "id": "font31set",
@@ -3546,14 +3716,14 @@
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
             "TypefaceFontName": "Medium",
-            "Size": "15",
+            "Size": "14",
             "LetterSpacing": "70"
           }
         },
         {
           "id": "font32widget",
           "kind": "get",
-          "var": "ConfirmDiscardLabel"
+          "var": "CloseHelpLabel"
         },
         {
           "id": "font32set",
@@ -3564,7 +3734,7 @@
         {
           "id": "font33",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:TitleFont"
         },
         {
           "id": "font33check",
@@ -3581,18 +3751,162 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
+            "TypefaceFontName": "DmBd",
+            "Size": "20",
+            "LetterSpacing": "0"
+          }
+        },
+        {
+          "id": "font33widget",
+          "kind": "get",
+          "var": "ConfirmTitle"
+        },
+        {
+          "id": "font33set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font34",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+        },
+        {
+          "id": "font34check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font34valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font34info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Regular",
+            "Size": "14",
+            "LetterSpacing": "0"
+          }
+        },
+        {
+          "id": "font34widget",
+          "kind": "get",
+          "var": "ConfirmText"
+        },
+        {
+          "id": "font34set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font35",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+        },
+        {
+          "id": "font35check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font35valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font35info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
             "TypefaceFontName": "Medium",
             "Size": "15",
             "LetterSpacing": "70"
           }
         },
         {
-          "id": "font33widget",
+          "id": "font35widget",
+          "kind": "get",
+          "var": "ConfirmSaveLabel"
+        },
+        {
+          "id": "font35set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font36",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+        },
+        {
+          "id": "font36check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font36valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font36info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Medium",
+            "Size": "15",
+            "LetterSpacing": "70"
+          }
+        },
+        {
+          "id": "font36widget",
+          "kind": "get",
+          "var": "ConfirmDiscardLabel"
+        },
+        {
+          "id": "font36set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font37",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+        },
+        {
+          "id": "font37check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font37valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font37info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Medium",
+            "Size": "15",
+            "LetterSpacing": "70"
+          }
+        },
+        {
+          "id": "font37widget",
           "kind": "get",
           "var": "ConfirmCancelLabel"
         },
         {
-          "id": "font33set",
+          "id": "font37set",
           "kind": "call",
           "function": "/Script/UMG.TextBlock:SetFont",
           "defaults": {}
@@ -3840,7 +4154,7 @@
           "font6info.FontObject"
         ],
         [
-          "font6widget.SnapLabel",
+          "font6widget.MagnetLabel",
           "font6set.self"
         ],
         [
@@ -3876,7 +4190,7 @@
           "font7info.FontObject"
         ],
         [
-          "font7widget.ReachLabel",
+          "font7widget.SnapLabel",
           "font7set.self"
         ],
         [
@@ -3912,7 +4226,7 @@
           "font8info.FontObject"
         ],
         [
-          "font8widget.FloorsLabel",
+          "font8widget.ReachLabel",
           "font8set.self"
         ],
         [
@@ -3948,7 +4262,7 @@
           "font9info.FontObject"
         ],
         [
-          "font9widget.WallsLabel",
+          "font9widget.FloorsLabel",
           "font9set.self"
         ],
         [
@@ -3984,7 +4298,7 @@
           "font10info.FontObject"
         ],
         [
-          "font10widget.LockLabel",
+          "font10widget.WallsLabel",
           "font10set.self"
         ],
         [
@@ -4020,7 +4334,7 @@
           "font11info.FontObject"
         ],
         [
-          "font11widget.SaveLabel",
+          "font11widget.LockLabel",
           "font11set.self"
         ],
         [
@@ -4056,7 +4370,7 @@
           "font12info.FontObject"
         ],
         [
-          "font12widget.ExitLabel",
+          "font12widget.SaveLabel",
           "font12set.self"
         ],
         [
@@ -4092,7 +4406,7 @@
           "font13info.FontObject"
         ],
         [
-          "font13widget.CatalogLabel",
+          "font13widget.ExitLabel",
           "font13set.self"
         ],
         [
@@ -4128,7 +4442,7 @@
           "font14info.FontObject"
         ],
         [
-          "font14widget.StoreroomLabel",
+          "font14widget.CatalogLabel",
           "font14set.self"
         ],
         [
@@ -4164,7 +4478,7 @@
           "font15info.FontObject"
         ],
         [
-          "font15widget.CompositionsLabel",
+          "font15widget.StoreroomLabel",
           "font15set.self"
         ],
         [
@@ -4200,7 +4514,7 @@
           "font16info.FontObject"
         ],
         [
-          "font16widget.LayoutsLabel",
+          "font16widget.CompositionsLabel",
           "font16set.self"
         ],
         [
@@ -4224,7 +4538,7 @@
           "font17.self"
         ],
         [
-          "font17.PrimaryFont",
+          "font17.SecondaryFont",
           "font17check.Object"
         ],
         [
@@ -4232,11 +4546,11 @@
           "font17valid.Condition"
         ],
         [
-          "font17.PrimaryFont",
+          "font17.SecondaryFont",
           "font17info.FontObject"
         ],
         [
-          "font17widget.Hints",
+          "font17widget.LayoutsLabel",
           "font17set.self"
         ],
         [
@@ -4260,7 +4574,7 @@
           "font18.self"
         ],
         [
-          "font18.SecondaryFont",
+          "font18.PrimaryFont",
           "font18check.Object"
         ],
         [
@@ -4268,11 +4582,11 @@
           "font18valid.Condition"
         ],
         [
-          "font18.SecondaryFont",
+          "font18.PrimaryFont",
           "font18info.FontObject"
         ],
         [
-          "font18widget.DragKeyText",
+          "font18widget.Hints",
           "font18set.self"
         ],
         [
@@ -4296,7 +4610,7 @@
           "font19.self"
         ],
         [
-          "font19.PrimaryFont",
+          "font19.SecondaryFont",
           "font19check.Object"
         ],
         [
@@ -4304,11 +4618,11 @@
           "font19valid.Condition"
         ],
         [
-          "font19.PrimaryFont",
+          "font19.SecondaryFont",
           "font19info.FontObject"
         ],
         [
-          "font19widget.DragText",
+          "font19widget.DragKeyText",
           "font19set.self"
         ],
         [
@@ -4332,7 +4646,7 @@
           "font20.self"
         ],
         [
-          "font20.SecondaryFont",
+          "font20.PrimaryFont",
           "font20check.Object"
         ],
         [
@@ -4340,11 +4654,11 @@
           "font20valid.Condition"
         ],
         [
-          "font20.SecondaryFont",
+          "font20.PrimaryFont",
           "font20info.FontObject"
         ],
         [
-          "font20widget.HeightKeyText",
+          "font20widget.DragText",
           "font20set.self"
         ],
         [
@@ -4368,7 +4682,7 @@
           "font21.self"
         ],
         [
-          "font21.PrimaryFont",
+          "font21.SecondaryFont",
           "font21check.Object"
         ],
         [
@@ -4376,11 +4690,11 @@
           "font21valid.Condition"
         ],
         [
-          "font21.PrimaryFont",
+          "font21.SecondaryFont",
           "font21info.FontObject"
         ],
         [
-          "font21widget.HeightText",
+          "font21widget.HeightKeyText",
           "font21set.self"
         ],
         [
@@ -4404,7 +4718,7 @@
           "font22.self"
         ],
         [
-          "font22.SecondaryFont",
+          "font22.PrimaryFont",
           "font22check.Object"
         ],
         [
@@ -4412,11 +4726,11 @@
           "font22valid.Condition"
         ],
         [
-          "font22.SecondaryFont",
+          "font22.PrimaryFont",
           "font22info.FontObject"
         ],
         [
-          "font22widget.TurnKeyText",
+          "font22widget.HeightText",
           "font22set.self"
         ],
         [
@@ -4440,7 +4754,7 @@
           "font23.self"
         ],
         [
-          "font23.PrimaryFont",
+          "font23.SecondaryFont",
           "font23check.Object"
         ],
         [
@@ -4448,11 +4762,11 @@
           "font23valid.Condition"
         ],
         [
-          "font23.PrimaryFont",
+          "font23.SecondaryFont",
           "font23info.FontObject"
         ],
         [
-          "font23widget.TurnText",
+          "font23widget.FreeKeyText",
           "font23set.self"
         ],
         [
@@ -4476,7 +4790,7 @@
           "font24.self"
         ],
         [
-          "font24.SecondaryFont",
+          "font24.PrimaryFont",
           "font24check.Object"
         ],
         [
@@ -4484,11 +4798,11 @@
           "font24valid.Condition"
         ],
         [
-          "font24.SecondaryFont",
+          "font24.PrimaryFont",
           "font24info.FontObject"
         ],
         [
-          "font24widget.BackKeyText",
+          "font24widget.FreeText",
           "font24set.self"
         ],
         [
@@ -4512,7 +4826,7 @@
           "font25.self"
         ],
         [
-          "font25.PrimaryFont",
+          "font25.SecondaryFont",
           "font25check.Object"
         ],
         [
@@ -4520,11 +4834,11 @@
           "font25valid.Condition"
         ],
         [
-          "font25.PrimaryFont",
+          "font25.SecondaryFont",
           "font25info.FontObject"
         ],
         [
-          "font25widget.BackText",
+          "font25widget.TurnKeyText",
           "font25set.self"
         ],
         [
@@ -4548,7 +4862,7 @@
           "font26.self"
         ],
         [
-          "font26.TitleFont",
+          "font26.PrimaryFont",
           "font26check.Object"
         ],
         [
@@ -4556,11 +4870,11 @@
           "font26valid.Condition"
         ],
         [
-          "font26.TitleFont",
+          "font26.PrimaryFont",
           "font26info.FontObject"
         ],
         [
-          "font26widget.HelpPanelTitle",
+          "font26widget.TurnText",
           "font26set.self"
         ],
         [
@@ -4584,7 +4898,7 @@
           "font27.self"
         ],
         [
-          "font27.PrimaryFont",
+          "font27.SecondaryFont",
           "font27check.Object"
         ],
         [
@@ -4592,11 +4906,11 @@
           "font27valid.Condition"
         ],
         [
-          "font27.PrimaryFont",
+          "font27.SecondaryFont",
           "font27info.FontObject"
         ],
         [
-          "font27widget.HelpText",
+          "font27widget.BackKeyText",
           "font27set.self"
         ],
         [
@@ -4620,7 +4934,7 @@
           "font28.self"
         ],
         [
-          "font28.SecondaryFont",
+          "font28.PrimaryFont",
           "font28check.Object"
         ],
         [
@@ -4628,11 +4942,11 @@
           "font28valid.Condition"
         ],
         [
-          "font28.SecondaryFont",
+          "font28.PrimaryFont",
           "font28info.FontObject"
         ],
         [
-          "font28widget.CloseHelpLabel",
+          "font28widget.BackText",
           "font28set.self"
         ],
         [
@@ -4656,7 +4970,7 @@
           "font29.self"
         ],
         [
-          "font29.TitleFont",
+          "font29.SecondaryFont",
           "font29check.Object"
         ],
         [
@@ -4664,11 +4978,11 @@
           "font29valid.Condition"
         ],
         [
-          "font29.TitleFont",
+          "font29.SecondaryFont",
           "font29info.FontObject"
         ],
         [
-          "font29widget.ConfirmTitle",
+          "font29widget.SnapBadgeText",
           "font29set.self"
         ],
         [
@@ -4692,7 +5006,7 @@
           "font30.self"
         ],
         [
-          "font30.PrimaryFont",
+          "font30.TitleFont",
           "font30check.Object"
         ],
         [
@@ -4700,11 +5014,11 @@
           "font30valid.Condition"
         ],
         [
-          "font30.PrimaryFont",
+          "font30.TitleFont",
           "font30info.FontObject"
         ],
         [
-          "font30widget.ConfirmText",
+          "font30widget.HelpPanelTitle",
           "font30set.self"
         ],
         [
@@ -4728,7 +5042,7 @@
           "font31.self"
         ],
         [
-          "font31.SecondaryFont",
+          "font31.PrimaryFont",
           "font31check.Object"
         ],
         [
@@ -4736,11 +5050,11 @@
           "font31valid.Condition"
         ],
         [
-          "font31.SecondaryFont",
+          "font31.PrimaryFont",
           "font31info.FontObject"
         ],
         [
-          "font31widget.ConfirmSaveLabel",
+          "font31widget.HelpText",
           "font31set.self"
         ],
         [
@@ -4776,7 +5090,7 @@
           "font32info.FontObject"
         ],
         [
-          "font32widget.ConfirmDiscardLabel",
+          "font32widget.CloseHelpLabel",
           "font32set.self"
         ],
         [
@@ -4800,7 +5114,7 @@
           "font33.self"
         ],
         [
-          "font33.SecondaryFont",
+          "font33.TitleFont",
           "font33check.Object"
         ],
         [
@@ -4808,11 +5122,11 @@
           "font33valid.Condition"
         ],
         [
-          "font33.SecondaryFont",
+          "font33.TitleFont",
           "font33info.FontObject"
         ],
         [
-          "font33widget.ConfirmCancelLabel",
+          "font33widget.ConfirmTitle",
           "font33set.self"
         ],
         [
@@ -4830,6 +5144,150 @@
         [
           "font32valid.else",
           "font33valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font34.self"
+        ],
+        [
+          "font34.PrimaryFont",
+          "font34check.Object"
+        ],
+        [
+          "font34check.ReturnValue",
+          "font34valid.Condition"
+        ],
+        [
+          "font34.PrimaryFont",
+          "font34info.FontObject"
+        ],
+        [
+          "font34widget.ConfirmText",
+          "font34set.self"
+        ],
+        [
+          "font34info.SlateFontInfo",
+          "font34set.InFontInfo"
+        ],
+        [
+          "font33set.then",
+          "font34valid.execute"
+        ],
+        [
+          "font34valid.then",
+          "font34set.execute"
+        ],
+        [
+          "font33valid.else",
+          "font34valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font35.self"
+        ],
+        [
+          "font35.SecondaryFont",
+          "font35check.Object"
+        ],
+        [
+          "font35check.ReturnValue",
+          "font35valid.Condition"
+        ],
+        [
+          "font35.SecondaryFont",
+          "font35info.FontObject"
+        ],
+        [
+          "font35widget.ConfirmSaveLabel",
+          "font35set.self"
+        ],
+        [
+          "font35info.SlateFontInfo",
+          "font35set.InFontInfo"
+        ],
+        [
+          "font34set.then",
+          "font35valid.execute"
+        ],
+        [
+          "font35valid.then",
+          "font35set.execute"
+        ],
+        [
+          "font34valid.else",
+          "font35valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font36.self"
+        ],
+        [
+          "font36.SecondaryFont",
+          "font36check.Object"
+        ],
+        [
+          "font36check.ReturnValue",
+          "font36valid.Condition"
+        ],
+        [
+          "font36.SecondaryFont",
+          "font36info.FontObject"
+        ],
+        [
+          "font36widget.ConfirmDiscardLabel",
+          "font36set.self"
+        ],
+        [
+          "font36info.SlateFontInfo",
+          "font36set.InFontInfo"
+        ],
+        [
+          "font35set.then",
+          "font36valid.execute"
+        ],
+        [
+          "font36valid.then",
+          "font36set.execute"
+        ],
+        [
+          "font35valid.else",
+          "font36valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font37.self"
+        ],
+        [
+          "font37.SecondaryFont",
+          "font37check.Object"
+        ],
+        [
+          "font37check.ReturnValue",
+          "font37valid.Condition"
+        ],
+        [
+          "font37.SecondaryFont",
+          "font37info.FontObject"
+        ],
+        [
+          "font37widget.ConfirmCancelLabel",
+          "font37set.self"
+        ],
+        [
+          "font37info.SlateFontInfo",
+          "font37set.InFontInfo"
+        ],
+        [
+          "font36set.then",
+          "font37valid.execute"
+        ],
+        [
+          "font37valid.then",
+          "font37set.execute"
+        ],
+        [
+          "font36valid.else",
+          "font37valid.execute"
         ]
       ]
     }
@@ -4946,6 +5404,20 @@
         "function": "self:Native_Event",
         "defaults": {
           "Name": "mode_scale"
+        }
+      },
+      {
+        "id": "Magnet",
+        "kind": "bound_event",
+        "widget": "Magnet",
+        "delegate": "OnClicked"
+      },
+      {
+        "id": "Magnet_event",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "neighbour_snap"
         }
       },
       {
@@ -5191,6 +5663,10 @@
       [
         "ScaleMode.then",
         "ScaleMode_event.execute"
+      ],
+      [
+        "Magnet.then",
+        "Magnet_event.execute"
       ],
       [
         "Snap.then",
