@@ -75,15 +75,18 @@ def blocked():
     branch(g,'state',combine(g,'blockedstate',checks,True));g.set('yes','local:OK','true');finish_bool(g,'Blocked')
     branch(g,'bus',validity(g,'busvalid',get(g,'InputBus')));method(g,'typing',BUS,'IsTyping',get(g,'InputBus'));branch(g,'typingcheck','typing.Typing')
     previous='typingcheck.else'
+    # The cursor against each panel's last painted rectangle, not IsHovered: a press on a panel's backing falls
+    # through to the viewport, whose mouse capture clears the panels' hover before the input action runs.
+    mouse=call(g,'mouse','/Script/UMG.WidgetLayoutLibrary:GetMousePositionOnPlatform')
     for i,(var,field) in enumerate([(var,'Panel') for var,_,_ in PANELS]+[('Toolbar','Feedback'),('Toolbar','LibraryTabs')]):
         name='panel'+str(i);branch(g,name+'valid',validity(g,name+'check',get(g,var)))
-        panel=widget(g,name+'widget',var,field)
-        hovered=call(g,name+'hover',WIDGET+':IsHovered',{'self':panel});visible=call(g,name+'visible',WIDGET+':IsVisible',{'self':get(g,var)})
+        panel=widget(g,name+'widget',var,field);geometry=call(g,name+'geometry',WIDGET+':GetCachedGeometry',{'self':panel})
+        hovered=call(g,name+'hover','/Script/UMG.SlateBlueprintLibrary:IsUnderLocation',{'Geometry':geometry,'AbsoluteCoordinate':mouse});visible=call(g,name+'visible',WIDGET+':IsVisible',{'self':get(g,var)})
         branch(g,name+'over',combine(g,name+'both',[hovered,visible]))
         g.node(name+'next','sequence',outputs=1)
         g.chain(previous,name+'valid',name+'over','yes');g.chain(name+'valid.else',name+'next');g.chain(name+'over.else',name+'next');previous=name+'next.then_0'
         if i==0:g.chain('bus.else',name+'valid')
-    g.chain('entry','state','yes','result');g.chain('state.else','bus','typing','typingcheck','yes');g.chain(previous,'result')
+    g.chain('entry','mouse','state','yes','result');g.chain('state.else','bus','typing','typingcheck','yes');g.chain(previous,'result')
     return g.function('EditorPointerBlocked',outputs=[v('Blocked','bool')],locals=[v('OK','bool','false')])
 
 

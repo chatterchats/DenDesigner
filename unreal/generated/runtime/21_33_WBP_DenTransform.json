@@ -35,15 +35,73 @@
                 "name": "Column",
                 "children": [
                   {
-                    "class": "/Script/UMG.TextBlock",
-                    "name": "Title",
-                    "props": {
-                      "Text": "Selected prop",
-                      "Font.Size": 12,
-                      "ColorAndOpacity": "(SpecifiedColor=(R=0.386,G=0.423,B=0.479,A=1),ColorUseRule=UseColor_Specified)",
-                      "TextTransformPolicy": "ToUpper"
+                    "class": "/Script/UMG.HorizontalBox",
+                    "name": "Header",
+                    "slot": {
+                      "Padding": "(Left=0,Top=0,Right=0,Bottom=0)"
                     },
-                    "variable": true
+                    "children": [
+                      {
+                        "class": "/Script/UMG.TextBlock",
+                        "name": "Title",
+                        "props": {
+                          "Text": "Selected prop",
+                          "Font.Size": 12,
+                          "ColorAndOpacity": "(SpecifiedColor=(R=0.386,G=0.423,B=0.479,A=1),ColorUseRule=UseColor_Specified)",
+                          "TextTransformPolicy": "ToUpper"
+                        },
+                        "variable": true,
+                        "slot": {
+                          "Size": "(SizeRule=Fill,Value=1)",
+                          "VerticalAlignment": "VAlign_Center"
+                        }
+                      },
+                      {
+                        "class": "/Script/UMG.Button",
+                        "name": "CloseInspector",
+                        "variable": true,
+                        "props": {
+                          "BackgroundColor": "(R=1,G=1,B=1,A=1)",
+                          "IsFocusable": "false",
+                          "WidgetStyle.Normal.DrawAs": "RoundedBox",
+                          "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0))",
+                          "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
+                          "WidgetStyle.Hovered.DrawAs": "RoundedBox",
+                          "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.08))",
+                          "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
+                          "WidgetStyle.Pressed.DrawAs": "RoundedBox",
+                          "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.04))",
+                          "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
+                          "WidgetStyle.Disabled.DrawAs": "RoundedBox",
+                          "WidgetStyle.Disabled.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0))",
+                          "WidgetStyle.Disabled.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
+                          "WidgetStyle.NormalPadding": "(Left=10,Top=7,Right=10,Bottom=7)",
+                          "WidgetStyle.PressedPadding": "(Left=10,Top=8,Right=10,Bottom=6)",
+                          "ToolTipText": "Deselect this prop"
+                        },
+                        "slot": {
+                          "VerticalAlignment": "VAlign_Center"
+                        },
+                        "children": [
+                          {
+                            "class": "/Script/UMG.TextBlock",
+                            "name": "CloseInspectorLabel",
+                            "props": {
+                              "Text": "Close",
+                              "Font.Size": 13,
+                              "ColorAndOpacity": "(SpecifiedColor=(R=0.584,G=0.611,B=0.651,A=1),ColorUseRule=UseColor_Specified)",
+                              "TextTransformPolicy": "ToUpper",
+                              "Justification": "Center"
+                            },
+                            "variable": true,
+                            "slot": {
+                              "HorizontalAlignment": "HAlign_Center",
+                              "VerticalAlignment": "VAlign_Center"
+                            }
+                          }
+                        ]
+                      }
+                    ]
                   },
                   {
                     "class": "/Script/UMG.TextBlock",
@@ -1319,7 +1377,7 @@
         {
           "id": "font1",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:TitleFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font1check",
@@ -1336,15 +1394,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "DmBd",
-            "Size": "18",
-            "LetterSpacing": "0"
+            "TypefaceFontName": "Medium",
+            "Size": "13",
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font1widget",
           "kind": "get",
-          "var": "Selection"
+          "var": "CloseInspectorLabel"
         },
         {
           "id": "font1set",
@@ -1355,7 +1413,7 @@
         {
           "id": "font2",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:TitleFont"
         },
         {
           "id": "font2check",
@@ -1372,15 +1430,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Bold",
-            "Size": "13",
-            "LetterSpacing": "120"
+            "TypefaceFontName": "DmBd",
+            "Size": "18",
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font2widget",
           "kind": "get",
-          "var": "GroupX"
+          "var": "Selection"
         },
         {
           "id": "font2set",
@@ -1416,7 +1474,7 @@
         {
           "id": "font3widget",
           "kind": "get",
-          "var": "XLabel"
+          "var": "GroupX"
         },
         {
           "id": "font3set",
@@ -1452,7 +1510,7 @@
         {
           "id": "font4widget",
           "kind": "get",
-          "var": "YLabel"
+          "var": "XLabel"
         },
         {
           "id": "font4set",
@@ -1488,7 +1546,7 @@
         {
           "id": "font5widget",
           "kind": "get",
-          "var": "ZLabel"
+          "var": "YLabel"
         },
         {
           "id": "font5set",
@@ -1524,7 +1582,7 @@
         {
           "id": "font6widget",
           "kind": "get",
-          "var": "GroupPitch"
+          "var": "ZLabel"
         },
         {
           "id": "font6set",
@@ -1552,15 +1610,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Medium",
+            "TypefaceFontName": "Bold",
             "Size": "13",
-            "LetterSpacing": "70"
+            "LetterSpacing": "120"
           }
         },
         {
           "id": "font7widget",
           "kind": "get",
-          "var": "RotationPivotLabel"
+          "var": "GroupPitch"
         },
         {
           "id": "font7set",
@@ -1588,15 +1646,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Bold",
+            "TypefaceFontName": "Medium",
             "Size": "13",
-            "LetterSpacing": "120"
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font8widget",
           "kind": "get",
-          "var": "PitchLabel"
+          "var": "RotationPivotLabel"
         },
         {
           "id": "font8set",
@@ -1632,7 +1690,7 @@
         {
           "id": "font9widget",
           "kind": "get",
-          "var": "YawLabel"
+          "var": "PitchLabel"
         },
         {
           "id": "font9set",
@@ -1668,7 +1726,7 @@
         {
           "id": "font10widget",
           "kind": "get",
-          "var": "RollLabel"
+          "var": "YawLabel"
         },
         {
           "id": "font10set",
@@ -1704,7 +1762,7 @@
         {
           "id": "font11widget",
           "kind": "get",
-          "var": "GroupScale"
+          "var": "RollLabel"
         },
         {
           "id": "font11set",
@@ -1740,7 +1798,7 @@
         {
           "id": "font12widget",
           "kind": "get",
-          "var": "ScaleLabel"
+          "var": "GroupScale"
         },
         {
           "id": "font12set",
@@ -1751,7 +1809,7 @@
         {
           "id": "font13",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font13check",
@@ -1768,15 +1826,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Regular",
-            "Size": "12",
-            "LetterSpacing": "0"
+            "TypefaceFontName": "Bold",
+            "Size": "13",
+            "LetterSpacing": "120"
           }
         },
         {
           "id": "font13widget",
           "kind": "get",
-          "var": "ApplyHint"
+          "var": "ScaleLabel"
         },
         {
           "id": "font13set",
@@ -1787,7 +1845,7 @@
         {
           "id": "font14",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font14check",
@@ -1804,15 +1862,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "14",
-            "LetterSpacing": "70"
+            "TypefaceFontName": "Regular",
+            "Size": "12",
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font14widget",
           "kind": "get",
-          "var": "CopyLabel"
+          "var": "ApplyHint"
         },
         {
           "id": "font14set",
@@ -1848,7 +1906,7 @@
         {
           "id": "font15widget",
           "kind": "get",
-          "var": "StoreLabel"
+          "var": "CopyLabel"
         },
         {
           "id": "font15set",
@@ -1884,7 +1942,7 @@
         {
           "id": "font16widget",
           "kind": "get",
-          "var": "ResetLabel"
+          "var": "StoreLabel"
         },
         {
           "id": "font16set",
@@ -1920,10 +1978,46 @@
         {
           "id": "font17widget",
           "kind": "get",
-          "var": "FocusLabel"
+          "var": "ResetLabel"
         },
         {
           "id": "font17set",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetFont",
+          "defaults": {}
+        },
+        {
+          "id": "font18",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+        },
+        {
+          "id": "font18check",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "font18valid",
+          "kind": "branch"
+        },
+        {
+          "id": "font18info",
+          "kind": "make_struct",
+          "struct": "/Script/SlateCore.SlateFontInfo",
+          "defaults": {
+            "TypefaceFontName": "Medium",
+            "Size": "14",
+            "LetterSpacing": "70"
+          }
+        },
+        {
+          "id": "font18widget",
+          "kind": "get",
+          "var": "FocusLabel"
+        },
+        {
+          "id": "font18set",
           "kind": "call",
           "function": "/Script/UMG.TextBlock:SetFont",
           "defaults": {}
@@ -1979,7 +2073,7 @@
           "font1.self"
         ],
         [
-          "font1.TitleFont",
+          "font1.SecondaryFont",
           "font1check.Object"
         ],
         [
@@ -1987,11 +2081,11 @@
           "font1valid.Condition"
         ],
         [
-          "font1.TitleFont",
+          "font1.SecondaryFont",
           "font1info.FontObject"
         ],
         [
-          "font1widget.Selection",
+          "font1widget.CloseInspectorLabel",
           "font1set.self"
         ],
         [
@@ -2015,7 +2109,7 @@
           "font2.self"
         ],
         [
-          "font2.SecondaryFont",
+          "font2.TitleFont",
           "font2check.Object"
         ],
         [
@@ -2023,11 +2117,11 @@
           "font2valid.Condition"
         ],
         [
-          "font2.SecondaryFont",
+          "font2.TitleFont",
           "font2info.FontObject"
         ],
         [
-          "font2widget.GroupX",
+          "font2widget.Selection",
           "font2set.self"
         ],
         [
@@ -2063,7 +2157,7 @@
           "font3info.FontObject"
         ],
         [
-          "font3widget.XLabel",
+          "font3widget.GroupX",
           "font3set.self"
         ],
         [
@@ -2099,7 +2193,7 @@
           "font4info.FontObject"
         ],
         [
-          "font4widget.YLabel",
+          "font4widget.XLabel",
           "font4set.self"
         ],
         [
@@ -2135,7 +2229,7 @@
           "font5info.FontObject"
         ],
         [
-          "font5widget.ZLabel",
+          "font5widget.YLabel",
           "font5set.self"
         ],
         [
@@ -2171,7 +2265,7 @@
           "font6info.FontObject"
         ],
         [
-          "font6widget.GroupPitch",
+          "font6widget.ZLabel",
           "font6set.self"
         ],
         [
@@ -2207,7 +2301,7 @@
           "font7info.FontObject"
         ],
         [
-          "font7widget.RotationPivotLabel",
+          "font7widget.GroupPitch",
           "font7set.self"
         ],
         [
@@ -2243,7 +2337,7 @@
           "font8info.FontObject"
         ],
         [
-          "font8widget.PitchLabel",
+          "font8widget.RotationPivotLabel",
           "font8set.self"
         ],
         [
@@ -2279,7 +2373,7 @@
           "font9info.FontObject"
         ],
         [
-          "font9widget.YawLabel",
+          "font9widget.PitchLabel",
           "font9set.self"
         ],
         [
@@ -2315,7 +2409,7 @@
           "font10info.FontObject"
         ],
         [
-          "font10widget.RollLabel",
+          "font10widget.YawLabel",
           "font10set.self"
         ],
         [
@@ -2351,7 +2445,7 @@
           "font11info.FontObject"
         ],
         [
-          "font11widget.GroupScale",
+          "font11widget.RollLabel",
           "font11set.self"
         ],
         [
@@ -2387,7 +2481,7 @@
           "font12info.FontObject"
         ],
         [
-          "font12widget.ScaleLabel",
+          "font12widget.GroupScale",
           "font12set.self"
         ],
         [
@@ -2411,7 +2505,7 @@
           "font13.self"
         ],
         [
-          "font13.PrimaryFont",
+          "font13.SecondaryFont",
           "font13check.Object"
         ],
         [
@@ -2419,11 +2513,11 @@
           "font13valid.Condition"
         ],
         [
-          "font13.PrimaryFont",
+          "font13.SecondaryFont",
           "font13info.FontObject"
         ],
         [
-          "font13widget.ApplyHint",
+          "font13widget.ScaleLabel",
           "font13set.self"
         ],
         [
@@ -2447,7 +2541,7 @@
           "font14.self"
         ],
         [
-          "font14.SecondaryFont",
+          "font14.PrimaryFont",
           "font14check.Object"
         ],
         [
@@ -2455,11 +2549,11 @@
           "font14valid.Condition"
         ],
         [
-          "font14.SecondaryFont",
+          "font14.PrimaryFont",
           "font14info.FontObject"
         ],
         [
-          "font14widget.CopyLabel",
+          "font14widget.ApplyHint",
           "font14set.self"
         ],
         [
@@ -2495,7 +2589,7 @@
           "font15info.FontObject"
         ],
         [
-          "font15widget.StoreLabel",
+          "font15widget.CopyLabel",
           "font15set.self"
         ],
         [
@@ -2531,7 +2625,7 @@
           "font16info.FontObject"
         ],
         [
-          "font16widget.ResetLabel",
+          "font16widget.StoreLabel",
           "font16set.self"
         ],
         [
@@ -2567,7 +2661,7 @@
           "font17info.FontObject"
         ],
         [
-          "font17widget.FocusLabel",
+          "font17widget.ResetLabel",
           "font17set.self"
         ],
         [
@@ -2585,6 +2679,42 @@
         [
           "font16valid.else",
           "font17valid.execute"
+        ],
+        [
+          "bus.EditorBus",
+          "font18.self"
+        ],
+        [
+          "font18.SecondaryFont",
+          "font18check.Object"
+        ],
+        [
+          "font18check.ReturnValue",
+          "font18valid.Condition"
+        ],
+        [
+          "font18.SecondaryFont",
+          "font18info.FontObject"
+        ],
+        [
+          "font18widget.FocusLabel",
+          "font18set.self"
+        ],
+        [
+          "font18info.SlateFontInfo",
+          "font18set.InFontInfo"
+        ],
+        [
+          "font17set.then",
+          "font18valid.execute"
+        ],
+        [
+          "font18valid.then",
+          "font18set.execute"
+        ],
+        [
+          "font17valid.else",
+          "font18valid.execute"
         ]
       ]
     }
@@ -2757,6 +2887,20 @@
         "function": "self:Native_Event",
         "defaults": {
           "Name": "focus"
+        }
+      },
+      {
+        "id": "CloseInspector",
+        "kind": "bound_event",
+        "widget": "CloseInspector",
+        "delegate": "OnClicked"
+      },
+      {
+        "id": "CloseInspector_event",
+        "kind": "call",
+        "function": "self:Native_Event",
+        "defaults": {
+          "Name": "deselect"
         }
       },
       {
@@ -2976,6 +3120,10 @@
       [
         "Focus.then",
         "Focus_event.execute"
+      ],
+      [
+        "CloseInspector.then",
+        "CloseInspector_event.execute"
       ],
       [
         "FieldX.CommitMethod",

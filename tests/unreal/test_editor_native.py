@@ -276,6 +276,10 @@ def run(unreal, root, fixture, field, field_name, check):
         check(get(host,'HasSelection') and comp.get_editor_property('custom_depth_stencil_value')==32,
               'native selection applies the selected outline')
         check(len(get(host,'Records'))==1, 'native selection captures vanilla baseline before editing')
+        emit('deselect',0);host.call_method('ProcessEditorEvents')
+        check(not get(host,'HasSelection') and comp.get_editor_property('custom_depth_stencil_value')==7,
+              'the inspector Close button deselects and removes the outline')
+        host.call_method('AcceptSelection',(facts,))
         def settle_edits():
             for _ in range(1000):
                 host.call_method('Pump')

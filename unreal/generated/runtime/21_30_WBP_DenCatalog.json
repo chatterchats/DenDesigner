@@ -16,7 +16,7 @@
           "Padding": "(Left=14,Top=14,Right=14,Bottom=12)"
         },
         "slot": {
-          "LayoutData": "(Anchors=(Minimum=(X=0,Y=0),Maximum=(X=0,Y=1)),Offsets=(Left=12,Top=144,Right=470,Bottom=58))"
+          "LayoutData": "(Anchors=(Minimum=(X=0,Y=0),Maximum=(X=0,Y=1)),Offsets=(Left=114,Top=80,Right=470,Bottom=58))"
         },
         "children": [
           {

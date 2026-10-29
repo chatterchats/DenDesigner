@@ -1,14 +1,16 @@
 """The HoloNet window: browse, share and manage builds on zcom.app.
 
-A centred window over the Den, under the editor menu bar (approved mockup boards
-"In-game · Browse" and "In-game · Share a composition"). 1640×944 at 1080p; UMG's
-DPI scaling keeps it inside a 1280×800 screen. Widget names the host already
-used for the Community panel are kept, so its logic carries over.
+A window over the Den, under the editor menu bar (approved mockup boards
+"In-game · Browse" and "In-game · Share a composition"). Its top-left corner
+matches the library panels beside the tab rail; it stretches with the screen and
+is 1640 wide at 1080p. Widget names the host already used for the Community panel
+are kept, so its logic carries over.
 """
 import ui_templates as e
 
 PATH = e.ROOT + 'WBP_DenHolonet'
-WIDTH, HEIGHT, TOP = 1640, 944, 96
+# The right margin that makes the window 1640 wide on a 1920-wide screen.
+RIGHT = 1920 - e.LIBRARY_LEFT - 1640
 RAIL, DETAIL, FORM = 232, 400, 560
 GREEN = e.slate(0.33, 0.57, 0.15)
 CARD_W, CARD_H = 238, 250
@@ -247,7 +249,7 @@ def tree():
     # 'Panel': the host blocks world clicks while the pointer is over a panel.
     window = {'class': '/Script/UMG.Border', 'name': 'Panel', 'variable': True,
               'props': dict(e.surface(e.rgba(0.0027, 0.003, 0.004, 0.94), e.rgba(*e.ACCENT, 0.3), 10, '(Left=0,Top=0,Right=0,Bottom=0)'), Clipping='ClipToBounds'),
-              'slot': {'LayoutData': f'(Offsets=(Left=0,Top={TOP},Right={WIDTH},Bottom={HEIGHT}),Anchors=(Minimum=(X=0.5,Y=0),Maximum=(X=0.5,Y=0)),Alignment=(X=0.5,Y=0))'},
+              'slot': {'LayoutData': f'(Offsets=(Left={e.LIBRARY_LEFT},Top=80,Right={RIGHT},Bottom=58),Anchors=(Minimum=(X=0,Y=0),Maximum=(X=1,Y=1)))'},
               'children': [vbox('WindowColumn', [
                   title_bar(), body,
                   e.text('Footer', '', 13, e.DIM, wrap=True, slot={'Padding': '(Left=20,Top=6,Right=20,Bottom=10)'})])]}

@@ -9841,6 +9841,12 @@
           "kind": "branch"
         },
         {
+          "id": "mouse",
+          "kind": "call",
+          "function": "/Script/UMG.WidgetLayoutLibrary:GetMousePositionOnPlatform",
+          "defaults": {}
+        },
+        {
           "id": "getToolbar",
           "kind": "get",
           "var": "Toolbar"
@@ -9861,9 +9867,15 @@
           "var": "/DenDesignerGF/Editor/WBP_DenToolbar:Panel"
         },
         {
+          "id": "panel0geometry",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:GetCachedGeometry",
+          "defaults": {}
+        },
+        {
           "id": "panel0hover",
           "kind": "call",
-          "function": "/Script/UMG.Widget:IsHovered",
+          "function": "/Script/UMG.SlateBlueprintLibrary:IsUnderLocation",
           "defaults": {}
         },
         {
@@ -9908,9 +9920,15 @@
           "var": "/DenDesignerGF/Editor/WBP_DenTransform:Panel"
         },
         {
+          "id": "panel1geometry",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:GetCachedGeometry",
+          "defaults": {}
+        },
+        {
           "id": "panel1hover",
           "kind": "call",
-          "function": "/Script/UMG.Widget:IsHovered",
+          "function": "/Script/UMG.SlateBlueprintLibrary:IsUnderLocation",
           "defaults": {}
         },
         {
@@ -9955,9 +9973,15 @@
           "var": "/DenDesignerGF/Editor/WBP_DenCatalog:Panel"
         },
         {
+          "id": "panel2geometry",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:GetCachedGeometry",
+          "defaults": {}
+        },
+        {
           "id": "panel2hover",
           "kind": "call",
-          "function": "/Script/UMG.Widget:IsHovered",
+          "function": "/Script/UMG.SlateBlueprintLibrary:IsUnderLocation",
           "defaults": {}
         },
         {
@@ -10002,9 +10026,15 @@
           "var": "/DenDesignerGF/Editor/WBP_DenLayouts:Panel"
         },
         {
+          "id": "panel3geometry",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:GetCachedGeometry",
+          "defaults": {}
+        },
+        {
           "id": "panel3hover",
           "kind": "call",
-          "function": "/Script/UMG.Widget:IsHovered",
+          "function": "/Script/UMG.SlateBlueprintLibrary:IsUnderLocation",
           "defaults": {}
         },
         {
@@ -10049,9 +10079,15 @@
           "var": "/DenDesignerGF/Editor/WBP_DenStoreroom:Panel"
         },
         {
+          "id": "panel4geometry",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:GetCachedGeometry",
+          "defaults": {}
+        },
+        {
           "id": "panel4hover",
           "kind": "call",
-          "function": "/Script/UMG.Widget:IsHovered",
+          "function": "/Script/UMG.SlateBlueprintLibrary:IsUnderLocation",
           "defaults": {}
         },
         {
@@ -10096,9 +10132,15 @@
           "var": "/DenDesignerGF/Editor/WBP_DenSettings:Panel"
         },
         {
+          "id": "panel5geometry",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:GetCachedGeometry",
+          "defaults": {}
+        },
+        {
           "id": "panel5hover",
           "kind": "call",
-          "function": "/Script/UMG.Widget:IsHovered",
+          "function": "/Script/UMG.SlateBlueprintLibrary:IsUnderLocation",
           "defaults": {}
         },
         {
@@ -10143,9 +10185,15 @@
           "var": "/DenDesignerGF/Editor/WBP_DenCompositions:Panel"
         },
         {
+          "id": "panel6geometry",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:GetCachedGeometry",
+          "defaults": {}
+        },
+        {
           "id": "panel6hover",
           "kind": "call",
-          "function": "/Script/UMG.Widget:IsHovered",
+          "function": "/Script/UMG.SlateBlueprintLibrary:IsUnderLocation",
           "defaults": {}
         },
         {
@@ -10190,9 +10238,15 @@
           "var": "/DenDesignerGF/Editor/WBP_DenHolonet:Panel"
         },
         {
+          "id": "panel7geometry",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:GetCachedGeometry",
+          "defaults": {}
+        },
+        {
           "id": "panel7hover",
           "kind": "call",
-          "function": "/Script/UMG.Widget:IsHovered",
+          "function": "/Script/UMG.SlateBlueprintLibrary:IsUnderLocation",
           "defaults": {}
         },
         {
@@ -10232,9 +10286,15 @@
           "var": "/DenDesignerGF/Editor/WBP_DenToolbar:Feedback"
         },
         {
+          "id": "panel8geometry",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:GetCachedGeometry",
+          "defaults": {}
+        },
+        {
           "id": "panel8hover",
           "kind": "call",
-          "function": "/Script/UMG.Widget:IsHovered",
+          "function": "/Script/UMG.SlateBlueprintLibrary:IsUnderLocation",
           "defaults": {}
         },
         {
@@ -10274,9 +10334,15 @@
           "var": "/DenDesignerGF/Editor/WBP_DenToolbar:LibraryTabs"
         },
         {
+          "id": "panel9geometry",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:GetCachedGeometry",
+          "defaults": {}
+        },
+        {
           "id": "panel9hover",
           "kind": "call",
-          "function": "/Script/UMG.Widget:IsHovered",
+          "function": "/Script/UMG.SlateBlueprintLibrary:IsUnderLocation",
           "defaults": {}
         },
         {
@@ -10360,7 +10426,15 @@
         ],
         [
           "panel0widget.Panel",
-          "panel0hover.self"
+          "panel0geometry.self"
+        ],
+        [
+          "panel0geometry.ReturnValue",
+          "panel0hover.Geometry"
+        ],
+        [
+          "mouse.ReturnValue",
+          "panel0hover.AbsoluteCoordinate"
         ],
         [
           "getToolbar.Toolbar",
@@ -10416,7 +10490,15 @@
         ],
         [
           "panel1widget.Panel",
-          "panel1hover.self"
+          "panel1geometry.self"
+        ],
+        [
+          "panel1geometry.ReturnValue",
+          "panel1hover.Geometry"
+        ],
+        [
+          "mouse.ReturnValue",
+          "panel1hover.AbsoluteCoordinate"
         ],
         [
           "getInspector.Inspector",
@@ -10468,7 +10550,15 @@
         ],
         [
           "panel2widget.Panel",
-          "panel2hover.self"
+          "panel2geometry.self"
+        ],
+        [
+          "panel2geometry.ReturnValue",
+          "panel2hover.Geometry"
+        ],
+        [
+          "mouse.ReturnValue",
+          "panel2hover.AbsoluteCoordinate"
         ],
         [
           "getCatalogPanel.CatalogPanel",
@@ -10520,7 +10610,15 @@
         ],
         [
           "panel3widget.Panel",
-          "panel3hover.self"
+          "panel3geometry.self"
+        ],
+        [
+          "panel3geometry.ReturnValue",
+          "panel3hover.Geometry"
+        ],
+        [
+          "mouse.ReturnValue",
+          "panel3hover.AbsoluteCoordinate"
         ],
         [
           "getLayoutsPanel.LayoutsPanel",
@@ -10572,7 +10670,15 @@
         ],
         [
           "panel4widget.Panel",
-          "panel4hover.self"
+          "panel4geometry.self"
+        ],
+        [
+          "panel4geometry.ReturnValue",
+          "panel4hover.Geometry"
+        ],
+        [
+          "mouse.ReturnValue",
+          "panel4hover.AbsoluteCoordinate"
         ],
         [
           "getStoreroomPanel.StoreroomPanel",
@@ -10624,7 +10730,15 @@
         ],
         [
           "panel5widget.Panel",
-          "panel5hover.self"
+          "panel5geometry.self"
+        ],
+        [
+          "panel5geometry.ReturnValue",
+          "panel5hover.Geometry"
+        ],
+        [
+          "mouse.ReturnValue",
+          "panel5hover.AbsoluteCoordinate"
         ],
         [
           "getSettingsPanel.SettingsPanel",
@@ -10676,7 +10790,15 @@
         ],
         [
           "panel6widget.Panel",
-          "panel6hover.self"
+          "panel6geometry.self"
+        ],
+        [
+          "panel6geometry.ReturnValue",
+          "panel6hover.Geometry"
+        ],
+        [
+          "mouse.ReturnValue",
+          "panel6hover.AbsoluteCoordinate"
         ],
         [
           "getCompositionsPanel.CompositionsPanel",
@@ -10728,7 +10850,15 @@
         ],
         [
           "panel7widget.Panel",
-          "panel7hover.self"
+          "panel7geometry.self"
+        ],
+        [
+          "panel7geometry.ReturnValue",
+          "panel7hover.Geometry"
+        ],
+        [
+          "mouse.ReturnValue",
+          "panel7hover.AbsoluteCoordinate"
         ],
         [
           "getCommunityPanel.CommunityPanel",
@@ -10780,7 +10910,15 @@
         ],
         [
           "panel8widget.Feedback",
-          "panel8hover.self"
+          "panel8geometry.self"
+        ],
+        [
+          "panel8geometry.ReturnValue",
+          "panel8hover.Geometry"
+        ],
+        [
+          "mouse.ReturnValue",
+          "panel8hover.AbsoluteCoordinate"
         ],
         [
           "getToolbar.Toolbar",
@@ -10832,7 +10970,15 @@
         ],
         [
           "panel9widget.LibraryTabs",
-          "panel9hover.self"
+          "panel9geometry.self"
+        ],
+        [
+          "panel9geometry.ReturnValue",
+          "panel9hover.Geometry"
+        ],
+        [
+          "mouse.ReturnValue",
+          "panel9hover.AbsoluteCoordinate"
         ],
         [
           "getToolbar.Toolbar",
@@ -10872,6 +11018,10 @@
         ],
         [
           "entry.then",
+          "mouse.execute"
+        ],
+        [
+          "mouse.then",
           "state.execute"
         ],
         [

@@ -18,7 +18,7 @@
           "Clipping": "ClipToBounds"
         },
         "slot": {
-          "LayoutData": "(Offsets=(Left=0,Top=96,Right=1640,Bottom=944),Anchors=(Minimum=(X=0.5,Y=0),Maximum=(X=0.5,Y=0)),Alignment=(X=0.5,Y=0))"
+          "LayoutData": "(Offsets=(Left=114,Top=80,Right=166,Bottom=58),Anchors=(Minimum=(X=0,Y=0),Maximum=(X=1,Y=1)))"
         },
         "children": [
           {

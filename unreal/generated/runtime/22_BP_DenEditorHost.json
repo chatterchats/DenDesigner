@@ -14048,7 +14048,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_refresh"
+            "B": "deselect"
           }
         },
         {
@@ -14058,7 +14058,7 @@
         {
           "id": "call4",
           "kind": "call",
-          "function": "self:RefreshCommunityGallery",
+          "function": "self:ClearSelection",
           "defaults": {}
         },
         {
@@ -14066,7 +14066,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_previous"
+            "B": "community_refresh"
           }
         },
         {
@@ -14076,7 +14076,7 @@
         {
           "id": "call5",
           "kind": "call",
-          "function": "self:PreviousCommunityPage",
+          "function": "self:RefreshCommunityGallery",
           "defaults": {}
         },
         {
@@ -14084,7 +14084,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_next"
+            "B": "community_previous"
           }
         },
         {
@@ -14094,7 +14094,7 @@
         {
           "id": "call6",
           "kind": "call",
-          "function": "self:NextCommunityPage",
+          "function": "self:PreviousCommunityPage",
           "defaults": {}
         },
         {
@@ -14102,7 +14102,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_download"
+            "B": "community_next"
           }
         },
         {
@@ -14112,7 +14112,7 @@
         {
           "id": "call7",
           "kind": "call",
-          "function": "self:AddCommunityListingToLibrary",
+          "function": "self:NextCommunityPage",
           "defaults": {}
         },
         {
@@ -14120,7 +14120,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community"
+            "B": "community_download"
           }
         },
         {
@@ -14130,17 +14130,15 @@
         {
           "id": "call8",
           "kind": "call",
-          "function": "self:ToggleEditorPanel",
-          "defaults": {
-            "Name": "community"
-          }
+          "function": "self:AddCommunityListingToLibrary",
+          "defaults": {}
         },
         {
           "id": "eq9",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_browse"
+            "B": "community"
           }
         },
         {
@@ -14150,9 +14148,9 @@
         {
           "id": "call9",
           "kind": "call",
-          "function": "self:SetCommunityArea",
+          "function": "self:ToggleEditorPanel",
           "defaults": {
-            "Area": "browse"
+            "Name": "community"
           }
         },
         {
@@ -14160,7 +14158,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_upload"
+            "B": "community_browse"
           }
         },
         {
@@ -14172,7 +14170,7 @@
           "kind": "call",
           "function": "self:SetCommunityArea",
           "defaults": {
-            "Area": "upload"
+            "Area": "browse"
           }
         },
         {
@@ -14180,7 +14178,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_account"
+            "B": "community_upload"
           }
         },
         {
@@ -14192,7 +14190,7 @@
           "kind": "call",
           "function": "self:SetCommunityArea",
           "defaults": {
-            "Area": "account"
+            "Area": "upload"
           }
         },
         {
@@ -14200,7 +14198,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "holonet_shares"
+            "B": "community_account"
           }
         },
         {
@@ -14212,7 +14210,7 @@
           "kind": "call",
           "function": "self:SetCommunityArea",
           "defaults": {
-            "Area": "shares"
+            "Area": "account"
           }
         },
         {
@@ -14220,7 +14218,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "holonet_sort_newest"
+            "B": "holonet_shares"
           }
         },
         {
@@ -14230,15 +14228,17 @@
         {
           "id": "call13",
           "kind": "call",
-          "function": "self:SortHolonetNewest",
-          "defaults": {}
+          "function": "self:SetCommunityArea",
+          "defaults": {
+            "Area": "shares"
+          }
         },
         {
           "id": "eq14",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "holonet_sort_imports"
+            "B": "holonet_sort_newest"
           }
         },
         {
@@ -14248,7 +14248,7 @@
         {
           "id": "call14",
           "kind": "call",
-          "function": "self:SortHolonetImports",
+          "function": "self:SortHolonetNewest",
           "defaults": {}
         },
         {
@@ -14256,7 +14256,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "holonet_usable"
+            "B": "holonet_sort_imports"
           }
         },
         {
@@ -14266,7 +14266,7 @@
         {
           "id": "call15",
           "kind": "call",
-          "function": "self:ToggleHolonetUsable",
+          "function": "self:SortHolonetImports",
           "defaults": {}
         },
         {
@@ -14274,7 +14274,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "holonet_place"
+            "B": "holonet_usable"
           }
         },
         {
@@ -14284,7 +14284,7 @@
         {
           "id": "call16",
           "kind": "call",
-          "function": "self:PlaceCommunityListing",
+          "function": "self:ToggleHolonetUsable",
           "defaults": {}
         },
         {
@@ -14292,7 +14292,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "holonet_get_pack"
+            "B": "holonet_place"
           }
         },
         {
@@ -14302,7 +14302,7 @@
         {
           "id": "call17",
           "kind": "call",
-          "function": "self:OpenHolonetPack",
+          "function": "self:PlaceCommunityListing",
           "defaults": {}
         },
         {
@@ -14310,7 +14310,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "holonet_share_update"
+            "B": "holonet_get_pack"
           }
         },
         {
@@ -14320,7 +14320,7 @@
         {
           "id": "call18",
           "kind": "call",
-          "function": "self:ShareHolonetUpdate",
+          "function": "self:OpenHolonetPack",
           "defaults": {}
         },
         {
@@ -14328,7 +14328,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "holonet_share_new"
+            "B": "holonet_share_update"
           }
         },
         {
@@ -14338,7 +14338,7 @@
         {
           "id": "call19",
           "kind": "call",
-          "function": "self:ShareHolonetNew",
+          "function": "self:ShareHolonetUpdate",
           "defaults": {}
         },
         {
@@ -14346,7 +14346,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "holonet_shares_previous"
+            "B": "holonet_share_new"
           }
         },
         {
@@ -14356,7 +14356,7 @@
         {
           "id": "call20",
           "kind": "call",
-          "function": "self:PreviousHolonetShares",
+          "function": "self:ShareHolonetNew",
           "defaults": {}
         },
         {
@@ -14364,7 +14364,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "holonet_shares_next"
+            "B": "holonet_shares_previous"
           }
         },
         {
@@ -14374,7 +14374,7 @@
         {
           "id": "call21",
           "kind": "call",
-          "function": "self:NextHolonetShares",
+          "function": "self:PreviousHolonetShares",
           "defaults": {}
         },
         {
@@ -14382,7 +14382,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "holonet_shares_reload"
+            "B": "holonet_shares_next"
           }
         },
         {
@@ -14392,7 +14392,7 @@
         {
           "id": "call22",
           "kind": "call",
-          "function": "self:ReloadHolonetShares",
+          "function": "self:NextHolonetShares",
           "defaults": {}
         },
         {
@@ -14400,7 +14400,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "holonet_share_selected"
+            "B": "holonet_shares_reload"
           }
         },
         {
@@ -14410,7 +14410,7 @@
         {
           "id": "call23",
           "kind": "call",
-          "function": "self:ShareSelectedComposition",
+          "function": "self:ReloadHolonetShares",
           "defaults": {}
         },
         {
@@ -14418,7 +14418,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_browse_dens"
+            "B": "holonet_share_selected"
           }
         },
         {
@@ -14428,17 +14428,15 @@
         {
           "id": "call24",
           "kind": "call",
-          "function": "self:SetCommunityArea",
-          "defaults": {
-            "Area": "browse_dens"
-          }
+          "function": "self:ShareSelectedComposition",
+          "defaults": {}
         },
         {
           "id": "eq25",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_close"
+            "B": "community_browse_dens"
           }
         },
         {
@@ -14448,9 +14446,9 @@
         {
           "id": "call25",
           "kind": "call",
-          "function": "self:SetEditorPanel",
+          "function": "self:SetCommunityArea",
           "defaults": {
-            "Name": ""
+            "Area": "browse_dens"
           }
         },
         {
@@ -14458,7 +14456,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_review"
+            "B": "community_close"
           }
         },
         {
@@ -14468,15 +14466,17 @@
         {
           "id": "call26",
           "kind": "call",
-          "function": "self:ReviewCommunityComposition",
-          "defaults": {}
+          "function": "self:SetEditorPanel",
+          "defaults": {
+            "Name": ""
+          }
         },
         {
           "id": "eq27",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_presets"
+            "B": "community_review"
           }
         },
         {
@@ -14486,17 +14486,15 @@
         {
           "id": "call27",
           "kind": "call",
-          "function": "self:SetEditorPanel",
-          "defaults": {
-            "Name": "layouts"
-          }
+          "function": "self:ReviewCommunityComposition",
+          "defaults": {}
         },
         {
           "id": "eq28",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_website"
+            "B": "community_presets"
           }
         },
         {
@@ -14506,15 +14504,17 @@
         {
           "id": "call28",
           "kind": "call",
-          "function": "self:OpenCommunityAccount",
-          "defaults": {}
+          "function": "self:SetEditorPanel",
+          "defaults": {
+            "Name": "layouts"
+          }
         },
         {
           "id": "eq29",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_copy_url"
+            "B": "community_website"
           }
         },
         {
@@ -14524,7 +14524,7 @@
         {
           "id": "call29",
           "kind": "call",
-          "function": "self:CopyCommunityURL",
+          "function": "self:OpenCommunityAccount",
           "defaults": {}
         },
         {
@@ -14532,7 +14532,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_copy_code"
+            "B": "community_copy_url"
           }
         },
         {
@@ -14542,7 +14542,7 @@
         {
           "id": "call30",
           "kind": "call",
-          "function": "self:CopyCommunityCode",
+          "function": "self:CopyCommunityURL",
           "defaults": {}
         },
         {
@@ -14550,7 +14550,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_connect"
+            "B": "community_copy_code"
           }
         },
         {
@@ -14560,7 +14560,7 @@
         {
           "id": "call31",
           "kind": "call",
-          "function": "self:ConnectCommunity",
+          "function": "self:CopyCommunityCode",
           "defaults": {}
         },
         {
@@ -14568,7 +14568,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_remember"
+            "B": "community_connect"
           }
         },
         {
@@ -14578,7 +14578,7 @@
         {
           "id": "call32",
           "kind": "call",
-          "function": "self:ToggleRememberCommunity",
+          "function": "self:ConnectCommunity",
           "defaults": {}
         },
         {
@@ -14586,7 +14586,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_forget"
+            "B": "community_remember"
           }
         },
         {
@@ -14596,7 +14596,7 @@
         {
           "id": "call33",
           "kind": "call",
-          "function": "self:ForgetCommunity",
+          "function": "self:ToggleRememberCommunity",
           "defaults": {}
         },
         {
@@ -14604,7 +14604,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_disconnect"
+            "B": "community_forget"
           }
         },
         {
@@ -14614,17 +14614,15 @@
         {
           "id": "call34",
           "kind": "call",
-          "function": "self:StartCommunityFetch",
-          "defaults": {
-            "Input": "DISCONNECT"
-          }
+          "function": "self:ForgetCommunity",
+          "defaults": {}
         },
         {
           "id": "eq35",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_submit"
+            "B": "community_disconnect"
           }
         },
         {
@@ -14634,15 +14632,17 @@
         {
           "id": "call35",
           "kind": "call",
-          "function": "self:SubmitCommunityComposition",
-          "defaults": {}
+          "function": "self:StartCommunityFetch",
+          "defaults": {
+            "Input": "DISCONNECT"
+          }
         },
         {
           "id": "eq36",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_cancel"
+            "B": "community_submit"
           }
         },
         {
@@ -14652,7 +14652,7 @@
         {
           "id": "call36",
           "kind": "call",
-          "function": "self:CancelCommunityFetch",
+          "function": "self:SubmitCommunityComposition",
           "defaults": {}
         },
         {
@@ -14660,7 +14660,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "rotation_pivot"
+            "B": "community_cancel"
           }
         },
         {
@@ -14670,17 +14670,15 @@
         {
           "id": "call37",
           "kind": "call",
-          "function": "self:CycleEditorSetting",
-          "defaults": {
-            "Key": "rotation_pivot"
-          }
+          "function": "self:CancelCommunityFetch",
+          "defaults": {}
         },
         {
           "id": "eq38",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "compositions"
+            "B": "rotation_pivot"
           }
         },
         {
@@ -14690,9 +14688,9 @@
         {
           "id": "call38",
           "kind": "call",
-          "function": "self:ToggleEditorPanel",
+          "function": "self:CycleEditorSetting",
           "defaults": {
-            "Name": "compositions"
+            "Key": "rotation_pivot"
           }
         },
         {
@@ -14700,7 +14698,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "composition_select"
+            "B": "compositions"
           }
         },
         {
@@ -14710,15 +14708,17 @@
         {
           "id": "call39",
           "kind": "call",
-          "function": "self:ToggleCompositionSelection",
-          "defaults": {}
+          "function": "self:ToggleEditorPanel",
+          "defaults": {
+            "Name": "compositions"
+          }
         },
         {
           "id": "eq40",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "composition_clear"
+            "B": "composition_select"
           }
         },
         {
@@ -14728,7 +14728,7 @@
         {
           "id": "call40",
           "kind": "call",
-          "function": "self:ClearCompositionSelection",
+          "function": "self:ToggleCompositionSelection",
           "defaults": {}
         },
         {
@@ -14736,7 +14736,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "settings"
+            "B": "composition_clear"
           }
         },
         {
@@ -14746,17 +14746,15 @@
         {
           "id": "call41",
           "kind": "call",
-          "function": "self:ToggleEditorPanel",
-          "defaults": {
-            "Name": "settings"
-          }
+          "function": "self:ClearCompositionSelection",
+          "defaults": {}
         },
         {
           "id": "eq42",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "settings_close"
+            "B": "settings"
           }
         },
         {
@@ -14766,9 +14764,9 @@
         {
           "id": "call42",
           "kind": "call",
-          "function": "self:SetEditorPanel",
+          "function": "self:ToggleEditorPanel",
           "defaults": {
-            "Name": ""
+            "Name": "settings"
           }
         },
         {
@@ -14776,7 +14774,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "settings_reset"
+            "B": "settings_close"
           }
         },
         {
@@ -14786,9 +14784,9 @@
         {
           "id": "call43",
           "kind": "call",
-          "function": "self:ChangeEditorSetting",
+          "function": "self:SetEditorPanel",
           "defaults": {
-            "Reset": "true"
+            "Name": ""
           }
         },
         {
@@ -14796,7 +14794,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "catalog"
+            "B": "settings_reset"
           }
         },
         {
@@ -14806,9 +14804,9 @@
         {
           "id": "call44",
           "kind": "call",
-          "function": "self:ToggleEditorPanel",
+          "function": "self:ChangeEditorSetting",
           "defaults": {
-            "Name": "catalog"
+            "Reset": "true"
           }
         },
         {
@@ -14816,7 +14814,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "layouts"
+            "B": "catalog"
           }
         },
         {
@@ -14828,7 +14826,7 @@
           "kind": "call",
           "function": "self:ToggleEditorPanel",
           "defaults": {
-            "Name": "layouts"
+            "Name": "catalog"
           }
         },
         {
@@ -14836,7 +14834,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "storeroom"
+            "B": "layouts"
           }
         },
         {
@@ -14848,7 +14846,7 @@
           "kind": "call",
           "function": "self:ToggleEditorPanel",
           "defaults": {
-            "Name": "storeroom"
+            "Name": "layouts"
           }
         },
         {
@@ -14856,7 +14854,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "help"
+            "B": "storeroom"
           }
         },
         {
@@ -14866,15 +14864,17 @@
         {
           "id": "call47",
           "kind": "call",
-          "function": "self:ToggleEditorHelp",
-          "defaults": {}
+          "function": "self:ToggleEditorPanel",
+          "defaults": {
+            "Name": "storeroom"
+          }
         },
         {
           "id": "eq48",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "snap"
+            "B": "help"
           }
         },
         {
@@ -14884,7 +14884,7 @@
         {
           "id": "call48",
           "kind": "call",
-          "function": "self:CycleEditorGrid",
+          "function": "self:ToggleEditorHelp",
           "defaults": {}
         },
         {
@@ -14892,7 +14892,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "reach"
+            "B": "snap"
           }
         },
         {
@@ -14902,7 +14902,7 @@
         {
           "id": "call49",
           "kind": "call",
-          "function": "self:CycleEditorReach",
+          "function": "self:CycleEditorGrid",
           "defaults": {}
         },
         {
@@ -14910,7 +14910,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "numeric_done"
+            "B": "reach"
           }
         },
         {
@@ -14920,7 +14920,7 @@
         {
           "id": "call50",
           "kind": "call",
-          "function": "self:FocusEditorViewport",
+          "function": "self:CycleEditorReach",
           "defaults": {}
         },
         {
@@ -14928,7 +14928,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "mode_select"
+            "B": "numeric_done"
           }
         },
         {
@@ -14938,17 +14938,15 @@
         {
           "id": "call51",
           "kind": "call",
-          "function": "self:SetGizmoMode",
-          "defaults": {
-            "Mode": "0"
-          }
+          "function": "self:FocusEditorViewport",
+          "defaults": {}
         },
         {
           "id": "eq52",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "mode_move"
+            "B": "mode_select"
           }
         },
         {
@@ -14960,7 +14958,7 @@
           "kind": "call",
           "function": "self:SetGizmoMode",
           "defaults": {
-            "Mode": "1"
+            "Mode": "0"
           }
         },
         {
@@ -14968,7 +14966,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "mode_rotate"
+            "B": "mode_move"
           }
         },
         {
@@ -14980,7 +14978,7 @@
           "kind": "call",
           "function": "self:SetGizmoMode",
           "defaults": {
-            "Mode": "2"
+            "Mode": "1"
           }
         },
         {
@@ -14988,7 +14986,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "mode_scale"
+            "B": "mode_rotate"
           }
         },
         {
@@ -15000,7 +14998,7 @@
           "kind": "call",
           "function": "self:SetGizmoMode",
           "defaults": {
-            "Mode": "3"
+            "Mode": "2"
           }
         },
         {
@@ -15008,7 +15006,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "gimbal"
+            "B": "mode_scale"
           }
         },
         {
@@ -15017,6 +15015,26 @@
         },
         {
           "id": "call55",
+          "kind": "call",
+          "function": "self:SetGizmoMode",
+          "defaults": {
+            "Mode": "3"
+          }
+        },
+        {
+          "id": "eq56",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "gimbal"
+          }
+        },
+        {
+          "id": "name56",
+          "kind": "branch"
+        },
+        {
+          "id": "call56",
           "kind": "call",
           "function": "self:CycleGizmoMode",
           "defaults": {}
@@ -17630,6 +17648,22 @@
         ],
         [
           "event.EventName",
+          "eq56.A"
+        ],
+        [
+          "eq56.ReturnValue",
+          "name56.Condition"
+        ],
+        [
+          "name55.else",
+          "name56.execute"
+        ],
+        [
+          "name56.then",
+          "call56.execute"
+        ],
+        [
+          "event.EventName",
           "setting0eq.A"
         ],
         [
@@ -17641,7 +17675,7 @@
           "setting0apply.Value"
         ],
         [
-          "name55.else",
+          "name56.else",
           "setting0.execute"
         ],
         [

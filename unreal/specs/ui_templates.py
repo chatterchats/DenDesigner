@@ -237,7 +237,7 @@ def trace_line():
 
 
 # The editor's look: translucent dark panels with thin outlines and an amber accent. The layout has a menu bar,
-# a library dock on the left (one panel at a time under its tabs), an inspector dock on the right and a status bar.
+# a library dock on the left (one panel at a time beside its side tabs), an inspector dock on the right and a status bar.
 # Colours are linear, as UMG stores them.
 ACCENT = (0.888, 0.479, 0.070)
 SOFT_RGB = (0.584, 0.611, 0.651)
@@ -273,8 +273,10 @@ ACTIVE_BACK = rgba(*ACCENT, 0.16)
 AXES = {"X": (0.584, 0.045, 0.052), "Y": (0.042, 0.254, 0.07), "Z": (0.028, 0.178, 0.552)}
 # Catalog, Storeroom and composition cards: two to a row in the library dock, so names and sizes fit.
 TILE_WIDTH, TILE_HEIGHT, PICTURE = 212, 250, 136
-LIBRARY_WIDTH, TABS_HEIGHT, INSPECTOR_WIDTH = 470, 60, 370
-LIBRARY_TOP = 80 + TABS_HEIGHT + 4
+LIBRARY_WIDTH, INSPECTOR_WIDTH = 470, 370
+# The library tabs are a rail down the left edge, so wide windows such as the HoloNet clear them.
+RAIL_WIDTH = 96
+LIBRARY_LEFT = 12 + RAIL_WIDTH + 6
 
 
 def rounded(fill, edge=None, radius=6, corners=None):
@@ -375,12 +377,12 @@ def image(name, icon_name, size=20, color=SOFT_RGB, slot=None):
             "slot": slot or {"VerticalAlignment": "VAlign_Center"}}
 
 
-def button(name, label, size=13, style="plain", icon_name=None, color=WHITE, tooltip=None, vertical=False):
+def button(name, label, size=13, style="plain", icon_name=None, color=WHITE, tooltip=None):
     """A button with an optional icon (`<name>Icon`) and caption (`<name>Label`); `label=None` makes it icon-only."""
     tint = {"primary": (0.0075, 0.006, 0.0035)}.get(style, SOFT_RGB if color == SOFT else (0.84, 0.81, 0.75))
     parts = []
     if icon_name:
-        gap = "(Left=0,Top=0,Right=0,Bottom=4)" if vertical else "(Left=0,Top=0,Right=0,Bottom=0)" if label is None else "(Left=0,Top=0,Right=7,Bottom=0)"
+        gap = "(Left=0,Top=0,Right=0,Bottom=0)" if label is None else "(Left=0,Top=0,Right=7,Bottom=0)"
         parts.append(image(name + "Icon", icon_name, 20, tint, {"HorizontalAlignment": "HAlign_Center", "VerticalAlignment": "VAlign_Center", "Padding": gap}))
     if label is not None:
         caption = text(name + "Label", label, size, INK if style == "primary" else color, role="button",
@@ -388,7 +390,7 @@ def button(name, label, size=13, style="plain", icon_name=None, color=WHITE, too
         caption["props"]["Justification"] = "Center"
         parts.append(caption)
     content = parts[0] if len(parts) == 1 else {
-        "class": "/Script/UMG.VerticalBox" if vertical else "/Script/UMG.HorizontalBox", "name": name + "Content",
+        "class": "/Script/UMG.HorizontalBox", "name": name + "Content",
         "slot": {"HorizontalAlignment": "HAlign_Center", "VerticalAlignment": "VAlign_Center"}, "children": parts}
     props = dict({"BackgroundColor": BUTTON, "IsFocusable": "false"}, **STYLES[style])
     if tooltip:
@@ -398,19 +400,31 @@ def button(name, label, size=13, style="plain", icon_name=None, color=WHITE, too
             "slot": {"Padding": "(Left=0,Top=0,Right=6,Bottom=6)"}, "children": [content]}
 
 
-def toggle(name, label, icon_name, vertical=False, fill=False):
+def toggle(name, label, icon_name, fill=False):
     """A tool, tab or filter button inside `<name>Back`, a border the runtime tints while it's on."""
-    inner = button(name, label, 11 if vertical else 15, "ghost", icon_name, SOFT, vertical=vertical)
+    inner = button(name, label, 15, "ghost", icon_name, SOFT)
     inner["slot"] = {"HorizontalAlignment": "HAlign_Fill", "VerticalAlignment": "VAlign_Fill"}
-    if vertical:  # four tabs share the dock's width
-        inner["props"]["WidgetStyle.NormalPadding"] = "(Left=6,Top=8,Right=6,Bottom=8)"
-        inner["props"]["WidgetStyle.PressedPadding"] = "(Left=6,Top=9,Right=6,Bottom=7)"
     slot = {"Padding": "(Left=0,Top=0,Right=2,Bottom=0)", "VerticalAlignment": "VAlign_Fill"}
     if fill:
         slot["Size"] = "(SizeRule=Fill,Value=1)"
     return {"class": "/Script/UMG.Border", "name": name + "Back", "variable": True,
             "props": surface(rgba(1, 1, 1), None, 4, "(Left=0,Top=0,Right=0,Bottom=0)", tint=CLEAR),
             "slot": slot, "children": [inner]}
+
+
+def side_tab(name, label, icon_name):
+    """A library tab in the rail: a toggle with its caption under its icon."""
+    tab = toggle(name, label, icon_name)
+    tab["slot"] = {"Padding": "(Left=0,Top=0,Right=0,Bottom=2)"}
+    inner = tab["children"][0]
+    inner["props"]["WidgetStyle.NormalPadding"] = "(Left=4,Top=10,Right=4,Bottom=8)"
+    inner["props"]["WidgetStyle.PressedPadding"] = "(Left=4,Top=11,Right=4,Bottom=7)"
+    content = inner["children"][0]
+    content["class"] = "/Script/UMG.VerticalBox"
+    icon_part, caption = content["children"]
+    icon_part["slot"]["Padding"] = "(Left=0,Top=0,Right=0,Bottom=5)"
+    caption["props"]["Font.Size"] = 11
+    return tab
 
 
 def divider(name, vertical=True, slot=None):
@@ -464,10 +478,11 @@ def toolbar():
                  {"class": "/Script/UMG.HorizontalBox", "name": "NavigationRight", "slot": middle,
                   "children": right + [divider("SaveDivider"), save, done]}]}]}
     tabs = {"class": "/Script/UMG.Border", "name": "LibraryTabs",
-            "props": surface(PANEL, EDGE, 8, "(Left=4,Top=4,Right=2,Bottom=4)"),
-            "slot": {"LayoutData": f"(Anchors=(Minimum=(X=0,Y=0),Maximum=(X=0,Y=0)),Offsets=(Left=12,Top=80,Right={LIBRARY_WIDTH},Bottom={TABS_HEIGHT}))"},
-            "children": [{"class": "/Script/UMG.HorizontalBox", "name": "LibraryRow",
-                          "children": [toggle(n, label_, i, vertical=True, fill=True) for n, label_, _, i in LIBRARY]}]}
+            "props": surface(PANEL, EDGE, 8, "(Left=4,Top=4,Right=4,Bottom=2)"),
+            "slot": {"LayoutData": "(Anchors=(Minimum=(X=0,Y=0),Maximum=(X=0,Y=0)),Offsets=(Left=12,Top=80,Right=0,Bottom=0))", "bAutoSize": "true"},
+            "children": [{"class": "/Script/UMG.SizeBox", "name": "LibraryRailWidth", "props": {"WidthOverride": RAIL_WIDTH - 8, "bOverride_WidthOverride": "true"},
+                          "children": [{"class": "/Script/UMG.VerticalBox", "name": "LibraryRail",
+                                        "children": [side_tab(n, label_, i) for n, label_, _, i in LIBRARY]}]}]}
 
     help_panel = {"class": "/Script/UMG.SizeBox", "name": "HelpPanel", "variable": True,
                   "props": {"WidthOverride": 600, "bOverride_WidthOverride": "true", "Visibility": "Collapsed"},
@@ -656,12 +671,12 @@ def cards(name):
 
 
 def library_panel(title, children):
-    """A panel in the library dock under the tabs (only one shows at a time)."""
+    """A panel in the library dock beside the tabs (only one shows at a time)."""
     panel = {"class": "/Script/UMG.Border", "name": "Panel",
              "props": surface(PANEL, EDGE, 8, "(Left=14,Top=14,Right=14,Bottom=12)"),
              # Pinned to the left edge, stretched top to bottom: Left is the x position and Right is the width;
-             # Top and Bottom are margins (below the tabs, above the status bar).
-             "slot": {"LayoutData": f"(Anchors=(Minimum=(X=0,Y=0),Maximum=(X=0,Y=1)),Offsets=(Left=12,Top={LIBRARY_TOP},Right={LIBRARY_WIDTH},Bottom=58))"},
+             # Top and Bottom are margins (below the menu bar, above the status bar).
+             "slot": {"LayoutData": f"(Anchors=(Minimum=(X=0,Y=0),Maximum=(X=0,Y=1)),Offsets=(Left={LIBRARY_LEFT},Top=80,Right={LIBRARY_WIDTH},Bottom=58))"},
              "children": [{"class": "/Script/UMG.VerticalBox", "name": "Column", "children": [
                  text("Title", title, 20, GOLD, role="title", slot={"Padding": "(Left=0,Top=0,Right=0,Bottom=10)"})] + children}]}
     return {"class": "/Script/UMG.CanvasPanel", "name": "Root", "children": [panel]}
@@ -896,8 +911,13 @@ def transform():
         actions.append(widget)
     selection = text("Selection", "", 18, GOLD, role="title", wrap=True, slot={"Padding": "(Left=0,Top=4,Right=0,Bottom=0)"})
     selection["props"]["WrappingPolicy"] = "AllowPerCharacterWrapping"  # asset names are one long "word"
+    # Closing the inspector deselects the prop, as Esc does.
+    close = button("CloseInspector", "Close", 13, "ghost", color=SOFT, tooltip="Deselect this prop")
+    close["slot"] = {"VerticalAlignment": "VAlign_Center"}
+    g.click("CloseInspector", "deselect")
     tree = inspector_panel("Panel", [
-        label("Title", "Selected prop", 12),
+        row("Header", [label("Title", "Selected prop", 12, slot={"Size": "(SizeRule=Fill,Value=1)", "VerticalAlignment": "VAlign_Center"}), close],
+            "(Left=0,Top=0,Right=0,Bottom=0)"),
         selection,
         divider("FieldsDivider", vertical=False),
     ] + groups + [
