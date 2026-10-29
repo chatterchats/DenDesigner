@@ -53,5 +53,6 @@ int dd_gallery_page(const unsigned char *json,size_t size,int legacy,int page,ch
 int dd_shares_page(const unsigned char *json,size_t size,int page,char *out,size_t capacity);
 int dd_profile(const unsigned char *json,size_t size,char *name,size_t capacity);
 size_t dd_thumbnail_name(const unsigned char *,size_t);
+int dd_json_word(const unsigned char *json,size_t size,const char *key,char *out,size_t capacity);
 int dd_publish_text(const char *in,size_t size,int max_chars,int multiline,char *out,size_t capacity);
 #endif

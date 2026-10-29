@@ -13,8 +13,9 @@ Design: mockup canvas https://claude.ai/artifact/Qo83uSVbDmV8eexUDT5zAT, boards
 
 Keep (it works; the user confirmed fetch, import, thumbnails and placement in-game):
 
-- The native bridge: `version.dll` proxy plus worker process (`native/community/`),
-  WinHTTP transport, redirects off, bounded responses, cancellation.
+- The native bridge (`native/community/`), WinHTTP transport, redirects off,
+  bounded responses, cancellation. (Since 0.9.20 it is one `version.dll`; see
+  "Single-DLL bridge" below.)
 - The SaveGame mailbox between Blueprint and bridge
   (`runtime_community_mailbox.py`, `BP_DenCommunityWireSave`) and its request
   types: `CATALOG/`, `PREVIEW/`, `DOWNLOAD/`, `COPYURL/`, `COPYCODE/`, `CONNECT`,
@@ -127,7 +128,8 @@ Each one builds, passes tests and can be installed on its own.
 - Kit: `tests/unreal/test_community_native.py` through
   `tools/build/test_native.sh`; author with `build_gf.sh --author-only` first.
 - Native: the Wine smoke builds in `native/community/` (`smoke-build.sh`,
-  `connection-smoke-build.sh`, `lifecycle-smoke-build.sh`).
+  `connection-smoke-build.sh`) and the end-to-end suite
+  `native/community/e2e/run.sh`.
 - In game (the user): connect with a key; browse and page; import a base-game
   build and a pack build (with and without the pack installed); share a new
   build; update it with "What changed" and see the changelog on zcom.app; check
@@ -142,6 +144,47 @@ Each one builds, passes tests and can be installed on its own.
   installer must not treat 0.9.20 as older.) The bridge version is set
   (`DD_VERSION` in `core.h`); the pak version changes at milestone 8.
 - No Steam Deck for testing: check 1280×800 by resizing the game window.
+- The bridge is a single `version.dll` (no `den-community.exe`), with every
+  bridge thread inside a structured exception guard. The key now lives in game
+  memory; the owner accepted that (the key limits who can upload and allows
+  moderation; it is not a high-value secret).
+
+## Single-DLL bridge (0.9.20)
+
+`den-community.exe` is gone: browse/import requests run on a worker thread and
+the connection (key, My Shares, sharing) on a task thread inside `version.dll`,
+started from a mailbox thread (`proxy.c`). The game's own threads only ever enter
+the version forwarders.
+
+- **Guards**: each thread body is wrapped in `__try/__except` (MSVC-target clang;
+  `__C_specific_handler` from ntdll, no C runtime). A caught fault logs, wipes the
+  key, answers the request in flight and every later one with "HoloNet stopped
+  after an internal error. Restart the game to use HoloNet.", and leaves the game
+  running. Reply writes use one lock released by `__finally`, so a fault can't
+  leave it held. No process-wide exception filters are installed.
+- **Cancel and timeout** no longer kill a process: the request's generation is
+  bumped and the dropped thread can neither reply nor change state. It stops at
+  its next network step (it reads only the bytes that have arrived) and a share
+  dropped mid-upload deletes its unfinished upload. Handles are never closed from
+  another thread, since the game's own HTTP may use WinHTTP.
+- **Wine/Proton fix**: Wine's WinHTTP ignores `WinHttpSetTimeouts` for the wait
+  on response headers and waited as long as the server stalled. Both transports
+  now also set `WINHTTP_OPTION_RECEIVE_RESPONSE_TIMEOUT` (6 s).
+- Threads get an explicit 2 MB stack (the JSON token table is 256 KB on the stack).
+- Imports: kernel32, user32 (clipboard), winhttp, bcrypt and ntdll, all system DLLs;
+  the game executable already imports WINHTTP.dll and USER32.dll.
+- Upload replies are read with the bounded JSON parser (`dd_json_word`), not a text
+  search, so their formatting doesn't matter.
+- Installer: one file; upgrading removes 0.9.19's `den-community.exe` only when it
+  matches the previous installation record.
+- Tests: `native/community/e2e/run.sh` (wine, python3, cc) builds a test DLL with
+  `-DDD_FAULT_TEST` crash points pointed at a local fake HoloNet, loads it in a
+  stand-in game process, and checks browse, search, preview, import, copy, connect
+  (wrong key, remembered, session only, relaunch reconnect), My Shares, share new
+  and update (exact request bodies), disconnect/forget, offline, the 25-second
+  deadline, cancel and replace (no stale replies), connect timeout and recovery,
+  cancelled share cleanup, a crash in each of the four threads, 60 rapid requests,
+  damaged mailbox files and damaged server replies (no caught faults allowed).
 
 ## Progress
 
@@ -181,7 +224,10 @@ Deviations from the mockup, to stay within engine calls the project already uses
   duplicate ids, exec wiring, functions that never run, and engine calls or pins not
   used anywhere before (none are new).
 - Bridge: connection smoke test and the real worker under Wine (MinGW build) against
-  a local server serving the fixtures.
+  a local server serving the fixtures. For the single DLL: the suite above, 77 of 77
+  checks, built from these sources with the Wine 9 SDK and `build.sh`'s flags (not the
+  Proton SDK); a long run of the stress, crash and fuzz checks at 10× (4,000 damaged
+  mailbox files, 600 damaged replies).
 - Not run: the kit (`build_gf.sh --author-only`, `tools/build/test_native.sh`,
   `tests/unreal/test_community_native.py`, updated for the new window but not run), the
   official Wine-SDK bridge build, the proxy and lifecycle smoke tests, ZComShare's
@@ -203,7 +249,9 @@ DD_SERVICE_INSECURE=1 bash native/community/build.sh` (recorded in
 ## In-game checklist
 
 Build and install first: `build_gf.sh --author-only`, then `tools/build/test_native.sh`;
-`bash native/community/build.sh`; package with `tools/build/package_community_bundle.py`.
+`bash native/community/build.sh` and `bash native/community/e2e/run.sh`; package with
+`tools/build/package_community_bundle.py`. The bridge is now only `version.dll`; delete
+an old `den-community.exe` from `Binaries/Win64` if you install by hand.
 
 1. Open the editor, choose **HoloNet** on the menu bar. The window is centred under the
    menu bar; the title bar says Not connected. At 1280×800 (resize the game window) it
@@ -229,6 +277,8 @@ Build and install first: `build_gf.sh --author-only`, then `tools/build/test_nat
 10. **My Shares**: both shares listed with revision and imports; picking one opens Share as
     an update. On the Compositions panel, select a card and choose **Share**.
 11. Close the window during a share: it stops; reopening shows no half-finished state.
+    Unplug the network and browse: an error within a few seconds, and the game keeps running.
+    `native.log` (next to the mailbox) says "HoloNet bridge 0.9.20 loaded (one DLL ...)".
 12. Prop pack authors: add a Nexus page in the pack tool; an invalid one is refused with the
     explanation.
 

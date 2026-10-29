@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Install the optional Community bridge after validating its archive and game.
+"""Install the optional HoloNet bridge after validating its archive and game.
 
 This does not configure Wine/Lutris DLL overrides or install the pak runtime.
 Unknown proxies are never overwritten. No files are written before preflight.
+Upgrading from 0.9.19 removes its den-community.exe, but only when it is the
+exact file the previous installation recorded.
 """
 import argparse
 import csv
@@ -17,8 +19,9 @@ import tempfile
 import zipfile
 
 SUPPORTED_EXE = 'aa3ff2e0759c90bae58054f2a68398e5b705fdfd05659242404d8c3602c6f36e'
-FILES = {'Binaries/Win64/version.dll', 'Binaries/Win64/den-community.exe', 'COMMUNITY-BRIDGE.md', 'LICENSE'}
-BINARIES = ('version.dll', 'den-community.exe')
+FILES = {'Binaries/Win64/version.dll', 'COMMUNITY-BRIDGE.md', 'LICENSE'}
+BINARIES = ('version.dll',)
+RETIRED = ('den-community.exe',)  # 0.9.19 and earlier; now inside version.dll
 RECORD = 'DenCommunityBridge.install.json'
 HEX = re.compile(r'[0-9a-f]{64}\Z')
 
@@ -109,7 +112,7 @@ def install(archive, game, *, running=game_running, supported_exe=SUPPORTED_EXE)
         require(record.is_file() and record.stat().st_size <= 65536, 'Invalid previous installation record')
         prior = json.loads(record.read_text(), object_pairs_hook=unique)
         require(type(prior) is dict and prior.get('product') == 'DenCommunityBridge' and prior.get('format') == 1
-                and type(prior.get('binaries')) is dict and set(prior['binaries']) == set(BINARIES)
+                and type(prior.get('binaries')) is dict and set(prior['binaries']) in (set(BINARIES), set(BINARIES + RETIRED))
                 and all(type(v) is str and HEX.fullmatch(v) for v in prior['binaries'].values()), 'Unknown installation record')
     hashes = {name: digest(payloads['Binaries/Win64/' + name]) for name in BINARIES}
     for name in BINARIES:
@@ -118,6 +121,11 @@ def install(archive, game, *, running=game_running, supported_exe=SUPPORTED_EXE)
         if path.exists():
             require(path.is_file() and file_digest(path) in (hashes[name], prior.get('binaries', {}).get(name)),
                     'Refusing to overwrite unknown existing proxy/binary: ' + name)
+    retired = []
+    for name in RETIRED:
+        path = target / name
+        if path.is_file() and not path.is_symlink() and file_digest(path) == prior.get('binaries', {}).get(name):
+            retired.append(path)
     installed = {'format': 1, 'product': 'DenCommunityBridge', 'version': manifest['version'],
                  'requires_runtime': manifest['requires_runtime'], 'supported_executable_sha256': supported_exe,
                  'archive_sha256': archive_sha, 'binaries': hashes}
@@ -134,6 +142,8 @@ def install(archive, game, *, running=game_running, supported_exe=SUPPORTED_EXE)
                 os.fsync(output.fileno())
         for source, destination in staged:
             os.replace(source, destination)
+        for path in retired:
+            path.unlink(missing_ok=True)
     finally:
         for source, _ in staged:
             source.unlink(missing_ok=True)

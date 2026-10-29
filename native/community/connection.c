@@ -1,8 +1,11 @@
 #include "windows.h"
-/* The in-game masked connection form can opt in to a dedicated plain local key
- * file. Credentials never enter composition exports, logs or command lines. */
-#define DD_RESULT (WM_APP + 1)
-static HWND window; /* Message-only timer endpoint; no player-facing native UI. */
+/* The key, My Shares and sharing. The mailbox thread (proxy.c) calls
+ * dd_connection_poll every 100 ms; network work runs on one task thread at a
+ * time. A task that times out or whose request is replaced is dropped: it is
+ * never terminated, stops at its next network step, and its result is
+ * discarded. The in-game masked connection form can opt in to a dedicated plain
+ * local key file. Credentials never enter composition exports, logs or command
+ * lines. */
 static int review_ready;
 /* Publish text is UTF-8: up to 120, 4000 and 500 characters. */
 static char upload_id[37], published_code[33], publish_title[481], publish_description[16001], publish_changelog[2001], update_code[33], update_revision[10];
@@ -14,7 +17,10 @@ static char requirements[65536];
 static DWORD thumbnail_size, payload_offset, payload_size;
 static char thumbnail_source_digest[65];
 
-static volatile LONG busy;
+static volatile LONG busy, task_generation;
+static LONG task_mine;
+static int task_kind;
+static int stale(void) { return task_mine != task_generation; }
 static int connected;
 static ULONGLONG started;
 static struct { char key[69]; WCHAR authorization[100]; } credential;
@@ -41,9 +47,12 @@ static void authorize(void) {
 }
 static void reply_wire(const char *wire) {
  DWORD n;size_t written;
- if(dd_read(request_path,current,sizeof(current),&n)&&n==original_size&&!memcmp(current,original,n)&&dd_save_response(original,original_size,&pending,wire,output,sizeof(output),&written)){
-  if(dd_write(response_path,output,(DWORD)written)&&equal(pending.input,"AUTH"))DeleteFileW(request_path);
- }
+ EnterCriticalSection(&dd_mailbox);
+ __try{
+  if(dd_read(request_path,current,sizeof(current),&n)&&n==original_size&&!memcmp(current,original,n)&&dd_save_response(original,original_size,&pending,wire,output,sizeof(output),&written)){
+   if(dd_write(response_path,output,(DWORD)written)&&equal(pending.input,"AUTH"))DeleteFileW(request_path);
+  }
+ }__finally{LeaveCriticalSection(&dd_mailbox);}
 }
 static void connection_reply(const char *message) {
  char wire[1024];
@@ -55,26 +64,38 @@ static void progress(const char *stage) {
  {const char *tag="\nprogress\t";for(i=0;tag[i];i++)wire[used++]=tag[i];}
  for(i=0;stage[i]&&used+5<sizeof(wire);i++)wire[used++]=stage[i];
  memcpy(wire+used,"\nend",5);
- if(dd_read(request_path,current,sizeof(current),&n)&&n==original_size&&!memcmp(current,original,n)&&dd_save_response(original,original_size,&pending,wire,output,sizeof(output),&written))dd_write(response_path,output,(DWORD)written);
+ EnterCriticalSection(&dd_mailbox);
+ __try{
+  if(!stale()&&dd_read(request_path,current,sizeof(current),&n)&&n==original_size&&!memcmp(current,original,n)&&dd_save_response(original,original_size,&pending,wire,output,sizeof(output),&written))dd_write(response_path,output,(DWORD)written);
+ }__finally{LeaveCriticalSection(&dd_mailbox);}
 }
 static int http(const WCHAR *method,const WCHAR *path,const unsigned char *body,DWORD bytes,const WCHAR *extra,char *reply,DWORD capacity) {
  /* Paths are fixed API routes plus validated codes, ids and page numbers. */
  HINTERNET session=0,connection=0,request=0;
  DWORD disable=WINHTTP_DISABLE_REDIRECTS|WINHTTP_DISABLE_COOKIES|WINHTTP_DISABLE_AUTHENTICATION;
- DWORD policy=WINHTTP_OPTION_REDIRECT_POLICY_NEVER, code=0, size=sizeof(code), got=0, used=0;
+ DWORD policy=WINHTTP_OPTION_REDIRECT_POLICY_NEVER, response_timeout=6000, code=0, size=sizeof(code), got=0, used=0;
  int result=0;
  reply[0]=0;safe_service_error=0;
+ if(stale()&&method[0]!='D')return 0; /* A dropped share still cancels its upload. */
  session=WinHttpOpen(L"DenDesignerHoloNet/" DD_WIDE(DD_VERSION),WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY,WINHTTP_NO_PROXY_NAME,WINHTTP_NO_PROXY_BYPASS,0);
  if(!session||!WinHttpSetTimeouts(session,4000,6000,6000,6000))goto done;
  connection=WinHttpConnect(session,DD_WIDE(DD_SERVICE_HOST),DD_SERVICE_PORT,0);if(!connection)goto done;
  request=WinHttpOpenRequest(connection,method,path,0,WINHTTP_NO_REFERER,WINHTTP_DEFAULT_ACCEPT_TYPES,DD_SERVICE_SECURE?WINHTTP_FLAG_SECURE:0);if(!request)goto done;
- if(!WinHttpSetOption(request,WINHTTP_OPTION_DISABLE_FEATURE,&disable,sizeof(disable))||!WinHttpSetOption(request,WINHTTP_OPTION_REDIRECT_POLICY,&policy,sizeof(policy)))goto done;
+ /* Wine (Proton) needs the response-header timeout set explicitly. */
+ if(!WinHttpSetOption(request,WINHTTP_OPTION_DISABLE_FEATURE,&disable,sizeof(disable))||!WinHttpSetOption(request,WINHTTP_OPTION_REDIRECT_POLICY,&policy,sizeof(policy))||!WinHttpSetOption(request,WINHTTP_OPTION_RECEIVE_RESPONSE_TIMEOUT,&response_timeout,sizeof(response_timeout)))goto done;
  if(!WinHttpAddRequestHeaders(request,credential.authorization,(DWORD)-1,WINHTTP_ADDREQ_FLAG_ADD|WINHTTP_ADDREQ_FLAG_REPLACE)||
  !WinHttpSendRequest(request,extra,(DWORD)-1,(LPVOID)body,bytes,bytes,0)||!WinHttpReceiveResponse(request,0))goto done;
  if(!WinHttpQueryHeaders(request,WINHTTP_QUERY_STATUS_CODE|WINHTTP_QUERY_FLAG_NUMBER,WINHTTP_HEADER_NAME_BY_INDEX,&code,&size,WINHTTP_NO_HEADER_INDEX))goto done;
  if(code==401){result=-1;goto done;}
  if(code==403){result=-2;goto done;}
- while(used+1<capacity){if(!WinHttpReadData(request,reply+used,capacity-used-1,&got))goto done;if(!got){reply[used]=0;if(code>=200&&code<300)result=1;else{safe_service_error=service_failure(code,reply);result=-3;}goto done;}used+=got;}
+ /* Read only what has arrived, so a dropped task stops between reads. */
+ for(;;){DWORD available=0;
+  if((stale()&&method[0]!='D')||!WinHttpQueryDataAvailable(request,&available))goto done;
+  if(available&&used+1>=capacity)goto done;
+  if(available>capacity-used-1)available=capacity-used-1;
+  if(available&&!WinHttpReadData(request,reply+used,available,&got))goto done;
+  if(!available||!got){reply[used]=0;if(code>=200&&code<300)result=1;else{safe_service_error=service_failure(code,reply);result=-3;}goto done;}
+  used+=got;}
  done:if(request)WinHttpCloseHandle(request);if(connection)WinHttpCloseHandle(connection);if(session)WinHttpCloseHandle(session);return result;
 }
 static int (*send_http)(const WCHAR *,const WCHAR *,const unsigned char *,DWORD,const WCHAR *,char *,DWORD)=http;
@@ -82,10 +103,9 @@ static int append(char *out,size_t cap,const char *text){size_t n=dd_strlen(out)
 /* JSON string from validated UTF-8 (dd_publish_text): UTF-8 passes through;
  * quotes, backslashes and line breaks are escaped. */
 static int quote(char *out,size_t cap,const char *text){size_t i;if(!append(out,cap,"\""))return 0;for(i=0;text[i];i++){char b[3]={text[i],0,0};if(text[i]=='\n'){b[0]='\\';b[1]='n';}else if((unsigned char)text[i]<32||text[i]==127)return 0;else if(text[i]=='"'||text[i]=='\\'){b[0]='\\';b[1]=text[i];}if(!append(out,cap,b))return 0;}return append(out,cap,"\"");}
-/* Parse fixed, bounded UUID/code response fields; never follow server URLs. */
+/* Fixed, bounded UUID/code/status fields only; never follow server URLs. */
 static int response_field(const char *json,const char *name,char *out,size_t cap){
- char tag[64]="\"";size_t i,j,length=dd_strlen(json);if(!append(tag,sizeof(tag),name)||!append(tag,sizeof(tag),"\":\""))return 0;
- for(i=0;i+dd_strlen(tag)<=length;i++)if(!memcmp(json+i,tag,dd_strlen(tag))){i+=dd_strlen(tag);for(j=0;j+1<cap&&json[i+j]&&json[i+j]!='"';j++){char c=json[i+j];if(!((c>='a'&&c<='z')||(c>='A'&&c<='Z')||(c>='0'&&c<='9')||c=='-'||c=='_'))return 0;out[j]=c;}out[j]=0;return j>0&&json[i+j]=='"';}return 0;
+ return dd_json_word((const unsigned char *)json,dd_strlen(json),name,out,cap);
 }
 /* Only fixed messages for known service codes are exposed. Never reflect a
  * server body (or arbitrary strings from it) into status, files or logs. */
@@ -153,18 +173,20 @@ static int api(int kind,const unsigned char *body,DWORD bytes,char *reply,DWORD 
  if(!response_field(reply,"id",upload_id,sizeof(upload_id))||dd_strlen(upload_id)!=36||!response_field(reply,"code",published_code,sizeof(published_code)))return 0;
  {char status[20];if(response_field(reply,"status",status,sizeof(status))&&equal(status,"published"))return 1;}
  if(!request_current())goto cancel;
- upload_stage="uploading the composition";progress("Uploading the composition...");stage_path(path,"/payload");result=send_http(L"PUT",path,(const unsigned char *)publish_wire+payload_offset,payload_size,L"Content-Type: application/json\r\n",reply,capacity);if(result!=1)return result;
+ upload_stage="uploading the composition";progress("Uploading the composition...");stage_path(path,"/payload");result=send_http(L"PUT",path,(const unsigned char *)publish_wire+payload_offset,payload_size,L"Content-Type: application/json\r\n",reply,capacity);if(result!=1){if(stale())goto cancel;return result;}
  if(!request_current())goto cancel;
- upload_stage="uploading the preview";progress("Uploading the preview...");stage_path(path,"/thumbnail");result=send_http(L"PUT",path,thumbnail,thumbnail_size,L"Content-Type: image/png\r\n",reply,capacity);if(result!=1)return result;
+ upload_stage="uploading the preview";progress("Uploading the preview...");stage_path(path,"/thumbnail");result=send_http(L"PUT",path,thumbnail,thumbnail_size,L"Content-Type: image/png\r\n",reply,capacity);if(result!=1){if(stale())goto cancel;return result;}
  if(!request_current())goto cancel;
  upload_stage="finishing the share";progress("HoloNet is checking the build...");stage_path(path,"/finalize");return send_http(L"POST",path,0,0,L"Accept: application/json\r\n",reply,capacity);
+ /* Replaced, deleted or timed out mid-upload: cancel the unfinished share. */
  cancel:stage_path(path,"");send_http(L"DELETE",path,0,0,L"Accept: application/json\r\n",reply,capacity);return 0;
 }
 static int (*send_api)(int,const unsigned char *,DWORD,char *,DWORD)=api;
-static DWORD WINAPI perform(LPVOID parameter) {
- int kind=(int)(size_t)parameter, result; char *reply=reply_buffer;
+/* Apply a finished task's result; called holding dd_mailbox, only while the
+ * task is current. */
+static void apply(int kind,int result) {
+ char *reply=reply_buffer;
  const char *message="HoloNet is unavailable or refused the share. Your text is kept; try again. Editing offline still works.";
- result=send_api(kind,0,0,reply,sizeof(reply_buffer));
  if(result==-3&&safe_service_error)message=safe_service_error;
  else if(result==0){status_text[0]=0;append(status_text,sizeof(status_text),"HoloNet stopped responding while ");append(status_text,sizeof(status_text),upload_stage);append(status_text,sizeof(status_text),". Try again; your text is kept.");message=status_text;}
  else if(result==-1){forget_key();remembered_connection=0;wipe();message="Key invalid, expired or revoked. Get a new key at " DD_SERVICE_HOST "/account.";}
@@ -175,7 +197,7 @@ static DWORD WINAPI perform(LPVOID parameter) {
   static char wire[DD_WIRE_MAX];size_t k=0,j;const char *head="ZCOM-COMMUNITY\t1\t";int page=0;
   for(j=0;shares_page[j];j++)page=page*10+shares_page[j]-'0';
   for(j=0;head[j];j++)wire[k++]=head[j];for(j=0;pending.token[j];j++)wire[k++]=pending.token[j];wire[k++]='\n';
-  if(dd_shares_page((const unsigned char *)reply,dd_strlen(reply),page,wire+k,sizeof(wire)-k-4)){k=dd_strlen(wire);memcpy(wire+k,"end",4);reply_wire(wire);SecureZeroMemory(reply,sizeof(reply_buffer));InterlockedExchange(&busy,0);return 0;}
+  if(dd_shares_page((const unsigned char *)reply,dd_strlen(reply),page,wire+k,sizeof(wire)-k-4)){k=dd_strlen(wire);memcpy(wire+k,"end",4);reply_wire(wire);return;}
   message="HoloNet sent a My Shares page this Den Designer could not read.";
  }
  else if(result==1){
@@ -190,55 +212,91 @@ static DWORD WINAPI perform(LPVOID parameter) {
   }else{wipe();message="HoloNet sent a profile this Den Designer could not read. Disconnected.";}
  }
  if(message!=status_text){size_t n=dd_strlen(message);if(n>=sizeof(status_text))n=sizeof(status_text)-1;memcpy(status_text,message,n);status_text[n]=0;}
- SecureZeroMemory(reply,sizeof(reply_buffer));
  if(kind||reply_connection)connection_reply(status_text);
  if(!kind){reply_connection=0;want_remember=0;SecureZeroMemory(original,sizeof(original));SecureZeroMemory(current,sizeof(current));SecureZeroMemory(output,sizeof(output));}
+}
+static DWORD WINAPI perform(LPVOID parameter) {
+ int kind=(int)(size_t)parameter,result;
+ DD_TEST_POINT("task");
+ result=send_api(kind,0,0,reply_buffer,sizeof(reply_buffer));
+ EnterCriticalSection(&dd_mailbox);
+ __try{if(!stale())apply(kind,result);}
+ __finally{SecureZeroMemory(reply_buffer,sizeof(reply_buffer));LeaveCriticalSection(&dd_mailbox);}
  InterlockedExchange(&busy,0);return 0;
 }
+static DWORD WINAPI task_main(LPVOID parameter) {
+ __try{perform(parameter);}
+ __except(EXCEPTION_EXECUTE_HANDLER){dd_fault("HoloNet stopped after an internal error while connecting or sharing. Restart the game to use HoloNet.");}
+ return 0;
+}
+
 static void start_task(int kind) {
  HANDLE thread;if(InterlockedCompareExchange(&busy,1,0))return;
- started=GetTickCount64();
- thread=CreateThread(0,0,perform,(LPVOID)(size_t)kind,0,0);
+ started=GetTickCount64();task_kind=kind;task_mine=task_generation;
+ thread=dd_thread(task_main,(LPVOID)(size_t)kind);
  if(thread)CloseHandle(thread);else{connection_reply("Could not start the HoloNet request. Try again.");InterlockedExchange(&busy,0);}
 }
 static int restore_connection(void) {
  if(!restore_key(credential.key))return 0;
  remembered_connection=1;authorize();start_task(0);return 1;
 }
-static LRESULT CALLBACK procedure(HWND hwnd,UINT message,WPARAM w,LPARAM l) {
- if(message==WM_CLOSE){wipe();DestroyWindow(hwnd);return 0;}
- if(message==WM_DESTROY){wipe();ExitProcess(0);}
- if(message==WM_TIMER&&busy&&GetTickCount64()-started>25000){wipe();ExitProcess(ERROR_TIMEOUT);}
- if(message==WM_TIMER&&busy&&!still_current()&&original_size){wipe();ExitProcess(ERROR_CANCELLED);}
- if(message==WM_TIMER&&!busy){
+/* Drop the running task: on timeout (answering the request), or when its
+ * request was replaced or deleted. An unfinished connection check also drops
+ * the key it was checking. */
+static void drop_task(int timed_out) {
+ EnterCriticalSection(&dd_mailbox);
+ __try{
+  InterlockedIncrement(&task_generation);
+  if(timed_out&&(task_kind||reply_connection)){
+   if(!task_kind)connection_reply("HoloNet didn't answer in time. Try again when you're online.");
+   else{status_text[0]=0;append(status_text,sizeof(status_text),"HoloNet stopped responding while ");append(status_text,sizeof(status_text),upload_stage);append(status_text,sizeof(status_text),". Try again; your text is kept.");connection_reply(status_text);}
+  }
+  if(!task_kind)wipe();
+  reply_connection=0;want_remember=0;
+ }__finally{LeaveCriticalSection(&dd_mailbox);}
+}
+void dd_connection_wipe(void) { wipe(); }
+/* Disconnect, Forget or a new key: drop any running task and the key. */
+void dd_connection_drop(void) {
+ EnterCriticalSection(&dd_mailbox);
+ __try{InterlockedIncrement(&task_generation);wipe();remembered_connection=0;reply_connection=0;want_remember=0;}
+ __finally{LeaveCriticalSection(&dd_mailbox);}
+}
+void dd_connection_poll(void) {
+ if(busy&&!stale()){
+  if(GetTickCount64()-started>25000)drop_task(1);
+  else if(original_size&&!still_current())drop_task(0);
+ }
+ if(!busy){
   const char *error;DWORD n;dd_save incoming;
   if(dd_recent(request_path,45)&&dd_read(request_path,current,sizeof(current),&n)&&dd_save_read(current,n,&incoming,&error)&&!equal(incoming.token,handled_token)&&(equal(incoming.input,"AUTH")||equal(incoming.input,"CONNECT"))){
    pending=incoming;memcpy(handled_token,pending.token,65);memcpy(original,current,n);original_size=n;reply_connection=1;want_remember=0;
    if(equal(pending.input,"AUTH")){
     wipe();want_remember=original[pending.wire_value_offset]=='1';memcpy(credential.key,original+pending.wire_value_offset+2,68);credential.key[68]=0;
     if(!want_remember){remembered_connection=0;}
-    if(!want_remember&&!forget_key()){connection_reply("Could not remove the previous remembered connection. Use Forget connection and retry.");wipe();reply_connection=0;return 0;}
+    if(!want_remember&&!forget_key()){connection_reply("Could not remove the previous remembered connection. Use Forget connection and retry.");wipe();reply_connection=0;return;}
    }else if(!key_valid(credential.key)&&!restore_key(credential.key)){
-    connection_reply("No remembered connection. Enter your game upload key and choose Connect.");reply_connection=0;SecureZeroMemory(original,sizeof(original));SecureZeroMemory(current,sizeof(current));return 0;
+    connection_reply("No remembered connection. Enter your game upload key and choose Connect.");reply_connection=0;SecureZeroMemory(original,sizeof(original));SecureZeroMemory(current,sizeof(current));return;
    }
    if(equal(pending.input,"CONNECT")){char saved[69];remembered_connection=restore_key(saved);SecureZeroMemory(saved,sizeof(saved));}
-   authorize();start_task(0);return 0;
+   authorize();start_task(0);return;
   }
  }
- if(message==WM_TIMER&&!busy){
+ if(!busy){
   const char *error;DWORD n;
   if(dd_recent(request_path,45)&&dd_read(request_path,current,sizeof(current),&n)&&dd_save_read(current,n,&pending,&error)&&!memcmp(pending.input,"MYSHARES/",9)&&!equal(pending.token,handled_token)){
    memcpy(handled_token,pending.token,65);memcpy(original,current,n);original_size=n;
-   if(!connected){connection_reply("Not connected. Enter a key or use Connect to retry your remembered connection.");return 0;}
-   memcpy(shares_page,pending.input+9,dd_strlen(pending.input+9)+1);start_task(2);return 0;
+   if(!connected){connection_reply("Not connected. Enter a key or use Connect to retry your remembered connection.");return;}
+   memcpy(shares_page,pending.input+9,dd_strlen(pending.input+9)+1);start_task(2);return;
   }
  }
- if(message==WM_TIMER&&!busy){
+ if(!busy){
   const char *error;DWORD n;
   if(dd_recent(request_path,45)&&dd_read(request_path,current,sizeof(current),&n)&&dd_save_read(current,n,&pending,&error)&&equal(pending.input,"PUBLISH")&&!equal(pending.token,handled_token)){
    WCHAR thumb_path[1024];char filename[40];size_t i,j,size,at;DWORD root;
+   DD_TEST_POINT("poll");
    memcpy(handled_token,pending.token,65);memcpy(original,current,n);original_size=n;upload_id[0]=0;review_ready=0;thumbnail_source_digest[0]=0;
-   if(!connected){connection_reply("Not connected. Enter a key or use Connect to retry your remembered connection.");return 0;}
+   if(!connected){connection_reply("Not connected. Enter a key or use Connect to retry your remembered connection.");return;}
    if(!dd_save_wire(original,n,&pending,publish_wire,sizeof(publish_wire),&size))goto bad_thumbnail;
    i=dd_thumbnail_name((const unsigned char *)publish_wire,size<64?size:64);if(!i)goto bad_thumbnail;
    memcpy(filename,publish_wire,i);filename[i]=0;
@@ -292,29 +350,17 @@ static LRESULT CALLBACK procedure(HWND hwnd,UINT message,WPARAM w,LPARAM l) {
    }
    if(at>=size)goto bad_metadata;payload_offset=(DWORD)at;payload_size=(DWORD)(size-at);
    if(!dd_publish_review((const unsigned char *)publish_wire+payload_offset,payload_size,requirements,sizeof(requirements)))goto bad_thumbnail;
-   review_ready=1;start_task(1);return 0;
-   bad_metadata:connection_reply("Check the text: a title of 1-120 characters, a description up to 4000 and What changed up to 500. An update needs the share's code and revision. Upload keys can't go in the text.");return 0;
+   review_ready=1;start_task(1);return;
+   bad_metadata:connection_reply("Check the text: a title of 1-120 characters, a description up to 4000 and What changed up to 500. An update needs the share's code and revision. Upload keys can't go in the text.");return;
    bad_thumbnail:connection_reply("The preview image or saved composition isn't ready. Wait for the card preview, then share again.");
   }
  }
- return DefWindowProcW(hwnd,message,w,l);
 }
-static LONG WINAPI crash_filter(EXCEPTION_POINTERS *exception) {
- (void)exception;wipe();ExitProcess(ERROR_PROCESS_ABORTED);return EXCEPTION_EXECUTE_HANDLER;
-}
-int dd_connection_main(void) {
- WNDCLASSW wc;MSG message;HMODULE instance=GetModuleHandleW(0);
+void dd_connection_start(void) {
+ dd_save incoming;const char *error;DWORD n;
  /* Optional persistence is plain local storage, explicitly chosen in-game. */
- if(!VirtualLock(&credential,sizeof(credential)))return 2;
- SetErrorMode(SEM_FAILCRITICALERRORS|SEM_NOGPFAULTERRORBOX);
- SetUnhandledExceptionFilter(crash_filter);
+ if(!VirtualLock(&credential,sizeof(credential)))dd_log("Could not lock the key's memory page; continuing without.");
  {typedef HRESULT(WINAPI *exclude_fn)(const void *,DWORD);exclude_fn exclude=(exclude_fn)GetProcAddress(GetModuleHandleW(L"kernel32.dll"),"WerRegisterExcludedMemoryBlock");if(exclude)exclude(&credential,sizeof(credential));}
- if(!dd_paths(request_path,response_path))return 2;
- memset(&wc,0,sizeof(wc));wc.lpfnWndProc=procedure;wc.hInstance=instance;wc.lpszClassName=L"ZComCommunityConnection";wc.hCursor=LoadCursorW(0,MAKEINTRESOURCEW(32512));
- if(!RegisterClassW(&wc))return 2;
- window=CreateWindowExW(0,wc.lpszClassName,L"",0,0,0,0,0,HWND_MESSAGE,0,instance,0);if(!window)return 2;
- SetTimer(window,1,100,0);
- {dd_save incoming;const char *error;DWORD n;int auth_waiting=dd_recent(request_path,45)&&dd_read(request_path,current,sizeof(current),&n)&&dd_save_read(current,n,&incoming,&error)&&equal(incoming.input,"AUTH");
- if(!auth_waiting)restore_connection();}
- while(GetMessageW(&message,0,0,0)>0){TranslateMessage(&message);DispatchMessageW(&message);}wipe();return 0;
+ if(!dd_paths(request_path,response_path))return;
+ if(!(dd_recent(request_path,45)&&dd_read(request_path,current,sizeof(current),&n)&&dd_save_read(current,n,&incoming,&error)&&equal(incoming.input,"AUTH")))restore_connection();
 }

@@ -220,3 +220,18 @@ int dd_forget_key(void) {
  if(!cat(path,1024,L".tmp")||!regular_path(path))return 0;
  return (DeleteFileW(path)||GetLastError()==ERROR_FILE_NOT_FOUND)&&ok;
 }
+#ifdef DD_FAULT_TEST
+static int *volatile dd_test_null;
+static volatile LONG dd_test_fired;
+void dd_test_point(const char *name) {
+  char want[64];
+  size_t i;
+  DWORD n = GetEnvironmentVariableA("DD_TEST_FAULT", want, sizeof(want));
+  if (!n || n >= sizeof(want))
+    return;
+  for (i = 0; name[i] && name[i] == want[i]; i++)
+    ;
+  if (!name[i] && !want[i] && !InterlockedExchange(&dd_test_fired, 1))
+    *dd_test_null = 1; /* Once: later requests show what players would see. */
+}
+#endif

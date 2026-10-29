@@ -1,6 +1,11 @@
 /* Dedicated fake-transport test executable. This file is never linked into the
  * shipped worker. It cannot contact the service or use a player's credentials. */
 #include "connection.c"
+/* proxy.c's shared pieces, for this test only. */
+CRITICAL_SECTION dd_mailbox;
+volatile LONG dd_broken;
+void dd_fault(const char *message) { (void)message; ExitProcess(70); }
+HANDLE dd_thread(LPTHREAD_START_ROUTINE start, LPVOID parameter) { return CreateThread(0, 2u << 20, start, parameter, STACK_SIZE_PARAM_IS_A_RESERVATION, 0); }
 static volatile LONG attempts, publish_attempts;
 static int fake_api(int kind,const unsigned char *body,DWORD n,char *response,DWORD cap) {
  const char *profile="{\"user_id\":\"11111111-1111-4111-8111-111111111111\",\"display_name\":\"Rook\\u2019s\\tden\",\"publishing\":\"beta-publishing\"}";
@@ -86,10 +91,10 @@ static void inpanel_checks(const char *key){
  if(!GetEnvironmentVariableW(L"DD_INPANEL_FIXTURE",fixture,1024))return;
  if(!dd_paths(request_path,response_path)||!dd_read(fixture,original,sizeof(original),&n)||!dd_write(request_path,original,n))ExitProcess(50);
  Sleep(100); /* Wine wall-clock snapshots can lag the file timestamp immediately after write. */
- handled_token[0]=0;wipe();if(busy)ExitProcess(66);if(!dd_recent(request_path,45))ExitProcess(67);if(!dd_save_read(original,n,&pending,&error))ExitProcess(68);if(!equal(pending.input,"PUBLISH"))ExitProcess(69);procedure(window,WM_TIMER,0,0);
+ handled_token[0]=0;wipe();if(busy)ExitProcess(66);if(!dd_recent(request_path,45))ExitProcess(67);if(!dd_save_read(original,n,&pending,&error))ExitProcess(68);if(!equal(pending.input,"PUBLISH"))ExitProcess(69);dd_connection_poll();
  if(publish_attempts)ExitProcess(51);if(!reply_contains("Not connected"))ExitProcess(65);
- memcpy(credential.key,key,69);authorize();connected=1;handled_token[0]=0;procedure(window,WM_TIMER,0,0);
- if(publish_attempts||!reply_contains("Thumbnail or saved snapshot unavailable"))ExitProcess(52);
+ memcpy(credential.key,key,69);authorize();connected=1;handled_token[0]=0;dd_connection_poll();
+ if(publish_attempts||!reply_contains("The preview image or saved composition isn't ready"))ExitProcess(52);
  if(!dd_read(request_path,original,sizeof(original),&n)||!dd_save_read(original,n,&pending,&error))ExitProcess(53);
  memcpy(filename,original+pending.wire_value_offset,24);filename[24]=0;
  root=GetEnvironmentVariableW(L"LOCALAPPDATA",thumbdir,900);if(!root||root>=900)ExitProcess(54);
@@ -97,22 +102,19 @@ static void inpanel_checks(const char *key){
  for(i=0;thumbdir[i];i++)thumbpath[i]=thumbdir[i];thumbpath[i++]='\\';for(j=0;filename[j];j++)thumbpath[i++]=(WCHAR)filename[j];thumbpath[i]=0;
  {unsigned char cached[sizeof(test_png)+32];memcpy(cached,test_png,sizeof(test_png));memset(cached+sizeof(test_png),0xa5,32);if(!dd_write(thumbpath,cached,sizeof(cached)))ExitProcess(55);}
  send_http=fake_http;request_current=fake_current;calls=finalized=deleted=0;enforce_png=1;
- handled_token[0]=0;procedure(window,WM_TIMER,0,0);
+ handled_token[0]=0;dd_connection_poll();
  began=GetTickCount64();while(busy&&GetTickCount64()-began<5000)Sleep(20);
  if(busy||publish_attempts!=1||!equal(publish_title,"VM saved composition")||!equal(publish_description,"Retained after errors")||!reply_contains("Published: " DD_SERVICE_URL "/comp/PublishedTest01"))ExitProcess(56);
- if(thumbnail_size!=sizeof(test_png)||IsWindowVisible(window)||GetWindow(window,GW_CHILD))ExitProcess(57);
+ if(thumbnail_size!=sizeof(test_png))ExitProcess(57);
  for(i=thumbnail_size;i<thumbnail_size+32;i++)if(thumbnail[i])ExitProcess(59);
  DeleteFileW(request_path);DeleteFileW(response_path);DeleteFileW(thumbpath);wipe();
 }
 static int blocked_api(int publish,const unsigned char *body,DWORD n,char *response,DWORD cap){(void)publish;(void)body;(void)n;(void)response;(void)cap;Sleep(60000);return 0;}
-static DWORD WINAPI open_window(LPVOID unused) {(void)unused;dd_connection_main();return 0;}
 void mainCRTStartup(void) {
- HANDLE thread;size_t i;char key[69];ULONGLONG began;
+ size_t i;char key[69];
  send_api=fake_api;
- thread=CreateThread(0,0,open_window,0,0,0);if(!thread)ExitProcess(10);
- began=GetTickCount64();while(!window&&GetTickCount64()-began<5000)Sleep(20);
- if(!window||IsWindowVisible(window)||GetWindow(window,GW_CHILD))ExitProcess(11);
- Sleep(150);KillTimer(window,1);if(SuspendThread(thread)==(DWORD)-1)ExitProcess(11); /* Deterministic manual pumps; no owner-thread timer races. */
+ InitializeCriticalSection(&dd_mailbox);
+ if(!dd_paths(request_path,response_path))ExitProcess(11); /* dd_connection_poll is pumped by hand below. */
  if(key_valid("not-a-key"))ExitProcess(12);
  memcpy(key,"zcu_",4);for(i=4;i<68;i++)key[i]='a';key[68]=0;
  if(!key_valid(key))ExitProcess(13);
@@ -122,7 +124,6 @@ void mainCRTStartup(void) {
  perform(0);if(connected||attempts!=2)ExitProcess(16);
  for(i=0;i<sizeof(credential);i++)if(((unsigned char *)&credential)[i])ExitProcess(17);
  for(i=0;status_text[i];i++)if(!memcmp(status_text+i,"zcu_",4))ExitProcess(18);
- if(IsWindowVisible(window)||GetWindow(window,GW_CHILD))ExitProcess(19);
  remembered_checks(key);
  inpanel_checks(key);
  staged_checks();
@@ -131,9 +132,11 @@ void mainCRTStartup(void) {
  {WCHAR cancel[2];if(GetEnvironmentVariableW(L"DD_CANCEL_SMOKE",cancel,2)){
    send_api=blocked_api;memcpy(original,"{}",2);original_size=2;
    if(!dd_write(request_path,original,2))ExitProcess(60);
+   DeleteFileW(response_path);
    start_task(1);if(!busy)ExitProcess(61);
-   DeleteFileW(request_path);procedure(window,WM_TIMER,0,0);
-   ExitProcess(62); /* Timer must terminate the entire blocked transport. */
+   DeleteFileW(request_path);dd_connection_poll();
+   if(!stale()||GetFileAttributesW(response_path)!=INVALID_FILE_ATTRIBUTES)ExitProcess(62); /* Dropped: no reply, ever. */
+   ExitProcess(0);
  }}
  ExitProcess(0);
 }

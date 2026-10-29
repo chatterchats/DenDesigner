@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build the optional Windows-only standalone transport. Does not install it.
+# Build the HoloNet bridge: one version.dll, no other programs. Does not install it.
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 source_dir="$PWD/native/community"
@@ -23,10 +23,12 @@ for file in core windows worker proxy connection; do
     "$compiler" "${flags[@]}" -c "$source_dir/$file.c" -o "$output/$file.obj"
 done
 "$compiler" --target=x86_64-pc-windows-msvc -c "$source_dir/chkstk.S" -o "$output/chkstk.obj"
-system_libs=("$wine_sdk/lib/wine/x86_64-windows/libkernel32.a" "$wine_sdk/lib/wine/x86_64-windows/libwinhttp.a" "$wine_sdk/lib/wine/x86_64-windows/libbcrypt.a")
-"$linker" /nodefaultlib /machine:x64 /subsystem:console /entry:mainCRTStartup /dynamicbase /nxcompat /timestamp:0 /out:"$output/den-community.exe" "$output/worker.obj" "$output/connection.obj" "$wine_sdk/lib/wine/x86_64-windows/libuser32.a" "$output/windows.obj" "$output/core.obj" "$output/chkstk.obj" "${system_libs[@]}"
-"$linker" /dll /nodefaultlib /machine:x64 /entry:DllMain /dynamicbase /nxcompat /timestamp:0 /def:"$source_dir/version.def" /out:"$output/version.dll" "$output/proxy.obj" "$output/windows.obj" "$output/core.obj" "$output/chkstk.obj" "${system_libs[@]}"
-sha256sum "$output/version.dll" "$output/den-community.exe" > "$output/SHA256SUMS"
+# ntdll provides __C_specific_handler for the __try guards (no C runtime).
+system_libs=()
+for lib in kernel32 user32 winhttp bcrypt ntdll; do system_libs+=("$wine_sdk/lib/wine/x86_64-windows/lib$lib.a"); done
+rm -f "$output/den-community.exe" # Built by 0.9.19 and earlier.
+"$linker" /dll /nodefaultlib /machine:x64 /entry:DllMain /dynamicbase /nxcompat /timestamp:0 /def:"$source_dir/version.def" /out:"$output/version.dll" "$output/proxy.obj" "$output/worker.obj" "$output/connection.obj" "$output/windows.obj" "$output/core.obj" "$output/chkstk.obj" "${system_libs[@]}"
+sha256sum "$output/version.dll" > "$output/SHA256SUMS"
 cat "$output/SHA256SUMS"
 
 python3 - "$PWD" "$output" "$service" <<'PYBUILD'
@@ -37,8 +39,8 @@ sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 version=re.search(r'#define DD_VERSION "([^"]+)"',(root/'native/community/core.h').read_text()).group(1)
 report={"format":1,"version":version,"service":sys.argv[3],"target":"windows-x86_64","requires_ue4ss":False,"requires_python":False,
         "sources":{p.relative_to(root).as_posix():sha(p) for p in sorted((root/'native/community').iterdir()) if p.is_file()},
-        "binaries":{name:sha(output/name) for name in ['version.dll','den-community.exe']},
-        "transport":"WinHTTP in owned cancellable worker process; BCrypt SHA-256; SaveGame value mailbox",
+        "binaries":{name:sha(output/name) for name in ['version.dll']},
+        "transport":"WinHTTP on the DLL's own guarded threads (structured exception handling; a caught fault stops HoloNet, not the game); BCrypt SHA-256; SaveGame value mailbox",
         "limits":{"total_ms":25000,"metadata_bytes":65536,"document_bytes":4194304,"parts":128},
         "scope":"HoloNet: server-paged browse and search, imports of schema-1 builds (base game, prop packs, unlisted mods; UTF-8 text), My Shares, sharing with What changed and a 512 px preview. In-game connection controls with opt-in plain local remembered key and automatic reconnect.",
         "verification":"Build only; see separate native smoke and kit evidence. No shipped-game acceptance implied."}

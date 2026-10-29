@@ -16,6 +16,15 @@ Versions restart at 0.9.20 ahead of 1.0.0; this follows 1.1.0-preview.22.
 - **Bridge**: imports HoloNet's build format (prop packs, unlisted mods, any
   characters), one server setting, zcom.app and share.zcom.app links, server
   paging and search, My Shares, What changed, 512 px previews, card footprints.
+- **Bridge is one file**: `den-community.exe` is gone; HoloNet runs on guarded
+  threads inside `version.dll`. A crash in bridge code stops HoloNet (with a
+  "restart the game" message), not the game. The key now lives in game memory.
+  The installer removes 0.9.19's `den-community.exe`.
+- Bridge fixes: under Wine/Proton a stalled server could hold a request until
+  the 25-second deadline (Wine ignored the response timeout); now 6 seconds.
+  A cancelled share deletes its unfinished upload.
+- `native/community/e2e/run.sh`: Wine end-to-end tests of the bridge, including
+  caught crashes, cancels, timeouts and fuzzed input.
 - **Prop packs**: optional `nexus_url` in pack.json and the in-editor tool, checked
   the same way as HoloNet (a Star Wars Zero Company page on nexusmods.com; else a
   Nexus title search). `BP_DenPropPack` gains `NexusURL`.

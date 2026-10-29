@@ -348,6 +348,18 @@ class NativeCommunityTests(unittest.TestCase):
             raw=self.request_with(operation,wire)
             self.assertEqual(bool(self.lib.dd_save_read(raw,len(raw),ctypes.byref(Save()),ctypes.byref(error))),valid,(operation,wire))
 
+    def test_upload_reply_fields_come_from_the_parser(self):
+        def word(raw, key, cap=64):
+            out = ctypes.create_string_buffer(cap)
+            return out.value.decode() if self.lib.dd_json_word(raw, len(raw), key, out, cap) else None
+        self.assertEqual(word(b'{"upload":{"id":"11111111-2222-4333-8444-555555555555","code":"PUBTEST1","status":"staging"}}', b'id', 37), '11111111-2222-4333-8444-555555555555')
+        self.assertEqual(word(b'{ "upload" : { "code" : "PUBTEST1" , "status" : "published" } }', b'status'), 'published')
+        self.assertEqual(word(b'{"error":{"code":"INVALID_THUMBNAIL","message":"zcu_not_echoed"}}', b'code'), 'INVALID_THUMBNAIL')
+        for raw, key, cap in [(b'{"error":{"code":"bad value!"}}', b'code', 64), (b'{"error":{"code":"A\\u0042"}}', b'code', 64),
+                              (b'{"a":1}', b'code', 64), (b'not json', b'code', 64), (b'{"code":"x"', b'code', 64),
+                              (b'{"code":"0123456789"}', b'code', 5), (b'{"code":"a","code":"b"}', b'code', 64)]:
+            self.assertIsNone(word(raw, key, cap), raw)
+
 class ProxyExportTests(unittest.TestCase):
     def test_proxy_covers_version_imports_of_game_and_graphics_dependencies(self):
         exports = {line.strip().split('=')[0] for line in (SOURCE/'version.def').read_text().splitlines() if '=DD_' in line}

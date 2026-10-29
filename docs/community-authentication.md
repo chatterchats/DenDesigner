@@ -51,6 +51,16 @@ The service was inspected at `../ZComShare`; the older frozen download-only
 
 ## Runtime boundary and credential storage decision
 
+**Since 0.9.20 the separate process described below is gone.** The connection
+runs on a thread inside `version.dll`, so the key is in the game process's
+memory (on a locked page, excluded from Windows Error Reporting where supported)
+and can appear in game crash dumps. The owner accepted this: the key only limits
+who can upload and lets HoloNet moderate users; it is not a high-value secret.
+Keys still never enter exports, logs, status messages, command lines or the
+mailbox beyond the temporary AUTH request. A caught fault in bridge code wipes
+the key. See `docs/holonet-phase4-plan.md`, "Single-DLL bridge". The rest of this
+section is the earlier design, kept for reference.
+
 The actual installed integration is a Windows x64 proxy plus a private WinHTTP
 worker, exchanging bounded values with Unreal through a fixed SaveGame mailbox.
 It also runs under Proton. This stage adds a separate **game-owned connection

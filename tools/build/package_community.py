@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Package the optional standalone Community bridge; never install implicitly."""
+"""Package the optional HoloNet bridge (one version.dll); never install implicitly."""
 import hashlib
 import json
 from pathlib import Path
@@ -17,7 +17,7 @@ def package(root=ROOT):
     if report['sources'] != sources:
         raise ValueError('Native source changed since its recorded build')
     files = {}
-    for name in ['version.dll', 'den-community.exe']:
+    for name in ['version.dll']:
         data = (native / name).read_bytes()
         if hashlib.sha256(data).hexdigest() != report['binaries'][name]:
             raise ValueError('Native binary does not match completed build: ' + name)

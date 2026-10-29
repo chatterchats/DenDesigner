@@ -131,7 +131,9 @@ nothing about Blueprint exposure. A private WinHTTP implementation avoids an
 engine HTTP ABI dependency.
 
 The implemented slice adds a proxy DLL and a bundled short-lived native request
-worker next to the game's Win64 executable, plus the pak update. The proxy owns
+worker next to the game's Win64 executable, plus the pak update. (Since 0.9.20
+the worker is gone: requests run on guarded threads inside the DLL; see
+`docs/holonet-phase4-plan.md`, "Single-DLL bridge".) The proxy owns
 the worker process so cancellation and a total deadline also cover DNS/TLS hangs;
 a kill-on-close Job object prevents it surviving the game. No separately started
 service or Python runtime is installed. Proton

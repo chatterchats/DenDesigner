@@ -1,10 +1,11 @@
 #include "windows.h"
 /* Forward version information APIs for the executable and all dependencies.
  * Resolve their implementation from System32, never search the game
- * directory. The optional worker has no Unreal/UE4SS hooks or native ABI calls.
+ * directory. HoloNet runs on this DLL's own threads and has no Unreal/UE4SS
+ * hooks or native ABI calls.
  */
 static INIT_ONCE once = INIT_ONCE_STATIC_INIT;
-static HMODULE real_version = 0, own_module = 0;
+static HMODULE real_version = 0;
 static BOOL CALLBACK load_version(PINIT_ONCE init, PVOID parameter,
                                   PVOID *context) {
   WCHAR path[1024];
@@ -125,37 +126,188 @@ DWORD WINAPI DD_VerInstallFileW(DWORD flags, LPCWSTR source_file, LPCWSTR destin
   if (!f) { SetLastError(ERROR_PROC_NOT_FOUND); return 0; }
   return f(flags, source_file, destination_file, source_dir, destination_dir, current_dir, temporary_file, temporary_len);
 }
-static unsigned char watched[DD_SAVE_MAX], latest[DD_SAVE_MAX], reply[DD_SAVE_MAX];
-static void stop(PROCESS_INFORMATION *pi) {
-  if (pi->hProcess) {
-    if (WaitForSingleObject(pi->hProcess, 0) == WAIT_TIMEOUT)
-      TerminateProcess(pi->hProcess, ERROR_CANCELLED);
-    WaitForSingleObject(pi->hProcess, 2000);
-    CloseHandle(pi->hProcess);
-    pi->hProcess = 0;
-  }
-  if (pi->hThread) {
-    CloseHandle(pi->hThread);
-    pi->hThread = 0;
+/* Everything below runs on threads this DLL starts; the game's own threads
+ * only ever enter the forwarders above. Each thread body runs inside a
+ * structured exception guard: a fault in HoloNet code is caught, logged and
+ * the key wiped, HoloNet answers every later request with DD_BROKEN_MESSAGE,
+ * and the game keeps running. */
+CRITICAL_SECTION dd_mailbox;
+volatile LONG dd_broken;
+static WCHAR request_path[1024], response_path[1024];
+static unsigned char watched[DD_SAVE_MAX], fresh[DD_SAVE_MAX], reply[DD_SAVE_MAX];
+static DWORD watched_size;
+static ULONGLONG began;
+static HANDLE worker;
+static int worker_waiting, worker_active, broken_answered;
+void dd_fault(const char *message) {
+  if (InterlockedExchange(&dd_broken, 1))
+    return;
+  __try {
+    dd_connection_wipe();
+    dd_log(message);
+  } __except (EXCEPTION_EXECUTE_HANDLER) {
   }
 }
-static int start_connection(const WCHAR *exe,WCHAR *command,HANDLE job,STARTUPINFOW *startup,PROCESS_INFORMATION *connection) {
- stop(connection);
- if(!CreateProcessW(exe,command,0,0,FALSE,CREATE_NO_WINDOW|CREATE_SUSPENDED,0,0,startup,connection))return 0;
- if(!AssignProcessToJobObject(job,connection->hProcess)){stop(connection);return 0;}
- ResumeThread(connection->hThread);return 1;
+HANDLE dd_thread(LPTHREAD_START_ROUTINE start, LPVOID parameter) {
+  /* Explicit stack: JSON parsing keeps a 256 KB token table on the stack, and
+   * the game's default thread stack size is not ours to assume. */
+  return CreateThread(0, 2u << 20, start, parameter,
+                      STACK_SIZE_PARAM_IS_A_RESERVATION, 0);
+}
+/* Reply with a fixed message when the request is still exactly the one
+ * watched. Same lock as every other reply, so a timeout and a late answer
+ * never both land. */
+static void answer(const char *message) {
+  dd_save save;
+  const char *error;
+  char wire[512];
+  size_t written;
+  DWORD n;
+  if (!dd_save_read(watched, watched_size, &save, &error) ||
+      !dd_error_wire(wire, sizeof(wire), save.token, message))
+    return;
+  EnterCriticalSection(&dd_mailbox);
+  __try {
+    if (dd_read(request_path, fresh, sizeof(fresh), &n) && n == watched_size &&
+        !memcmp(fresh, watched, n) &&
+        dd_save_response(watched, watched_size, &save, wire, reply,
+                         sizeof(reply), &written))
+      dd_write(response_path, reply, (DWORD)written);
+  } __finally {
+    LeaveCriticalSection(&dd_mailbox);
+  }
+}
+static DWORD WINAPI worker_main(LPVOID generation) {
+  __try {
+    dd_worker_once((LONG)(LONG_PTR)generation);
+  } __except (EXCEPTION_EXECUTE_HANDLER) {
+    dd_fault("HoloNet stopped after an internal error in a browse or import "
+             "request. Restart the game to use HoloNet.");
+  }
+  return 0;
+}
+static int worker_running(void) {
+  if (!worker)
+    return 0;
+  if (WaitForSingleObject(worker, 0) == WAIT_TIMEOUT)
+    return 1;
+  CloseHandle(worker);
+  worker = 0;
+  return 0;
+}
+/* A dropped worker can no longer reply (its generation is stale). It is never
+ * terminated; it returns after its current network step. */
+static void drop_worker(void) {
+  InterlockedIncrement(&dd_worker_generation);
+  worker_waiting = worker_active = 0;
+}
+static int is(const dd_save *save, const char *input) {
+  return !memcmp(save->input, input, dd_strlen(input) + 1);
+}
+static void route(void) {
+  dd_save control;
+  const char *error;
+  DD_TEST_POINT("mailbox");
+  if (!dd_save_read(watched, watched_size, &control, &error)) {
+    dd_log("Rejected unsupported or malformed mailbox SaveGame.");
+    return;
+  }
+  if (dd_broken) {
+    answer(DD_BROKEN_MESSAGE);
+    return;
+  }
+  /* Requests that need the key belong to the connection (connection.c), which
+   * reads them itself on the next poll. */
+  if (is(&control, "FORGET")) {
+    dd_connection_drop();
+    answer(dd_forget_key() ? "Forgot connection. The saved key was removed "
+                             "from this computer."
+                           : "Could not remove the saved connection. Check "
+                             "local file permissions and retry Forget "
+                             "connection.");
+  } else if (is(&control, "DISCONNECT")) {
+    dd_connection_drop();
+    answer("Disconnected for this session. Use Forget connection to remove a "
+           "remembered key.");
+  } else if (is(&control, "AUTH")) {
+    dd_connection_drop(); /* A new key replaces any connection in progress. */
+  } else if (!is(&control, "CONNECT") && !is(&control, "PUBLISH") &&
+             memcmp(control.input, "MYSHARES/", 9)) {
+    worker_waiting = worker_active = 1;
+  }
+}
+static void tick(void) {
+  DWORD count = 0;
+  int exists = dd_recent(request_path, 45) &&
+               dd_read(request_path, fresh, sizeof(fresh), &count);
+  if (!exists) {
+    if (watched_size) {
+      drop_worker();
+      SecureZeroMemory(watched, sizeof(watched));
+      watched_size = 0;
+    }
+  } else if (count != watched_size || memcmp(fresh, watched, count)) {
+    drop_worker();
+    SecureZeroMemory(watched, sizeof(watched));
+    memcpy(watched, fresh, count);
+    watched_size = count;
+    began = GetTickCount64();
+    route();
+  } else if (worker_active && GetTickCount64() - began >= 25000) {
+    EnterCriticalSection(&dd_mailbox);
+    __try {
+      drop_worker();
+      dd_log("HoloNet request timed out.");
+    } __finally {
+      LeaveCriticalSection(&dd_mailbox);
+    }
+    answer("HoloNet didn't answer in time. Try again when you're online.");
+  }
+  SecureZeroMemory(fresh, sizeof(fresh));
+  if (dd_broken) {
+    /* The request a crashed thread was working on is answered at once. */
+    if (!broken_answered) {
+      broken_answered = 1;
+      drop_worker();
+      if (watched_size)
+        answer(DD_BROKEN_MESSAGE);
+    }
+    return;
+  }
+  /* One worker at a time: a new request waits for a dropped one to return. */
+  if (worker_waiting && !worker_running()) {
+    worker_waiting = 0;
+    worker = dd_thread(worker_main, (LPVOID)(LONG_PTR)dd_worker_generation);
+    if (!worker) {
+      worker_active = 0;
+      answer("Could not start the HoloNet request. Try again.");
+    }
+  } else if (worker_active && !worker_waiting && !worker_running())
+    worker_active = 0;
+  dd_connection_poll();
+}
+static int run(void) {
+  dd_save stale;
+  const char *error;
+  DWORD bytes;
+  if (!dd_paths(request_path, response_path))
+    return 0;
+  dd_log("HoloNet bridge " DD_VERSION " loaded (one DLL, no other programs). "
+         "Requests have a 25-second deadline.");
+  /* Remove an unfinished key-entry request from a prior game session. Only
+   * connection.key is eligible for automatic reconnect. */
+  if (dd_read(request_path, fresh, sizeof(fresh), &bytes) &&
+      dd_save_read(fresh, bytes, &stale, &error) && is(&stale, "AUTH"))
+    DeleteFileW(request_path);
+  SecureZeroMemory(fresh, sizeof(fresh));
+  dd_connection_start();
+  for (;;) {
+    tick();
+    Sleep(100);
+  }
 }
 static DWORD WINAPI monitor(PVOID ignored) {
-  WCHAR exe[1024], command[1100], request[1024], response[1024];
-  PROCESS_INFORMATION child, connection;
-  WCHAR connect_command[1120];
-  STARTUPINFOW startup;
-  DWORD count = 0, prior = 0;
-  ULONGLONG began = 0;
-  size_t n, i;
   HMODULE pin;
-  HANDLE job;
-  JOBOBJECT_EXTENDED_LIMIT_INFORMATION limits;
   (void)ignored;
   /* Pin only our module for the process lifetime. Nothing is awaited in
    * DllMain. */
@@ -163,137 +315,35 @@ static DWORD WINAPI monitor(PVOID ignored) {
                          GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
                      (LPCWSTR)(const void *)&monitor, &pin);
   Sleep(500);
-  if (!dd_paths(request, response))
-    return 0;
-  n = GetModuleFileNameW(own_module, exe, 1000);
-  if (!n || n >= 1000)
-    return 0;
-  while (n && exe[n - 1] != '\\')
-    n--;
-  {
-    const WCHAR *name = L"den-community.exe";
-    for (i = 0; name[i]; i++)
-      exe[n + i] = name[i];
-    exe[n + i] = 0;
+  InitializeCriticalSection(&dd_mailbox);
+  __try {
+    if (!run())
+      return 0;
+  } __except (EXCEPTION_EXECUTE_HANDLER) {
+    dd_fault("HoloNet stopped after an internal error in the mailbox thread. "
+             "Restart the game to use HoloNet.");
   }
-  command[0] = '"';
-  for (i = 0; exe[i]; i++)
-    command[i + 1] = exe[i];
-  command[i + 1] = '"';
-  command[i + 2] = 0;
-  memcpy(connect_command, command, (i+2)*sizeof(WCHAR));
-  {const WCHAR *suffix=L" --connect";size_t j;for(j=0;suffix[j];j++)connect_command[i+2+j]=suffix[j];connect_command[i+2+j]=0;}
-  memset(&connection, 0, sizeof(connection));
-  memset(&child, 0, sizeof(child));
-  memset(&startup, 0, sizeof(startup));
-  startup.cb = sizeof(startup);
-  job = CreateJobObjectW(0, 0);
-  memset(&limits, 0, sizeof(limits));
-  limits.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
-  if (!job || !SetInformationJobObject(job, JobObjectExtendedLimitInformation,
-                                       &limits, sizeof(limits))) {
-    if (job)
-      CloseHandle(job);
-    dd_log("Community child lifetime job unavailable; transport disabled.");
-    return 0;
-  }
-  /* The game owns job's final handle. On game exit Windows closes it and kills
-   * an outstanding worker, including a pending network operation. */
-  dd_log("Standalone Community transport loaded; no UE4SS hooks. Requests have "
-         "25-second total deadline.");
-  /* Remove an unfinished key-entry request from a prior game session. Only
-   * connection.key is eligible for automatic reconnect. */
-  {dd_save stale;const char *error;DWORD bytes;
-   if(dd_read(request,latest,sizeof(latest),&bytes)&&dd_save_read(latest,bytes,&stale,&error)&&!memcmp(stale.input,"AUTH",5))DeleteFileW(request);
-   SecureZeroMemory(latest,sizeof(latest));}
-  start_connection(exe,connect_command,job,&startup,&connection);
-  for (;;) {
-    SecureZeroMemory(latest,sizeof(latest));
-    int exists = dd_recent(request, 45) &&
-                 dd_read(request, latest, sizeof(latest), &count);
-    if (!exists) {
-      stop(&child);
-      prior = 0;SecureZeroMemory(watched,sizeof(watched));
-    } else if (count != prior || memcmp(latest, watched, count)) {
-      stop(&child);
-      SecureZeroMemory(watched,sizeof(watched));memcpy(watched, latest, count);
-      prior = count;
-      began = GetTickCount64();
-      {
-        dd_save control; const char *parse_error;
-        if(dd_save_read(latest,count,&control,&parse_error) &&
-           (!memcmp(control.input,"CONNECT",8)||!memcmp(control.input,"AUTH",5)||!memcmp(control.input,"FORGET",7)||!memcmp(control.input,"DISCONNECT",11)||!memcmp(control.input,"PUBLISH",8)||!memcmp(control.input,"MYSHARES/",9))) {
-          /* Requests that need the key go to the long-lived connection process. */
-          const char *message="HoloNet connection unavailable. Choose Connect to try again.";
-          char wire[512];size_t written;
-          if(!memcmp(control.input,"FORGET",7)){
-            stop(&connection);message=dd_forget_key()?"Forgot connection. The saved key was removed from this computer.":"Could not remove the saved connection. Check local file permissions and retry Forget connection.";
-          }else if(!memcmp(control.input,"DISCONNECT",11)){
-            stop(&connection);message="Disconnected for this session. Use Forget connection to remove a remembered key.";
-          }else{
-            if(!memcmp(control.input,"AUTH",5))start_connection(exe,connect_command,job,&startup,&connection);
-            else if(!connection.hProcess||WaitForSingleObject(connection.hProcess,0)!=WAIT_TIMEOUT)start_connection(exe,connect_command,job,&startup,&connection);
-            if(connection.hProcess&&WaitForSingleObject(connection.hProcess,0)==WAIT_TIMEOUT){Sleep(100);continue;}
-          }
-          if(dd_error_wire(wire,sizeof(wire),control.token,message) && dd_save_response(latest,count,&control,wire,reply,sizeof(reply),&written))dd_write(response,reply,(DWORD)written);
-          Sleep(100);continue;
-        }
-      }
-      /* CreateProcess receives an absolute application path; no shell, user
-       * arguments, remote binary, or downloaded content is ever executed. */
-      if (!CreateProcessW(exe, command, 0, 0, FALSE,
-                          CREATE_NO_WINDOW | CREATE_SUSPENDED, 0, 0, &startup,
-                          &child))
-        dd_log("Community worker could not start; verify den-community.exe "
-               "installation.");
-      else if (!AssignProcessToJobObject(job, child.hProcess)) {
-        stop(&child);
-        dd_log(
-            "Community worker could not join lifetime job; request cancelled.");
-      } else {
-        ResumeThread(child.hThread);
-      }
-    } else if (child.hProcess) {
-      if (WaitForSingleObject(child.hProcess, 0) != WAIT_TIMEOUT)
-        stop(&child);
-      else if (GetTickCount64() - began >= 25000) {
-        dd_save save;
-        const char *error;
-        unsigned char *out;
-        size_t written;
-        char *wire;
-        stop(&child);
-        dd_log("Community request timed out; owned worker cancelled.");
-        /* A timeout is a normal token-scoped error, not a late success. */
-        out = HeapAlloc(GetProcessHeap(), 0, DD_SAVE_MAX);
-        wire = HeapAlloc(GetProcessHeap(), 0, 2048);
-        if (out && wire && dd_recent(request, 45) &&
-            dd_read(request, latest, sizeof(latest), &count) &&
-            count == prior && !memcmp(latest, watched, count) &&
-            dd_save_read(watched, prior, &save, &error) &&
-            dd_error_wire(
-                wire, 2048, save.token,
-                "HoloNet didn't answer in time. Try again when you're online.") &&
-            dd_save_response(watched, prior, &save, wire, out, DD_SAVE_MAX,
-                             &written))
-          dd_write(response, out, (DWORD)written);
-        if (out)
-          HeapFree(GetProcessHeap(), 0, out);
-        if (wire)
-          HeapFree(GetProcessHeap(), 0, wire);
-      }
+  /* Keep answering, so the game shows why HoloNet stopped. A second fault
+   * ends this thread quietly. */
+  __try {
+    for (;;) {
+      tick();
+      Sleep(100);
     }
-    Sleep(100);
+  } __except (EXCEPTION_EXECUTE_HANDLER) {
   }
   return 0;
 }
 BOOL WINAPI DllMain(HINSTANCE module, DWORD reason, LPVOID reserved) {
   (void)reserved;
   if (reason == DLL_PROCESS_ATTACH) {
-    own_module = module;
-    DisableThreadLibraryCalls(module); /* Queue only. Worker starts after
-                                          loader-lock initialization. */
-    QueueUserWorkItem(monitor, 0, WT_EXECUTELONGFUNCTION);
+    HANDLE thread;
+    /* The thread starts only after the loader lock is released; nothing here
+     * waits for it. */
+    DisableThreadLibraryCalls(module);
+    thread = dd_thread(monitor, 0);
+    if (thread)
+      CloseHandle(thread);
   }
   return TRUE;
 }

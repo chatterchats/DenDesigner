@@ -1471,6 +1471,20 @@ int dd_profile(const unsigned char *json,size_t size,char *name,size_t cap){
  * with \n for a line break and \\ for a backslash. Decodes into out; checks
  * UTF-8, at most max_chars characters, no control characters (line breaks
  * only when multiline) and no upload key. */
+/* Upload replies and error bodies: the first member named key, in document
+ * order at any depth, whose value is a string of letters, digits, '-' and '_'
+ * (ids, codes, statuses). Nothing else from a server body is ever read. */
+int dd_json_word(const unsigned char *json,size_t size,const char *key,char *out,size_t cap){
+ parser p;int obj,m;size_t i;
+ if(!cap||size>DD_METADATA_MAX||!init(&p,json,size))return 0;
+ for(obj=0;obj<p.used;obj++){
+  if(p.t[obj].kind!='{'||(m=member(&p,obj,key))<0)continue;
+  if(!text(&p,m,out,cap)||!out[0])return 0;
+  for(i=0;out[i];i++){char c=out[i];if(!((c>='a'&&c<='z')||(c>='A'&&c<='Z')||(c>='0'&&c<='9')||c=='-'||c=='_'))return 0;}
+  return 1;
+ }
+ return 0;
+}
 int dd_publish_text(const char *in,size_t size,int max_chars,int multiline,char *out,size_t cap){
  size_t i,used=0,k;int chars=0;unsigned u;
  for(i=0;i<size;i+=k){

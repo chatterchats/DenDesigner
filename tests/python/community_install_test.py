@@ -27,7 +27,6 @@ class CommunityInstallTest(unittest.TestCase):
 
     def archive(self, version='0.1.0-test.1', binary=b'test bridge', mutate=None, extra=None):
         files = {'Binaries/Win64/version.dll': binary,
-                 'Binaries/Win64/den-community.exe': binary + b' worker',
                  'COMMUNITY-BRIDGE.md': b'test documentation', 'LICENSE': b'test license'}
         manifest = {'format': 1, 'version': version, 'requires_runtime': '0.9.20',
                     'requires_ue4ss': False, 'requires_python': False, 'supported_executable_sha256': self.supported,
@@ -55,7 +54,7 @@ class CommunityInstallTest(unittest.TestCase):
         self.assertEqual(result['archive_sha256'], hashlib.sha256(archive.read_bytes()).hexdigest())
         self.assertEqual(result['supported_executable_sha256'], self.supported)
         self.assertEqual(result['requires_runtime'], '0.9.20')
-        self.assertEqual(set(self.state()), {'SWZeroCompany.exe', 'version.dll', 'den-community.exe', installer.RECORD})
+        self.assertEqual(set(self.state()), {'SWZeroCompany.exe', 'version.dll', installer.RECORD})
         before = self.state()
         self.assertEqual(self.install(archive), result)
         self.assertEqual(self.state(), before)
@@ -64,6 +63,22 @@ class CommunityInstallTest(unittest.TestCase):
         self.assertEqual(upgraded['version'], '0.1.0-test.2')
         self.assertEqual((self.target / 'version.dll').read_bytes(), b'new bridge')
         self.assertEqual(json.loads((self.target / installer.RECORD).read_text())['binaries'], upgraded['binaries'])
+
+    def test_upgrade_from_two_file_bridge_removes_only_the_recorded_worker(self):
+        old_dll, old_worker = b'0.9.19 bridge', b'0.9.19 worker'
+        def previous(worker_on_disk):
+            (self.target / 'version.dll').write_bytes(old_dll)
+            (self.target / 'den-community.exe').write_bytes(worker_on_disk)
+            (self.target / installer.RECORD).write_text(json.dumps({'format': 1, 'product': 'DenCommunityBridge', 'version': '0.9.19',
+                'binaries': {'version.dll': hashlib.sha256(old_dll).hexdigest(), 'den-community.exe': hashlib.sha256(old_worker).hexdigest()}}))
+        previous(old_worker)
+        result = self.install(self.archive())
+        self.assertEqual(set(self.state()), {'SWZeroCompany.exe', 'version.dll', installer.RECORD})
+        self.assertEqual(set(result['binaries']), {'version.dll'})
+        # A den-community.exe that is not the recorded one is left alone.
+        previous(b'something else')
+        self.install(self.archive())
+        self.assertEqual((self.target / 'den-community.exe').read_bytes(), b'something else')
 
     def test_unknown_existing_files_never_overwritten(self):
         archive = self.archive()

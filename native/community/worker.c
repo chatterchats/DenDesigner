@@ -1,7 +1,9 @@
 #include "windows.h"
-/* HTTP is isolated behind this value transport. Parsing/import callers never
- * depend on WinHTTP handle types. Cancelling terminates this owned worker
- * process, including DNS, TLS, response reads and parsing. */
+/* Browse, import and copy requests, one at a time on a worker thread
+ * (proxy.c). HTTP is isolated behind this value transport. Parsing/import
+ * callers never depend on WinHTTP handle types. A dropped request (replaced,
+ * deleted or timed out) is never terminated: it stops at its next network step
+ * and cannot reply. */
 typedef struct {
   int (*get)(const char *, unsigned char *, size_t, size_t *, const char **);
 } transport;
@@ -23,6 +25,9 @@ static int json_type(const WCHAR *type) {
   }
   return type[i] == 0 || type[i] == ';' || type[i] == ' ';
 }
+volatile LONG dd_worker_generation;
+static LONG mine;
+static int dropped(void) { return mine != dd_worker_generation; }
 static int weq(const WCHAR *a, const WCHAR *b) {
   while (*a && *a == *b) {
     a++;
@@ -39,12 +44,12 @@ static int http_get(const char *narrow, unsigned char *out, size_t cap,
   DWORD status = 0, statusbytes = sizeof(status),
         disable = WINHTTP_DISABLE_REDIRECTS | WINHTTP_DISABLE_COOKIES |
                   WINHTTP_DISABLE_AUTHENTICATION;
-  DWORD policy = WINHTTP_OPTION_REDIRECT_POLICY_NEVER;
+  DWORD policy = WINHTTP_OPTION_REDIRECT_POLICY_NEVER, response_timeout = 6000;
   DWORD got = 0;
   size_t n = 0, i;
   int ok = 0;
   *error = "HoloNet is offline or the secure connection failed.";
-  if (dd_strlen(narrow) >= 512 || memcmp(narrow, "/api/v1/", 8))
+  if (dd_strlen(narrow) >= 512 || memcmp(narrow, "/api/v1/", 8) || dropped())
     return 0;
   dd_ascii_wide(narrow, path, 512);
   session = WinHttpOpen(L"DenDesignerHoloNet/" DD_WIDE(DD_VERSION),
@@ -63,10 +68,14 @@ static int http_get(const char *narrow, unsigned char *out, size_t cap,
                          DD_SERVICE_SECURE ? WINHTTP_FLAG_SECURE : 0);
   if (!request)
     goto done;
+  /* The wait for response headers has its own timeout. Windows takes it from
+   * WinHttpSetTimeouts; Wine (Proton) needs it set, or it waits forever. */
   if (!WinHttpSetOption(request, WINHTTP_OPTION_DISABLE_FEATURE, &disable,
                         sizeof(disable)) ||
       !WinHttpSetOption(request, WINHTTP_OPTION_REDIRECT_POLICY, &policy,
-                        sizeof(policy)))
+                        sizeof(policy)) ||
+      !WinHttpSetOption(request, WINHTTP_OPTION_RECEIVE_RESPONSE_TIMEOUT,
+                        &response_timeout, sizeof(response_timeout)))
     goto done;
   if (!WinHttpSendRequest(
           request, L"Accept: application/json\r\nAccept-Encoding: identity\r\n",
@@ -115,21 +124,23 @@ static int http_get(const char *narrow, unsigned char *out, size_t cap,
       goto done;
     }
   }
+  /* Read only what has arrived, so a slow reply still comes back here between
+   * reads and a dropped request stops. No data available means the end. */
   for (;;) {
-    DWORD wanted = (DWORD)(cap - n);
-    if (wanted > 8192)
-      wanted = 8192;
-    if (!wanted) {
-      unsigned char extra;
-      if (!WinHttpReadData(request, &extra, 1, &got))
-        goto done;
-      if (got) {
-        *error = "HoloNet sent a reply that is too large.";
-        goto done;
-      }
+    DWORD available = 0;
+    if (dropped() || !WinHttpQueryDataAvailable(request, &available))
+      goto done;
+    if (!available)
       break;
+    if (n == cap) {
+      *error = "HoloNet sent a reply that is too large.";
+      goto done;
     }
-    if (!WinHttpReadData(request, out + n, wanted, &got))
+    if (available > cap - n)
+      available = (DWORD)(cap - n);
+    if (available > 8192)
+      available = 8192;
+    if (!WinHttpReadData(request, out + n, available, &got))
       goto done;
     if (!got)
       break;
@@ -179,7 +190,7 @@ static unsigned char original[DD_SAVE_MAX], fresh[DD_SAVE_MAX],
     metadata[DD_METADATA_MAX], document[DD_DOCUMENT_MAX], response[DD_SAVE_MAX];
 static char request_wire[DD_WIRE_UTF8_MAX];
 static char wire[DD_WIRE_MAX];
-static int once(void) {
+int dd_worker_once(LONG generation) {
   WCHAR request_path[1024], response_path[1024];
   DWORD request_size = 0, fresh_size = 0;
   size_t metadata_size = 0, document_size = 0, expected_size = 0,
@@ -188,7 +199,9 @@ static int once(void) {
   const char *error = "The HoloNet request failed.";
   dd_save save;
   transport net = {http_get};
-  int valid = 0, revision = 0;
+  int valid = 0, revision = 0, result = 4;
+  mine = generation;
+  DD_TEST_POINT("worker");
   if (!dd_paths(request_path, response_path) || !dd_recent(request_path, 45) ||
       !dd_read(request_path, original, sizeof(original), &request_size) ||
       !dd_save_read(original, request_size, &save, &error) ||
@@ -248,24 +261,26 @@ static int once(void) {
 complete:
   if (!valid && !dd_error_wire(wire, sizeof(wire), save.token, error))
     return 3;
-  /* Recheck exact original bytes immediately before publishing; token
-   * replacement and deletion cannot cause a stale response to be imported. BP
-   * also checks token. */
-  if (!dd_read(request_path, fresh, sizeof(fresh), &fresh_size) ||
-      fresh_size != request_size || memcmp(original, fresh, request_size))
-    return 4;
-  if (!dd_save_response(original, request_size, &save, wire, response,
-                        sizeof(response), &response_size) ||
-      !dd_write(response_path, response, (DWORD)response_size)) {
-    dd_log("Could not publish Community response SaveGame.");
-    return 5;
+  /* Recheck exact original bytes immediately before publishing, under the
+   * reply lock; token replacement, deletion and timeouts cannot cause a stale
+   * response to be imported. BP also checks token. */
+  EnterCriticalSection(&dd_mailbox);
+  __try {
+    if (dropped() || !dd_read(request_path, fresh, sizeof(fresh), &fresh_size) ||
+        fresh_size != request_size || memcmp(original, fresh, request_size))
+      result = 4;
+    else if (!dd_save_response(original, request_size, &save, wire, response,
+                               sizeof(response), &response_size) ||
+             !dd_write(response_path, response, (DWORD)response_size))
+      result = 5;
+    else
+      result = valid ? 0 : 1;
+  } __finally {
+    LeaveCriticalSection(&dd_mailbox);
   }
-  dd_log(valid ? "HoloNet request answered; awaiting the game."
-               : error);
-  return valid ? 0 : 1;
-}
-void mainCRTStartup(void) {
- const WCHAR *command=GetCommandLineW(); size_t i;
- for(i=0;command[i];i++) if(command[i]=='-' && command[i+1]=='-' && command[i+2]=='c') ExitProcess((UINT)dd_connection_main());
- ExitProcess((UINT)once());
+  if (result == 5)
+    dd_log("Could not publish Community response SaveGame.");
+  else if (result < 2)
+    dd_log(valid ? "HoloNet request answered; awaiting the game." : error);
+  return result;
 }

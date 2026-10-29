@@ -201,7 +201,8 @@ record are retained in `dist/verification/community/startup-crash/`.
 
 The Community path uses **no UE4SS**. The offline editor remains a content-only
 Game Feature. Its optional standalone bridge is a Windows `version.dll` proxy
-plus a bundled, short-lived `den-community.exe` request worker. No engine
+(since 0.9.20 the only file; earlier versions added a short-lived
+`den-community.exe` request worker, described in the historical sections below). No engine
 functions, UObject layouts or game-thread hooks are used. The pak communicates
 through its own typed SaveGame mailbox and ordinary composition methods.
 
@@ -309,7 +310,7 @@ five checks.
 ```sh
 python3 -m unittest discover -s tests/python -p '*_test.py'
 bash native/community/smoke-build.sh
-bash native/community/lifecycle-smoke-build.sh
+bash native/community/e2e/run.sh   # 0.9.20+: replaces lifecycle-smoke-build.sh
 # Run the Windows harnesses in a disposable Wine prefix with version=n,b.
 # Do not substitute the game prefix for these test harnesses.
 DENDESIGNER_NATIVE_RESPONSE="$PWD/dist/verification/community/native-response.sav" \

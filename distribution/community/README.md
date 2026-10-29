@@ -5,6 +5,14 @@ closed. The bridge is a background transport for **HoloNet** (zcom.app); it has
 no desktop form and never takes focus. Preserve an established Proton/Wine
 `version=n,b` override.
 
+The bridge is **one file**, `Binaries/Win64/version.dll`, the same kind of proxy
+ReShade and UE4SS use. It passes the game's version-information calls to
+Windows' own `version.dll` and runs HoloNet on its own background threads; it
+starts no other programs and does not hook the game. If HoloNet code ever hits
+an internal error, it is caught: HoloNet stops (and says to restart the game to
+use it again) and the game keeps running. Upgrading from 0.9.19: the installer
+removes the old `den-community.exe`; if you install by hand, delete it yourself.
+
 Open **HoloNet** from the editor's menu bar. It is a centred window with these
 sections on the left:
 
@@ -39,15 +47,17 @@ decide which ones display.
 Remember connection is opt-in **plain local storage** at
 `Saved/SaveGames/ZComDen/Community/v1/connection.key`. Anyone with the file can use
 that key until expiry/revocation. Off keeps the connection for this session only.
-Forget stops the worker and removes the saved key; Disconnect ends this session
-but keeps an opted-in saved key. Masking cannot protect clipboard history or
-forced process dumps. The typed AUTH mailbox is temporary and removed after its
+Forget clears the key from memory and removes the saved key; Disconnect ends this
+session but keeps an opted-in saved key. The key is held in the game's memory
+while connected, so game crash dumps can contain it. Masking cannot protect
+clipboard history or forced process dumps. The typed AUTH mailbox is temporary and removed after its
 reply; exclude HoloNet mailbox files and process dumps from diagnostics. Keys
 never enter composition/layout exports, status messages, logs, arguments or
 process environment variables.
 
-Cancel or closing HoloNet invalidates network work; closing the editor also
-releases rendering work. Game exit kills owned workers. Cancel racing a committed
+Cancel or closing HoloNet invalidates network work (an unfinished share is
+cancelled on HoloNet); closing the editor also releases rendering work. Network
+steps time out after 6 seconds and a request after 25. Cancel racing a committed
 finalize can leave a completed publication: check your website listing before
 starting a different upload. Retry the same saved composition and text to recover a
 staged share. The preview image is the card's cached render (512 px when it exists,
