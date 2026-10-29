@@ -68,6 +68,10 @@
       "type": "object:/Script/Engine.TextureRenderTarget2D"
     },
     {
+      "name": "ShareTarget",
+      "type": "object:/Script/Engine.TextureRenderTarget2D"
+    },
+    {
       "name": "MeshPath",
       "type": "string"
     },
@@ -5029,6 +5033,243 @@
       ]
     },
     {
+      "name": "WriteSharePreview",
+      "nodes": [
+        {
+          "id": "self",
+          "kind": "self"
+        },
+        {
+          "id": "getPrepared",
+          "kind": "get",
+          "var": "Prepared"
+        },
+        {
+          "id": "getMeshPath",
+          "kind": "get",
+          "var": "MeshPath"
+        },
+        {
+          "id": "iscomposition",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:StartsWith",
+          "defaults": {
+            "InPrefix": "/ZComDen/CompositionThumbs/",
+            "SearchCase": "CaseSensitive"
+          }
+        },
+        {
+          "id": "ready0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "composition",
+          "kind": "branch"
+        },
+        {
+          "id": "getShareTarget",
+          "kind": "get",
+          "var": "ShareTarget"
+        },
+        {
+          "id": "targetvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "target",
+          "kind": "branch"
+        },
+        {
+          "id": "create",
+          "kind": "call",
+          "function": "/Script/Engine.KismetRenderingLibrary:CreateRenderTarget2D",
+          "defaults": {
+            "Width": "512",
+            "Height": "512",
+            "Format": "RTF_RGBA8",
+            "ClearColor": "(R=0,G=0,B=0,A=1)",
+            "bAutoGenerateMipMaps": "false",
+            "bSupportUAVs": "false"
+          }
+        },
+        {
+          "id": "save",
+          "kind": "set",
+          "var": "ShareTarget"
+        },
+        {
+          "id": "assign",
+          "kind": "set",
+          "var": "/Script/Engine.SceneCaptureComponent2D:TextureTarget"
+        },
+        {
+          "id": "getCapture",
+          "kind": "get",
+          "var": "Capture"
+        },
+        {
+          "id": "capture",
+          "kind": "call",
+          "function": "/Script/Engine.SceneCaptureComponent2D:CaptureScene",
+          "defaults": {}
+        },
+        {
+          "id": "path",
+          "kind": "call",
+          "function": "self:CachePath",
+          "defaults": {}
+        },
+        {
+          "id": "name",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Replace",
+          "defaults": {
+            "From": ".png",
+            "To": "_512.png",
+            "SearchCase": "CaseSensitive"
+          }
+        },
+        {
+          "id": "export",
+          "kind": "call",
+          "function": "/Script/Engine.KismetRenderingLibrary:ExportRenderTarget",
+          "defaults": {}
+        },
+        {
+          "id": "getTarget",
+          "kind": "get",
+          "var": "Target"
+        },
+        {
+          "id": "restore",
+          "kind": "set",
+          "var": "/Script/Engine.SceneCaptureComponent2D:TextureTarget"
+        }
+      ],
+      "links": [
+        [
+          "getMeshPath.MeshPath",
+          "iscomposition.SourceString"
+        ],
+        [
+          "getPrepared.Prepared",
+          "ready0.A"
+        ],
+        [
+          "iscomposition.ReturnValue",
+          "ready0.B"
+        ],
+        [
+          "ready0.ReturnValue",
+          "composition.Condition"
+        ],
+        [
+          "getShareTarget.ShareTarget",
+          "targetvalid.Object"
+        ],
+        [
+          "targetvalid.ReturnValue",
+          "target.Condition"
+        ],
+        [
+          "self.self",
+          "create.WorldContextObject"
+        ],
+        [
+          "create.ReturnValue",
+          "save.ShareTarget"
+        ],
+        [
+          "getShareTarget.ShareTarget",
+          "assign.TextureTarget"
+        ],
+        [
+          "getCapture.Capture",
+          "assign.self"
+        ],
+        [
+          "getCapture.Capture",
+          "capture.self"
+        ],
+        [
+          "getMeshPath.MeshPath",
+          "path.Path"
+        ],
+        [
+          "path.Name",
+          "name.SourceString"
+        ],
+        [
+          "self.self",
+          "export.WorldContextObject"
+        ],
+        [
+          "getShareTarget.ShareTarget",
+          "export.TextureRenderTarget"
+        ],
+        [
+          "path.Directory",
+          "export.FilePath"
+        ],
+        [
+          "name.ReturnValue",
+          "export.FileName"
+        ],
+        [
+          "getTarget.Target",
+          "restore.TextureTarget"
+        ],
+        [
+          "getCapture.Capture",
+          "restore.self"
+        ],
+        [
+          "entry.then",
+          "composition.execute"
+        ],
+        [
+          "composition.then",
+          "target.execute"
+        ],
+        [
+          "target.then",
+          "assign.execute"
+        ],
+        [
+          "assign.then",
+          "capture.execute"
+        ],
+        [
+          "capture.then",
+          "path.execute"
+        ],
+        [
+          "path.then",
+          "export.execute"
+        ],
+        [
+          "export.then",
+          "restore.execute"
+        ],
+        [
+          "target.else",
+          "create.execute"
+        ],
+        [
+          "create.then",
+          "save.execute"
+        ],
+        [
+          "save.then",
+          "assign.execute"
+        ]
+      ]
+    },
+    {
       "name": "ReleaseStudio",
       "nodes": [
         {
@@ -5093,6 +5334,32 @@
           "kind": "call",
           "function": "/Script/Engine.StaticMeshComponent:SetStaticMesh",
           "defaults": {}
+        },
+        {
+          "id": "getShareTarget",
+          "kind": "get",
+          "var": "ShareTarget"
+        },
+        {
+          "id": "validshare",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "sharevalid",
+          "kind": "branch"
+        },
+        {
+          "id": "releaseshare",
+          "kind": "call",
+          "function": "/Script/Engine.KismetRenderingLibrary:ReleaseRenderTarget2D",
+          "defaults": {}
+        },
+        {
+          "id": "clearshare",
+          "kind": "set",
+          "var": "ShareTarget"
         }
       ],
       "links": [
@@ -5115,6 +5382,18 @@
         [
           "getMesh.Mesh",
           "mesh.self"
+        ],
+        [
+          "getShareTarget.ShareTarget",
+          "validshare.Object"
+        ],
+        [
+          "validshare.ReturnValue",
+          "sharevalid.Condition"
+        ],
+        [
+          "getShareTarget.ShareTarget",
+          "releaseshare.TextureRenderTarget"
         ],
         [
           "entry.then",
@@ -5145,8 +5424,24 @@
           "mesh.execute"
         ],
         [
+          "mesh.then",
+          "sharevalid.execute"
+        ],
+        [
+          "sharevalid.then",
+          "releaseshare.execute"
+        ],
+        [
+          "releaseshare.then",
+          "clearshare.execute"
+        ],
+        [
           "valid.else",
           "clear.execute"
+        ],
+        [
+          "sharevalid.else",
+          "clearshare.execute"
         ]
       ]
     }

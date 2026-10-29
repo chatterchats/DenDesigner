@@ -20,7 +20,7 @@ SUBINTERFACE='/Script/EnhancedInput.EnhancedInputSubsystemInterface'
 WIDGET='/Script/UMG.Widget'
 USERWIDGET='/Script/UMG.UserWidget'
 CINEMATIC='/Script/BitReactorGame.BRG_CinematicSubsystem'
-PANELS=[('Toolbar','WBP_DenToolbar',50),('Inspector','WBP_DenTransform',45),('CatalogPanel','WBP_DenCatalog',40),('LayoutsPanel','WBP_DenLayouts',40),('StoreroomPanel','WBP_DenStoreroom',40),('SettingsPanel','WBP_DenSettings',40),('CompositionsPanel','WBP_DenCompositions',40),('CommunityPanel','WBP_DenCommunity',40)]
+PANELS=[('Toolbar','WBP_DenToolbar',50),('Inspector','WBP_DenTransform',45),('CatalogPanel','WBP_DenCatalog',40),('LayoutsPanel','WBP_DenLayouts',40),('StoreroomPanel','WBP_DenStoreroom',40),('SettingsPanel','WBP_DenSettings',40),('CompositionsPanel','WBP_DenCompositions',40),('CommunityPanel','WBP_DenHolonet',40)]
 
 
 def widget_class(variable):return UIROOT+next(cls for var,cls,_ in PANELS if var==variable)
@@ -50,7 +50,7 @@ def create_panel(var,cls,order):
     g=Graph();g.node('self','self');previous='entry'
     obj=call(g,'create'+var,WBL+':Create',{'WorldContextObject':'self.self','OwningPlayer':get(g,'EditorController')},WidgetType=UIROOT+cls)
     g.node('cast'+var,'cast',**{'class':UIROOT+cls});g.wire((obj,'cast'+var+'.Object'))
-    castpin='cast'+var+'.As'+{'WBP_DenToolbar':'WBP Den Toolbar','WBP_DenTransform':'WBP Den Transform','WBP_DenCatalog':'WBP Den Catalog','WBP_DenLayouts':'WBP Den Layouts','WBP_DenStoreroom':'WBP Den Storeroom','WBP_DenSettings':'WBP Den Settings','WBP_DenCompositions':'WBP Den Compositions','WBP_DenCommunity':'WBP Den Community'}[cls]
+    castpin='cast'+var+'.As'+{'WBP_DenToolbar':'WBP Den Toolbar','WBP_DenTransform':'WBP Den Transform','WBP_DenCatalog':'WBP Den Catalog','WBP_DenLayouts':'WBP Den Layouts','WBP_DenStoreroom':'WBP Den Storeroom','WBP_DenSettings':'WBP Den Settings','WBP_DenCompositions':'WBP Den Compositions','WBP_DenHolonet':'WBP Den Holonet'}[cls]
     set_value(g,'save'+var,var,castpin)
     set_value(g,'bus'+var,UIROOT+cls+':EditorBus',get(g,'InputBus'));g.wire((get(g,var),'bus'+var+'.self'))
     call(g,'show'+var,USERWIDGET+':AddToViewport',{'self':get(g,var)},ZOrder=order)

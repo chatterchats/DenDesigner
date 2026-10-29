@@ -12,7 +12,7 @@ def spec():
         e.divider('LibraryDivider',vertical=False),
         e.label('LibraryTitle','Saved compositions'),
         e.cards('Compositions'),
-        e.row('LibraryRow',[e.button('LoadComposition','Place selected',14),e.button('DeleteComposition','Delete selected',14)]),
+        e.row('LibraryRow',[e.button('LoadComposition','Place selected',14),e.button('ShareComposition','Share',14),e.button('DeleteComposition','Delete selected',14)]),
         e.text('Footer','',12,e.DIM,wrap=True),
     ])
     g.click('SelectParts','composition_select');g.click('ClearParts','composition_clear')
@@ -21,5 +21,5 @@ def spec():
     g.links.remove(['CompositionName.then','CompositionName_event.execute'])
     g.nodes += [dict(id='name_enter',kind='call',function='/Script/Engine.KismetMathLibrary:EqualEqual_ByteByte',defaults={'B':'1'}),dict(id='name_entered',kind='branch')]
     g.links += [['CompositionName.CommitMethod','name_enter.A'],['name_enter.ReturnValue','name_entered.Condition'],['CompositionName.then','name_entered.execute'],['name_entered.then','CompositionName_event.execute']]
-    g.item('Compositions','composition_card');g.click('LoadComposition','load_composition');g.click('DeleteComposition','delete_composition')
+    g.item('Compositions','composition_card');g.click('LoadComposition','load_composition');g.click('ShareComposition','holonet_share_selected');g.click('DeleteComposition','delete_composition')
     return {'kind':'widget','path':e.ROOT+'WBP_DenCompositions','tree':tree,'functions':e.NATIVE_EVENT,'graph':g.spec()}

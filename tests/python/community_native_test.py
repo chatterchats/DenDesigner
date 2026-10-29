@@ -24,7 +24,7 @@ def sha256(pointer, count, output):
 class Save(ctypes.Structure):
     _fields_ = [('token',ctypes.c_char*65),('input',ctypes.c_char*257),
         ('size_offset',ctypes.c_size_t),('length_offset',ctypes.c_size_t),
-        ('value_offset',ctypes.c_size_t),('end',ctypes.c_size_t)]
+        ('value_offset',ctypes.c_size_t),('end',ctypes.c_size_t),('wide',ctypes.c_int)]
 
 def canonical(doc):
     return json.dumps(doc,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
@@ -42,8 +42,12 @@ class NativeCommunityTests(unittest.TestCase):
         cls.lib.dd_listing.argtypes = [ctypes.c_char_p,ctypes.c_size_t,ctypes.c_char_p,ctypes.POINTER(ctypes.c_size_t),ctypes.c_void_p,ctypes.POINTER(ctypes.c_char_p)]
         cls.lib.dd_save_read.argtypes = [ctypes.c_char_p,ctypes.c_size_t,ctypes.POINTER(Save),ctypes.POINTER(ctypes.c_char_p)]
         cls.lib.dd_save_response.argtypes = [ctypes.c_char_p,ctypes.c_size_t,ctypes.POINTER(Save),ctypes.c_char_p,ctypes.c_void_p,ctypes.c_size_t,ctypes.POINTER(ctypes.c_size_t)]
+        cls.lib.dd_save_wire.argtypes = [ctypes.c_char_p,ctypes.c_size_t,ctypes.POINTER(Save),ctypes.c_void_p,ctypes.c_size_t,ctypes.POINTER(ctypes.c_size_t)]
         cls.fixture = (SOURCE/'fixtures/request-v1.sav').read_bytes()
-        cls.sample = json.loads((ROOT/'tests/fixtures/sharing/published-monitor-v1.json').read_text())
+        fixtures = ROOT/'tests/fixtures/sharing'
+        cls.sample = json.loads((fixtures/'holonet-composition-base.json').read_text())
+        cls.pack_raw = (fixtures/'holonet-composition-pack.json').read_bytes()
+        cls.pack = json.loads(cls.pack_raw)
     @classmethod
     def tearDownClass(cls): cls.temporary.cleanup()
     def validate(self, doc=None, raw=None, rehash=False):
@@ -53,14 +57,33 @@ class NativeCommunityTests(unittest.TestCase):
         wire = ctypes.create_string_buffer(48*1024)
         error = ctypes.c_char_p()
         accepted = self.lib.dd_document(raw,len(raw),b'DenDesignerTest01',b'0'*32,sha256,wire,len(wire),ctypes.byref(error))
-        return accepted, wire.value, error.value
-    def test_reviewed_sample_validates_into_expected_wire(self):
-        accepted, wire, _ = self.validate()
+        return accepted, wire.value, error.value and error.value.decode()
+    def test_holonet_fixtures_byte_for_byte(self):
+        # Real build files saved from the HoloNet server, unmodified.
+        accepted, wire, _ = self.validate(raw=canonical(self.sample))
         self.assertTrue(accepted)
-        self.assertIn(b'\ncount\t1\npart\t/Game/',wire)
+        self.assertIn(b'\nreport\tBase game only.\nanchor\t0\t0\t0\ncount\t1\npart\t/Game/',wire)
         self.assertTrue(wire.endswith(b'\nend'))
-        self.assertNotIn(b'\nend\n',wire)
-        self.assertIn(b'packs: none',wire)
+        accepted, wire, error = self.validate(raw=self.pack_raw)
+        self.assertTrue(accepted, error)
+        lines = wire.decode().split('\n')
+        self.assertEqual(lines[2], 'name\tRook\u2019s arcade nook \u2014 v2\u2026 signerTest01')
+        self.assertEqual(lines[3], 'report\tUses prop packs: Arcade Cabinets \u201cDeluxe\u201d 1.2.0. Also uses 1 asset from a mod HoloNet doesn\'t list.')
+        self.assertEqual(lines[5], 'count\t3')
+        self.assertEqual(lines[7].split('\t')[1:5], ['/ArcadePack/Meshes/SM_Cabinet.SM_Cabinet','80.5','0','0'])
+        self.assertEqual(lines[8:10], ['material\t','material\t/ArcadePack/Materials/MI_Red.MI_Red'])
+        self.assertEqual(lines[10].split('\t')[1:4], ['/OtherMod/Meshes/SM_Thing.SM_Thing','160','-12.25'])
+    def test_title_is_cut_by_characters_and_never_breaks_the_wire(self):
+        doc = copy.deepcopy(self.sample)
+        doc['metadata']['title'] = 'Tab\there\nand\u00e9'*5
+        accepted, wire, _ = self.validate(doc)
+        self.assertTrue(accepted)
+        name = wire.decode().split('\n')[2]
+        self.assertEqual(name, 'name\t'+('Tab here and\u00e9'*5)[:27]+' signerTest01')
+        doc['metadata']['title'] = '\U0001F680'*30
+        accepted, wire, _ = self.validate(doc)
+        self.assertTrue(accepted)
+        self.assertEqual(wire.decode().split('\n')[2], 'name\t'+'\U0001F680'*27+' signerTest01')
     def test_known_mesh_arrangements_support128_distinct_parts(self):
         doc = copy.deepcopy(self.sample)
         part = doc['payload']['entries'][0]
@@ -71,44 +94,88 @@ class NativeCommunityTests(unittest.TestCase):
         self.assertEqual(wire.count(b'\npart\t'),128)
         doc['payload']['entries'].append(dict(part,Key='part-128'))
         self.assertFalse(self.validate(doc,rehash=True)[0])
+    def test_versions_are_not_pinned_but_newer_schemas_are_refused(self):
+        doc = copy.deepcopy(self.sample)
+        doc['compatibility'].update(game_version='99999999',mod_version='0.9.20')
+        doc['metadata']['future_field'] = {'ignored': True}
+        doc['future_root'] = 1
+        self.assertTrue(self.validate(doc)[0])
+        doc = copy.deepcopy(self.sample);doc['schema_version'] = 2
+        accepted, _, error = self.validate(doc)
+        self.assertFalse(accepted);self.assertIn('newer Den Designer',error)
+        for change in [lambda d:d['compatibility'].update(game_id='steam:1'),
+                       lambda d:d['compatibility'].update(mod_id='other.mod'),
+                       lambda d:d['compatibility'].pop('mod_version')]:
+            doc = copy.deepcopy(self.sample);change(doc)
+            accepted, _, error = self.validate(doc)
+            self.assertFalse(accepted);self.assertIn('different game or mod',error)
     def test_unsupported_and_malformed_documents_never_validate(self):
-        changes = [lambda d:d.update(schema_version=2),lambda d:d.update(schema_version=True),
-            lambda d:d.update(content_type='den'),lambda d:d['compatibility'].update(game_version='other'),
+        changes = [lambda d:d.update(schema_version=0),lambda d:d.update(schema_version=True),
+            lambda d:d.update(content_type='den'),lambda d:d.update(format='other'),
             lambda d:d['payload']['entries'][0].update(Mesh='/tmp/exec.exe'),
-            lambda d:d['payload']['entries'][0].update(Position=[.5,0,0]),
+            lambda d:d['payload']['entries'][0].update(Mesh='C:/Windows/x.x'),
             lambda d:d['payload']['entries'][0].update(Scale=[0,1,1]),
+            lambda d:d['payload']['entries'][0].update(Scale=[101,1,1]),
             lambda d:d['payload']['entries'][0].update(Position=[10000001,0,0]),
             lambda d:d['payload']['entries'][0].update(Hidden=True),
             lambda d:d['payload']['entries'][0].update(Kind=2),
             lambda d:d['payload']['entries'][0].update(CollisionMode=3),
             lambda d:d['payload']['entries'][0].update(Unknown='ignored'),
-            lambda d:d['metadata'].update(title='\nInjected record'),
-            lambda d:d['metadata'].update(title=' leading space'),
-            lambda d:d['metadata'].update(title='Unicode snowman \u2603')]
+            lambda d:d['payload']['entries'][0].update(Key='caf\u00e9'),
+            lambda d:d['metadata'].update(title=''),
+            lambda d:d['metadata'].update(title='   '),
+            lambda d:d['metadata'].update(title='x'*121),
+            lambda d:d['metadata'].update(description='x'*4001),
+            lambda d:d['metadata'].pop('author'),
+            lambda d:d['metadata'].update(footprint_cm=[1,2]),
+            lambda d:d['dependencies'].update(packs={}),
+            lambda d:d['dependencies'].update(packs=[{'id':'p','mount':'../x','version':'1','title':'P'}]),
+            lambda d:d['dependencies'].update(unknown_assets=[{'path':'/A/B.B','kind':'sound'}])]
         for change in changes:
             doc = copy.deepcopy(self.sample);change(doc)
             with self.subTest(doc=doc): self.assertFalse(self.validate(doc,rehash=True)[0])
-    def test_dependency_unknown_pack_material_and_unreviewed_mesh_rejected(self):
-        for field, value in [('packs',[{'id':'test-pack','version':'1'}]),
-                             ('unknown_assets',[{'path':'/Game/A.A','kind':'mesh'}]),
-                             ('assets',[])]:
-            doc = copy.deepcopy(self.sample);doc['dependencies'][field] = value
-            accepted,_,error = self.validate(doc)
-            self.assertFalse(accepted);self.assertIn(b'Dependencies:',error)
-        doc = copy.deepcopy(self.sample);doc['payload']['entries'][0]['Materials']=['/Game/Material.Material']
-        self.assertFalse(self.validate(doc,rehash=True)[0])
+        doc = copy.deepcopy(self.sample);doc['metadata']['footprint_cm']=[62.5,40,118]
+        self.assertTrue(self.validate(doc)[0])
+    def test_every_asset_needs_a_declared_source(self):
+        accepted, _, error = self.validate(raw=self.pack_raw)
+        self.assertTrue(accepted)
+        def without(change):
+            doc = copy.deepcopy(self.pack);change(doc)
+            return self.validate(doc,rehash=True)
+        # Pack mount removed: its mesh and material are no longer covered.
+        accepted, _, error = without(lambda d:d['dependencies'].update(packs=[]))
+        self.assertFalse(accepted);self.assertIn('part from a source',error)
+        accepted, _, error = without(lambda d:d['dependencies'].update(unknown_assets=[]))
+        self.assertFalse(accepted);self.assertIn('part from a source',error)
+        # An unknown_assets entry covers only its own kind.
+        accepted, _, error = without(lambda d:d['dependencies']['unknown_assets'][0].update(kind='material'))
+        self.assertFalse(accepted)
+        # A mount must match a whole path segment.
+        accepted, _, error = without(lambda d:d['dependencies']['packs'][0].update(mount='Arcade'))
+        self.assertFalse(accepted)
+        accepted, _, error = without(lambda d:d['payload']['entries'][1].update(Materials=['/Elsewhere/M.M']))
+        self.assertFalse(accepted);self.assertIn('material from a source',error)
     def test_integrity_duplicate_fields_and_noncanonical_payload_rejected(self):
         doc = copy.deepcopy(self.sample);doc['payload']['entries'][0]['Position']=[3,0,0]
-        self.assertFalse(self.validate(doc)[0])
+        accepted, _, error = self.validate(doc)
+        self.assertFalse(accepted);self.assertIn('integrity',error)
         raw = canonical(self.sample)
         for bad in [raw.replace(b'"schema_version":1',b'"schema_version":1,"schema_version":1'),
                     raw.replace(b'"schema_version":1',b'"schema_version":NaN'),
                     raw.replace(b'"schema_version":1',b'"schema_version":1,"\\u0073chema_version":1'),
+                    raw.replace(b'"title":"',b'"title":"\\ud800'),
+                    raw.replace(b'"title":"',b'"title":"\xc3\x28'),
+                    raw.replace(b'"title":"',b'"title":"\xed\xa0\x80'),
                     json.dumps(self.sample,sort_keys=True,indent=2).encode(),
                     raw[:-1], b'['*1000, raw+b'{}']:
             self.assertFalse(self.validate(raw=bad)[0])
         doc = copy.deepcopy(self.sample);doc['payload']['entries']*=2
         self.assertFalse(self.validate(doc,rehash=True)[0])
+    def test_raw_utf8_metadata_is_accepted_like_escapes(self):
+        escaped = json.dumps(self.pack,sort_keys=True,separators=(',',':'),ensure_ascii=True).encode()
+        utf8 = canonical(self.pack)
+        self.assertNotEqual(escaped, utf8)
+        self.assertEqual(self.validate(raw=escaped)[1], self.validate(raw=utf8)[1])
     def test_listing_version_identity_hash_and_size(self):
         raw = canonical(self.sample)
         item = dict(code='DenDesignerTest01',kind='comp',schema_version=1,document_bytes=len(raw),document_sha256=hashlib.sha256(raw).hexdigest())
@@ -116,8 +183,12 @@ class NativeCommunityTests(unittest.TestCase):
             encoded=canonical(value);size=ctypes.c_size_t();digest=ctypes.create_string_buffer(65);error=ctypes.c_char_p()
             return self.lib.dd_listing(encoded,len(encoded),b'DenDesignerTest01',ctypes.byref(size),digest,ctypes.byref(error)),size.value,digest.value
         self.assertEqual(validate({'api_version':'v1','item':item}), (1,len(raw),hashlib.sha256(raw).hexdigest().encode()))
-        for key,value in [('code','OtherCode'),('kind','den'),('schema_version',2),('document_bytes',4194305),('document_bytes',0),('document_sha256','x'*64)]:
+        for key,value in [('code','OtherCode'),('kind','den'),('schema_version',2),('schema_version',0),('document_bytes',4194305),('document_bytes',0),('document_sha256','x'*64)]:
             self.assertFalse(validate({'api_version':'v1','item':dict(item,**{key:value})})[0])
+        listing = (ROOT/'tests/fixtures/sharing/holonet-composition-pack.listing.json').read_bytes()
+        size=ctypes.c_size_t();digest=ctypes.create_string_buffer(65);error=ctypes.c_char_p()
+        self.assertTrue(self.lib.dd_listing(listing,len(listing),b'T93765D1',ctypes.byref(size),digest,ctypes.byref(error)))
+        self.assertEqual((size.value,digest.value),(len(self.pack_raw),hashlib.sha256(self.pack_raw).hexdigest().encode()))
     def test_exact_gvas_fixture_and_atomic_response_serialization(self):
         save=Save();error=ctypes.c_char_p()
         self.assertTrue(self.lib.dd_save_read(self.fixture,len(self.fixture),ctypes.byref(save),ctypes.byref(error)))
@@ -186,8 +257,12 @@ class NativeCommunityTests(unittest.TestCase):
     def test_code_allowlist(self):
         for text in (b'DenDesignerTest01',b'https://share.zcom.app/comp/DenDesignerTest01',b'https://zcom.app/comp/DenDesignerTest01/'):
             code=ctypes.create_string_buffer(33);self.assertTrue(self.lib.dd_code(text,code));self.assertEqual(code.value,b'DenDesignerTest01')
-        for text in (b'bad',b'https://evil.test/comp/DenDesignerTest01',b'https://share.zcom.app.evil.test/comp/DenDesignerTest01',b'https://share.zcom.app:443/comp/DenDesignerTest01',b'https://zcom.app/comp/DenDesignerTest01?x=1',b'file:///tmp/evil',b'https://evil@zcom.app/comp/DenDesignerTest01'):
-            code=ctypes.create_string_buffer(33);self.assertFalse(self.lib.dd_code(text,code))
+        # HoloNet codes are case-insensitive; links work with or without https://.
+        for text in (b'h7854vmd',b'H7854VMD',b'https://zcom.app/comp/h7854vmd',b'zcom.app/comp/H7854VMD',b'share.zcom.app/comp/H7854VMD/',b'https://www.zcom.app/comp/H7854VMD'):
+            code=ctypes.create_string_buffer(33);self.assertTrue(self.lib.dd_code(text,code),text);self.assertEqual(code.value,b'H7854VMD')
+        code=ctypes.create_string_buffer(33);self.assertTrue(self.lib.dd_code(b'ab_cd-ef',code));self.assertEqual(code.value,b'ab_cd-ef')
+        for text in (b'bad',b'https://evil.test/comp/DenDesignerTest01',b'https://share.zcom.app.evil.test/comp/DenDesignerTest01',b'https://share.zcom.app:443/comp/DenDesignerTest01',b'https://zcom.app/comp/DenDesignerTest01?x=1',b'file:///tmp/evil',b'https://evil@zcom.app/comp/DenDesignerTest01',b'http://zcom.app/comp/H7854VMD',b'evilzcom.app/comp/H7854VMD',b'https://zcom.app/u/H7854VMD'):
+            code=ctypes.create_string_buffer(33);self.assertFalse(self.lib.dd_code(text,code),text)
 
     def request_with(self, operation, wire):
         error=ctypes.c_char_p();save=Save()
@@ -220,6 +295,58 @@ class NativeCommunityTests(unittest.TestCase):
                            (b'../../secret.png\n{}',False)]:
             raw=self.request_with(b'PUBLISH',wire)
             self.assertEqual(bool(self.lib.dd_save_read(raw,len(raw),ctypes.byref(Save()),ctypes.byref(error))),valid)
+
+    def wide_request(self, operation, text):
+        # A request as UE saves it when Wire holds non-ASCII text: UTF-16 with a
+        # negative length, and the property size covering the wider value.
+        # Lay out with a same-length plain operation, then name the real one.
+        placeholder=b'Z'*len(operation)
+        raw=bytearray(self.request_with(placeholder,b'request'));save=Save();error=ctypes.c_char_p()
+        self.assertTrue(self.lib.dd_save_read(bytes(raw),len(raw),ctypes.byref(save),ctypes.byref(error)))
+        at=raw.index(placeholder+b'\0');raw[at:at+len(operation)]=operation
+        value=text.encode('utf-16-le')+b'\0\0';units=len(value)//2
+        raw[save.value_offset-4:save.end]=struct.pack('<i',-units)+value
+        struct.pack_into('<I',raw,save.size_offset,4+len(value))
+        return bytes(raw)
+    def test_utf16_requests_decode_to_utf8_for_publish_and_search_only(self):
+        text='Composition_0123abcd_512.png\ntitle\tCaf\u00e9 \U0001F680\npayload\n{}'
+        raw=self.wide_request(b'PUBLISH',text);save=Save();error=ctypes.c_char_p()
+        self.assertTrue(self.lib.dd_save_read(raw,len(raw),ctypes.byref(save),ctypes.byref(error)))
+        self.assertEqual(save.wide,1)
+        out=ctypes.create_string_buffer(4096);written=ctypes.c_size_t()
+        self.assertTrue(self.lib.dd_save_wire(raw,len(raw),ctypes.byref(save),out,len(out),ctypes.byref(written)))
+        self.assertEqual(out.raw[:written.value].decode(),text)
+        small=ctypes.create_string_buffer(len(text.encode())) # one byte short of the NUL
+        self.assertFalse(self.lib.dd_save_wire(raw,len(raw),ctypes.byref(save),small,len(small),ctypes.byref(written)))
+        raw=self.wide_request(b'CATALOG/0','newest\tall\tcaf\u00e9');save=Save()
+        self.assertTrue(self.lib.dd_save_read(raw,len(raw),ctypes.byref(save),ctypes.byref(error)))
+        for operation,value in [(b'AUTH','1\tzcu_'+'a'*63+'\u00e9'),(b'DenDesignerTest01','\u00e9'),(b'PUBLISH','\u00e9'),
+                                (b'PUBLISH','Composition_0123abcd.png\n\ud800'),(b'PUBLISH','Composition_0123abcd.png\n\x01{}')]:
+            try:raw=self.wide_request(operation,value)
+            except UnicodeEncodeError:
+                raw=bytearray(self.wide_request(operation,'Composition_0123abcd.png\nx'));at=raw.index('x'.encode('utf-16-le'),40);raw[at:at+2]=b'\x00\xd8';raw=bytes(raw)
+            self.assertFalse(self.lib.dd_save_read(raw,len(raw),ctypes.byref(Save()),ctypes.byref(error)),value)
+    def test_non_ascii_responses_are_written_as_utf16_fstrings(self):
+        save=Save();error=ctypes.c_char_p()
+        self.assertTrue(self.lib.dd_save_read(self.fixture,len(self.fixture),ctypes.byref(save),ctypes.byref(error)))
+        wire='ZCOM-COMMUNITY\t1\ttoken\nname\tRook\u2019s \U0001F680\nend'.encode()
+        output=ctypes.create_string_buffer(65536);written=ctypes.c_size_t()
+        self.assertTrue(self.lib.dd_save_response(self.fixture,len(self.fixture),ctypes.byref(save),wire,output,len(output),ctypes.byref(written)))
+        result=output.raw[:written.value];value=wire.decode().encode('utf-16-le')+b'\0\0'
+        self.assertEqual(struct.unpack_from('<i',result,save.length_offset)[0],-(len(value)//2))
+        self.assertEqual(struct.unpack_from('<I',result,save.size_offset)[0],4+len(value))
+        self.assertEqual(result[save.value_offset:save.value_offset+len(value)],value)
+        self.assertEqual(result[save.value_offset+len(value):],self.fixture[save.end:])
+        self.assertFalse(self.lib.dd_save_response(self.fixture,len(self.fixture),ctypes.byref(save),b'bad \xff utf8',output,len(output),ctypes.byref(written)))
+    def test_catalog_shares_and_publish_requests_are_typed(self):
+        error=ctypes.c_char_p()
+        for operation,wire,valid in [(b'CATALOG/0',b'lamp',True),(b'CATALOG/12',b'imports\tbase\tlamp',True),(b'CATALOG/0',b'newest\tall\t',True),
+                                     (b'CATALOG/0',b'oldest\tall\tx',False),(b'CATALOG/0',b'newest\tsome\tx',False),(b'CATALOG/0',b'newest\tall',False),
+                                     (b'CATALOG/01',b'x',False),(b'CATALOG/10000',b'x',False),(b'CATALOG/x',b'x',False),(b'CATALOG/0',b'zcu_'+b'a'*64,False),(b'CATALOG/0',b'x'*81,False),
+                                     (b'MYSHARES/0',b'request',True),(b'MYSHARES/3',b'request',True),(b'MYSHARES/',b'request',False),(b'MYSHARES/0',b'x',False),
+                                     (b'PUBLISH',b'Composition_0123abcd_512.png\n{}',True),(b'PUBLISH',b'Composition_0123abcd_256.png\n{}',False)]:
+            raw=self.request_with(operation,wire)
+            self.assertEqual(bool(self.lib.dd_save_read(raw,len(raw),ctypes.byref(Save()),ctypes.byref(error))),valid,(operation,wire))
 
 class ProxyExportTests(unittest.TestCase):
     def test_proxy_covers_version_imports_of_game_and_graphics_dependencies(self):

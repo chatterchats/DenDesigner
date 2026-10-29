@@ -5,6 +5,7 @@ from runtime_apply import get
 from runtime_world import validity, set_value, finish_bool
 from runtime_editor_host import widget
 from runtime_gizmo_controller import op
+from runtime_community_mailbox import HOLONET
 
 
 def valid_key():
@@ -33,8 +34,8 @@ def connect():
     flag=call(g,'flag',KML+':SelectString',{'bPickA':get(g,'CommunityRemember')},A='1\t',B='0\t')
     payload=call(g,'payload',STR+'Concat_StrStr',{'A':flag,'B':'key.ConnectionKeyCopy'})
     g.call('send','self:StartCommunityTransfer',Input='AUTH');g.wire((payload,'send.Payload'))
-    g.set('release','local:ConnectionKeyCopy','');g.set('status','CommunityMessage','Checking Community connection…');g.call('refresh','self:RefreshCommunityFeedback')
-    g.set('invalid','CommunityMessage','Enter a complete game upload key from share.zcom.app/account. The key field has been cleared.')
+    g.set('release','local:ConnectionKeyCopy','');g.set('status','CommunityMessage','Checking your HoloNet connection…');g.call('refresh','self:RefreshCommunityFeedback')
+    g.set('invalid','CommunityMessage','Enter a complete game upload key from '+HOLONET+'/account. The key field has been cleared.')
     g.chain('entry','panel','copy','clear','empty','restore','release','refresh');g.chain('empty.else','validate','valid','send','status','release');g.chain('valid.else','invalid','release')
     return g.function('ConnectCommunity',locals=[v('ConnectionKeyCopy','string')])
 

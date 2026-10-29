@@ -63,6 +63,14 @@
       "name": "Enabled",
       "type": "bool",
       "default": "true"
+    },
+    {
+      "name": "FootprintNames",
+      "type": "string[]"
+    },
+    {
+      "name": "FootprintSizes",
+      "type": "vector[]"
     }
   ],
   "graph": {
@@ -3063,6 +3071,36 @@
           "kind": "call",
           "function": "self:FinishThumbnail",
           "defaults": {}
+        },
+        {
+          "id": "getCurrentPath",
+          "kind": "get",
+          "var": "CurrentPath"
+        },
+        {
+          "id": "iscomposition",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:StartsWith",
+          "defaults": {
+            "InPrefix": "/ZComDen/CompositionThumbs/",
+            "SearchCase": "CaseSensitive"
+          }
+        },
+        {
+          "id": "composition4share",
+          "kind": "branch"
+        },
+        {
+          "id": "share",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenThumbnailStudio:WriteSharePreview",
+          "defaults": {}
+        },
+        {
+          "id": "footprint",
+          "kind": "call",
+          "function": "self:RememberFootprint",
+          "defaults": {}
         }
       ],
       "links": [
@@ -3171,6 +3209,18 @@
           "finish.Texture"
         ],
         [
+          "getCurrentPath.CurrentPath",
+          "iscomposition.SourceString"
+        ],
+        [
+          "iscomposition.ReturnValue",
+          "composition4share.Condition"
+        ],
+        [
+          "getStudio.Studio",
+          "share.self"
+        ],
+        [
           "entry.then",
           "composition.execute"
         ],
@@ -3256,7 +3306,336 @@
         ],
         [
           "export.then",
+          "composition4share.execute"
+        ],
+        [
+          "composition4share.then",
+          "share.execute"
+        ],
+        [
+          "share.then",
+          "footprint.execute"
+        ],
+        [
+          "footprint.then",
           "finish.execute"
+        ],
+        [
+          "composition4share.else",
+          "finish.execute"
+        ]
+      ]
+    },
+    {
+      "name": "RememberFootprint",
+      "nodes": [
+        {
+          "id": "getStudio",
+          "kind": "get",
+          "var": "Studio"
+        },
+        {
+          "id": "getCurrentPath",
+          "kind": "get",
+          "var": "CurrentPath"
+        },
+        {
+          "id": "path",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenThumbnailStudio:CachePath",
+          "defaults": {}
+        },
+        {
+          "id": "extent",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenThumbnailStudio:CompositionExtent"
+        },
+        {
+          "id": "size",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Multiply_VectorFloat",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "getFootprintNames",
+          "kind": "get",
+          "var": "FootprintNames"
+        },
+        {
+          "id": "find",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Find",
+          "defaults": {}
+        },
+        {
+          "id": "found",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "known",
+          "kind": "branch"
+        },
+        {
+          "id": "getFootprintSizes",
+          "kind": "get",
+          "var": "FootprintSizes"
+        },
+        {
+          "id": "update",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Set",
+          "defaults": {}
+        },
+        {
+          "id": "addname",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "addsize",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getStudio.Studio",
+          "path.self"
+        ],
+        [
+          "getCurrentPath.CurrentPath",
+          "path.Path"
+        ],
+        [
+          "getStudio.Studio",
+          "extent.self"
+        ],
+        [
+          "extent.CompositionExtent",
+          "size.A"
+        ],
+        [
+          "getFootprintNames.FootprintNames",
+          "find.TargetArray"
+        ],
+        [
+          "path.Name",
+          "find.ItemToFind"
+        ],
+        [
+          "find.ReturnValue",
+          "found.A"
+        ],
+        [
+          "found.ReturnValue",
+          "known.Condition"
+        ],
+        [
+          "getFootprintSizes.FootprintSizes",
+          "update.TargetArray"
+        ],
+        [
+          "find.ReturnValue",
+          "update.Index"
+        ],
+        [
+          "size.ReturnValue",
+          "update.Item"
+        ],
+        [
+          "getFootprintNames.FootprintNames",
+          "addname.TargetArray"
+        ],
+        [
+          "path.Name",
+          "addname.NewItem"
+        ],
+        [
+          "getFootprintSizes.FootprintSizes",
+          "addsize.TargetArray"
+        ],
+        [
+          "size.ReturnValue",
+          "addsize.NewItem"
+        ],
+        [
+          "entry.then",
+          "path.execute"
+        ],
+        [
+          "path.then",
+          "find.execute"
+        ],
+        [
+          "find.then",
+          "known.execute"
+        ],
+        [
+          "known.then",
+          "update.execute"
+        ],
+        [
+          "known.else",
+          "addname.execute"
+        ],
+        [
+          "addname.then",
+          "addsize.execute"
+        ]
+      ]
+    },
+    {
+      "name": "CompositionFootprint",
+      "inputs": [
+        {
+          "name": "Name",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Found",
+          "type": "bool"
+        },
+        {
+          "name": "Size",
+          "type": "vector"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Found",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "Size",
+          "type": "vector"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getFootprintNames",
+          "kind": "get",
+          "var": "FootprintNames"
+        },
+        {
+          "id": "find",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Find",
+          "defaults": {}
+        },
+        {
+          "id": "found",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "known",
+          "kind": "branch"
+        },
+        {
+          "id": "getFootprintSizes",
+          "kind": "get",
+          "var": "FootprintSizes"
+        },
+        {
+          "id": "read",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "keep",
+          "kind": "set",
+          "var": "local:Size"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:Found",
+          "defaults": {
+            "Found": "true"
+          }
+        },
+        {
+          "id": "foundvalue",
+          "kind": "get",
+          "var": "local:Found"
+        },
+        {
+          "id": "sizevalue",
+          "kind": "get",
+          "var": "local:Size"
+        }
+      ],
+      "links": [
+        [
+          "getFootprintNames.FootprintNames",
+          "find.TargetArray"
+        ],
+        [
+          "entry.Name",
+          "find.ItemToFind"
+        ],
+        [
+          "find.ReturnValue",
+          "found.A"
+        ],
+        [
+          "found.ReturnValue",
+          "known.Condition"
+        ],
+        [
+          "getFootprintSizes.FootprintSizes",
+          "read.TargetArray"
+        ],
+        [
+          "find.ReturnValue",
+          "read.Index"
+        ],
+        [
+          "read.Item",
+          "keep.Size"
+        ],
+        [
+          "foundvalue.Found",
+          "result.Found"
+        ],
+        [
+          "sizevalue.Size",
+          "result.Size"
+        ],
+        [
+          "entry.then",
+          "known.execute"
+        ],
+        [
+          "known.then",
+          "keep.execute"
+        ],
+        [
+          "keep.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "known.else",
+          "result.execute"
         ]
       ]
     }

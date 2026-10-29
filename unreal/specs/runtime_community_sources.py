@@ -10,7 +10,7 @@ from runtime_layout_ui import PRESETS
 import runtime_composition_library as compositions
 import runtime_layout_ui as presets
 
-MAP={'WBP_DenCompositions':'WBP_DenCommunity','CompositionsPanel':'CommunityPanel','RefreshCompositionLibrary':'RefreshCommunitySources','RefreshCompositionFeedback':'RefreshCommunityFeedback','ReadCompositionCard':'ReadCommunitySourceCard','SelectCompositionCard':'SelectCommunitySourceCard','CompositionLibraryCurrent':'CommunitySourceCurrent','SelectedComposition':'CommunitySourceName','CompositionNames':'CommunitySourceNames','CompositionRows':'CommunitySourceRows','CompositionListStatus':'CommunitySourceListStatus','CompositionListRevision':'CommunitySourceListRevision','CompositionLibraryID':'CommunitySourceLibraryID','CompositionMessage':'CommunityMessage'}
+MAP={'WBP_DenCompositions':'WBP_DenHolonet','CompositionsPanel':'CommunityPanel','RefreshCompositionLibrary':'RefreshCommunitySources','RefreshCompositionFeedback':'RefreshCommunityFeedback','ReadCompositionCard':'ReadCommunitySourceCard','SelectCompositionCard':'SelectCommunitySourceCard','CompositionLibraryCurrent':'CommunitySourceCurrent','SelectedComposition':'CommunitySourceName','CompositionNames':'CommunitySourceNames','CompositionRows':'CommunitySourceRows','CompositionListStatus':'CommunitySourceListStatus','CompositionListRevision':'CommunitySourceListRevision','CompositionLibraryID':'CommunitySourceLibraryID','CompositionMessage':'CommunityMessage'}
 
 def adapt(value):
     if isinstance(value,list):return [adapt(x) for x in value]
@@ -26,9 +26,14 @@ def feedback():
     g=Graph();branch(g,'valid',validity(g,'panel',get(g,'CommunityPanel')))
     text(g,'footer','CommunityPanel','Footer',value=get(g,'CommunityMessage'))
     from graph import KML
-    label=call(g,'label',KML+':SelectString',{'bPickA':get(g,'CommunityRemember')},A='Remember connection: On',B='Remember connection: Off')
+    label=call(g,'label',KML+':SelectString',{'bPickA':get(g,'CommunityRemember')},A='Remember on this PC: On',B='Remember on this PC: Off')
     text(g,'remember','CommunityPanel','RememberCommunityLabel',value=label)
-    g.chain('entry','valid','footer','remember');return g.function('RefreshCommunityFeedback')
+    # Title bar: "Connected as <name>" or "Not connected".
+    from runtime_community_ui import connected
+    who=call(g,'who',STR+'Replace',{'SourceString':get(g,'CommunityProfile')},From=' - Remembered connection.',To='',SearchCase='CaseSensitive')
+    text(g,'pill','CommunityPanel','ConnectionLabel',value=call(g,'pilltext',KML+':SelectString',{'A':who,'bPickA':connected(g)},B='Not connected'))
+    g.call('share','self:RefreshHolonetShare')
+    g.chain('entry','valid','footer','remember','pill','share');return g.function('RefreshCommunityFeedback')
 
 
 def changed():

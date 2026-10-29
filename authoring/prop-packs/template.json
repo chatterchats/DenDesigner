@@ -5,6 +5,7 @@
   "title": "My Furniture",
   "author": "Your name",
   "version": "1.0.0",
+  "nexus_url": "",
   "props": [
     {
       "name": "Chair",

@@ -119,7 +119,7 @@ def run(unreal, host, document, get, field, check, saved, finish_preview, settle
             from runtime_editor_assets import UIROOT
             world=unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
             widgets=unreal.get_default_object(unreal.load_class(None,'/Script/UMG.WidgetBlueprintLibrary'))
-            panel=widgets.call_method('Create',(world,unreal.EditorAssetLibrary.load_blueprint_class(UIROOT+'WBP_DenCommunity'),None))
+            panel=widgets.call_method('Create',(world,unreal.EditorAssetLibrary.load_blueprint_class(UIROOT+'WBP_DenHolonet'),None))
             setprop(host,'CommunityPanel',panel.get_path_name())
         keybox=get(get(host,'CommunityPanel'),'CommunityKey')
         check(get(keybox,'IsPassword'),'in-game Community key entry is masked')
@@ -172,7 +172,7 @@ def run(unreal, host, document, get, field, check, saved, finish_preview, settle
         before_selection=get(host,'SelectedComposition')
         token='1'*32
         setprop(host,'CommunityToken',token);setprop(host,'CommunityPending','true')
-        deliver(token,'ZCOM-COMMUNITY\t1\t'+token+'\ngallery\t0\t1\t1\nlisting\tPublicTest01\tPublic arrangement\tPublic description\tActual creator\t1\t3\tUnknown dependencies: 1\nend')
+        deliver(token,'ZCOM-COMMUNITY\t1\t'+token+'\ngallery\t0\t1\t1\ncard\tPublicTest01\tPublic arrangement\tActual creator\t1\t3\t0\t1\t0\t2026-10-29T02:23:35.000Z\t0.6 \u00d7 0.4 \u00d7 1.2 m\tPublic description\nend')
         host.call_method('PollCommunityMailbox')
         check(len(get(host,'CommunityBrowseRows'))==1 and not get(host,'CommunityPending'),'public catalogue populates native cards and completes its request')
         public_row=list(get(host,'CommunityBrowseRows'))[0]
@@ -208,7 +208,7 @@ def run(unreal, host, document, get, field, check, saved, finish_preview, settle
             host.call_method('StartCommunityTransfer',('CATALOG/0',' '));t=get(host,'CommunityToken')
             # Refresh clears old rows before the controlled response is delivered.
             host.call_method('RefreshCommunityGallery');t=get(host,'CommunityToken')
-            deliver(t,'ZCOM-COMMUNITY\t1\t'+t+'\ngallery\t0\t1\t1\nlisting\tPublicTest01\tPublic arrangement\tPublic description\tActual creator\t1\t3\tUnknown dependencies: 1\nend')
+            deliver(t,'ZCOM-COMMUNITY\t1\t'+t+'\ngallery\t0\t1\t1\ncard\tPublicTest01\tPublic arrangement\tActual creator\t1\t3\t0\t1\t0\t2026-10-29T02:23:35.000Z\t0.6 \u00d7 0.4 \u00d7 1.2 m\tPublic description\nend')
             host.call_method('PollCommunityMailbox');host.call_method('CancelCommunityFetch')
             row=list(get(host,'CommunityBrowseRows'))[0];host.call_method('SelectCommunityListing',(get(row,'Key'),))
             host.call_method('SetCommunityArea',('upload',))
@@ -227,7 +227,7 @@ def run(unreal, host, document, get, field, check, saved, finish_preview, settle
                            'Position':unreal.Vector(1.25,-2.5,3),'Rotation':unreal.Rotator(10,20,30),'Scale':unreal.Vector(1,2,3),'CollisionMode':1}.items():
             row.set_editor_property(field_name(key),value)
         publish_doc.call_method('WriteEntry',(row,True))
-        outgoing, ready = host.call_method('BuildCommunitySubmission',(publish_doc,))
+        outgoing, ready = host.call_method('BuildCommunitySubmission',(publish_doc,''))
         check(ready,'publishing serializer accepts bounded saved values')
         encoded = json.loads(outgoing)
         check(encoded['payload']['entries'][0]['Position']==[1.25,-2.5,3] and encoded['payload']['entries'][0]['Materials']==list(field(row,'Materials')),
@@ -330,10 +330,10 @@ def run(unreal, host, document, get, field, check, saved, finish_preview, settle
               'publishing the selected saved card creates an outgoing value request')
         evidence=Path(__file__).resolve().parents[2]/'dist/verification/community/inpanel-publish.sav'
         evidence.parent.mkdir(parents=True,exist_ok=True);evidence.write_bytes(mailbox[0].read_bytes())
-        thumb_name,title,description,code,revision,published_json=get(selected_request,'Wire').split('\n',5)
-        check(title=='VM saved composition' and description=='Retained after errors' and code==revision=='','UMG metadata reaches the transport without a native desktop form')
+        thumb_name,title,description,payload_word,published_json=get(selected_request,'Wire').split('\n',4)
+        check(title=='title\tVM saved composition' and description=='description\tRetained after errors' and payload_word=='payload','UMG metadata reaches the transport without a native desktop form')
         import re
-        check(re.fullmatch(r'Composition_[a-f0-9]{8}\.png',thumb_name) is not None,
+        check(re.fullmatch(r'Composition_[a-f0-9]{8}(_512)?\.png',thumb_name) is not None,
               'saved-card publication reuses the restricted local thumbnail basename')
         selected_values=json.loads(published_json)['payload']['entries']
         check(len(selected_values)==len(parts) and selected_values[0]['Mesh']==field(parts[0],'Mesh')
@@ -391,8 +391,8 @@ def run(unreal, host, document, get, field, check, saved, finish_preview, settle
         setprop(host,'CommunityMailboxAt',-1e9)
         host.call_method('PollCommunityMailbox')
         check(get(host,'CommunityPending') and get(host,'CommunityToken')==retry_token,'in-panel upload progress does not consume or cancel its request')
-        host.call_method('FailCommunityFetch',(retry_token,'Published: https://share.zcom.app/comp/PublishedTest01'))
-        check(get(host,'CommunityPublicURL')=='https://share.zcom.app/comp/PublishedTest01' and get(host,'CommunityPublicCode')=='PublishedTest01','successful publication keeps independently copyable public URL and share code')
+        host.call_method('FailCommunityFetch',(retry_token,'Published: https://zcom.app/comp/PublishedTest01'))
+        check(get(host,'CommunityPublicURL')=='https://zcom.app/comp/PublishedTest01' and get(host,'CommunityPublicCode')=='PublishedTest01','successful publication keeps independently copyable public URL and share code')
         host.call_method('CopyCommunityURL')
         copied=unreal.GameplayStatics.load_game_from_slot(REQUEST,0)
         check(get(copied,'Input')=='COPYURL/PublishedTest01','URL copy sends only the validated opaque publication code to background transport')
@@ -405,8 +405,8 @@ def run(unreal, host, document, get, field, check, saved, finish_preview, settle
         host.call_method('SetEditorPanel',('',))
         check(not get(host,'CommunityPending') and not mailbox[0].exists() and str(keybox.call_method('GetText'))=='','closing Community clears draft credential text and invalidates pending work')
         host.call_method('SetEditorPanel',('community',))
-        host.call_method('SetCommunityArea',('den',))
-        check(get(host,'CommunityArea')=='den' and not get(host,'CommunityPending'),'Full Den unavailable area sends no composition upload request')
+        host.call_method('SetCommunityArea',('browse_dens',))
+        check(get(host,'CommunityArea')=='browse_dens' and not get(host,'CommunityPending'),'Dens (coming soon) sends no request')
         host.call_method('SetCommunityArea',('browse',))
 
 

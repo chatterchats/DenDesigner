@@ -51,8 +51,9 @@ Its GameFeatureData adds that component to `BitReactorGameState`. The plugin dec
 as a dependency so its shared class exists before registration. There are no mesh hard references
 in the registration metadata: opening the catalog never loads the whole pack's geometry.
 
-For manual authoring, the provider fields are `PackID`, `Title`, `Author`, `Version`, `SchemaVersion`
-and aligned arrays `Paths`, `Labels`, `Details`, `Dimensions`, `Solid`, `SearchTexts`.
+For manual authoring, the provider fields are `PackID`, `Title`, `Author`, `Version`, `SchemaVersion`,
+the optional `NexusURL` (`nexus_url` in `pack.json`: your Star Wars Zero Company page on
+nexusmods.com; without it HoloNet links to a Nexus search for the title) and aligned arrays `Paths`, `Labels`, `Details`, `Dimensions`, `Solid`, `SearchTexts`.
 Both authoring workflows fill these arrays for you. Do not rename the shared base class or its fields.
 
 ## Limits and updates

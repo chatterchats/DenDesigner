@@ -1,5 +1,5 @@
 """Opt-in, content-only pack providers. Metadata imports are bounded; meshes stay soft paths."""
-from graph import Graph, variable as v, GS, KSL
+from graph import Graph, variable as v, GS, KSL, KML
 from runtime import ROOT, arr
 from runtime_store import call, branch, combine, STR, valid_key
 from runtime_world import set_value, validity
@@ -17,7 +17,7 @@ def types():
     key=valid_key();key['name']='ValidPackID'
     yield '18da_BP_DenPropPack',dict(kind='blueprint',path=PACK,parent='/Script/Engine.ActorComponent',
         defaults={'PrimaryComponentTick.bCanEverTick':'false'},variables=[v('SchemaVersion','int','1'),
-        v('PackID','string'),v('Title','string'),v('Author','string'),v('Version','string'),
+        v('PackID','string'),v('Title','string'),v('Author','string'),v('Version','string'),v('NexusURL','string'),
         *[v(n,k+'[]') for n,k in FIELDS.items()]],functions=[key])
 
 
@@ -77,11 +77,18 @@ def begin():
     set_value(g,'next','local:Scan',op(g,'inc','Add_IntInt','scan.Scan',B=1))
     arr(g,'known','Contains',get(g,'RegisteredPackIDs'));g.wire((p(g,'PackID'),'known.ItemToFind'));branch(g,'new',neg(g,'unknown','known.ReturnValue'))
     add(g,'remember',get(g,'RegisteredPackIDs'),p(g,'PackID'));g.set('row','PackRow','0');g.set('shelf','PackShelf','-1');g.set('yes','local:WasAccepted','true')
+    # What HoloNet needs to declare this pack in a shared build. The mount is the
+    # first path segment of the pack's assets (/<mount>/...).
+    arr(g,'firstpath','Get',p(g,'Paths'),Index=0)
+    call(g,'mount',STR+'Split',{'SourceString':call(g,'mountchop',STR+'RightChop',{'SourceString':'firstpath.Item'},Count=1)},InStr='/',SearchCase='CaseSensitive',SearchDir='FromStart')
+    record=['remember']
+    for field,value in [('PackMounts','mount.LeftS'),('PackTitles',p(g,'Title')),('PackVersions',p(g,'Version')),('PackNexusURLs',p(g,'NexusURL'))]:
+        add(g,'remember'+field,get(g,field),value);record.append('remember'+field)
     g.get('accepted','local:WasAccepted');g.wire(('accepted.WasAccepted','result.Accepted'))
     msg=call(g,'message',STR+'Concat_StrStr',{'B':p(g,'PackID')},A='Ignored invalid or conflicting prop pack: ')
     g.call('issue','self:PackIssue');g.wire((msg,'issue.Message'))
     g.chain('entry','valid','id','header','loop','cast','conflict');g.chain('conflict.else','next','loop');g.chain('cast.CastFailed','next')
-    g.chain('loop.else','new','remember','row','shelf','yes','result');g.chain('new.else','result')
+    g.chain('loop.else','new',*record,'row','shelf','yes','result');g.chain('new.else','result')
     g.chain('valid.else','result');g.chain('header.else','issue','result');g.chain('conflict','issue')
     return g.function('BeginPropPack',outputs=[v('Accepted','bool')],locals=[v('WasAccepted','bool','false'),v('Scan','int','0')])
 
@@ -161,9 +168,70 @@ def pump():
     return g.function('PumpPropPacks',locals=[v('StartedAt','double'),v('Steps','int','0')])
 
 
+def json_text(g,name,value):
+    """Pack metadata inside a JSON string: escape backslashes and quotes."""
+    slashes=call(g,name+'slashes',STR+'Replace',{'SourceString':value},From='\\',To='\\\\',SearchCase='CaseSensitive')
+    quoted=call(g,name+'quotes',STR+'Replace',{'SourceString':slashes},From='"',To='\\"',SearchCase='CaseSensitive')
+    return call(g,name,STR+'Concat_StrStr',{'A':call(g,name+'open',STR+'Concat_StrStr',{'B':quoted},A='"')},B='"')
+
+
+def declare():
+    """HoloNet dependencies.packs for the given asset paths: one object per
+    loaded pack whose mount any path is under. Returns the JSON array."""
+    g=Graph();g.get('pack','local:PackIndex');g.get('path','local:PathIndex');g.get('json','local:Declared')
+    arr(g,'packcount','Length',get(g,'RegisteredPackIDs'));branch(g,'morepacks',op(g,'packwithin','Less_IntInt','pack.PackIndex','packcount.ReturnValue'))
+    fields={}
+    for field in ['RegisteredPackIDs','PackMounts','PackTitles','PackVersions','PackNexusURLs']:
+        arr(g,'read'+field,'Get',get(g,field));g.wire(('pack.PackIndex','read'+field+'.Index'));fields[field]='read'+field+'.Item'
+    prefix=call(g,'prefix',STR+'Concat_StrStr',{'A':call(g,'prefixopen',STR+'Concat_StrStr',{'B':fields['PackMounts']},A='/')},B='/')
+    arr(g,'pathcount','Length','entry.Paths');branch(g,'morepaths',op(g,'pathwithin','Less_IntInt','path.PathIndex','pathcount.ReturnValue'))
+    arr(g,'readpath','Get','entry.Paths');g.wire(('path.PathIndex','readpath.Index'))
+    branch(g,'uses',call(g,'under',STR+'StartsWith',{'SourceString':'readpath.Item','InPrefix':prefix},SearchCase='IgnoreCase'))
+    set_value(g,'nextpath','local:PathIndex',op(g,'pathinc','Add_IntInt','path.PathIndex',B=1))
+    comma=call(g,'comma',KML+':SelectString',{'bPickA':call(g,'first',STR+'EqualEqual_StrStr',{'A':'json.Declared'},B='[')},A='',B=',')
+    value='json.Declared'
+    parts=[comma,'{"id":',json_text(g,'id',fields['RegisteredPackIDs']),',"mount":',json_text(g,'mountvalue',fields['PackMounts']),',"version":',json_text(g,'version',fields['PackVersions']),
+           ',"title":',json_text(g,'title',fields['PackTitles']),',"url":',json_text(g,'url',fields['PackNexusURLs']),'}']
+    for i,part in enumerate(parts):
+        args={'A':value};defaults={}
+        if part.endswith('.ReturnValue'):args['B']=part
+        else:defaults['B']=part
+        value=call(g,'append'+str(i),STR+'Concat_StrStr',args,**defaults)
+    set_value(g,'store','local:Declared',value)
+    g.set('resetpath','local:PathIndex','0');set_value(g,'nextpack','local:PackIndex',op(g,'packinc','Add_IntInt','pack.PackIndex',B=1))
+    final=call(g,'close',STR+'Concat_StrStr',{'A':'json.Declared'},B=']');g.wire((final,'result.JSON'))
+    g.chain('entry','morepacks','morepaths','uses','store','resetpath','nextpack','morepacks')
+    g.chain('uses.else','nextpath','morepaths');g.chain('morepaths.else','resetpath');g.chain('morepacks.else','result')
+    return g.function('DeclarePacks',inputs=[v('Paths','string[]')],outputs=[v('JSON','string')],locals=[v('PackIndex','int','0'),v('PathIndex','int','0'),v('Declared','string','[')])
+
+
+def describe():
+    """A one-line summary of where the given asset paths come from."""
+    g=Graph();g.get('path','local:PathIndex');g.get('text','local:Titles');g.get('other','local:Other')
+    arr(g,'count','Length','entry.Paths');branch(g,'more',op(g,'within','Less_IntInt','path.PathIndex','count.ReturnValue'))
+    arr(g,'read','Get','entry.Paths');g.wire(('path.PathIndex','read.Index'))
+    branch(g,'game',call(g,'isgame',STR+'StartsWith',{'SourceString':'read.Item'},InPrefix='/Game/',SearchCase='IgnoreCase'))
+    call(g,'mount',STR+'Split',{'SourceString':call(g,'chop',STR+'RightChop',{'SourceString':'read.Item'},Count=1)},InStr='/',SearchCase='CaseSensitive',SearchDir='FromStart')
+    arr(g,'pack','Find',get(g,'PackMounts'));g.wire(('mount.LeftS','pack.ItemToFind'));branch(g,'known',op(g,'found','GreaterEqual_IntInt','pack.ReturnValue',B=0))
+    arr(g,'title','Get',get(g,'PackTitles'));g.wire(('pack.ReturnValue','title.Index'))
+    branch(g,'listed',call(g,'already',STR+'Contains',{'SearchIn':'text.Titles','Substring':'title.Item'},bUseCase='true'))
+    comma=call(g,'comma',KML+':SelectString',{'bPickA':call(g,'first',STR+'EqualEqual_StrStr',{'A':'text.Titles'},B='')},A='',B=', ')
+    set_value(g,'addtitle','local:Titles',call(g,'join',STR+'Concat_StrStr',{'A':call(g,'joincomma',STR+'Concat_StrStr',{'A':'text.Titles','B':comma}),'B':'title.Item'}))
+    set_value(g,'addother','local:Other',op(g,'otherinc','Add_IntInt','other.Other',B=1))
+    set_value(g,'next','local:PathIndex',op(g,'inc','Add_IntInt','path.PathIndex',B=1))
+    packs=call(g,'packs',KML+':SelectString',{'A':call(g,'packtext',STR+'Concat_StrStr',{'A':call(g,'packhead',STR+'Concat_StrStr',{'B':'text.Titles'},A='Uses prop packs: ')},B='. People need them installed to use it.'),
+        'bPickA':call(g,'anypacks',STR+'NotEqual_StrStr',{'A':'text.Titles'},B='')},B='Base game only · anyone with Den Designer can use it.')
+    other=call(g,'othertext',KML+':SelectString',{'A':call(g,'othernote',STR+'Concat_StrStr',{'A':call(g,'otherhead',STR+'Concat_StrStr',{'B':call(g,'othernum',STR+'Conv_IntToString',{'InInt':'other.Other'})},A=' ')},B=' asset(s) come from other mods; HoloNet lists them, but can’t link to them.'),
+        'bPickA':op(g,'anyother','Greater_IntInt','other.Other',B=0)},B='')
+    g.wire((call(g,'summary',STR+'Concat_StrStr',{'A':packs,'B':other}),'result.Summary'))
+    g.chain('entry','more','game','next','more');g.chain('game.else','known','listed','next');g.chain('listed.else','addtitle','next');g.chain('known.else','addother','next');g.chain('more.else','result')
+    return g.function('DescribeSources',inputs=[v('Paths','string[]')],outputs=[v('Summary','string')],locals=[v('PathIndex','int','0'),v('Titles','string',''),v('Other','int','0')])
+
+
 def variables():
     return [v('PendingPacks','object:/Script/Engine.ActorComponent[]'),v('CurrentPack','object:'+PACK),v('PacksLoading','bool'),
-        v('PackCursor','int'),v('PackRow','int'),v('PackShelf','int','-1'),v('PackGroup','int','-1'),v('RegisteredPackIDs','string[]'),v('PackIssues','string[]')]
+        v('PackCursor','int'),v('PackRow','int'),v('PackShelf','int','-1'),v('PackGroup','int','-1'),v('RegisteredPackIDs','string[]'),v('PackIssues','string[]'),
+        *[v(name,'string[]') for name in ['PackMounts','PackTitles','PackVersions','PackNexusURLs']]]
 
 
-def functions():return [issue(),queue(),discover(),begin(),shelf(),row(),step(),pump()]
+def functions():return [issue(),queue(),discover(),begin(),shelf(),row(),step(),pump(),declare(),describe()]

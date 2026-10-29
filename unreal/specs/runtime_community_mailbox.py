@@ -11,6 +11,9 @@ from runtime_apply import get, clock
 from runtime_session import prop
 from runtime_gizmo_controller import op
 
+# HoloNet's address; must match DD_SERVICE_HOST in native/community/core.h.
+HOLONET = 'zcom.app'
+
 WIRE=ROOT+'BP_DenCommunityWireSave'
 REQUEST='ZComDen/Community/v1/request'
 RESPONSE='ZComDen/Community/v1/response'
@@ -31,7 +34,7 @@ def length(g,name,source,n):
     arr(g,name+'len','Length',source);return op(g,name,'EqualEqual_IntInt',name+'len.ReturnValue',B=n)
 
 
-def bad(g,pins,message='Invalid Community response. Nothing was imported.'):
+def bad(g,pins,message='HoloNet sent something unexpected. Nothing was imported.'):
     g.call('fail','self:FailCommunityFetch',Message=message);g.wire((get(g,'CommunityToken'),'fail.Token'))
     for pin in pins:g.chain(pin,'fail')
 
@@ -51,7 +54,7 @@ def write():
     set_value(g,'wire',WIRE+':Wire',value);g.wire(('cast.AsBP Den Community Wire Save','wire.self'))
     call(g,'save',GS+':SaveGameToSlot',{'SaveGameObject':'cast.AsBP Den Community Wire Save'},SlotName=REQUEST,UserIndex=0)
     branch(g,'saved','save.ReturnValue');g.chain('entry','create','cast','Token','Input','wire','save','saved')
-    bad(g,['cast.CastFailed','saved.else'],'Community request could not be saved. Nothing was imported.')
+    bad(g,['cast.CastFailed','saved.else'],'Couldn’t write the HoloNet request. Nothing was imported.')
     return g.function('WriteCommunityRequest')
 
 
@@ -78,6 +81,7 @@ def preamble():
     expected=call(g,'expected',STR+'Concat_StrStr',{'B':get(g,'CommunityToken')},A='ZCOM-COMMUNITY\t1\t')
     branch(g,'header',call(g,'headercheck',STR+'EqualEqual_StrStr',{'A':item(g,'headerline',lines,0),'B':expected}))
     status=item(g,'status',lines,1);branch(g,'gallerymode',call(g,'galleryword',STR+'StartsWith',{'SourceString':status},InPrefix='gallery\t',SearchCase='CaseSensitive'));g.call('galleryread','self:ReadCommunityGallery');branch(g,'ok',eq(g,'okcheck',status,'ok'))
+    branch(g,'sharesmode',call(g,'sharesword',STR+'StartsWith',{'SourceString':status},InPrefix='shares\t',SearchCase='CaseSensitive'));g.call('sharesread','self:ReadHolonetShares')
     progress=split(g,'progressparts',status,'\t');branch(g,'progress',combine(g,'progresscheck',[length(g,'progresssize',progress,2),eq(g,'progressword',item(g,'progressworditem',progress,0),'progress')]))
     from runtime_editor_host import text
     text(g,'progresslabel','CommunityPanel','Footer',value=item(g,'progressmessage',progress,1))
@@ -95,7 +99,7 @@ def preamble():
     integer=call(g,'integer',STR+'Conv_StringToInt',{'InString':number});branch(g,'countvalid',op(g,'integral','EqualEqual_DoubleDouble',call(g,'asdouble',KML+':Conv_IntToDouble',{'InInt':integer}),'partnumber.Value'))
     g.call('begin','self:BeginCommunityImport');g.wire((get(g,'CommunityToken'),'begin.Token'),(item(g,'namevalue',fields['name'],1),'begin.Name'),(item(g,'reportvalue',fields['report'],1),'begin.Report'),(integer,'begin.Count'))
     anchor=call(g,'anchorvalue',KML+':MakeVector',{'X':'X.Value','Y':'Y.Value','Z':'Z.Value'});g.wire((anchor,'begin.Anchor'));branch(g,'began','begin.Accepted');g.set('cursor','CommunityWireCursor','6')
-    g.chain(previous,'partnumber','numbervalid','countvalid','begin','began','cursor');g.chain('entry','size','header','gallerymode','galleryread');g.chain('gallerymode.else','ok','successsize','fields');g.chain('ok.else','progress','progresslabel');g.chain('progress.else','error','serviceerror')
+    g.chain(previous,'partnumber','numbervalid','countvalid','begin','began','cursor');g.chain('entry','size','header','gallerymode','galleryread');g.chain('gallerymode.else','sharesmode','sharesread');g.chain('sharesmode.else','ok','successsize','fields');g.chain('ok.else','progress','progresslabel');g.chain('progress.else','error','serviceerror')
     bad(g,['size.else','header.else','error.else','successsize.else','fields.else','Xvalid.else','Yvalid.else','Zvalid.else','numbervalid.else','countvalid.else','began.else'])
     return g.function('ReadCommunityPreamble')
 
@@ -130,7 +134,7 @@ def pump():
     set_value(g,'advance','CommunityWireCursor',op(g,'next','Add_IntInt',get(g,'CommunityWireCursor'),B=1));set_value(g,'spend','local:Budget',op(g,'budgetnext','Add_IntInt','budget.Budget',B=1))
     g.chain('entry','pending','started','budgetcheck','within','end','last','commit','committed','release')
     g.chain('end.else','record','accepted','advance','spend','budgetcheck')
-    bad(g,['within.else','last.else','committed.else','accepted.else'],'Community import rejected (invalid values, duplicate name or library changed). Existing compositions were kept.')
+    bad(g,['within.else','last.else','committed.else','accepted.else'],'Import stopped: a part was invalid, the name is already taken, or the library changed. Your compositions were kept.')
     return g.function('PumpCommunityResponse',locals=[v('Budget','int','0')])
 
 

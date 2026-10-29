@@ -7,6 +7,8 @@
 #include <windows.h>
 #include <winhttp.h>
 #include <bcrypt.h>
+#define DD_WIDEN(x) L##x
+#define DD_WIDE(x) DD_WIDEN(x)
 size_t dd_strlen(const char *);
 void *memcpy(void *, const void *, size_t);
 void *memset(void *, int, size_t);

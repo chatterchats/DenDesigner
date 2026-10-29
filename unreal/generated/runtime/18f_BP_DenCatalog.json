@@ -106,6 +106,22 @@
     {
       "name": "PackIssues",
       "type": "string[]"
+    },
+    {
+      "name": "PackMounts",
+      "type": "string[]"
+    },
+    {
+      "name": "PackTitles",
+      "type": "string[]"
+    },
+    {
+      "name": "PackVersions",
+      "type": "string[]"
+    },
+    {
+      "name": "PackNexusURLs",
+      "type": "string[]"
     }
   ],
   "functions": [
@@ -3156,6 +3172,81 @@
           }
         },
         {
+          "id": "firstpath",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {
+            "Index": "0"
+          }
+        },
+        {
+          "id": "mountchop",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:RightChop",
+          "defaults": {
+            "Count": "1"
+          }
+        },
+        {
+          "id": "mount",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Split",
+          "defaults": {
+            "InStr": "/",
+            "SearchCase": "CaseSensitive",
+            "SearchDir": "FromStart"
+          }
+        },
+        {
+          "id": "packNexusURL",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPropPack:NexusURL"
+        },
+        {
+          "id": "getPackMounts",
+          "kind": "get",
+          "var": "PackMounts"
+        },
+        {
+          "id": "rememberPackMounts",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "getPackTitles",
+          "kind": "get",
+          "var": "PackTitles"
+        },
+        {
+          "id": "rememberPackTitles",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "getPackVersions",
+          "kind": "get",
+          "var": "PackVersions"
+        },
+        {
+          "id": "rememberPackVersions",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
+          "id": "getPackNexusURLs",
+          "kind": "get",
+          "var": "PackNexusURLs"
+        },
+        {
+          "id": "rememberPackNexusURLs",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
+        },
+        {
           "id": "accepted",
           "kind": "get",
           "var": "local:WasAccepted"
@@ -3533,6 +3624,54 @@
           "remember.NewItem"
         ],
         [
+          "packPaths.Paths",
+          "firstpath.TargetArray"
+        ],
+        [
+          "firstpath.Item",
+          "mountchop.SourceString"
+        ],
+        [
+          "mountchop.ReturnValue",
+          "mount.SourceString"
+        ],
+        [
+          "getCurrentPack.CurrentPack",
+          "packNexusURL.self"
+        ],
+        [
+          "getPackMounts.PackMounts",
+          "rememberPackMounts.TargetArray"
+        ],
+        [
+          "mount.LeftS",
+          "rememberPackMounts.NewItem"
+        ],
+        [
+          "getPackTitles.PackTitles",
+          "rememberPackTitles.TargetArray"
+        ],
+        [
+          "packTitle.Title",
+          "rememberPackTitles.NewItem"
+        ],
+        [
+          "getPackVersions.PackVersions",
+          "rememberPackVersions.TargetArray"
+        ],
+        [
+          "packVersion.Version",
+          "rememberPackVersions.NewItem"
+        ],
+        [
+          "getPackNexusURLs.PackNexusURLs",
+          "rememberPackNexusURLs.TargetArray"
+        ],
+        [
+          "packNexusURL.NexusURL",
+          "rememberPackNexusURLs.NewItem"
+        ],
+        [
           "accepted.WasAccepted",
           "result.Accepted"
         ],
@@ -3590,6 +3729,22 @@
         ],
         [
           "remember.then",
+          "rememberPackMounts.execute"
+        ],
+        [
+          "rememberPackMounts.then",
+          "rememberPackTitles.execute"
+        ],
+        [
+          "rememberPackTitles.then",
+          "rememberPackVersions.execute"
+        ],
+        [
+          "rememberPackVersions.then",
+          "rememberPackNexusURLs.execute"
+        ],
+        [
+          "rememberPackNexusURLs.then",
           "row.execute"
         ],
         [
@@ -5688,6 +5843,1348 @@
         [
           "next.then",
           "loop.execute"
+        ]
+      ]
+    },
+    {
+      "name": "DeclarePacks",
+      "inputs": [
+        {
+          "name": "Paths",
+          "type": "string[]"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "JSON",
+          "type": "string"
+        }
+      ],
+      "locals": [
+        {
+          "name": "PackIndex",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "PathIndex",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "Declared",
+          "type": "string",
+          "default": "["
+        }
+      ],
+      "nodes": [
+        {
+          "id": "pack",
+          "kind": "get",
+          "var": "local:PackIndex"
+        },
+        {
+          "id": "path",
+          "kind": "get",
+          "var": "local:PathIndex"
+        },
+        {
+          "id": "json",
+          "kind": "get",
+          "var": "local:Declared"
+        },
+        {
+          "id": "getRegisteredPackIDs",
+          "kind": "get",
+          "var": "RegisteredPackIDs"
+        },
+        {
+          "id": "packcount",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "packwithin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "morepacks",
+          "kind": "branch"
+        },
+        {
+          "id": "readRegisteredPackIDs",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "getPackMounts",
+          "kind": "get",
+          "var": "PackMounts"
+        },
+        {
+          "id": "readPackMounts",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "getPackTitles",
+          "kind": "get",
+          "var": "PackTitles"
+        },
+        {
+          "id": "readPackTitles",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "getPackVersions",
+          "kind": "get",
+          "var": "PackVersions"
+        },
+        {
+          "id": "readPackVersions",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "getPackNexusURLs",
+          "kind": "get",
+          "var": "PackNexusURLs"
+        },
+        {
+          "id": "readPackNexusURLs",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "prefixopen",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "A": "/"
+          }
+        },
+        {
+          "id": "prefix",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "B": "/"
+          }
+        },
+        {
+          "id": "pathcount",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "pathwithin",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "morepaths",
+          "kind": "branch"
+        },
+        {
+          "id": "readpath",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "under",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:StartsWith",
+          "defaults": {
+            "SearchCase": "IgnoreCase"
+          }
+        },
+        {
+          "id": "uses",
+          "kind": "branch"
+        },
+        {
+          "id": "pathinc",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "nextpath",
+          "kind": "set",
+          "var": "local:PathIndex"
+        },
+        {
+          "id": "first",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "["
+          }
+        },
+        {
+          "id": "comma",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectString",
+          "defaults": {
+            "A": "",
+            "B": ","
+          }
+        },
+        {
+          "id": "idslashes",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Replace",
+          "defaults": {
+            "From": "\\",
+            "To": "\\\\",
+            "SearchCase": "CaseSensitive"
+          }
+        },
+        {
+          "id": "idquotes",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Replace",
+          "defaults": {
+            "From": "\"",
+            "To": "\\\"",
+            "SearchCase": "CaseSensitive"
+          }
+        },
+        {
+          "id": "idopen",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "A": "\""
+          }
+        },
+        {
+          "id": "id",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "B": "\""
+          }
+        },
+        {
+          "id": "mountvalueslashes",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Replace",
+          "defaults": {
+            "From": "\\",
+            "To": "\\\\",
+            "SearchCase": "CaseSensitive"
+          }
+        },
+        {
+          "id": "mountvaluequotes",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Replace",
+          "defaults": {
+            "From": "\"",
+            "To": "\\\"",
+            "SearchCase": "CaseSensitive"
+          }
+        },
+        {
+          "id": "mountvalueopen",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "A": "\""
+          }
+        },
+        {
+          "id": "mountvalue",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "B": "\""
+          }
+        },
+        {
+          "id": "versionslashes",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Replace",
+          "defaults": {
+            "From": "\\",
+            "To": "\\\\",
+            "SearchCase": "CaseSensitive"
+          }
+        },
+        {
+          "id": "versionquotes",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Replace",
+          "defaults": {
+            "From": "\"",
+            "To": "\\\"",
+            "SearchCase": "CaseSensitive"
+          }
+        },
+        {
+          "id": "versionopen",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "A": "\""
+          }
+        },
+        {
+          "id": "version",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "B": "\""
+          }
+        },
+        {
+          "id": "titleslashes",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Replace",
+          "defaults": {
+            "From": "\\",
+            "To": "\\\\",
+            "SearchCase": "CaseSensitive"
+          }
+        },
+        {
+          "id": "titlequotes",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Replace",
+          "defaults": {
+            "From": "\"",
+            "To": "\\\"",
+            "SearchCase": "CaseSensitive"
+          }
+        },
+        {
+          "id": "titleopen",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "A": "\""
+          }
+        },
+        {
+          "id": "title",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "B": "\""
+          }
+        },
+        {
+          "id": "urlslashes",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Replace",
+          "defaults": {
+            "From": "\\",
+            "To": "\\\\",
+            "SearchCase": "CaseSensitive"
+          }
+        },
+        {
+          "id": "urlquotes",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Replace",
+          "defaults": {
+            "From": "\"",
+            "To": "\\\"",
+            "SearchCase": "CaseSensitive"
+          }
+        },
+        {
+          "id": "urlopen",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "A": "\""
+          }
+        },
+        {
+          "id": "url",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "B": "\""
+          }
+        },
+        {
+          "id": "append0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "append1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "B": "{\"id\":"
+          }
+        },
+        {
+          "id": "append2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "append3",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "B": ",\"mount\":"
+          }
+        },
+        {
+          "id": "append4",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "append5",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "B": ",\"version\":"
+          }
+        },
+        {
+          "id": "append6",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "append7",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "B": ",\"title\":"
+          }
+        },
+        {
+          "id": "append8",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "append9",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "B": ",\"url\":"
+          }
+        },
+        {
+          "id": "append10",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "append11",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "B": "}"
+          }
+        },
+        {
+          "id": "store",
+          "kind": "set",
+          "var": "local:Declared"
+        },
+        {
+          "id": "resetpath",
+          "kind": "set",
+          "var": "local:PathIndex",
+          "defaults": {
+            "PathIndex": "0"
+          }
+        },
+        {
+          "id": "packinc",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "nextpack",
+          "kind": "set",
+          "var": "local:PackIndex"
+        },
+        {
+          "id": "close",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "B": "]"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getRegisteredPackIDs.RegisteredPackIDs",
+          "packcount.TargetArray"
+        ],
+        [
+          "pack.PackIndex",
+          "packwithin.A"
+        ],
+        [
+          "packcount.ReturnValue",
+          "packwithin.B"
+        ],
+        [
+          "packwithin.ReturnValue",
+          "morepacks.Condition"
+        ],
+        [
+          "getRegisteredPackIDs.RegisteredPackIDs",
+          "readRegisteredPackIDs.TargetArray"
+        ],
+        [
+          "pack.PackIndex",
+          "readRegisteredPackIDs.Index"
+        ],
+        [
+          "getPackMounts.PackMounts",
+          "readPackMounts.TargetArray"
+        ],
+        [
+          "pack.PackIndex",
+          "readPackMounts.Index"
+        ],
+        [
+          "getPackTitles.PackTitles",
+          "readPackTitles.TargetArray"
+        ],
+        [
+          "pack.PackIndex",
+          "readPackTitles.Index"
+        ],
+        [
+          "getPackVersions.PackVersions",
+          "readPackVersions.TargetArray"
+        ],
+        [
+          "pack.PackIndex",
+          "readPackVersions.Index"
+        ],
+        [
+          "getPackNexusURLs.PackNexusURLs",
+          "readPackNexusURLs.TargetArray"
+        ],
+        [
+          "pack.PackIndex",
+          "readPackNexusURLs.Index"
+        ],
+        [
+          "readPackMounts.Item",
+          "prefixopen.B"
+        ],
+        [
+          "prefixopen.ReturnValue",
+          "prefix.A"
+        ],
+        [
+          "entry.Paths",
+          "pathcount.TargetArray"
+        ],
+        [
+          "path.PathIndex",
+          "pathwithin.A"
+        ],
+        [
+          "pathcount.ReturnValue",
+          "pathwithin.B"
+        ],
+        [
+          "pathwithin.ReturnValue",
+          "morepaths.Condition"
+        ],
+        [
+          "entry.Paths",
+          "readpath.TargetArray"
+        ],
+        [
+          "path.PathIndex",
+          "readpath.Index"
+        ],
+        [
+          "readpath.Item",
+          "under.SourceString"
+        ],
+        [
+          "prefix.ReturnValue",
+          "under.InPrefix"
+        ],
+        [
+          "under.ReturnValue",
+          "uses.Condition"
+        ],
+        [
+          "path.PathIndex",
+          "pathinc.A"
+        ],
+        [
+          "pathinc.ReturnValue",
+          "nextpath.PathIndex"
+        ],
+        [
+          "json.Declared",
+          "first.A"
+        ],
+        [
+          "first.ReturnValue",
+          "comma.bPickA"
+        ],
+        [
+          "readRegisteredPackIDs.Item",
+          "idslashes.SourceString"
+        ],
+        [
+          "idslashes.ReturnValue",
+          "idquotes.SourceString"
+        ],
+        [
+          "idquotes.ReturnValue",
+          "idopen.B"
+        ],
+        [
+          "idopen.ReturnValue",
+          "id.A"
+        ],
+        [
+          "readPackMounts.Item",
+          "mountvalueslashes.SourceString"
+        ],
+        [
+          "mountvalueslashes.ReturnValue",
+          "mountvaluequotes.SourceString"
+        ],
+        [
+          "mountvaluequotes.ReturnValue",
+          "mountvalueopen.B"
+        ],
+        [
+          "mountvalueopen.ReturnValue",
+          "mountvalue.A"
+        ],
+        [
+          "readPackVersions.Item",
+          "versionslashes.SourceString"
+        ],
+        [
+          "versionslashes.ReturnValue",
+          "versionquotes.SourceString"
+        ],
+        [
+          "versionquotes.ReturnValue",
+          "versionopen.B"
+        ],
+        [
+          "versionopen.ReturnValue",
+          "version.A"
+        ],
+        [
+          "readPackTitles.Item",
+          "titleslashes.SourceString"
+        ],
+        [
+          "titleslashes.ReturnValue",
+          "titlequotes.SourceString"
+        ],
+        [
+          "titlequotes.ReturnValue",
+          "titleopen.B"
+        ],
+        [
+          "titleopen.ReturnValue",
+          "title.A"
+        ],
+        [
+          "readPackNexusURLs.Item",
+          "urlslashes.SourceString"
+        ],
+        [
+          "urlslashes.ReturnValue",
+          "urlquotes.SourceString"
+        ],
+        [
+          "urlquotes.ReturnValue",
+          "urlopen.B"
+        ],
+        [
+          "urlopen.ReturnValue",
+          "url.A"
+        ],
+        [
+          "json.Declared",
+          "append0.A"
+        ],
+        [
+          "comma.ReturnValue",
+          "append0.B"
+        ],
+        [
+          "append0.ReturnValue",
+          "append1.A"
+        ],
+        [
+          "append1.ReturnValue",
+          "append2.A"
+        ],
+        [
+          "id.ReturnValue",
+          "append2.B"
+        ],
+        [
+          "append2.ReturnValue",
+          "append3.A"
+        ],
+        [
+          "append3.ReturnValue",
+          "append4.A"
+        ],
+        [
+          "mountvalue.ReturnValue",
+          "append4.B"
+        ],
+        [
+          "append4.ReturnValue",
+          "append5.A"
+        ],
+        [
+          "append5.ReturnValue",
+          "append6.A"
+        ],
+        [
+          "version.ReturnValue",
+          "append6.B"
+        ],
+        [
+          "append6.ReturnValue",
+          "append7.A"
+        ],
+        [
+          "append7.ReturnValue",
+          "append8.A"
+        ],
+        [
+          "title.ReturnValue",
+          "append8.B"
+        ],
+        [
+          "append8.ReturnValue",
+          "append9.A"
+        ],
+        [
+          "append9.ReturnValue",
+          "append10.A"
+        ],
+        [
+          "url.ReturnValue",
+          "append10.B"
+        ],
+        [
+          "append10.ReturnValue",
+          "append11.A"
+        ],
+        [
+          "append11.ReturnValue",
+          "store.Declared"
+        ],
+        [
+          "pack.PackIndex",
+          "packinc.A"
+        ],
+        [
+          "packinc.ReturnValue",
+          "nextpack.PackIndex"
+        ],
+        [
+          "json.Declared",
+          "close.A"
+        ],
+        [
+          "close.ReturnValue",
+          "result.JSON"
+        ],
+        [
+          "entry.then",
+          "morepacks.execute"
+        ],
+        [
+          "morepacks.then",
+          "morepaths.execute"
+        ],
+        [
+          "morepaths.then",
+          "uses.execute"
+        ],
+        [
+          "uses.then",
+          "store.execute"
+        ],
+        [
+          "store.then",
+          "resetpath.execute"
+        ],
+        [
+          "resetpath.then",
+          "nextpack.execute"
+        ],
+        [
+          "nextpack.then",
+          "morepacks.execute"
+        ],
+        [
+          "uses.else",
+          "nextpath.execute"
+        ],
+        [
+          "nextpath.then",
+          "morepaths.execute"
+        ],
+        [
+          "morepaths.else",
+          "resetpath.execute"
+        ],
+        [
+          "morepacks.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "DescribeSources",
+      "inputs": [
+        {
+          "name": "Paths",
+          "type": "string[]"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Summary",
+          "type": "string"
+        }
+      ],
+      "locals": [
+        {
+          "name": "PathIndex",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "Titles",
+          "type": "string",
+          "default": ""
+        },
+        {
+          "name": "Other",
+          "type": "int",
+          "default": "0"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "path",
+          "kind": "get",
+          "var": "local:PathIndex"
+        },
+        {
+          "id": "text",
+          "kind": "get",
+          "var": "local:Titles"
+        },
+        {
+          "id": "other",
+          "kind": "get",
+          "var": "local:Other"
+        },
+        {
+          "id": "count",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "more",
+          "kind": "branch"
+        },
+        {
+          "id": "read",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "isgame",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:StartsWith",
+          "defaults": {
+            "InPrefix": "/Game/",
+            "SearchCase": "IgnoreCase"
+          }
+        },
+        {
+          "id": "game",
+          "kind": "branch"
+        },
+        {
+          "id": "chop",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:RightChop",
+          "defaults": {
+            "Count": "1"
+          }
+        },
+        {
+          "id": "mount",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Split",
+          "defaults": {
+            "InStr": "/",
+            "SearchCase": "CaseSensitive",
+            "SearchDir": "FromStart"
+          }
+        },
+        {
+          "id": "getPackMounts",
+          "kind": "get",
+          "var": "PackMounts"
+        },
+        {
+          "id": "pack",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Find",
+          "defaults": {}
+        },
+        {
+          "id": "found",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "known",
+          "kind": "branch"
+        },
+        {
+          "id": "getPackTitles",
+          "kind": "get",
+          "var": "PackTitles"
+        },
+        {
+          "id": "title",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "already",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "bUseCase": "true"
+          }
+        },
+        {
+          "id": "listed",
+          "kind": "branch"
+        },
+        {
+          "id": "first",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "comma",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectString",
+          "defaults": {
+            "A": "",
+            "B": ", "
+          }
+        },
+        {
+          "id": "joincomma",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "join",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "addtitle",
+          "kind": "set",
+          "var": "local:Titles"
+        },
+        {
+          "id": "otherinc",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "addother",
+          "kind": "set",
+          "var": "local:Other"
+        },
+        {
+          "id": "inc",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "next",
+          "kind": "set",
+          "var": "local:PathIndex"
+        },
+        {
+          "id": "packhead",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "A": "Uses prop packs: "
+          }
+        },
+        {
+          "id": "packtext",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "B": ". People need them installed to use it."
+          }
+        },
+        {
+          "id": "anypacks",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:NotEqual_StrStr",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "packs",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectString",
+          "defaults": {
+            "B": "Base game only \u00b7 anyone with Den Designer can use it."
+          }
+        },
+        {
+          "id": "othernum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Conv_IntToString",
+          "defaults": {}
+        },
+        {
+          "id": "otherhead",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "A": " "
+          }
+        },
+        {
+          "id": "othernote",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "B": " asset(s) come from other mods; HoloNet lists them, but can\u2019t link to them."
+          }
+        },
+        {
+          "id": "anyother",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "othertext",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectString",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "summary",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "entry.Paths",
+          "count.TargetArray"
+        ],
+        [
+          "path.PathIndex",
+          "within.A"
+        ],
+        [
+          "count.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "more.Condition"
+        ],
+        [
+          "entry.Paths",
+          "read.TargetArray"
+        ],
+        [
+          "path.PathIndex",
+          "read.Index"
+        ],
+        [
+          "read.Item",
+          "isgame.SourceString"
+        ],
+        [
+          "isgame.ReturnValue",
+          "game.Condition"
+        ],
+        [
+          "read.Item",
+          "chop.SourceString"
+        ],
+        [
+          "chop.ReturnValue",
+          "mount.SourceString"
+        ],
+        [
+          "getPackMounts.PackMounts",
+          "pack.TargetArray"
+        ],
+        [
+          "mount.LeftS",
+          "pack.ItemToFind"
+        ],
+        [
+          "pack.ReturnValue",
+          "found.A"
+        ],
+        [
+          "found.ReturnValue",
+          "known.Condition"
+        ],
+        [
+          "getPackTitles.PackTitles",
+          "title.TargetArray"
+        ],
+        [
+          "pack.ReturnValue",
+          "title.Index"
+        ],
+        [
+          "text.Titles",
+          "already.SearchIn"
+        ],
+        [
+          "title.Item",
+          "already.Substring"
+        ],
+        [
+          "already.ReturnValue",
+          "listed.Condition"
+        ],
+        [
+          "text.Titles",
+          "first.A"
+        ],
+        [
+          "first.ReturnValue",
+          "comma.bPickA"
+        ],
+        [
+          "text.Titles",
+          "joincomma.A"
+        ],
+        [
+          "comma.ReturnValue",
+          "joincomma.B"
+        ],
+        [
+          "joincomma.ReturnValue",
+          "join.A"
+        ],
+        [
+          "title.Item",
+          "join.B"
+        ],
+        [
+          "join.ReturnValue",
+          "addtitle.Titles"
+        ],
+        [
+          "other.Other",
+          "otherinc.A"
+        ],
+        [
+          "otherinc.ReturnValue",
+          "addother.Other"
+        ],
+        [
+          "path.PathIndex",
+          "inc.A"
+        ],
+        [
+          "inc.ReturnValue",
+          "next.PathIndex"
+        ],
+        [
+          "text.Titles",
+          "packhead.B"
+        ],
+        [
+          "packhead.ReturnValue",
+          "packtext.A"
+        ],
+        [
+          "text.Titles",
+          "anypacks.A"
+        ],
+        [
+          "packtext.ReturnValue",
+          "packs.A"
+        ],
+        [
+          "anypacks.ReturnValue",
+          "packs.bPickA"
+        ],
+        [
+          "other.Other",
+          "othernum.InInt"
+        ],
+        [
+          "othernum.ReturnValue",
+          "otherhead.B"
+        ],
+        [
+          "otherhead.ReturnValue",
+          "othernote.A"
+        ],
+        [
+          "other.Other",
+          "anyother.A"
+        ],
+        [
+          "othernote.ReturnValue",
+          "othertext.A"
+        ],
+        [
+          "anyother.ReturnValue",
+          "othertext.bPickA"
+        ],
+        [
+          "packs.ReturnValue",
+          "summary.A"
+        ],
+        [
+          "othertext.ReturnValue",
+          "summary.B"
+        ],
+        [
+          "summary.ReturnValue",
+          "result.Summary"
+        ],
+        [
+          "entry.then",
+          "more.execute"
+        ],
+        [
+          "more.then",
+          "game.execute"
+        ],
+        [
+          "game.then",
+          "next.execute"
+        ],
+        [
+          "next.then",
+          "more.execute"
+        ],
+        [
+          "game.else",
+          "known.execute"
+        ],
+        [
+          "known.then",
+          "listed.execute"
+        ],
+        [
+          "listed.then",
+          "next.execute"
+        ],
+        [
+          "listed.else",
+          "addtitle.execute"
+        ],
+        [
+          "addtitle.then",
+          "next.execute"
+        ],
+        [
+          "known.else",
+          "addother.execute"
+        ],
+        [
+          "addother.then",
+          "next.execute"
+        ],
+        [
+          "more.else",
+          "result.execute"
         ]
       ]
     }

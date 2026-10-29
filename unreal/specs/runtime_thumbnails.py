@@ -122,10 +122,28 @@ def write_cache():
     return g.function('WriteCache',outputs=[v('Texture','object:'+TEXTURE)],locals=[v('ResultTexture','object:'+TEXTURE)])
 
 
+def write_share():
+    """HoloNet share preview: a separate 512 px capture of a staged composition,
+    saved beside its card as <name>_512.png. The 128 px card target is untouched."""
+    g=Graph();g.node('self','self');branch(g,'composition',combine(g,'ready',[get(g,'Prepared'),call(g,'iscomposition',STR+'StartsWith',{'SourceString':get(g,'MeshPath')},InPrefix='/ZComDen/CompositionThumbs/',SearchCase='CaseSensitive')]))
+    branch(g,'target',validity(g,'targetvalid',get(g,'ShareTarget')))
+    target=call(g,'create',RENDER+':CreateRenderTarget2D',{'WorldContextObject':'self.self'},Width=512,Height=512,Format='RTF_RGBA8',ClearColor='(R=0,G=0,B=0,A=1)',bAutoGenerateMipMaps='false',bSupportUAVs='false');set_value(g,'save','ShareTarget',target)
+    set_value(g,'assign',CAPTURE+':TextureTarget',get(g,'ShareTarget'));g.wire((get(g,'Capture'),'assign.self'))
+    call(g,'capture',CAPTURE+':CaptureScene',{'self':get(g,'Capture')})
+    g.call('path','self:CachePath');g.wire((get(g,'MeshPath'),'path.Path'))
+    name=call(g,'name',STR+'Replace',{'SourceString':'path.Name'},From='.png',To='_512.png',SearchCase='CaseSensitive')
+    call(g,'export',RENDER+':ExportRenderTarget',{'WorldContextObject':'self.self','TextureRenderTarget':get(g,'ShareTarget'),'FilePath':'path.Directory','FileName':name})
+    set_value(g,'restore',CAPTURE+':TextureTarget',get(g,'Target'));g.wire((get(g,'Capture'),'restore.self'))
+    g.chain('entry','composition','target','assign','capture','path','export','restore');g.chain('target.else','create','save','assign')
+    return g.function('WriteSharePreview')
+
+
 def release():
     g=Graph();g.set('prepared','Prepared','false');g.set('path','MeshPath','');g.set('capturetarget',CAPTURE+':TextureTarget');g.wire((get(g,'Capture'),'capturetarget.self'))
     branch(g,'valid',validity(g,'validtarget',get(g,'Target')));call(g,'release',RENDER+':ReleaseRenderTarget2D',{'TextureRenderTarget':get(g,'Target')});g.set('clear','Target')
-    call(g,'mesh',SMC+':SetStaticMesh',{'self':get(g,'Mesh')});g.chain('entry','prepared','path','capturetarget','valid','release','clear','mesh');g.chain('valid.else','clear');return g.function('ReleaseStudio')
+    call(g,'mesh',SMC+':SetStaticMesh',{'self':get(g,'Mesh')})
+    branch(g,'sharevalid',validity(g,'validshare',get(g,'ShareTarget')));call(g,'releaseshare',RENDER+':ReleaseRenderTarget2D',{'TextureRenderTarget':get(g,'ShareTarget')});g.set('clearshare','ShareTarget')
+    g.chain('entry','prepared','path','capturetarget','valid','release','clear','mesh','sharevalid','releaseshare','clearshare');g.chain('valid.else','clear');g.chain('sharevalid.else','clearshare');return g.function('ReleaseStudio')
 
 
 def studio_spec():
@@ -136,5 +154,5 @@ def studio_spec():
             dict(name='Mesh',**{'class':SMC},attach='Root',props={'Mobility':'Movable','BodyInstance.CollisionEnabled':'NoCollision','CastShadow':'false','LightingChannels':'(bChannel0=False,bChannel1=True,bChannel2=False)'}),
             *[dict(name=name,**{'class':LIGHT},attach='Root',props={'Mobility':'Movable','CastShadows':'false','LightingChannels':'(bChannel0=False,bChannel1=True,bChannel2=False)'}) for name in ['KeyLight','FillLight']],
             dict(name='Capture',**{'class':CAPTURE},attach='Root',props={'FOVAngle':'30','bCaptureEveryFrame':'false','bCaptureOnMovement':'false','PrimitiveRenderMode':'PRM_UseShowOnlyList','CaptureSource':'SCS_FinalColorLDR'})],
-        variables=[v('CompositionCenter','vector'),v('CompositionExtent','vector'),v('Target','object:'+TARGET),v('MeshPath','string'),v('Prepared','bool')],graph=g.spec(),
-        functions=[valid_asset_path(),distance(),filename(),cache_path(),read_cache(),prepare(),prepare_composition(),composition_frame(),frame(),capture(),write_cache(),release()])
+        variables=[v('CompositionCenter','vector'),v('CompositionExtent','vector'),v('Target','object:'+TARGET),v('ShareTarget','object:'+TARGET),v('MeshPath','string'),v('Prepared','bool')],graph=g.spec(),
+        functions=[valid_asset_path(),distance(),filename(),cache_path(),read_cache(),prepare(),prepare_composition(),composition_frame(),frame(),capture(),write_cache(),write_share(),release()])

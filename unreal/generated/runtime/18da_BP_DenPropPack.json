@@ -28,6 +28,10 @@
       "type": "string"
     },
     {
+      "name": "NexusURL",
+      "type": "string"
+    },
+    {
       "name": "Paths",
       "type": "string[]"
     },

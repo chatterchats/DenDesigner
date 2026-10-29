@@ -134,10 +134,131 @@ Each one builds, passes tests and can be installed on its own.
   the Discord preview; disconnect, remember and forget; close the window during
   an upload.
 
-## To ask the user when starting
+## Decisions (2026-10-29)
 
-- Keep "Add and place now" next to "Add to my Compositions"? (It's on the
-  approved board.)
-- Version for the HoloNet release: Den Designer 1.2.0-preview.1 and bridge
-  0.2.0-preview.1?
-- Is a Steam Deck available for testing the 1280×800 layout?
+- Keep **Add and place now** next to **Add to my Compositions**.
+- Versions: Den Designer **0.9.20** and bridge **0.9.20**; 1.0.0 is the final
+  release. (Den Designer goes down from 1.1.0-preview.22, so Nexus and the
+  installer must not treat 0.9.20 as older.) The bridge version is set
+  (`DD_VERSION` in `core.h`); the pak version changes at milestone 8.
+- No Steam Deck for testing: check 1280×800 by resizing the game window.
+
+## Progress
+
+All eight milestones are implemented in source (2026-10-29). Nothing here has
+been built with the kit, packaged or run in the game yet.
+
+| Milestone | State |
+| --- | --- |
+| 1. Bridge contract | Done. Bridge items 1–5, 7–10 |
+| 2. Publishing data | Done. Catalog keeps each pack's mount, title, version and Nexus link (`DeclarePacks`, `DescribeSources`); the studio writes `Composition_<hash>_512.png` beside each composition card and the thumbnail queue remembers its footprint; `BuildCommunitySubmission` sends `dependencies.packs` and `metadata.footprint_cm` |
+| 3–6. Window | Done. `WBP_DenHolonet` (`unreal/specs/runtime_holonet_widget.py`) replaces `WBP_DenCommunity`; host logic in `runtime_community_*.py` |
+| 7. Prop pack Nexus links | Done. `pack.json`/template, `prop_pack.py`, in-editor tool field, `BP_DenPropPack.NexusURL`, docs |
+| 8. Package and install | Versions set to 0.9.20 and docs updated. The kit build, packaging and install are yours to run (they need the kit and the game) |
+
+Deviations from the mockup, to stay within engine calls the project already uses
+(each can be revisited):
+
+- Text boxes are single-line, so descriptions and What changed have no line breaks
+  when typed in game (the website keeps them).
+- Not connected on Share a build points to Account instead of taking the key inline.
+- "Only what I can use" filters each page in the game (the server can only filter to
+  base game), so a page can show fewer than eight cards; the page caption says how many
+  are hidden.
+- Local composition cards have no "SHARED · CODE" badge; instead the share whose title
+  matches the composition's name is picked as the update target.
+- Cards cached before 0.9.20 have no 512 px render or footprint until they render again;
+  sharing them uses the 128 px card and leaves the footprint out.
+
+### How it was checked here
+
+- Python: 112 tests, including `tests/python/holonet_spec_test.py`, which runs the
+  generated window graphs (card and pack rows from the real fixtures, readiness,
+  filtering, the detail pane, My Shares, the PUBLISH text, the update choice, the
+  share result, pack declarations and footprint) through `tools/build/simulate_specs.py`.
+  It also checks the generated specs are up to date and lint clean.
+- `tools/build/lint_specs.py` on all generated specs: links, functions, variables,
+  duplicate ids, exec wiring, functions that never run, and engine calls or pins not
+  used anywhere before (none are new).
+- Bridge: connection smoke test and the real worker under Wine (MinGW build) against
+  a local server serving the fixtures.
+- Not run: the kit (`build_gf.sh --author-only`, `tools/build/test_native.sh`,
+  `tests/unreal/test_community_native.py`, updated for the new window but not run), the
+  official Wine-SDK bridge build, the proxy and lifecycle smoke tests, ZComShare's
+  `npm run dev`, live zcom.app.
+
+To check against `../ZComShare/docs/api.md` (written from this plan; the API
+docs were not available):
+
+- `/api/v1/compositions`: confirmed by `tests/fixtures/sharing/holonet-gallery-page.json`
+  (1-based `page`, `pages`, `total`, full listing items); covered by a bridge test.
+- `/api/v1/my/listings` items: `code`, `title`, `latest_revision` (or
+  `revision`), `import_count`, `hidden` (or `visibility: "hidden"`),
+  `updated_at`.
+- Begin upload takes `changelog`; the bridge sends it only for updates. The uploaded
+  JSON carries `dependencies.packs[{id, mount, version, title, url}]` and
+  `metadata.footprint_cm`.
+
+Local development build: `DD_SERVICE_HOST=localhost DD_SERVICE_PORT=3000
+DD_SERVICE_INSECURE=1 bash native/community/build.sh` (recorded in
+`build.json` as a development build; never ship it).
+
+## In-game checklist
+
+Build and install first: `build_gf.sh --author-only`, then `tools/build/test_native.sh`;
+`bash native/community/build.sh`; package with `tools/build/package_community_bundle.py`.
+
+1. Open the editor, choose **HoloNet** on the menu bar. The window is centred under the
+   menu bar; the title bar says Not connected. At 1280×800 (resize the game window) it
+   still fits.
+2. **Account**: paste a key, Connect. Title bar: Connected as <your name>. Try Remember on,
+   restart the game, reopen HoloNet: still connected. Disconnect, then Forget.
+3. **Browse**: cards load (8 per page); Next/Previous; search for a title; Most imported
+   changes the order. A build you imported before shows IN LIBRARY.
+4. Select a base-game build: preview renders, readiness "Ready to import · base game only",
+   parts, footprint, code. **Add to my Compositions**: it appears in Compositions.
+5. Select a build that uses a prop pack you **don't** have: "Needs the … prop pack";
+   **Get the prop pack on Nexus** opens the right page. Turn on **Only what I can use**: it
+   disappears from the grid. Install the pack, restart: it is ready and shows "uses …".
+6. **Add and place now** on a build: Compositions opens and the placement preview follows
+   the pointer; click to place.
+7. **Have a code?**: paste a code, and separately a zcom.app/comp/… link: both import.
+8. **Share a build**: pick a new composition (rendered after installing 0.9.20). Title is
+   filled in; "Share as a new build" is chosen. Share: code shown; Copy code and Copy link
+   work. On zcom.app the build has the prop packs (with Nexus links) and a sharp preview.
+9. Change that composition, save it, pick it again: "Update <title> · CODE (becomes revision
+   2)" is chosen and What changed appears. Share update. On zcom.app: revision 2 and its
+   changelog. Check the Discord preview of the link.
+10. **My Shares**: both shares listed with revision and imports; picking one opens Share as
+    an update. On the Compositions panel, select a card and choose **Share**.
+11. Close the window during a share: it stops; reopening shows no half-finished state.
+12. Prop pack authors: add a Nexus page in the pack tool; an invalid one is refused with the
+    explanation.
+
+## Bridge wire for the window (milestones 3–5)
+
+All values are UTF-8 in the bridge. The response SaveGame's `Wire` is ANSI when
+ASCII and UTF-16 otherwise; UE reads both. Text fields never contain a tab or
+line break.
+
+- `CATALOG/<page>` (0-based), wire `<newest|imports>\t<all|base>\t<search>`.
+  Reply: `gallery\t<page>\t<pages>\t<total>`, then per listing
+  `card\t<code>\t<title>\t<creator>\t<parts>\t<revision>\t<imports>\t<base_game_only 0|1>\t<unknown asset count>\t<updated>\t<footprint>\t<description>`
+  (footprint is display text such as `2.4 × 0.8 × 2.1 m`, or empty)
+  and one `pack\t<code>\t<id>\t<title>\t<version>\t<parts>\t<nexus url>` per
+  prop pack, then `end`. Eight per page. The description is the first 1000
+  characters with `\n` for a line break and `\\` for a backslash. A wire with
+  no tab is the preview.22 panel's search: six per page, old `listing` rows.
+- `MYSHARES/<page>`, wire `request`. Reply: `shares\t<page>\t<pages>\t<total>`,
+  then `share\t<code>\t<title>\t<latest revision>\t<imports>\t<public|hidden>\t<updated>`,
+  then `end`. Needs a connection (else `error\tNot connected…`).
+- `PUBLISH`: first line `Composition_<hash>.png` or `Composition_<hash>_512.png`
+  (the share render, same thumbs folder), then `title\t…`, `description\t…`,
+  optional `changelog\t…` and `update\t<code>\t<revision>` lines (values use
+  `\n` and `\\`), then a line `payload` and the JSON. The old four-line form
+  still works.
+- Imports (`<code>`, `PREVIEW/`, `DOWNLOAD/`) keep their format; `report` is now
+  a readable requirements line ("Base game only." / "Uses prop packs: …").
+- Status messages keep the prefixes the game matches: `Published: https://zcom.app/comp/<code>`,
+  `Connected as <name>` (or `Connected to HoloNet`), `Not connected`,
+  `Key invalid`, `Remembered connection.`

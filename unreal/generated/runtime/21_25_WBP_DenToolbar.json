@@ -1801,7 +1801,7 @@
                             "class": "/Script/UMG.TextBlock",
                             "name": "CommunityLabel",
                             "props": {
-                              "Text": "Community",
+                              "Text": "HoloNet",
                               "Font.Size": 11,
                               "ColorAndOpacity": "(SpecifiedColor=(R=0.584,G=0.611,B=0.651,A=1),ColorUseRule=UseColor_Specified)",
                               "TextTransformPolicy": "ToUpper",

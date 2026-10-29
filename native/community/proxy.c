@@ -125,7 +125,7 @@ DWORD WINAPI DD_VerInstallFileW(DWORD flags, LPCWSTR source_file, LPCWSTR destin
   if (!f) { SetLastError(ERROR_PROC_NOT_FOUND); return 0; }
   return f(flags, source_file, destination_file, source_dir, destination_dir, current_dir, temporary_file, temporary_len);
 }
-static unsigned char watched[DD_SAVE_MAX], latest[DD_SAVE_MAX];
+static unsigned char watched[DD_SAVE_MAX], latest[DD_SAVE_MAX], reply[DD_SAVE_MAX];
 static void stop(PROCESS_INFORMATION *pi) {
   if (pi->hProcess) {
     if (WaitForSingleObject(pi->hProcess, 0) == WAIT_TIMEOUT)
@@ -222,9 +222,10 @@ static DWORD WINAPI monitor(PVOID ignored) {
       {
         dd_save control; const char *parse_error;
         if(dd_save_read(latest,count,&control,&parse_error) &&
-           (!memcmp(control.input,"CONNECT",8)||!memcmp(control.input,"AUTH",5)||!memcmp(control.input,"FORGET",7)||!memcmp(control.input,"DISCONNECT",11)||!memcmp(control.input,"PUBLISH",8))) {
-          const char *message="Community connection unavailable. Retry Connect.";
-          unsigned char out[DD_SAVE_MAX];char wire[512];size_t written;
+           (!memcmp(control.input,"CONNECT",8)||!memcmp(control.input,"AUTH",5)||!memcmp(control.input,"FORGET",7)||!memcmp(control.input,"DISCONNECT",11)||!memcmp(control.input,"PUBLISH",8)||!memcmp(control.input,"MYSHARES/",9))) {
+          /* Requests that need the key go to the long-lived connection process. */
+          const char *message="HoloNet connection unavailable. Choose Connect to try again.";
+          char wire[512];size_t written;
           if(!memcmp(control.input,"FORGET",7)){
             stop(&connection);message=dd_forget_key()?"Forgot connection. The saved key was removed from this computer.":"Could not remove the saved connection. Check local file permissions and retry Forget connection.";
           }else if(!memcmp(control.input,"DISCONNECT",11)){
@@ -234,7 +235,7 @@ static DWORD WINAPI monitor(PVOID ignored) {
             else if(!connection.hProcess||WaitForSingleObject(connection.hProcess,0)!=WAIT_TIMEOUT)start_connection(exe,connect_command,job,&startup,&connection);
             if(connection.hProcess&&WaitForSingleObject(connection.hProcess,0)==WAIT_TIMEOUT){Sleep(100);continue;}
           }
-          if(dd_error_wire(wire,sizeof(wire),control.token,message) && dd_save_response(latest,count,&control,wire,out,sizeof(out),&written))dd_write(response,out,(DWORD)written);
+          if(dd_error_wire(wire,sizeof(wire),control.token,message) && dd_save_response(latest,count,&control,wire,reply,sizeof(reply),&written))dd_write(response,reply,(DWORD)written);
           Sleep(100);continue;
         }
       }
@@ -272,7 +273,7 @@ static DWORD WINAPI monitor(PVOID ignored) {
             dd_save_read(watched, prior, &save, &error) &&
             dd_error_wire(
                 wire, 2048, save.token,
-                "Community request timed out. Try again when online.") &&
+                "HoloNet didn't answer in time. Try again when you're online.") &&
             dd_save_response(watched, prior, &save, wire, out, DD_SAVE_MAX,
                              &written))
           dd_write(response, out, (DWORD)written);

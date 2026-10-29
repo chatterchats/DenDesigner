@@ -829,6 +829,41 @@
       "type": "int"
     },
     {
+      "name": "CommunityBrowseSort",
+      "type": "string",
+      "default": "newest"
+    },
+    {
+      "name": "CommunityBrowseUsable",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "CommunityPlaceAfterImport",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "CommunityBrowseParts",
+      "type": "string[]"
+    },
+    {
+      "name": "CommunityBrowseFootprints",
+      "type": "string[]"
+    },
+    {
+      "name": "CommunityBrowseDates",
+      "type": "string[]"
+    },
+    {
+      "name": "CommunityBrowseReady",
+      "type": "bool[]"
+    },
+    {
+      "name": "CommunityBrowsePackURLs",
+      "type": "string[]"
+    },
+    {
       "name": "CommunityBrowsePage",
       "type": "int"
     },
@@ -933,6 +968,55 @@
     {
       "name": "CommunityMessage",
       "type": "string"
+    },
+    {
+      "name": "HolonetShareTarget",
+      "type": "int",
+      "default": "-1"
+    },
+    {
+      "name": "HolonetShareUpdate",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "HolonetShowResult",
+      "type": "bool",
+      "default": "false"
+    },
+    {
+      "name": "HolonetSharesPage",
+      "type": "int"
+    },
+    {
+      "name": "HolonetSharesPages",
+      "type": "int"
+    },
+    {
+      "name": "HolonetSharesTotal",
+      "type": "int",
+      "default": "-1"
+    },
+    {
+      "name": "HolonetSharesStale",
+      "type": "bool",
+      "default": "true"
+    },
+    {
+      "name": "HolonetShareRevisions",
+      "type": "int[]"
+    },
+    {
+      "name": "HolonetShareCodes",
+      "type": "string[]"
+    },
+    {
+      "name": "HolonetShareTitles",
+      "type": "string[]"
+    },
+    {
+      "name": "HolonetShareRows",
+      "type": "object:/DenDesignerGF/Editor/BP_DenCatalogItem[]"
     },
     {
       "name": "CommunityUploadJSON",
@@ -1049,7 +1133,7 @@
     },
     {
       "name": "CommunityPanel",
-      "type": "object:/DenDesignerGF/Editor/WBP_DenCommunity"
+      "type": "object:/DenDesignerGF/Editor/WBP_DenHolonet"
     }
   ],
   "graph": {
@@ -3200,13 +3284,13 @@
           "kind": "call",
           "function": "/Script/UMG.WidgetBlueprintLibrary:Create",
           "defaults": {
-            "WidgetType": "/DenDesignerGF/Editor/WBP_DenCommunity"
+            "WidgetType": "/DenDesignerGF/Editor/WBP_DenHolonet"
           }
         },
         {
           "id": "castCommunityPanel",
           "kind": "cast",
-          "class": "/DenDesignerGF/Editor/WBP_DenCommunity"
+          "class": "/DenDesignerGF/Editor/WBP_DenHolonet"
         },
         {
           "id": "saveCommunityPanel",
@@ -3221,7 +3305,7 @@
         {
           "id": "busCommunityPanel",
           "kind": "set",
-          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:EditorBus"
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:EditorBus"
         },
         {
           "id": "getCommunityPanel",
@@ -3247,7 +3331,7 @@
         {
           "id": "registerCommunityPanelCommunityCodewidget",
           "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:CommunityCode"
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:CommunityCode"
         },
         {
           "id": "registerCommunityPanelCommunityCode",
@@ -3258,7 +3342,7 @@
         {
           "id": "registerCommunityPanelCommunitySearchwidget",
           "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:CommunitySearch"
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:CommunitySearch"
         },
         {
           "id": "registerCommunityPanelCommunitySearch",
@@ -3269,7 +3353,7 @@
         {
           "id": "registerCommunityPanelPublishTitlewidget",
           "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:PublishTitle"
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:PublishTitle"
         },
         {
           "id": "registerCommunityPanelPublishTitle",
@@ -3280,7 +3364,7 @@
         {
           "id": "registerCommunityPanelPublishDescriptionwidget",
           "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:PublishDescription"
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:PublishDescription"
         },
         {
           "id": "registerCommunityPanelPublishDescription",
@@ -3289,34 +3373,12 @@
           "defaults": {}
         },
         {
-          "id": "registerCommunityPanelPublishCodewidget",
+          "id": "registerCommunityPanelPublishChangelogwidget",
           "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:PublishCode"
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:PublishChangelog"
         },
         {
-          "id": "registerCommunityPanelPublishCode",
-          "kind": "call",
-          "function": "/DenDesignerGF/Runtime/BP_DenEditorBus:RegisterTextInput",
-          "defaults": {}
-        },
-        {
-          "id": "registerCommunityPanelPublishRevisionwidget",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:PublishRevision"
-        },
-        {
-          "id": "registerCommunityPanelPublishRevision",
-          "kind": "call",
-          "function": "/DenDesignerGF/Runtime/BP_DenEditorBus:RegisterTextInput",
-          "defaults": {}
-        },
-        {
-          "id": "registerCommunityPanelDenPresetNamewidget",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:DenPresetName"
-        },
-        {
-          "id": "registerCommunityPanelDenPresetName",
+          "id": "registerCommunityPanelPublishChangelog",
           "kind": "call",
           "function": "/DenDesignerGF/Runtime/BP_DenEditorBus:RegisterTextInput",
           "defaults": {}
@@ -3324,7 +3386,7 @@
         {
           "id": "registerCommunityPanelCommunityKeywidget",
           "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:CommunityKey"
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:CommunityKey"
         },
         {
           "id": "registerCommunityPanelCommunityKey",
@@ -3360,7 +3422,7 @@
           "castCommunityPanel.Object"
         ],
         [
-          "castCommunityPanel.AsWBP Den Community",
+          "castCommunityPanel.AsWBP Den Holonet",
           "saveCommunityPanel.CommunityPanel"
         ],
         [
@@ -3473,51 +3535,19 @@
         ],
         [
           "getCommunityPanel.CommunityPanel",
-          "registerCommunityPanelPublishCodewidget.self"
+          "registerCommunityPanelPublishChangelogwidget.self"
         ],
         [
           "getInputBus.InputBus",
-          "registerCommunityPanelPublishCode.self"
+          "registerCommunityPanelPublishChangelog.self"
         ],
         [
-          "registerCommunityPanelPublishCodewidget.PublishCode",
-          "registerCommunityPanelPublishCode.Widget"
+          "registerCommunityPanelPublishChangelogwidget.PublishChangelog",
+          "registerCommunityPanelPublishChangelog.Widget"
         ],
         [
           "registerCommunityPanelPublishDescription.then",
-          "registerCommunityPanelPublishCode.execute"
-        ],
-        [
-          "getCommunityPanel.CommunityPanel",
-          "registerCommunityPanelPublishRevisionwidget.self"
-        ],
-        [
-          "getInputBus.InputBus",
-          "registerCommunityPanelPublishRevision.self"
-        ],
-        [
-          "registerCommunityPanelPublishRevisionwidget.PublishRevision",
-          "registerCommunityPanelPublishRevision.Widget"
-        ],
-        [
-          "registerCommunityPanelPublishCode.then",
-          "registerCommunityPanelPublishRevision.execute"
-        ],
-        [
-          "getCommunityPanel.CommunityPanel",
-          "registerCommunityPanelDenPresetNamewidget.self"
-        ],
-        [
-          "getInputBus.InputBus",
-          "registerCommunityPanelDenPresetName.self"
-        ],
-        [
-          "registerCommunityPanelDenPresetNamewidget.DenPresetName",
-          "registerCommunityPanelDenPresetName.Widget"
-        ],
-        [
-          "registerCommunityPanelPublishRevision.then",
-          "registerCommunityPanelDenPresetName.execute"
+          "registerCommunityPanelPublishChangelog.execute"
         ],
         [
           "getCommunityPanel.CommunityPanel",
@@ -3532,7 +3562,7 @@
           "registerCommunityPanelCommunityKey.Widget"
         ],
         [
-          "registerCommunityPanelDenPresetName.then",
+          "registerCommunityPanelPublishChangelog.then",
           "registerCommunityPanelCommunityKey.execute"
         ],
         [
@@ -10152,7 +10182,7 @@
         {
           "id": "panel7widget",
           "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:Panel"
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:Panel"
         },
         {
           "id": "panel7hover",
@@ -18443,37 +18473,67 @@
           "defaults": {}
         },
         {
-          "id": "title",
+          "id": "getCommunityBrowseCodes",
           "kind": "get",
-          "var": "/DenDesignerGF/Editor/BP_DenCatalogItem:Title"
+          "var": "CommunityBrowseCodes"
         },
         {
-          "id": "creatorcaption",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
-          "defaults": {
-            "A": " \u00b7 "
-          }
-        },
-        {
-          "id": "caption",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "id": "Codes",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
           "defaults": {}
         },
         {
-          "id": "descriptionprefix",
+          "id": "getCommunityBrowseParts",
+          "kind": "get",
+          "var": "CommunityBrowseParts"
+        },
+        {
+          "id": "Parts",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "getCommunityBrowseFootprints",
+          "kind": "get",
+          "var": "CommunityBrowseFootprints"
+        },
+        {
+          "id": "Footprints",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "getCommunityBrowseDates",
+          "kind": "get",
+          "var": "CommunityBrowseDates"
+        },
+        {
+          "id": "Dates",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "getCommunityBrowsePackURLs",
+          "kind": "get",
+          "var": "CommunityBrowsePackURLs"
+        },
+        {
+          "id": "PackURLs",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "byprefix",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
           "defaults": {
-            "A": "\n"
+            "A": "by "
           }
-        },
-        {
-          "id": "description",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
-          "defaults": {}
         },
         {
           "id": "revisionnum",
@@ -18482,32 +18542,69 @@
           "defaults": {}
         },
         {
-          "id": "revisionprefix",
+          "id": "revprefix",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
           "defaults": {
-            "A": "\nRevision: "
+            "A": " \u00b7 revision "
           }
         },
         {
-          "id": "revision",
+          "id": "dateprefix",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "A": " \u00b7 "
+          }
+        },
+        {
+          "id": "bylinerev",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
           "defaults": {}
         },
         {
-          "id": "requirementprefix",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
-          "defaults": {
-            "A": "\n"
-          }
-        },
-        {
-          "id": "requirementcaption",
+          "id": "byline",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
           "defaults": {}
+        },
+        {
+          "id": "hasfootprint",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:NotEqual_StrStr",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "footprint",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectString",
+          "defaults": {
+            "B": "Not given"
+          }
+        },
+        {
+          "id": "title",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/BP_DenCatalogItem:Title"
+        },
+        {
+          "id": "hasdescription",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:NotEqual_StrStr",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "description",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectString",
+          "defaults": {
+            "B": "No description."
+          }
         },
         {
           "id": "getCommunityPanel",
@@ -18515,15 +18612,223 @@
           "var": "CommunityPanel"
         },
         {
-          "id": "detailwidget",
+          "id": "setDetailTitlewidget",
           "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:CommunityDetail"
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:DetailTitle"
         },
         {
-          "id": "detail",
+          "id": "setDetailTitle",
           "kind": "call",
           "function": "/Script/UMG.TextBlock:SetText",
           "defaults": {}
+        },
+        {
+          "id": "setDetailBylinewidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:DetailByline"
+        },
+        {
+          "id": "setDetailByline",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {}
+        },
+        {
+          "id": "setCommunityDetailwidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:CommunityDetail"
+        },
+        {
+          "id": "setCommunityDetail",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {}
+        },
+        {
+          "id": "setDetailReadyTextwidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:DetailReadyText"
+        },
+        {
+          "id": "setDetailReadyText",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {}
+        },
+        {
+          "id": "setFactPartsValuewidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:FactPartsValue"
+        },
+        {
+          "id": "setFactPartsValue",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {}
+        },
+        {
+          "id": "setFactFootprintValuewidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:FactFootprintValue"
+        },
+        {
+          "id": "setFactFootprintValue",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {}
+        },
+        {
+          "id": "setFactCodeValuewidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:FactCodeValue"
+        },
+        {
+          "id": "setFactCodeValue",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {}
+        },
+        {
+          "id": "readywidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:DetailReady"
+        },
+        {
+          "id": "showready",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetVisibility",
+          "defaults": {
+            "InVisibility": "Visible"
+          }
+        },
+        {
+          "id": "haspack",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:NotEqual_StrStr",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "packlink",
+          "kind": "branch"
+        },
+        {
+          "id": "packwidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:GetPack"
+        },
+        {
+          "id": "showpack",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetVisibility",
+          "defaults": {
+            "InVisibility": "Visible"
+          }
+        },
+        {
+          "id": "packhidden",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:GetPack"
+        },
+        {
+          "id": "hidepack",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetVisibility",
+          "defaults": {
+            "InVisibility": "Collapsed"
+          }
+        },
+        {
+          "id": "emptytitlewidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:DetailTitle"
+        },
+        {
+          "id": "emptytitle",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {
+            "InText": "Select a build"
+          }
+        },
+        {
+          "id": "emptybylinewidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:DetailByline"
+        },
+        {
+          "id": "emptybyline",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {
+            "InText": ""
+          }
+        },
+        {
+          "id": "emptydetailwidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:CommunityDetail"
+        },
+        {
+          "id": "emptydetail",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {
+            "InText": "Pick a card to see what it is, who made it and what it needs."
+          }
+        },
+        {
+          "id": "readyhidden",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:DetailReady"
+        },
+        {
+          "id": "hideready",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetVisibility",
+          "defaults": {
+            "InVisibility": "Collapsed"
+          }
+        },
+        {
+          "id": "clearFactPartsValuewidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:FactPartsValue"
+        },
+        {
+          "id": "clearFactPartsValue",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {
+            "InText": ""
+          }
+        },
+        {
+          "id": "clearFactFootprintValuewidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:FactFootprintValue"
+        },
+        {
+          "id": "clearFactFootprintValue",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {
+            "InText": ""
+          }
+        },
+        {
+          "id": "clearFactCodeValuewidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:FactCodeValue"
+        },
+        {
+          "id": "clearFactCodeValue",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {
+            "InText": ""
+          }
         }
       ],
       "links": [
@@ -18596,32 +18901,48 @@
           "Creators.Index"
         ],
         [
-          "Rows.Item",
-          "title.self"
+          "getCommunityBrowseCodes.CommunityBrowseCodes",
+          "Codes.TargetArray"
+        ],
+        [
+          "getCommunityBrowseSelected.CommunityBrowseSelected",
+          "Codes.Index"
+        ],
+        [
+          "getCommunityBrowseParts.CommunityBrowseParts",
+          "Parts.TargetArray"
+        ],
+        [
+          "getCommunityBrowseSelected.CommunityBrowseSelected",
+          "Parts.Index"
+        ],
+        [
+          "getCommunityBrowseFootprints.CommunityBrowseFootprints",
+          "Footprints.TargetArray"
+        ],
+        [
+          "getCommunityBrowseSelected.CommunityBrowseSelected",
+          "Footprints.Index"
+        ],
+        [
+          "getCommunityBrowseDates.CommunityBrowseDates",
+          "Dates.TargetArray"
+        ],
+        [
+          "getCommunityBrowseSelected.CommunityBrowseSelected",
+          "Dates.Index"
+        ],
+        [
+          "getCommunityBrowsePackURLs.CommunityBrowsePackURLs",
+          "PackURLs.TargetArray"
+        ],
+        [
+          "getCommunityBrowseSelected.CommunityBrowseSelected",
+          "PackURLs.Index"
         ],
         [
           "Creators.Item",
-          "creatorcaption.B"
-        ],
-        [
-          "title.Title",
-          "caption.A"
-        ],
-        [
-          "creatorcaption.ReturnValue",
-          "caption.B"
-        ],
-        [
-          "Descriptions.Item",
-          "descriptionprefix.B"
-        ],
-        [
-          "caption.ReturnValue",
-          "description.A"
-        ],
-        [
-          "descriptionprefix.ReturnValue",
-          "description.B"
+          "byprefix.B"
         ],
         [
           "Revisions.Item",
@@ -18629,47 +18950,303 @@
         ],
         [
           "revisionnum.ReturnValue",
-          "revisionprefix.B"
+          "revprefix.B"
         ],
         [
-          "description.ReturnValue",
-          "revision.A"
+          "Dates.Item",
+          "dateprefix.B"
         ],
         [
-          "revisionprefix.ReturnValue",
-          "revision.B"
+          "revprefix.ReturnValue",
+          "bylinerev.A"
         ],
         [
-          "Requirements.Item",
-          "requirementprefix.B"
+          "dateprefix.ReturnValue",
+          "bylinerev.B"
         ],
         [
-          "revision.ReturnValue",
-          "requirementcaption.A"
+          "byprefix.ReturnValue",
+          "byline.A"
         ],
         [
-          "requirementprefix.ReturnValue",
-          "requirementcaption.B"
+          "bylinerev.ReturnValue",
+          "byline.B"
+        ],
+        [
+          "Footprints.Item",
+          "hasfootprint.A"
+        ],
+        [
+          "Footprints.Item",
+          "footprint.A"
+        ],
+        [
+          "hasfootprint.ReturnValue",
+          "footprint.bPickA"
+        ],
+        [
+          "Rows.Item",
+          "title.self"
+        ],
+        [
+          "Descriptions.Item",
+          "hasdescription.A"
+        ],
+        [
+          "Descriptions.Item",
+          "description.A"
+        ],
+        [
+          "hasdescription.ReturnValue",
+          "description.bPickA"
         ],
         [
           "getCommunityPanel.CommunityPanel",
-          "detailwidget.self"
+          "setDetailTitlewidget.self"
         ],
         [
-          "detailwidget.CommunityDetail",
-          "detail.self"
+          "setDetailTitlewidget.DetailTitle",
+          "setDetailTitle.self"
         ],
         [
-          "requirementcaption.ReturnValue",
-          "detail.InText"
+          "title.Title",
+          "setDetailTitle.InText"
+        ],
+        [
+          "bounds.then",
+          "setDetailTitle.execute"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "setDetailBylinewidget.self"
+        ],
+        [
+          "setDetailBylinewidget.DetailByline",
+          "setDetailByline.self"
+        ],
+        [
+          "byline.ReturnValue",
+          "setDetailByline.InText"
+        ],
+        [
+          "setDetailTitle.then",
+          "setDetailByline.execute"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "setCommunityDetailwidget.self"
+        ],
+        [
+          "setCommunityDetailwidget.CommunityDetail",
+          "setCommunityDetail.self"
+        ],
+        [
+          "description.ReturnValue",
+          "setCommunityDetail.InText"
+        ],
+        [
+          "setDetailByline.then",
+          "setCommunityDetail.execute"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "setDetailReadyTextwidget.self"
+        ],
+        [
+          "setDetailReadyTextwidget.DetailReadyText",
+          "setDetailReadyText.self"
+        ],
+        [
+          "Requirements.Item",
+          "setDetailReadyText.InText"
+        ],
+        [
+          "setCommunityDetail.then",
+          "setDetailReadyText.execute"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "setFactPartsValuewidget.self"
+        ],
+        [
+          "setFactPartsValuewidget.FactPartsValue",
+          "setFactPartsValue.self"
+        ],
+        [
+          "Parts.Item",
+          "setFactPartsValue.InText"
+        ],
+        [
+          "setDetailReadyText.then",
+          "setFactPartsValue.execute"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "setFactFootprintValuewidget.self"
+        ],
+        [
+          "setFactFootprintValuewidget.FactFootprintValue",
+          "setFactFootprintValue.self"
+        ],
+        [
+          "footprint.ReturnValue",
+          "setFactFootprintValue.InText"
+        ],
+        [
+          "setFactPartsValue.then",
+          "setFactFootprintValue.execute"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "setFactCodeValuewidget.self"
+        ],
+        [
+          "setFactCodeValuewidget.FactCodeValue",
+          "setFactCodeValue.self"
+        ],
+        [
+          "Codes.Item",
+          "setFactCodeValue.InText"
+        ],
+        [
+          "setFactFootprintValue.then",
+          "setFactCodeValue.execute"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "readywidget.self"
+        ],
+        [
+          "readywidget.DetailReady",
+          "showready.self"
+        ],
+        [
+          "PackURLs.Item",
+          "haspack.A"
+        ],
+        [
+          "haspack.ReturnValue",
+          "packlink.Condition"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "packwidget.self"
+        ],
+        [
+          "packwidget.GetPack",
+          "showpack.self"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "packhidden.self"
+        ],
+        [
+          "packhidden.GetPack",
+          "hidepack.self"
+        ],
+        [
+          "setFactCodeValue.then",
+          "showready.execute"
+        ],
+        [
+          "showready.then",
+          "packlink.execute"
+        ],
+        [
+          "packlink.then",
+          "showpack.execute"
+        ],
+        [
+          "packlink.else",
+          "hidepack.execute"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "emptytitlewidget.self"
+        ],
+        [
+          "emptytitlewidget.DetailTitle",
+          "emptytitle.self"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "emptybylinewidget.self"
+        ],
+        [
+          "emptybylinewidget.DetailByline",
+          "emptybyline.self"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "emptydetailwidget.self"
+        ],
+        [
+          "emptydetailwidget.CommunityDetail",
+          "emptydetail.self"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "readyhidden.self"
+        ],
+        [
+          "readyhidden.DetailReady",
+          "hideready.self"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "clearFactPartsValuewidget.self"
+        ],
+        [
+          "clearFactPartsValuewidget.FactPartsValue",
+          "clearFactPartsValue.self"
+        ],
+        [
+          "hideready.then",
+          "clearFactPartsValue.execute"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "clearFactFootprintValuewidget.self"
+        ],
+        [
+          "clearFactFootprintValuewidget.FactFootprintValue",
+          "clearFactFootprintValue.self"
+        ],
+        [
+          "clearFactPartsValue.then",
+          "clearFactFootprintValue.execute"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "clearFactCodeValuewidget.self"
+        ],
+        [
+          "clearFactCodeValuewidget.FactCodeValue",
+          "clearFactCodeValue.self"
+        ],
+        [
+          "clearFactFootprintValue.then",
+          "clearFactCodeValue.execute"
         ],
         [
           "entry.then",
           "bounds.execute"
         ],
         [
-          "bounds.then",
-          "detail.execute"
+          "bounds.else",
+          "emptytitle.execute"
+        ],
+        [
+          "emptytitle.then",
+          "emptybyline.execute"
+        ],
+        [
+          "emptybyline.then",
+          "emptydetail.execute"
+        ],
+        [
+          "emptydetail.then",
+          "hideready.execute"
         ]
       ]
     },
@@ -18804,7 +19381,7 @@
         {
           "id": "image",
           "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:CommunityPreview"
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:CommunityPreview"
         },
         {
           "id": "brush",
@@ -19062,6 +19639,878 @@
         [
           "entry.then",
           "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "CommunityCodeInLibrary",
+      "inputs": [
+        {
+          "name": "Code",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Found",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "Found",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "getCommunitySourceNames",
+          "kind": "get",
+          "var": "CommunitySourceNames"
+        },
+        {
+          "id": "count",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "more",
+          "kind": "branch"
+        },
+        {
+          "id": "name",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "spaced",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "A": " "
+          }
+        },
+        {
+          "id": "contains",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "bUseCase": "false"
+          }
+        },
+        {
+          "id": "match",
+          "kind": "branch"
+        },
+        {
+          "id": "inc",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "next",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:Found",
+          "defaults": {
+            "Found": "true"
+          }
+        },
+        {
+          "id": "found",
+          "kind": "get",
+          "var": "local:Found"
+        }
+      ],
+      "links": [
+        [
+          "getCommunitySourceNames.CommunitySourceNames",
+          "count.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "count.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "more.Condition"
+        ],
+        [
+          "getCommunitySourceNames.CommunitySourceNames",
+          "name.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "name.Index"
+        ],
+        [
+          "entry.Code",
+          "spaced.B"
+        ],
+        [
+          "name.Item",
+          "contains.SearchIn"
+        ],
+        [
+          "spaced.ReturnValue",
+          "contains.Substring"
+        ],
+        [
+          "contains.ReturnValue",
+          "match.Condition"
+        ],
+        [
+          "i.Cursor",
+          "inc.A"
+        ],
+        [
+          "inc.ReturnValue",
+          "next.Cursor"
+        ],
+        [
+          "found.Found",
+          "result.Found"
+        ],
+        [
+          "entry.then",
+          "more.execute"
+        ],
+        [
+          "more.then",
+          "match.execute"
+        ],
+        [
+          "match.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "match.else",
+          "next.execute"
+        ],
+        [
+          "next.then",
+          "more.execute"
+        ],
+        [
+          "more.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ShowCommunityListings",
+      "locals": [
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "Hidden",
+          "type": "int",
+          "default": "0"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getCommunityPanel",
+          "kind": "get",
+          "var": "CommunityPanel"
+        },
+        {
+          "id": "list",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:CommunityListings"
+        },
+        {
+          "id": "clear",
+          "kind": "call",
+          "function": "/Script/UMG.ListView:ClearListItems",
+          "defaults": {}
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "hidden",
+          "kind": "get",
+          "var": "local:Hidden"
+        },
+        {
+          "id": "getCommunityBrowseRows",
+          "kind": "get",
+          "var": "CommunityBrowseRows"
+        },
+        {
+          "id": "count",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "more",
+          "kind": "branch"
+        },
+        {
+          "id": "getCommunityBrowseReady",
+          "kind": "get",
+          "var": "CommunityBrowseReady"
+        },
+        {
+          "id": "ready",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "getCommunityBrowseUsable",
+          "kind": "get",
+          "var": "CommunityBrowseUsable"
+        },
+        {
+          "id": "nofilter",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "show0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "shown",
+          "kind": "branch"
+        },
+        {
+          "id": "row",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "listadd",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:CommunityListings"
+        },
+        {
+          "id": "add",
+          "kind": "call",
+          "function": "/Script/UMG.ListView:AddItem",
+          "defaults": {}
+        },
+        {
+          "id": "hide",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "skip",
+          "kind": "set",
+          "var": "local:Hidden"
+        },
+        {
+          "id": "inc",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "next",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "getCommunityBrowsePage",
+          "kind": "get",
+          "var": "CommunityBrowsePage"
+        },
+        {
+          "id": "onebased",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "pagenum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Conv_IntToString",
+          "defaults": {}
+        },
+        {
+          "id": "pageprefix",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "A": "Page "
+          }
+        },
+        {
+          "id": "getCommunityBrowsePages",
+          "kind": "get",
+          "var": "CommunityBrowsePages"
+        },
+        {
+          "id": "pagesnum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Conv_IntToString",
+          "defaults": {}
+        },
+        {
+          "id": "of",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "A": " of "
+          }
+        },
+        {
+          "id": "getCommunityBrowseTotal",
+          "kind": "get",
+          "var": "CommunityBrowseTotal"
+        },
+        {
+          "id": "totalnum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Conv_IntToString",
+          "defaults": {}
+        },
+        {
+          "id": "builds",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "A": " \u00b7 builds: "
+          }
+        },
+        {
+          "id": "totalcaption",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "pagecaption",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "hiddennum",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Conv_IntToString",
+          "defaults": {}
+        },
+        {
+          "id": "hiddenprefix",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "A": " \u00b7 hidden here: "
+          }
+        },
+        {
+          "id": "hiddensuffix",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "withhidden",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "anyhidden",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "hiddencaption",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectString",
+          "defaults": {}
+        },
+        {
+          "id": "nonempty",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "caption",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectString",
+          "defaults": {
+            "B": "No shared builds match. Try a different search, or Refresh."
+          }
+        },
+        {
+          "id": "statuswidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:GalleryStatus"
+        },
+        {
+          "id": "status",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {}
+        },
+        {
+          "id": "scope",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectString",
+          "defaults": {
+            "A": "Showing builds you can use: base game and the prop packs you have installed.",
+            "B": "Showing every shared composition. Previews render here from each build\u2019s parts."
+          }
+        },
+        {
+          "id": "scopetextwidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:BrowseStatus"
+        },
+        {
+          "id": "scopetext",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getCommunityPanel.CommunityPanel",
+          "list.self"
+        ],
+        [
+          "list.CommunityListings",
+          "clear.self"
+        ],
+        [
+          "getCommunityBrowseRows.CommunityBrowseRows",
+          "count.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "count.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "more.Condition"
+        ],
+        [
+          "getCommunityBrowseReady.CommunityBrowseReady",
+          "ready.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "ready.Index"
+        ],
+        [
+          "getCommunityBrowseUsable.CommunityBrowseUsable",
+          "nofilter.A"
+        ],
+        [
+          "nofilter.ReturnValue",
+          "show0.A"
+        ],
+        [
+          "ready.Item",
+          "show0.B"
+        ],
+        [
+          "show0.ReturnValue",
+          "shown.Condition"
+        ],
+        [
+          "getCommunityBrowseRows.CommunityBrowseRows",
+          "row.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "row.Index"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "listadd.self"
+        ],
+        [
+          "listadd.CommunityListings",
+          "add.self"
+        ],
+        [
+          "row.Item",
+          "add.Item"
+        ],
+        [
+          "hidden.Hidden",
+          "hide.A"
+        ],
+        [
+          "hide.ReturnValue",
+          "skip.Hidden"
+        ],
+        [
+          "i.Cursor",
+          "inc.A"
+        ],
+        [
+          "inc.ReturnValue",
+          "next.Cursor"
+        ],
+        [
+          "getCommunityBrowsePage.CommunityBrowsePage",
+          "onebased.A"
+        ],
+        [
+          "onebased.ReturnValue",
+          "pagenum.InInt"
+        ],
+        [
+          "pagenum.ReturnValue",
+          "pageprefix.B"
+        ],
+        [
+          "getCommunityBrowsePages.CommunityBrowsePages",
+          "pagesnum.InInt"
+        ],
+        [
+          "pagesnum.ReturnValue",
+          "of.B"
+        ],
+        [
+          "getCommunityBrowseTotal.CommunityBrowseTotal",
+          "totalnum.InInt"
+        ],
+        [
+          "totalnum.ReturnValue",
+          "builds.B"
+        ],
+        [
+          "of.ReturnValue",
+          "totalcaption.A"
+        ],
+        [
+          "builds.ReturnValue",
+          "totalcaption.B"
+        ],
+        [
+          "pageprefix.ReturnValue",
+          "pagecaption.A"
+        ],
+        [
+          "totalcaption.ReturnValue",
+          "pagecaption.B"
+        ],
+        [
+          "hidden.Hidden",
+          "hiddennum.InInt"
+        ],
+        [
+          "hiddennum.ReturnValue",
+          "hiddenprefix.B"
+        ],
+        [
+          "hiddenprefix.ReturnValue",
+          "hiddensuffix.A"
+        ],
+        [
+          "pagecaption.ReturnValue",
+          "withhidden.A"
+        ],
+        [
+          "hiddensuffix.ReturnValue",
+          "withhidden.B"
+        ],
+        [
+          "hidden.Hidden",
+          "anyhidden.A"
+        ],
+        [
+          "withhidden.ReturnValue",
+          "hiddencaption.A"
+        ],
+        [
+          "pagecaption.ReturnValue",
+          "hiddencaption.B"
+        ],
+        [
+          "anyhidden.ReturnValue",
+          "hiddencaption.bPickA"
+        ],
+        [
+          "getCommunityBrowseTotal.CommunityBrowseTotal",
+          "nonempty.A"
+        ],
+        [
+          "hiddencaption.ReturnValue",
+          "caption.A"
+        ],
+        [
+          "nonempty.ReturnValue",
+          "caption.bPickA"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "statuswidget.self"
+        ],
+        [
+          "statuswidget.GalleryStatus",
+          "status.self"
+        ],
+        [
+          "caption.ReturnValue",
+          "status.InText"
+        ],
+        [
+          "getCommunityBrowseUsable.CommunityBrowseUsable",
+          "scope.bPickA"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "scopetextwidget.self"
+        ],
+        [
+          "scopetextwidget.BrowseStatus",
+          "scopetext.self"
+        ],
+        [
+          "scope.ReturnValue",
+          "scopetext.InText"
+        ],
+        [
+          "entry.then",
+          "clear.execute"
+        ],
+        [
+          "clear.then",
+          "more.execute"
+        ],
+        [
+          "more.then",
+          "shown.execute"
+        ],
+        [
+          "shown.then",
+          "add.execute"
+        ],
+        [
+          "add.then",
+          "next.execute"
+        ],
+        [
+          "next.then",
+          "more.execute"
+        ],
+        [
+          "shown.else",
+          "skip.execute"
+        ],
+        [
+          "skip.then",
+          "next.execute"
+        ],
+        [
+          "more.else",
+          "status.execute"
+        ],
+        [
+          "status.then",
+          "scopetext.execute"
+        ]
+      ]
+    },
+    {
+      "name": "OpenHolonetPack",
+      "nodes": [
+        {
+          "id": "getCommunityBrowsePackURLs",
+          "kind": "get",
+          "var": "CommunityBrowsePackURLs"
+        },
+        {
+          "id": "count",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "getCommunityBrowseSelected",
+          "kind": "get",
+          "var": "CommunityBrowseSelected"
+        },
+        {
+          "id": "min",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "max",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "boundscheck0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "bounds",
+          "kind": "branch"
+        },
+        {
+          "id": "url",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "isnexus",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:StartsWith",
+          "defaults": {
+            "InPrefix": "https://www.nexusmods.com/",
+            "SearchCase": "CaseSensitive"
+          }
+        },
+        {
+          "id": "nexus",
+          "kind": "branch"
+        },
+        {
+          "id": "open",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:LaunchURL",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getCommunityBrowsePackURLs.CommunityBrowsePackURLs",
+          "count.TargetArray"
+        ],
+        [
+          "getCommunityBrowseSelected.CommunityBrowseSelected",
+          "min.A"
+        ],
+        [
+          "getCommunityBrowseSelected.CommunityBrowseSelected",
+          "max.A"
+        ],
+        [
+          "count.ReturnValue",
+          "max.B"
+        ],
+        [
+          "min.ReturnValue",
+          "boundscheck0.A"
+        ],
+        [
+          "max.ReturnValue",
+          "boundscheck0.B"
+        ],
+        [
+          "boundscheck0.ReturnValue",
+          "bounds.Condition"
+        ],
+        [
+          "getCommunityBrowsePackURLs.CommunityBrowsePackURLs",
+          "url.TargetArray"
+        ],
+        [
+          "getCommunityBrowseSelected.CommunityBrowseSelected",
+          "url.Index"
+        ],
+        [
+          "url.Item",
+          "isnexus.SourceString"
+        ],
+        [
+          "isnexus.ReturnValue",
+          "nexus.Condition"
+        ],
+        [
+          "url.Item",
+          "open.URL"
+        ],
+        [
+          "entry.then",
+          "bounds.execute"
+        ],
+        [
+          "bounds.then",
+          "nexus.execute"
+        ],
+        [
+          "nexus.then",
+          "open.execute"
         ]
       ]
     },
@@ -19443,117 +20892,6 @@
       ]
     },
     {
-      "name": "RefreshCommunityFeedback",
-      "nodes": [
-        {
-          "id": "getCommunityPanel",
-          "kind": "get",
-          "var": "CommunityPanel"
-        },
-        {
-          "id": "panel",
-          "kind": "call",
-          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
-          "defaults": {}
-        },
-        {
-          "id": "valid",
-          "kind": "branch"
-        },
-        {
-          "id": "getCommunityMessage",
-          "kind": "get",
-          "var": "CommunityMessage"
-        },
-        {
-          "id": "footerwidget",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:Footer"
-        },
-        {
-          "id": "footer",
-          "kind": "call",
-          "function": "/Script/UMG.TextBlock:SetText",
-          "defaults": {}
-        },
-        {
-          "id": "getCommunityRemember",
-          "kind": "get",
-          "var": "CommunityRemember"
-        },
-        {
-          "id": "label",
-          "kind": "call",
-          "function": "/Script/Engine.KismetMathLibrary:SelectString",
-          "defaults": {
-            "A": "Remember connection: On",
-            "B": "Remember connection: Off"
-          }
-        },
-        {
-          "id": "rememberwidget",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:RememberCommunityLabel"
-        },
-        {
-          "id": "remember",
-          "kind": "call",
-          "function": "/Script/UMG.TextBlock:SetText",
-          "defaults": {}
-        }
-      ],
-      "links": [
-        [
-          "getCommunityPanel.CommunityPanel",
-          "panel.Object"
-        ],
-        [
-          "panel.ReturnValue",
-          "valid.Condition"
-        ],
-        [
-          "getCommunityPanel.CommunityPanel",
-          "footerwidget.self"
-        ],
-        [
-          "footerwidget.Footer",
-          "footer.self"
-        ],
-        [
-          "getCommunityMessage.CommunityMessage",
-          "footer.InText"
-        ],
-        [
-          "getCommunityRemember.CommunityRemember",
-          "label.bPickA"
-        ],
-        [
-          "getCommunityPanel.CommunityPanel",
-          "rememberwidget.self"
-        ],
-        [
-          "rememberwidget.RememberCommunityLabel",
-          "remember.self"
-        ],
-        [
-          "label.ReturnValue",
-          "remember.InText"
-        ],
-        [
-          "entry.then",
-          "valid.execute"
-        ],
-        [
-          "valid.then",
-          "footer.execute"
-        ],
-        [
-          "footer.then",
-          "remember.execute"
-        ]
-      ]
-    },
-    {
       "name": "BuildCommunityRequirements",
       "inputs": [
         {
@@ -19579,9 +20917,8 @@
           "default": "0"
         },
         {
-          "name": "RequirementReport",
-          "type": "string",
-          "default": "Requirements detected from saved part values. Service coverage and installed assets are validated independently."
+          "name": "Paths",
+          "type": "string[]"
         }
       ],
       "nodes": [
@@ -19612,9 +20949,9 @@
           "var": "local:RequirementCursor"
         },
         {
-          "id": "report",
+          "id": "paths",
           "kind": "get",
-          "var": "local:RequirementReport"
+          "var": "local:Paths"
         },
         {
           "id": "within",
@@ -19638,38 +20975,10 @@
           "struct": "/DenDesignerGF/Runtime/ST_DenEntry"
         },
         {
-          "id": "reviewed",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
-          "defaults": {
-            "B": "/Game/Game/Environments/Strategy/HQ/Props/Control/Control_Monitor_A.Control_Monitor_A"
-          }
-        },
-        {
-          "id": "meshlabel",
-          "kind": "call",
-          "function": "/Script/Engine.KismetMathLibrary:SelectString",
-          "defaults": {
-            "A": "\nReviewed base game mesh: ",
-            "B": "\nUNKNOWN mesh/pack coverage: "
-          }
-        },
-        {
-          "id": "mesh",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "id": "addmesh",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
           "defaults": {}
-        },
-        {
-          "id": "appendtext",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
-          "defaults": {}
-        },
-        {
-          "id": "append",
-          "kind": "set",
-          "var": "local:RequirementReport"
         },
         {
           "id": "mireset",
@@ -19707,23 +21016,22 @@
           "defaults": {}
         },
         {
-          "id": "matlabel",
+          "id": "hasmaterial",
           "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "function": "/Script/Engine.KismetStringLibrary:NotEqual_StrStr",
           "defaults": {
-            "A": "\nMaterial (UNKNOWN pack coverage; empty = mesh default): "
+            "B": ""
           }
         },
         {
-          "id": "mappendtext",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
-          "defaults": {}
+          "id": "nonempty",
+          "kind": "branch"
         },
         {
-          "id": "mappend",
-          "kind": "set",
-          "var": "local:RequirementReport"
+          "id": "addmaterial",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Add",
+          "defaults": {}
         },
         {
           "id": "madd",
@@ -19750,6 +21058,27 @@
           "id": "next",
           "kind": "set",
           "var": "local:RequirementCursor"
+        },
+        {
+          "id": "getCatalogProvider",
+          "kind": "get",
+          "var": "CatalogProvider"
+        },
+        {
+          "id": "catalogvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "catalog",
+          "kind": "branch"
+        },
+        {
+          "id": "describe",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenCatalog:DescribeSources",
+          "defaults": {}
         }
       ],
       "links": [
@@ -19794,32 +21123,12 @@
           "partdata.ST_DenEntry"
         ],
         [
-          "partdata.Mesh",
-          "reviewed.A"
-        ],
-        [
-          "reviewed.ReturnValue",
-          "meshlabel.bPickA"
-        ],
-        [
-          "meshlabel.ReturnValue",
-          "mesh.A"
+          "paths.Paths",
+          "addmesh.TargetArray"
         ],
         [
           "partdata.Mesh",
-          "mesh.B"
-        ],
-        [
-          "report.RequirementReport",
-          "appendtext.A"
-        ],
-        [
-          "mesh.ReturnValue",
-          "appendtext.B"
-        ],
-        [
-          "appendtext.ReturnValue",
-          "append.RequirementReport"
+          "addmesh.NewItem"
         ],
         [
           "partdata.Materials",
@@ -19847,19 +21156,19 @@
         ],
         [
           "mat.Item",
-          "matlabel.B"
+          "hasmaterial.A"
         ],
         [
-          "report.RequirementReport",
-          "mappendtext.A"
+          "hasmaterial.ReturnValue",
+          "nonempty.Condition"
         ],
         [
-          "matlabel.ReturnValue",
-          "mappendtext.B"
+          "paths.Paths",
+          "addmaterial.TargetArray"
         ],
         [
-          "mappendtext.ReturnValue",
-          "mappend.RequirementReport"
+          "mat.Item",
+          "addmaterial.NewItem"
         ],
         [
           "mi.RequirementMaterialCursor",
@@ -19878,7 +21187,23 @@
           "next.RequirementCursor"
         ],
         [
-          "report.RequirementReport",
+          "getCatalogProvider.CatalogProvider",
+          "catalogvalid.Object"
+        ],
+        [
+          "catalogvalid.ReturnValue",
+          "catalog.Condition"
+        ],
+        [
+          "getCatalogProvider.CatalogProvider",
+          "describe.self"
+        ],
+        [
+          "paths.Paths",
+          "describe.Paths"
+        ],
+        [
+          "describe.Summary",
           "result.Report"
         ],
         [
@@ -19891,10 +21216,10 @@
         ],
         [
           "more.then",
-          "append.execute"
+          "addmesh.execute"
         ],
         [
-          "append.then",
+          "addmesh.then",
           "mireset.execute"
         ],
         [
@@ -19903,15 +21228,23 @@
         ],
         [
           "mmore.then",
-          "mappend.execute"
+          "nonempty.execute"
         ],
         [
-          "mappend.then",
+          "nonempty.then",
+          "addmaterial.execute"
+        ],
+        [
+          "addmaterial.then",
           "mnext.execute"
         ],
         [
           "mnext.then",
           "mmore.execute"
+        ],
+        [
+          "nonempty.else",
+          "mnext.execute"
         ],
         [
           "mmore.else",
@@ -19923,10 +21256,22 @@
         ],
         [
           "more.else",
+          "catalog.execute"
+        ],
+        [
+          "catalog.then",
+          "describe.execute"
+        ],
+        [
+          "describe.then",
           "result.execute"
         ],
         [
           "document.else",
+          "result.execute"
+        ],
+        [
+          "catalog.else",
           "result.execute"
         ]
       ]
@@ -19939,7 +21284,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetSystemLibrary:LaunchURL",
           "defaults": {
-            "URL": "https://share.zcom.app/account"
+            "URL": "https://zcom.app/account"
           }
         }
       ],
@@ -19947,383 +21292,6 @@
         [
           "entry.then",
           "open.execute"
-        ]
-      ]
-    },
-    {
-      "name": "ReadCommunityDenCard",
-      "inputs": [
-        {
-          "name": "Key",
-          "type": "string"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "Accepted",
-          "type": "bool"
-        },
-        {
-          "name": "Name",
-          "type": "string"
-        }
-      ],
-      "locals": [
-        {
-          "name": "OK",
-          "type": "bool",
-          "default": "false"
-        },
-        {
-          "name": "PresetNameCopy",
-          "type": "string"
-        }
-      ],
-      "nodes": [
-        {
-          "id": "getUIOpen",
-          "kind": "get",
-          "var": "UIOpen"
-        },
-        {
-          "id": "getActivePanel",
-          "kind": "get",
-          "var": "ActivePanel"
-        },
-        {
-          "id": "layoutname",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
-          "defaults": {
-            "B": "community"
-          }
-        },
-        {
-          "id": "layoutactive0",
-          "kind": "call",
-          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
-          "defaults": {}
-        },
-        {
-          "id": "active",
-          "kind": "branch"
-        },
-        {
-          "id": "split",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Split",
-          "defaults": {
-            "InStr": ":",
-            "SearchCase": "CaseSensitive",
-            "SearchDir": "FromStart"
-          }
-        },
-        {
-          "id": "parsed",
-          "kind": "branch"
-        },
-        {
-          "id": "revision",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Conv_StringToInt",
-          "defaults": {}
-        },
-        {
-          "id": "index",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Conv_StringToInt",
-          "defaults": {}
-        },
-        {
-          "id": "getPresetNames",
-          "kind": "get",
-          "var": "PresetNames"
-        },
-        {
-          "id": "length",
-          "kind": "array_call",
-          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
-          "defaults": {}
-        },
-        {
-          "id": "getPresetListRevision",
-          "kind": "get",
-          "var": "PresetListRevision"
-        },
-        {
-          "id": "same",
-          "kind": "call",
-          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
-          "defaults": {}
-        },
-        {
-          "id": "min",
-          "kind": "call",
-          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
-          "defaults": {
-            "B": "0"
-          }
-        },
-        {
-          "id": "max",
-          "kind": "call",
-          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
-          "defaults": {}
-        },
-        {
-          "id": "revexactstr",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Conv_IntToString",
-          "defaults": {}
-        },
-        {
-          "id": "revexact",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
-          "defaults": {}
-        },
-        {
-          "id": "idxexactstr",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Conv_IntToString",
-          "defaults": {}
-        },
-        {
-          "id": "idxexact",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
-          "defaults": {}
-        },
-        {
-          "id": "checks0",
-          "kind": "call",
-          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
-          "defaults": {}
-        },
-        {
-          "id": "checks1",
-          "kind": "call",
-          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
-          "defaults": {}
-        },
-        {
-          "id": "checks2",
-          "kind": "call",
-          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
-          "defaults": {}
-        },
-        {
-          "id": "checks3",
-          "kind": "call",
-          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
-          "defaults": {}
-        },
-        {
-          "id": "valid",
-          "kind": "branch"
-        },
-        {
-          "id": "item",
-          "kind": "array_call",
-          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
-          "defaults": {}
-        },
-        {
-          "id": "found",
-          "kind": "set",
-          "var": "local:PresetNameCopy"
-        },
-        {
-          "id": "yes",
-          "kind": "set",
-          "var": "local:OK",
-          "defaults": {
-            "OK": "true"
-          }
-        },
-        {
-          "id": "out",
-          "kind": "get",
-          "var": "local:OK"
-        },
-        {
-          "id": "nameout",
-          "kind": "get",
-          "var": "local:PresetNameCopy"
-        }
-      ],
-      "links": [
-        [
-          "getActivePanel.ActivePanel",
-          "layoutname.A"
-        ],
-        [
-          "getUIOpen.UIOpen",
-          "layoutactive0.A"
-        ],
-        [
-          "layoutname.ReturnValue",
-          "layoutactive0.B"
-        ],
-        [
-          "layoutactive0.ReturnValue",
-          "active.Condition"
-        ],
-        [
-          "entry.Key",
-          "split.SourceString"
-        ],
-        [
-          "split.ReturnValue",
-          "parsed.Condition"
-        ],
-        [
-          "split.LeftS",
-          "revision.InString"
-        ],
-        [
-          "split.RightS",
-          "index.InString"
-        ],
-        [
-          "getPresetNames.PresetNames",
-          "length.TargetArray"
-        ],
-        [
-          "revision.ReturnValue",
-          "same.A"
-        ],
-        [
-          "getPresetListRevision.PresetListRevision",
-          "same.B"
-        ],
-        [
-          "index.ReturnValue",
-          "min.A"
-        ],
-        [
-          "index.ReturnValue",
-          "max.A"
-        ],
-        [
-          "length.ReturnValue",
-          "max.B"
-        ],
-        [
-          "revision.ReturnValue",
-          "revexactstr.InInt"
-        ],
-        [
-          "split.LeftS",
-          "revexact.A"
-        ],
-        [
-          "revexactstr.ReturnValue",
-          "revexact.B"
-        ],
-        [
-          "index.ReturnValue",
-          "idxexactstr.InInt"
-        ],
-        [
-          "split.RightS",
-          "idxexact.A"
-        ],
-        [
-          "idxexactstr.ReturnValue",
-          "idxexact.B"
-        ],
-        [
-          "same.ReturnValue",
-          "checks0.A"
-        ],
-        [
-          "min.ReturnValue",
-          "checks0.B"
-        ],
-        [
-          "checks0.ReturnValue",
-          "checks1.A"
-        ],
-        [
-          "max.ReturnValue",
-          "checks1.B"
-        ],
-        [
-          "checks1.ReturnValue",
-          "checks2.A"
-        ],
-        [
-          "revexact.ReturnValue",
-          "checks2.B"
-        ],
-        [
-          "checks2.ReturnValue",
-          "checks3.A"
-        ],
-        [
-          "idxexact.ReturnValue",
-          "checks3.B"
-        ],
-        [
-          "checks3.ReturnValue",
-          "valid.Condition"
-        ],
-        [
-          "getPresetNames.PresetNames",
-          "item.TargetArray"
-        ],
-        [
-          "index.ReturnValue",
-          "item.Index"
-        ],
-        [
-          "item.Item",
-          "found.PresetNameCopy"
-        ],
-        [
-          "out.OK",
-          "result.Accepted"
-        ],
-        [
-          "nameout.PresetNameCopy",
-          "result.Name"
-        ],
-        [
-          "entry.then",
-          "active.execute"
-        ],
-        [
-          "active.then",
-          "parsed.execute"
-        ],
-        [
-          "parsed.then",
-          "valid.execute"
-        ],
-        [
-          "valid.then",
-          "found.execute"
-        ],
-        [
-          "found.then",
-          "yes.execute"
-        ],
-        [
-          "yes.then",
-          "result.execute"
-        ],
-        [
-          "active.else",
-          "result.execute"
-        ],
-        [
-          "parsed.else",
-          "result.execute"
-        ],
-        [
-          "valid.else",
-          "result.execute"
         ]
       ]
     },
@@ -20875,7 +21843,7 @@
         {
           "id": "key",
           "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenCommunity:CommunityKey"
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:CommunityKey"
         },
         {
           "id": "clear",

@@ -87,13 +87,36 @@ def poll():
     branch(g,'timeout',op(g,'late','Greater_DoubleDouble',op(g,'duration','Subtract_DoubleDouble',clock(g,'now'),get(g,'RequestAt')),B=30));g.call('fail','self:FinishThumbnail')
     branch(g,'capture',op(g,'two','EqualEqual_IntInt',get(g,'Phase'),B=2));method(g,'render',STUDIO,'CaptureFrame',get(g,'Studio'));g.set('exportphase','Phase','3')
     method(g,'export',STUDIO,'WriteCache',get(g,'Studio'));g.call('finish','self:FinishThumbnail');g.wire(('export.Texture','finish.Texture'))
+    # Compositions also get the 512 px HoloNet preview and a remembered footprint.
+    branch(g,'composition4share',call(g,'iscomposition',STR+'StartsWith',{'SourceString':get(g,'CurrentPath')},InPrefix='/ZComDen/CompositionThumbs/',SearchCase='CaseSensitive'))
+    method(g,'share',STUDIO,'WriteSharePreview',get(g,'Studio'));g.call('footprint','self:RememberFootprint')
     g.chain('entry','composition','pollcomposition');g.chain('composition.else','idle','next');g.chain('idle.else','loading','job','done','mesh','prepare','ready','release','capturephase');g.chain('done.else','timeout','fail')
     for pin in ['job.else','mesh.CastFailed','ready.else']:g.chain(pin,'fail')
-    g.chain('loading.else','capture','render','exportphase');g.chain('capture.else','export','finish');return g.function('PumpThumbnails')
+    g.chain('loading.else','capture','render','exportphase');g.chain('capture.else','export','composition4share','share','footprint','finish');g.chain('composition4share.else','finish');return g.function('PumpThumbnails')
+
+
+def remember_footprint():
+    """Footprint (bounding box size, cm) of the composition just rendered, keyed
+    by its card file name (Composition_<hash>.png), for HoloNet sharing."""
+    g=Graph();method(g,'path',STUDIO,'CachePath',get(g,'Studio'),{'Path':get(g,'CurrentPath')})
+    size=op(g,'size','Multiply_VectorFloat',prop(g,'extent',STUDIO,'CompositionExtent',get(g,'Studio')),B=2)
+    arr(g,'find','Find',get(g,'FootprintNames'));g.wire(('path.Name','find.ItemToFind'));branch(g,'known',op(g,'found','GreaterEqual_IntInt','find.ReturnValue',B=0))
+    arr(g,'update','Set',get(g,'FootprintSizes'));g.wire(('find.ReturnValue','update.Index'),(size,'update.Item'))
+    arr(g,'addname','Add',get(g,'FootprintNames'));g.wire(('path.Name','addname.NewItem'));arr(g,'addsize','Add',get(g,'FootprintSizes'));g.wire((size,'addsize.NewItem'))
+    g.chain('entry','path','find','known','update');g.chain('known.else','addname','addsize')
+    return g.function('RememberFootprint')
+
+
+def footprint():
+    g=Graph();arr(g,'find','Find',get(g,'FootprintNames'));g.wire(('entry.Name','find.ItemToFind'));branch(g,'known',op(g,'found','GreaterEqual_IntInt','find.ReturnValue',B=0))
+    arr(g,'read','Get',get(g,'FootprintSizes'));g.wire(('find.ReturnValue','read.Index'));set_value(g,'keep','local:Size','read.Item')
+    g.set('yes','local:Found','true');g.get('foundvalue','local:Found');g.get('sizevalue','local:Size');g.wire(('foundvalue.Found','result.Found'),('sizevalue.Size','result.Size'))
+    g.chain('entry','known','keep','yes','result');g.chain('known.else','result')
+    return g.function('CompositionFootprint',inputs=[v('Name','string')],outputs=[v('Found','bool'),v('Size','vector')],locals=[v('Found','bool','false'),v('Size','vector')])
 
 
 def spec():
     from runtime_composition_thumbnails import request as composition_request,release as composition_release,begin as composition_begin,poll as composition_poll
     g=Graph();g.node('tick','event',name='ReceiveTick');g.call('pump','self:PumpThumbnails');g.chain('tick','pump');g.node('end','event',name='ReceiveEndPlay');g.call('cancel','self:CancelPending');g.call('release','self:ReleaseCaptureStudio');g.chain('end','cancel','release')
     return dict(kind='blueprint',path=QUEUE,parent=ACTOR,defaults={'PrimaryActorTick.bCanEverTick':'true','PrimaryActorTick.bStartWithTickEnabled':'true'},
-        variables=[v('CacheDocuments','object:'+LAYOUT+'[]'),v('CompositionRenderer','object:'+APPLY),v('CachePaths','string[]'),v('CacheTextures','object:'+TEXTURE+'[]'),v('CacheStates','int[]'),v('PendingPaths','string[]'),v('CurrentPath','string'),v('Phase','int'),v('Job','object:'+JOB),v('Studio','object:'+STUDIO),v('RequestAt','double'),v('IdleAt','double'),v('NextAt','double'),v('Enabled','bool','true')],graph=g.spec(),functions=[composition_request(),composition_release(),composition_begin(),composition_poll(),valid_asset_path(),request(),release_job(),release_studio(),finish(),cancel(),begin(),poll()])
+        variables=[v('CacheDocuments','object:'+LAYOUT+'[]'),v('CompositionRenderer','object:'+APPLY),v('CachePaths','string[]'),v('CacheTextures','object:'+TEXTURE+'[]'),v('CacheStates','int[]'),v('PendingPaths','string[]'),v('CurrentPath','string'),v('Phase','int'),v('Job','object:'+JOB),v('Studio','object:'+STUDIO),v('RequestAt','double'),v('IdleAt','double'),v('NextAt','double'),v('Enabled','bool','true'),v('FootprintNames','string[]'),v('FootprintSizes','vector[]')],graph=g.spec(),functions=[composition_request(),composition_release(),composition_begin(),composition_poll(),valid_asset_path(),request(),release_job(),release_studio(),finish(),cancel(),begin(),poll(),remember_footprint(),footprint()])

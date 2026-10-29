@@ -1,3 +1,27 @@
+## 0.9.20 / HoloNet bridge 0.9.20 (Phase 4; not yet built or tested in game)
+
+Versions restart at 0.9.20 ahead of 1.0.0; this follows 1.1.0-preview.22.
+
+- **HoloNet window** replaces the docked Community panel: a centred window with
+  Browse (search, Newest / Most imported, Only what I can use, cards with IN
+  LIBRARY, detail pane with readiness, parts, footprint and code, Add to my
+  Compositions, Add and place now, Get the prop pack on Nexus), Dens (coming soon),
+  Have a code?, Share a build, My Shares and Account. "Connected as <name>" in the
+  title bar. Full Den publishing placeholders are gone.
+- **Sharing**: picking a saved composition checks it at once and suggests updating
+  the share with the same title (same code, next revision, What changed) or
+  sharing as new. Shares declare the prop packs used (from loaded packs, with
+  their Nexus links) and the footprint, and send a 512 px preview when the card
+  has one. **Share** on the Compositions panel opens it with that composition.
+- **Bridge**: imports HoloNet's build format (prop packs, unlisted mods, any
+  characters), one server setting, zcom.app and share.zcom.app links, server
+  paging and search, My Shares, What changed, 512 px previews, card footprints.
+- **Prop packs**: optional `nexus_url` in pack.json and the in-editor tool, checked
+  the same way as HoloNet (a Star Wars Zero Company page on nexusmods.com; else a
+  Nexus title search). `BP_DenPropPack` gains `NexusURL`.
+- Tools: `tools/build/lint_specs.py` (offline Blueprint spec checks) and
+  `tools/build/simulate_specs.py` (runs spec logic in tests).
+
 ## 1.1.0-preview.22 / Community bridge 0.1.0-preview.10
 
 - Restore local WBP_DenCompositions creation/library/placement; add distinct

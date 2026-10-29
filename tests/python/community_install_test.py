@@ -29,7 +29,7 @@ class CommunityInstallTest(unittest.TestCase):
         files = {'Binaries/Win64/version.dll': binary,
                  'Binaries/Win64/den-community.exe': binary + b' worker',
                  'COMMUNITY-BRIDGE.md': b'test documentation', 'LICENSE': b'test license'}
-        manifest = {'format': 1, 'version': version, 'requires_runtime': '1.1.0-preview.22',
+        manifest = {'format': 1, 'version': version, 'requires_runtime': '0.9.20',
                     'requires_ue4ss': False, 'requires_python': False, 'supported_executable_sha256': self.supported,
                     'files': {name: {'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()} for name, data in files.items()}}
         if mutate:
@@ -54,7 +54,7 @@ class CommunityInstallTest(unittest.TestCase):
         result = self.install(archive)
         self.assertEqual(result['archive_sha256'], hashlib.sha256(archive.read_bytes()).hexdigest())
         self.assertEqual(result['supported_executable_sha256'], self.supported)
-        self.assertEqual(result['requires_runtime'], '1.1.0-preview.22')
+        self.assertEqual(result['requires_runtime'], '0.9.20')
         self.assertEqual(set(self.state()), {'SWZeroCompany.exe', 'version.dll', 'den-community.exe', installer.RECORD})
         before = self.state()
         self.assertEqual(self.install(archive), result)

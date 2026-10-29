@@ -10,6 +10,9 @@ from runtime_world import validity, set_value, finish_bool
 from runtime_apply import get, clock
 from runtime_session import prop, method
 from runtime_gizmo_controller import op
+from runtime_community_mailbox import HOLONET
+
+PUBLISHED='Published: https://'+HOLONET+'/comp/'
 from runtime_transform import copy_entry
 from runtime_layout_ui import PRESETS
 
@@ -21,7 +24,7 @@ def current(g):
 
 def cancel():
     g=Graph();g.call('mailbox','self:ReleaseCommunityMailbox');g.set('outgoing','CommunityOutgoing','');g.set('pending','CommunityPending','false');g.set('token','CommunityToken','');g.set('release','CommunityDocument')
-    g.set('message','CommunityMessage','Community request cancelled.');g.call('refresh','self:RefreshCommunityFeedback')
+    g.set('message','CommunityMessage','HoloNet request cancelled.');g.call('refresh','self:RefreshCommunityFeedback')
     g.call('clearkey','self:ClearCommunityKey');g.chain('entry','clearkey','mailbox','outgoing','pending','token','release','message','refresh');return g.function('CancelCommunityFetch')
 
 
@@ -45,8 +48,8 @@ def start(payload=False):
     token=call(g,'compact',STR+'Replace',{'SourceString':token},From='-',To='',SearchCase='CaseSensitive')
     token=call(g,'lower',STR+'ToLower',{'SourceString':token})
     set_value(g,'outgoing','CommunityOutgoing','entry.Payload' if payload else get(g,'CommunityOutgoing'));set_value(g,'token','CommunityToken',token);set_value(g,'input','CommunityRequest','normalize.CleanInput');set_value(g,'at','CommunityStarted',clock(g,'now'))
-    g.set('pending','CommunityPending','true');g.call('write','self:WriteCommunityRequest');g.set('message','CommunityMessage','Fetching Community composition… The optional Community bridge must be installed.');g.call('refresh','self:RefreshCommunityFeedback')
-    g.set('releaseoutgoing','CommunityOutgoing','');g.set('invalid','CommunityMessage','Enter a share code or an HTTPS zcom.app composition link (up to 256 ASCII characters).')
+    g.set('pending','CommunityPending','true');g.call('write','self:WriteCommunityRequest');g.set('message','CommunityMessage','Contacting HoloNet… (needs the Den Designer HoloNet bridge installed)');g.call('refresh','self:RefreshCommunityFeedback')
+    g.set('releaseoutgoing','CommunityOutgoing','');g.set('invalid','CommunityMessage','Enter a share code or a zcom.app composition link.')
     g.chain('entry','cancel','ready','available','normalize','bounded','outgoing','token','input','at','pending','message','write','releaseoutgoing','refresh');g.chain('bounded.else','invalid','refresh')
     return g.function('StartCommunityTransfer' if payload else 'StartCommunityFetch',inputs=[v('Input','string')]+([v('Payload','string')] if payload else []))
 
@@ -55,7 +58,7 @@ def poll():
     g=Graph();g.call('mailbox','self:PollCommunityMailbox');branch(g,'pending',get(g,'CommunityPending'))
     limit=call(g,'deadline',KML+':SelectFloat',{'bPickA':call(g,'publishing',STR+'EqualEqual_StrStr',{'A':get(g,'CommunityRequest')},B='PUBLISH')},A=600,B=65)
     branch(g,'expired',combine(g,'expiredcheck',[op(g,'timeout','Greater_DoubleDouble',op(g,'elapsed','Subtract_DoubleDouble',clock(g,'now'),get(g,'CommunityStarted')),limit),call(g,'closed',KML+':Not_PreBool',{'A':get(g,'UIOpen')})],True))
-    g.call('cancel','self:CancelCommunityFetch');g.set('message','CommunityMessage','Community timed out or the editor closed. Check connection and bridge installation, then retry.');g.call('refresh','self:RefreshCommunityFeedback')
+    g.call('cancel','self:CancelCommunityFetch');g.set('message','CommunityMessage','HoloNet didn’t answer in time, or the editor closed. Check your connection and that the bridge is installed, then try again.');g.call('refresh','self:RefreshCommunityFeedback')
     g.chain('entry','pending','expired','cancel','message','refresh');g.chain('expired.else','mailbox');return g.function('PollCommunityFetch')
 
 
@@ -67,12 +70,22 @@ def fail():
     branch(g,'account',combine(g,'accountchecks',[call(g,'isconnect',STR+'EqualEqual_StrStr',{'A':get(g,'CommunityRequest')},B='CONNECT'),call(g,'isauth',STR+'EqualEqual_StrStr',{'A':get(g,'CommunityRequest')},B='AUTH'),call(g,'isdisconnect',STR+'EqualEqual_StrStr',{'A':get(g,'CommunityRequest')},B='DISCONNECT'),call(g,'isforget',STR+'EqualEqual_StrStr',{'A':get(g,'CommunityRequest')},B='FORGET'),call(g,'disconnectedreply',STR+'StartsWith',{'SourceString':'entry.Message'},InPrefix='Not connected',SearchCase='CaseSensitive'),call(g,'revokedreply',STR+'StartsWith',{'SourceString':'entry.Message'},InPrefix='Key invalid',SearchCase='CaseSensitive')],True))
     from runtime_editor_host import text
     set_value(g,'profile','CommunityProfile',message);text(g,'profilelabel','CommunityPanel','CommunityProfile',value=message)
-    branch(g,'published',call(g,'publishedcheck',STR+'StartsWith',{'SourceString':'entry.Message'},InPrefix='Published: https://share.zcom.app/comp/',SearchCase='CaseSensitive'))
+    branch(g,'published',call(g,'publishedcheck',STR+'StartsWith',{'SourceString':'entry.Message'},InPrefix=PUBLISHED,SearchCase='CaseSensitive'))
     url=call(g,'url',STR+'RightChop',{'SourceString':'entry.Message'},Count=11)
-    code=call(g,'code',STR+'RightChop',{'SourceString':url},Count=28)
-    set_value(g,'publicurl','CommunityPublicURL',url);set_value(g,'publiccode','CommunityPublicCode',code);text(g,'publicationlabel','CommunityPanel','PublishResult',value=message)
-    branch(g,'galleryfailed',call(g,'galleryrequest',STR+'StartsWith',{'SourceString':get(g,'CommunityRequest')},InPrefix='CATALOG/',SearchCase='CaseSensitive'));text(g,'galleryerror','CommunityPanel','GalleryStatus',value=message);g.chain('refresh','galleryfailed','galleryerror')
-    g.chain('entry','current','account','profile','profilelabel','published');g.chain('account.else','published');g.chain('published','publicurl','publiccode','publicationlabel','remembered');g.chain('published.else','remembered')
+    code=call(g,'code',STR+'RightChop',{'SourceString':url},Count=len(PUBLISHED)-len('Published: '))
+    set_value(g,'publicurl','CommunityPublicURL',url);set_value(g,'publiccode','CommunityPublicCode',code);text(g,'publicationlabel','CommunityPanel','PublishResult',value=call(g,'shortlink',STR+'RightChop',{'SourceString':url},Count=8))
+    # Share a build shows the result; an update is now one revision newer.
+    text(g,'sharecode','CommunityPanel','ShareResultCode',value=code)
+    from runtime_community_ui import has_target
+    updated=combine(g,'updated',[get(g,'HolonetShareUpdate'),has_target(g)])
+    text(g,'sharetitle','CommunityPanel','ShareResultTitle',value=call(g,'sharetitletext',KML+':SelectString',{'bPickA':updated},A='Shared · the update is live',B='Shared · your build is live'))
+    branch(g,'bump',updated);arr(g,'oldrev','Get',get(g,'HolonetShareRevisions'));g.wire((get(g,'HolonetShareTarget'),'oldrev.Index'))
+    arr(g,'newrev','Set',get(g,'HolonetShareRevisions'));g.wire((get(g,'HolonetShareTarget'),'newrev.Index'),(op(g,'plusone','Add_IntInt','oldrev.Item',B=1),'newrev.Item'))
+    g.set('showresult','HolonetShowResult','true');g.set('staleshares','HolonetSharesStale','true');g.call('sharepanel','self:RefreshHolonetShare')
+    branch(g,'sharesfailed',call(g,'sharesrequest',STR+'StartsWith',{'SourceString':get(g,'CommunityRequest')},InPrefix='MYSHARES/',SearchCase='CaseSensitive'));text(g,'shareserror','CommunityPanel','SharesStatus',value=message)
+    g.set('newaccount','HolonetSharesStale','true')
+    branch(g,'galleryfailed',call(g,'galleryrequest',STR+'StartsWith',{'SourceString':get(g,'CommunityRequest')},InPrefix='CATALOG/',SearchCase='CaseSensitive'));text(g,'galleryerror','CommunityPanel','GalleryStatus',value=message);g.chain('refresh','galleryfailed','galleryerror');g.chain('galleryfailed.else','sharesfailed','shareserror')
+    g.chain('entry','current','account','profile','profilelabel','newaccount','published');g.chain('account.else','published');g.chain('published','publicurl','publiccode','publicationlabel','sharecode','sharetitle','bump','newrev','showresult','staleshares','sharepanel','remembered');g.chain('bump.else','showresult');g.chain('published.else','remembered')
     g.chain('remembered','remember','cancel','message','refresh');g.chain('remembered.else','cancel');return g.function('FailCommunityFetch',inputs=[v('Token','string'),v('Message','string')])
 
 
@@ -130,11 +143,14 @@ def commit():
     arr(g,'exists','Contains',get(g,'CompositionNames'));g.wire((get(g,'CommunityName'),'exists.ItemToFind'));branch(g,'duplicate','exists.ReturnValue')
     method(g,'save',PRESETS,'SavePreset',get(g,'CompositionService'),{'Name':get(g,'CommunityName'),'Document':get(g,'CommunityDocument')});branch(g,'saved',op(g,'success','EqualEqual_IntInt','save.Status',B=1))
     set_value(g,'selected','SelectedComposition','save.CleanName');g.set('pending','CommunityPending','false');g.set('token','CommunityToken','');g.set('release','CommunityDocument')
-    set_value(g,'message','CommunityMessage',call(g,'caption',STR+'Concat_StrStr',{'B':get(g,'CommunityReport')},A='Imported. Select the card to generate its local preview, then Place selected. '))
+    set_value(g,'message','CommunityMessage',call(g,'caption',STR+'Concat_StrStr',{'B':get(g,'CommunityReport')},A='Added to your Compositions. ' ))
     g.call('cards','self:RefreshCompositionLibrary');g.set('yes','local:OK','true');finish_bool(g)
+    # Add and place now: open Compositions and place the new card, as Place selected does.
+    branch(g,'place',get(g,'CommunityPlaceAfterImport'));g.set('placed','CommunityPlaceAfterImport','false')
+    g.call('compositions','self:SetEditorPanel',Name='compositions');g.call('placing','self:QueueCompositionAction',Name='load_composition',Argument='')
     branch(g,'preview',call(g,'previewmode',STR+'StartsWith',{'SourceString':get(g,'CommunityRequest')},InPrefix='PREVIEW/',SearchCase='CaseSensitive'));g.call('cachepreview','self:FinishCommunityPreview');g.wire((get(g,'CommunityDocument'),'cachepreview.Document'))
     g.chain('entry','current','ready','readycheck','validate','valid','complete','preview','cachepreview','yes','result');g.chain('preview.else','refresh','fresh','freshcheck','duplicate')
-    g.chain('duplicate.else','save','saved','pending','token','release','message','cards','yes','result')
+    g.chain('duplicate.else','save','saved','pending','token','release','message','cards','place','placed','compositions','placing','yes','result');g.chain('place.else','yes')
     for pin in ['current.else','readycheck.else','valid.else','complete.else','freshcheck.else','duplicate.then','saved.else']:g.chain(pin,'result')
     return g.function('CommitCommunityImport',inputs=[v('Token','string')],outputs=[v('Accepted','bool')],locals=[v('OK','bool','false')])
 
@@ -147,9 +163,9 @@ def variables():
 
 
 def functions():
-    from runtime_community_publish import publish, serialize, thumbnail_name
+    from runtime_community_publish import serialize, thumbnail_name
     from runtime_community_connection import functions as connection_functions
     from runtime_community_ui import functions as ui_functions
     from runtime_community_sources import functions as source_functions
     from runtime_community_browser import functions as browser_functions
-    return browser_functions()+source_functions()+ui_functions()+[cancel(),normalize(),start(),start(True),poll(),fail(),begin(),append(),material(),commit(),serialize(),thumbnail_name(),publish()]+connection_functions()
+    return browser_functions()+source_functions()+ui_functions()+[cancel(),normalize(),start(),start(True),poll(),fail(),begin(),append(),material(),commit(),serialize(),thumbnail_name()]+connection_functions()

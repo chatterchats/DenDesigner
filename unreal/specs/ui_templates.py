@@ -331,7 +331,7 @@ def scrollbar(thickness=4):
 
 # Menu bar: (widget name, label, event, icon). Widget names are runtime identities; labels may change.
 LIBRARY = [("Catalog", "Catalog", "catalog", "catalog"), ("Storeroom", "Storeroom", "storeroom", "storeroom"),
-           ("Compositions", "Compositions", "compositions", "compositions"), ("Community", "Community", "community", "community"), ("Layouts", "Layouts", "layouts", "layouts")]
+           ("Compositions", "Compositions", "compositions", "compositions"), ("Community", "HoloNet", "community", "community"), ("Layouts", "Layouts", "layouts", "layouts")]
 TOOLS = [("SelectMode", "Select", "mode_select", "select"), ("Move", "Move", "mode_move", "move"),
          ("Rotate", "Rotate", "mode_rotate", "rotate"), ("ScaleMode", "Scale", "mode_scale", "scale")]
 QUICK_CONTROLS = [("Magnet", "Snap", "neighbour_snap", "magnet"), ("Snap", "Off", "snap", "grid"), ("Reach", "20 m", "reach", "range")]

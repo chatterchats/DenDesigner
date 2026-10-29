@@ -6,7 +6,7 @@ from pathlib import Path
 from package_gf import archive
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = '0.1.0-preview.10'
+VERSION = '0.9.20'
 
 
 def package(root=ROOT):
@@ -25,7 +25,7 @@ def package(root=ROOT):
     files['COMMUNITY-BRIDGE.md'] = (root / 'distribution/community/README.md').read_bytes()
     files['LICENSE'] = (root / 'LICENSE').read_bytes()
     return archive(root / 'dist/packages' / ('DenDesigner-CommunityBridge-' + VERSION + '.zip'), files,
-        {'format':1, 'version':VERSION, 'requires_runtime':'1.1.0-preview.22',
+        {'format':1, 'version':VERSION, 'requires_runtime':'0.9.20',
          'requires_ue4ss':False, 'requires_python':False,
          'supported_executable_sha256':'aa3ff2e0759c90bae58054f2a68398e5b705fdfd05659242404d8c3602c6f36e',
          'native_build':report,

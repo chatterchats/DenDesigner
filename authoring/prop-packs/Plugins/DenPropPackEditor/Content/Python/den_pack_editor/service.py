@@ -120,6 +120,11 @@ def validate(doc):
     return warnings
 
 
+
+def _has_property(obj,name):
+    try:obj.get_editor_property(name);return True
+    except Exception:return False
+
 def author(doc, folder):
     validate(doc)
     require_mount(doc, folder)
@@ -139,6 +144,9 @@ def author(doc, folder):
     u.BlueprintEditorLibrary.compile_blueprint(bp)
     cdo = u.get_default_object(bp.generated_class())
     values = dict(SchemaVersion=1,PackID=doc['id'],Title=doc['title'],Author=doc['author'],Version=doc['version'])
+    if doc.get('nexus_url'):
+        model.require(_has_property(cdo,'NexusURL'), 'This Den Designer authoring reference is too old for a Nexus link. Install the current authoring bundle, or leave the Nexus link empty.')
+        values['NexusURL']=doc['nexus_url']
     values.update(Paths=[p['mesh'] for p in doc['props']],Labels=[p['name'] for p in doc['props']],
                   Dimensions=[u.Vector(*p['size']) for p in doc['props']],Solid=[p['collision'] for p in doc['props']],
                   SearchTexts=[p.get('tags','') for p in doc['props']],
@@ -176,7 +184,9 @@ def verify_registration(doc):
     scan(name)
     bp = u.load_object(None,f'/{name}/BP_PropPack.BP_PropPack')
     cdo = u.get_default_object(bp.generated_class())
-    for key,expected in dict(SchemaVersion=1,PackID=doc['id'],Title=doc['title'],Author=doc['author'],Version=doc['version']).items():
+    expected_fields=dict(SchemaVersion=1,PackID=doc['id'],Title=doc['title'],Author=doc['author'],Version=doc['version'])
+    if doc.get('nexus_url'):expected_fields['NexusURL']=doc['nexus_url']
+    for key,expected in expected_fields.items():
         model.require(cdo.get_editor_property(key)==expected, 'Provider field did not persist: '+key)
     arrays=dict(Paths=[p['mesh'] for p in doc['props']],Labels=[p['name'] for p in doc['props']],
                 SearchTexts=[p.get('tags','') for p in doc['props']],Solid=[p['collision'] for p in doc['props']],

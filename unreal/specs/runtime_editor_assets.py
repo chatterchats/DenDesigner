@@ -48,9 +48,8 @@ def opening_ready():
 def text_fields(widget_name):
     from runtime_settings_widget import spec as settings_spec
     from runtime_composition_widget import spec as composition_spec
-    from runtime_community_widget import spec as community_spec
-    from runtime_community_widget import spec as community_spec
-    factories={'WBP_DenCompositions':composition_spec,'WBP_DenCommunity':community_spec,'WBP_DenSettings':settings_spec,'WBP_DenToolbar':editor.toolbar,'WBP_DenCatalog':editor.catalog,
+    from runtime_holonet_widget import spec as community_spec
+    factories={'WBP_DenCompositions':composition_spec,'WBP_DenHolonet':community_spec,'WBP_DenSettings':settings_spec,'WBP_DenToolbar':editor.toolbar,'WBP_DenCatalog':editor.catalog,
                'WBP_DenLayouts':editor.layouts,'WBP_DenStoreroom':editor.storeroom,
                'WBP_DenTransform':editor.transform}
     def walk(node):
@@ -261,8 +260,7 @@ def specs():
     yield '20_BP_DenEditorBus',bus_spec()
     from runtime_settings_widget import spec as settings_spec
     from runtime_composition_widget import spec as composition_spec
-    from runtime_community_widget import spec as community_spec
-    from runtime_community_widget import spec as community_spec
+    from runtime_holonet_widget import spec as community_spec
     sources=editor.input_actions()+[editor.mapping_context(),editor.rig(),editor.toolbar(),editor.catalog_item(),editor.catalog_entry(),editor.catalog_shelf(),editor.catalog_chip(),editor.catalog(),editor.layouts(),editor.storeroom(),editor.transform(),settings_spec(),composition_spec(),community_spec()]
     for index,source in enumerate(sources,1):
         spec=convert(source)

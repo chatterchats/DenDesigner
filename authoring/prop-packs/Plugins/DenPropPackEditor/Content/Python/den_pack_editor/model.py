@@ -22,6 +22,27 @@ def label(value,name,maximum=96,required=True):
     require(all(ord(c)>=32 for c in value),name+' contains control characters')
     return value
 
+# A pack's Nexus Mods page. HoloNet uses it only if it is an HTTPS Nexus Mods
+# page for Star Wars Zero Company; otherwise it links to a Nexus search for the
+# pack's title. Checked here so authors find out before they publish.
+NEXUS=re.compile(r'https://www\.nexusmods\.com/(?:games/)?starwarszerocompany/mods/[0-9]+/?\Z')
+NEXUS_SEARCH='https://www.nexusmods.com/games/starwarszerocompany/mods?title='
+
+
+def nexus_url(doc):
+    value=doc.get('nexus_url','')
+    require(isinstance(value,str) and (value=='' or NEXUS.fullmatch(value)),
+            'nexus_url must be your pack\'s Nexus Mods page for Star Wars Zero Company, like '
+            'https://www.nexusmods.com/games/starwarszerocompany/mods/123. Leave it empty and '
+            'HoloNet links to a Nexus search for the pack title instead.')
+    return value
+
+
+def nexus_link(doc):
+    """The link HoloNet shows for this pack."""
+    from urllib.parse import quote
+    return nexus_url(doc) or NEXUS_SEARCH+quote(doc['title'],safe='')
+
 
 def validate(doc, allow_empty=False):
     require(isinstance(doc,dict),'Manifest must be an object')
@@ -30,6 +51,7 @@ def validate(doc, allow_empty=False):
     require(name.lower() not in {'dendesignergf','denproppackeditor','zcomauthoring','engine','game','gamefeatures','modulargameplay'},'Reserved plugin name')
     ident=doc.get('id','');require(isinstance(ident,str) and PACKID.fullmatch(ident),'id must be a lowercase stable pack ID')
     for field in ['title','author','version']:label(doc.get(field),field)
+    nexus_url(doc)
     entries=doc.get('props');require(isinstance(entries,list) and (0 if allow_empty else 1)<=len(entries)<=2048,'props must contain 1–2048 entries')
     seen=set()
     for i,e in enumerate(entries):
@@ -65,6 +87,7 @@ def sharing_manifest(doc):
     import hashlib
     validate(doc)
     result={k:doc[k] for k in ('schema','plugin','id','title','author','version')}
+    if doc.get('nexus_url'):result['nexus_url']=doc['nexus_url']
     result['props']=[{k:e[k] for k in ('name','mesh','size','collision','tags','description') if k in e} for e in doc['props']]
     result['assets']=doc.get('assets',[dict(id='legacy-'+hashlib.sha256(e['mesh'].encode()).hexdigest(),path=e['mesh'],kind='mesh') for e in doc['props']])
     return result

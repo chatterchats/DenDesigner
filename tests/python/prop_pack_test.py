@@ -50,3 +50,38 @@ class ManifestTests(unittest.TestCase):
         self.assertNotIn('load_asset',json.dumps(pack.provider(self.doc)))
 
 if __name__=='__main__':unittest.main()
+
+
+class NexusLinkTests(unittest.TestCase):
+    """Same rule in the command-line tool and the in-editor tool."""
+    def modules(self):
+        import sys
+        sys.path.insert(0,str(ROOT/'authoring/prop-packs/Plugins/DenPropPackEditor/Content/Python'))
+        from den_pack_editor import model
+        return [pack,model]
+    def doc(self):return json.loads((ROOT/'authoring/prop-packs/example/pack.json').read_text())
+    def test_valid_links_are_used_and_shipped(self):
+        for module in self.modules():
+            for url in ['https://www.nexusmods.com/games/starwarszerocompany/mods/42','https://www.nexusmods.com/starwarszerocompany/mods/42/']:
+                doc=self.doc();doc['nexus_url']=url
+                self.assertEqual(module.nexus_link(module.validate(doc)),url)
+                self.assertEqual(module.sharing_manifest(doc)['nexus_url'],url)
+        doc=self.doc();doc['nexus_url']='https://www.nexusmods.com/games/starwarszerocompany/mods/42'
+        self.assertEqual(pack.provider(doc)['defaults']['NexusURL'],doc['nexus_url'])
+    def test_missing_or_empty_link_falls_back_to_a_title_search(self):
+        for module in self.modules():
+            for value in [None,'']:
+                doc=self.doc();doc['title']='Arcade Cabinets “Deluxe” & more'
+                if value is not None:doc['nexus_url']=value
+                module.validate(doc)
+                self.assertEqual(module.nexus_link(doc),'https://www.nexusmods.com/games/starwarszerocompany/mods?title=Arcade%20Cabinets%20%E2%80%9CDeluxe%E2%80%9D%20%26%20more')
+                self.assertNotIn('nexus_url',module.sharing_manifest(doc))
+        self.assertNotIn('NexusURL',pack.provider(self.doc())['defaults'])
+    def test_other_links_are_refused_with_a_clear_message(self):
+        for module in self.modules():
+            for url in ['http://www.nexusmods.com/games/starwarszerocompany/mods/42','https://www.nexusmods.com/games/othergame/mods/42',
+                        'https://nexusmods.com.evil.test/games/starwarszerocompany/mods/42','https://www.nexusmods.com/games/starwarszerocompany/mods/42?x=1"',
+                        'https://www.nexusmods.com/games/starwarszerocompany/mods/','www.nexusmods.com/games/starwarszerocompany/mods/42',42]:
+                doc=self.doc();doc['nexus_url']=url
+                with self.assertRaises(ValueError) as raised:module.validate(doc)
+                self.assertIn('Nexus search for the pack title',str(raised.exception))

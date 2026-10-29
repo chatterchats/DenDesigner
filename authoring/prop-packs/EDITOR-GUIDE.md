@@ -34,6 +34,11 @@ build path, without a separate DLL.
 
 1. Choose **New pack**. Enter a unique plugin name (`MyFurniture`), permanent lowercase pack ID
    (`my-furniture`), title, author and version. Choose **Save pack**.
+   Once your pack has a Nexus Mods page, add it as **Nexus page**, for example
+   `https://www.nexusmods.com/games/starwarszerocompany/mods/123`. HoloNet shows
+   it on builds that use your pack. Leave it empty until then: HoloNet links to a
+   Nexus search for your pack's title instead. Only Star Wars Zero Company pages on
+   nexusmods.com are accepted.
 2. If the panel requests a restart to mount the new content folder, restart the editor and reopen
    the pack from the dropdown. This is required when a new pack's filesystem path contains spaces.
 3. Choose **Show content**. Import your static meshes, textures and materials into that pack's

@@ -47,7 +47,7 @@ class Panel:
         self.button(bar,'Save pack',self.save_pack)
         self.button(bar,'Show content',self.show_content)
         self.form=self.new(u.VerticalBox);body.add_child(self.form)
-        for name,label in [('plugin','Plugin name'),('id','Permanent pack ID'),('title','Title'),('author','Author'),('version','Version')]:
+        for name,label in [('plugin','Plugin name'),('id','Permanent pack ID'),('title','Title'),('author','Author'),('version','Version'),('nexus_url','Nexus page (optional)')]:
             row=self.new(u.HorizontalBox);self.form.add_child(row)
             self.label(row,label,155)
             field=self.edit(row,'',None)
@@ -116,6 +116,7 @@ class Panel:
     def collect(self):
         result=copy.deepcopy(self.doc)
         for name,field in self.fields.items():result[name]=str(field.get_text())
+        if not result.get('nexus_url'):result.pop('nexus_url',None)
         result['props']=[]
         for original,fields in self.rows:
             row=copy.deepcopy(original)
@@ -167,7 +168,7 @@ class Panel:
         self.message('Removed this registration entry. The imported asset is still in the Content Browser.')
 
     def render(self):
-        for name,field in self.fields.items():field.set_text(self.doc[name])
+        for name,field in self.fields.items():field.set_text(self.doc.get(name,''))
         for name in ('plugin','id'):self.fields[name].set_is_read_only(self.folder is not None)
         self.scroll.clear_children();self.rows=[]
         # Row buttons disappear with their rows; keep only controls in the fixed form.

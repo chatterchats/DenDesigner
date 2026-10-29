@@ -82,7 +82,7 @@ def validated_archive(path, supported_exe=SUPPORTED_EXE):
         manifest = json.loads(archive.read('manifest.json'), object_pairs_hook=unique)
         require(type(manifest) is dict and type(manifest.get('format')) is int and manifest['format'] == 1, 'Unsupported bridge manifest')
         require(manifest.get('supported_executable_sha256') == supported_exe and HEX.fullmatch(supported_exe), 'Unsupported executable compatibility declaration')
-        require(manifest.get('requires_runtime') == '1.1.0-preview.22'
+        require(manifest.get('requires_runtime') == '0.9.20'
                 and manifest.get('requires_ue4ss') is False and manifest.get('requires_python') is False, 'Unexpected bridge requirements')
         require(type(manifest.get('version')) is str and re.fullmatch(r'[0-9A-Za-z._-]{1,64}', manifest['version']), 'Invalid bridge version')
         require(type(manifest.get('files')) is dict and set(manifest['files']) == FILES, 'Manifest inventory differs')

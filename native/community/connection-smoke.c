@@ -2,20 +2,23 @@
  * shipped worker. It cannot contact the service or use a player's credentials. */
 #include "connection.c"
 static volatile LONG attempts, publish_attempts;
-static int fake_api(int publish,const unsigned char *body,DWORD n,char *response,DWORD cap) {
- const char *profile="{\"user_id\":\"11111111-1111-4111-8111-111111111111\",\"publishing\":\"beta-publishing\"}";
+static int fake_api(int kind,const unsigned char *body,DWORD n,char *response,DWORD cap) {
+ const char *profile="{\"user_id\":\"11111111-1111-4111-8111-111111111111\",\"display_name\":\"Rook\\u2019s\\tden\",\"publishing\":\"beta-publishing\"}";
  (void)body;(void)n;(void)cap;
- if(publish){InterlockedIncrement(&publish_attempts);return api(1,body,n,response,cap);}
+ if(kind){InterlockedIncrement(&publish_attempts);return api(kind,body,n,response,cap);}
  InterlockedIncrement(&attempts);
  if(attempts==2)return -1;
  memcpy(response,profile,dd_strlen(profile)+1);return 1;
 }
 static int calls, finalized, deleted, fail_thumbnail, lose_reply, abandon, enforce_png;
+static char last_body[4096];static WCHAR last_path[160];
 static int fake_current(void){return !(abandon&&calls>=3);}
 static int fake_http(const WCHAR *method,const WCHAR *path,const unsigned char *body,DWORD bytes,const WCHAR *headers,char *reply,DWORD cap){
  const char *staging="{\"upload\":{\"id\":\"11111111-1111-4111-8111-111111111111\",\"code\":\"PublishedTest01\",\"status\":\"staging\"}}";
  const char *published="{\"upload\":{\"id\":\"11111111-1111-4111-8111-111111111111\",\"code\":\"PublishedTest01\",\"status\":\"published\"}}";
- (void)body;(void)bytes;(void)headers;(void)cap;calls++;
+ (void)headers;(void)cap;calls++;
+ {size_t i;for(i=0;path[i]&&i+1<160;i++)last_path[i]=path[i];last_path[i]=0;}
+ if(method[0]=='P'&&method[1]=='O'&&bytes&&bytes<sizeof(last_body)){memcpy(last_body,body,bytes);last_body[bytes]=0;}
  if(method[0]=='D'){deleted++;reply[0]=0;return 1;}
  if(path[dd_strlen("/api/v1/composition-uploads")]==0){memcpy(reply,finalized?published:staging,dd_strlen(finalized?published:staging)+1);return 1;}
  {size_t n=0;while(path[n])n++;
@@ -27,12 +30,24 @@ static int fake_http(const WCHAR *method,const WCHAR *path,const unsigned char *
 static void staged_checks(void){
  char reply[4096];int r;
  thumbnail_source_digest[0]=0;enforce_png=0;send_http=fake_http;request_current=fake_current;
- memcpy(publish_title,"Saved composition",18);publish_description[0]=0;update_code[0]=0;
- memcpy(original,"{}",2);payload_offset=0;payload_size=2;thumbnail[0]=1;thumbnail_size=1;
+ memcpy(publish_title,"Saved composition",18);publish_description[0]=0;publish_changelog[0]=0;update_code[0]=0;
+ memcpy(publish_wire,"{}",2);payload_offset=0;payload_size=2;thumbnail[0]=1;thumbnail_size=1;
  calls=finalized=deleted=0;fail_thumbnail=1;r=api(1,0,0,reply,sizeof(reply));if(r!=0||calls!=3||finalized)ExitProcess(20);
  fail_thumbnail=0;lose_reply=1;calls=0;r=api(1,0,0,reply,sizeof(reply));if(r!=0||calls!=4||finalized!=1)ExitProcess(21);
  calls=0;r=api(1,0,0,reply,sizeof(reply));if(r!=1||calls!=1||finalized!=1)ExitProcess(22);
  calls=finalized=0;abandon=1;r=api(1,0,0,reply,sizeof(reply));if(r!=0||finalized||deleted!=1)ExitProcess(23);
+ abandon=0;
+ /* UTF-8 text and What changed go into the begin request; What changed only
+  * when updating. */
+ memcpy(publish_title,"Caf\xc3\xa9 \"nook\"",14);memcpy(publish_description,"Line one\nback\\slash",21);memcpy(publish_changelog,"Fixed lights",13);
+ calls=finalized=0;last_body[0]=0;r=api(1,0,0,reply,sizeof(reply));
+ if(!equal(last_body,"{\"title\":\"Caf\xc3\xa9 \\\"nook\\\"\",\"description\":\"Line one\\nback\\\\slash\"}"))ExitProcess(24);
+ memcpy(update_code,"H7854VMD",9);memcpy(update_revision,"2",2);last_body[0]=0;r=api(1,0,0,reply,sizeof(reply));
+ if(!equal(last_body,"{\"title\":\"Caf\xc3\xa9 \\\"nook\\\"\",\"description\":\"Line one\\nback\\\\slash\",\"code\":\"H7854VMD\",\"base_revision\":2,\"changelog\":\"Fixed lights\"}"))ExitProcess(25);
+ update_code[0]=0;update_revision[0]=0;publish_changelog[0]=0;
+ /* My Shares asks the server for the 1-based page. */
+ memcpy(shares_page,"3",2);r=api(2,0,0,reply,sizeof(reply));
+ {const WCHAR *want=L"/api/v1/my/listings?page=4&per_page=8";size_t i=0;while(want[i]&&last_path[i]==want[i])i++;if(want[i]||last_path[i])ExitProcess(26);}
 }
 static void add_directory(WCHAR *path,const WCHAR *part) {
  size_t n=0,i;while(path[n])n++;path[n++]='\\';for(i=0;part[i];i++)path[n++]=part[i];path[n]=0;
@@ -84,7 +99,7 @@ static void inpanel_checks(const char *key){
  send_http=fake_http;request_current=fake_current;calls=finalized=deleted=0;enforce_png=1;
  handled_token[0]=0;procedure(window,WM_TIMER,0,0);
  began=GetTickCount64();while(busy&&GetTickCount64()-began<5000)Sleep(20);
- if(busy||publish_attempts!=1||!equal(publish_title,"VM saved composition")||!equal(publish_description,"Retained after errors")||!reply_contains("Published: https://share.zcom.app/comp/PublishedTest01"))ExitProcess(56);
+ if(busy||publish_attempts!=1||!equal(publish_title,"VM saved composition")||!equal(publish_description,"Retained after errors")||!reply_contains("Published: " DD_SERVICE_URL "/comp/PublishedTest01"))ExitProcess(56);
  if(thumbnail_size!=sizeof(test_png)||IsWindowVisible(window)||GetWindow(window,GW_CHILD))ExitProcess(57);
  for(i=thumbnail_size;i<thumbnail_size+32;i++)if(thumbnail[i])ExitProcess(59);
  DeleteFileW(request_path);DeleteFileW(response_path);DeleteFileW(thumbpath);wipe();
@@ -103,7 +118,7 @@ void mainCRTStartup(void) {
  if(!key_valid(key))ExitProcess(13);
  memcpy(credential.key,key,69);authorize();perform(0);
  if(!connected||attempts!=1||memcmp(credential.key,key,69))ExitProcess(14);
- if(!equal(status_text,"Connected: https://share.zcom.app/profile/11111111-1111-4111-8111-111111111111"))ExitProcess(15);
+ if(!equal(status_text,"Connected as Rook\xe2\x80\x99s den"))ExitProcess(15);
  perform(0);if(connected||attempts!=2)ExitProcess(16);
  for(i=0;i<sizeof(credential);i++)if(((unsigned char *)&credential)[i])ExitProcess(17);
  for(i=0;status_text[i];i++)if(!memcmp(status_text+i,"zcu_",4))ExitProcess(18);
@@ -111,8 +126,8 @@ void mainCRTStartup(void) {
  remembered_checks(key);
  inpanel_checks(key);
  staged_checks();
- if(!equal(service_failure(400,"{\"error\":{\"code\":\"INVALID_THUMBNAIL\",\"message\":\"zcu_do_not_echo\"}}"),"Cached preview rejected by Community. Its PNG stream is invalid or unsupported. Regenerate the saved card preview and retry."))ExitProcess(63);
- if(!equal(service_failure(409,"{\"error\":{\"code\":\"REVISION_CONFLICT\"}}"),"Your publication changed. Check its current revision on the website before updating again."))ExitProcess(64);
+ if(!equal(service_failure(400,"{\"error\":{\"code\":\"INVALID_THUMBNAIL\",\"message\":\"zcu_do_not_echo\"}}"),"HoloNet couldn't read the preview image. Let the card preview render again, then share."))ExitProcess(63);
+ if(!equal(service_failure(409,"{\"error\":{\"code\":\"REVISION_CONFLICT\"}}"),"This share has changed on HoloNet since you picked it. Pick it again from My Shares, then share."))ExitProcess(64);
  {WCHAR cancel[2];if(GetEnvironmentVariableW(L"DD_CANCEL_SMOKE",cancel,2)){
    send_api=blocked_api;memcpy(original,"{}",2);original_size=2;
    if(!dd_write(request_path,original,2))ExitProcess(60);
