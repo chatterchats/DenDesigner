@@ -32,6 +32,19 @@ cp "$kit/Releases/BaseGame/Windows/AssetRegistry.bin" "$kit/Releases/BaseGame/$p
 
 echo "1/3 Authoring Blueprint runtime and UI"
 python3 -I "$repo/unreal/specs/runtime.py"
+# Authoring rebuilds only assets that have a spec. Remove authored assets whose spec
+# is gone (a renamed or removed Blueprint), or the cook ships them and verification
+# fails. Icons and the Game Feature data asset are not authored from specs.
+python3 -I - "$repo" <<'PY'
+import json, pathlib, sys
+root = pathlib.Path(sys.argv[1]); content = root / "unreal/DenDesignerGF/Content"
+specs = [json.loads(p.read_text()) for p in sorted((root / "unreal/generated/runtime").glob("*.json"))]
+keep = {content / (s["path"].removeprefix("/DenDesignerGF/") + ".uasset") for s in specs}
+for folder in ("Editor", "Runtime"):
+    for asset in sorted((content / folder).glob("**/*.uasset")) if (content / folder).is_dir() else []:
+        if asset not in keep and "Icons" not in asset.relative_to(content).parts:
+            print("Removing stale authored asset", asset.relative_to(root)); asset.unlink()
+PY
 icons="$work/icons"
 bash "$repo/tools/build/render_icons.sh" "$icons"
 DENDESIGNERGF_RUNTIME_SPECS="$repo/unreal/generated/runtime" DENDESIGNERGF_ICONS="$icons" \
