@@ -265,7 +265,7 @@ def run(unreal, host, document, get, field, check, saved, finish_preview, settle
         token = start()
         setprop(host, 'CommunityStarted', -1e9)
         host.call_method('PollCommunityFetch')
-        check(not get(host, 'CommunityPending') and 'timed out' in get(host, 'CommunityMessage'),
+        check(not get(host, 'CommunityPending') and 'answer in time' in get(host, 'CommunityMessage'),
               'pak deadline cancels offline or absent companion requests')
         unchanged('timeout keeps the local library intact')
 
