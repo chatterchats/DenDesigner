@@ -57,7 +57,8 @@ def graphs(spec):
 
 
 def engine_pins(specs):
-    """Engine function -> pins seen on it (defaults and links)."""
+    """Engine function -> pins seen on it (defaults and links), including
+    'execute' only if some node ran it with exec pins."""
     pins = collections.defaultdict(set)
     for spec in specs.values():
         for _, graph in graphs(spec):
@@ -72,6 +73,11 @@ def engine_pins(specs):
                     if n and n['kind'] in ('call', 'array_call') and not n['function'].startswith('self:'):
                         pins[n['function']].add(pin)
     return pins
+
+
+def pure(fn, baseline_pins):
+    """An engine function the baseline only ever uses without exec pins."""
+    return fn in baseline_pins and not baseline_pins[fn] & {'execute', 'then'}
 
 
 def tree_variables(tree):
@@ -171,6 +177,11 @@ def lint(specs, baseline_pins, baseline_tree=None):
                         else:
                             novel.append(f'{where}: {n["id"]} new engine call {fn}')
                     else:
+                        wired = {e.partition('.')[2] for l in graph.get('links', []) for e in l if e.partition('.')[0] == n['id']}
+                        if pure(fn, baseline_pins) and wired & {'execute', 'then'}:
+                            problems.append(f'{where}: {n["id"]} {fn} is pure and has no exec pins')
+                        if fn in baseline_pins and 'execute' in baseline_pins[fn] and not wired & {'execute', 'then'}:
+                            problems.append(f'{where}: {n["id"]} {fn} needs exec pins; unwired, it never runs')
                         used = set(n.get('defaults', {}))
                         used |= {e.partition('.')[2] for l in graph.get('links', []) for e in l if e.partition('.')[0] == n['id']}
                         for pin in sorted(used - baseline_pins[fn] - {'execute', 'then', 'ReturnValue', 'self'}):

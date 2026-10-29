@@ -103,7 +103,7 @@ def remember_footprint():
     arr(g,'find','Find',get(g,'FootprintNames'));g.wire(('path.Name','find.ItemToFind'));branch(g,'known',op(g,'found','GreaterEqual_IntInt','find.ReturnValue',B=0))
     arr(g,'update','Set',get(g,'FootprintSizes'));g.wire(('find.ReturnValue','update.Index'),(size,'update.Item'))
     arr(g,'addname','Add',get(g,'FootprintNames'));g.wire(('path.Name','addname.NewItem'));arr(g,'addsize','Add',get(g,'FootprintSizes'));g.wire((size,'addsize.NewItem'))
-    g.chain('entry','path','find','known','update');g.chain('known.else','addname','addsize')
+    g.chain('entry','path','known','update');g.chain('known.else','addname','addsize')
     return g.function('RememberFootprint')
 
 

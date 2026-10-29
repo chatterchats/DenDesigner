@@ -3472,10 +3472,6 @@
         ],
         [
           "path.then",
-          "find.execute"
-        ],
-        [
-          "find.then",
           "known.execute"
         ],
         [
