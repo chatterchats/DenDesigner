@@ -32,8 +32,8 @@ def area():
     for value,label in [('browse_dens','Dens'),('upload','Share a build'),('shares','My Shares'),('account','Account')]:
         subtitle=call(g,'subtitle'+value,KML+':SelectString',{'B':subtitle,'bPickA':call(g,'is'+value,STR+'EqualEqual_StrStr',{'A':'entry.Area'},B=value)},A=label)
     text(g,'subtitle','CommunityPanel','HolonetSubtitle',value=subtitle);g.chain(previous,'subtitle');previous='subtitle'
-    branch(g,'upload',call(g,'uploadarea',STR+'EqualEqual_StrStr',{'A':'entry.Area'},B='upload'));g.call('share','self:RefreshHolonetShare')
-    branch(g,'shares',call(g,'sharesarea',STR+'EqualEqual_StrStr',{'A':'entry.Area'},B='shares'));g.call('loadshares','self:EnsureHolonetShares')
+    branch(g,'upload',call(g,'whenupload',STR+'EqualEqual_StrStr',{'A':'entry.Area'},B='upload'));g.call('share','self:RefreshHolonetShare')
+    branch(g,'shares',call(g,'whenshares',STR+'EqualEqual_StrStr',{'A':'entry.Area'},B='shares'));g.call('loadshares','self:EnsureHolonetShares')
     g.call('style','self:StyleHolonetBrowse')
     g.chain(previous,'style','upload','share');g.chain('upload.else','shares','loadshares')
     return g.function('SetCommunityArea',inputs=[v('Area','string')])

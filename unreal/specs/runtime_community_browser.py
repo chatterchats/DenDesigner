@@ -190,9 +190,9 @@ def code_in_library(code_var='entry.Code'):
     g=Graph();g.get('i','local:Cursor');arr(g,'count','Length',get(g,'CommunitySourceNames'));branch(g,'more',op(g,'within','Less_IntInt','i.Cursor','count.ReturnValue'))
     arr(g,'name','Get',get(g,'CommunitySourceNames'));g.wire(('i.Cursor','name.Index'))
     branch(g,'match',call(g,'contains',STR+'Contains',{'SearchIn':'name.Item','Substring':prefix(g,'spaced',' ',code_var)},bUseCase='false'))
-    set_value(g,'next','local:Cursor',op(g,'inc','Add_IntInt','i.Cursor',B=1));g.set('yes','local:Found','true');g.get('found','local:Found');g.wire(('found.Found','result.Found'))
+    set_value(g,'next','local:Cursor',op(g,'inc','Add_IntInt','i.Cursor',B=1));g.set('yes','local:InLibrary','true');g.get('found','local:InLibrary');g.wire(('found.InLibrary','result.Found'))
     g.chain('entry','more','match','yes','result');g.chain('match.else','next','more');g.chain('more.else','result')
-    return g.function('CommunityCodeInLibrary',inputs=[v('Code','string')],outputs=[v('Found','bool')],locals=[v('Cursor','int','0'),v('Found','bool','false')])
+    return g.function('CommunityCodeInLibrary',inputs=[v('Code','string')],outputs=[v('Found','bool')],locals=[v('Cursor','int','0'),v('InLibrary','bool','false')])
 
 
 def show_listings():

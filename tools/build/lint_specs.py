@@ -10,8 +10,9 @@ baseline already has (and the kit accepts) are not repeated.
 
   python3 tools/build/lint_specs.py [--baseline <dir>]
 
---baseline points at a known-good generated folder (default: the committed one
-from git HEAD) to learn which engine functions and pins are already proven.
+--baseline points at a known-good generated folder. By default it is the one in
+the commit named in tools/build/spec-baseline.txt: the last commit whose specs
+the kit built without errors. Update that file after a successful kit build.
 """
 import argparse
 import collections
@@ -34,12 +35,16 @@ def load(folder):
     return specs
 
 
-def head_baseline():
+BASELINE = ROOT / 'tools/build/spec-baseline.txt'
+
+
+def head_baseline(ref=None):
+    ref = ref or BASELINE.read_text().strip()
     temp = Path(tempfile.mkdtemp())
-    listing = subprocess.run(['git', 'ls-tree', '--name-only', 'HEAD', 'unreal/generated/runtime/'],
+    listing = subprocess.run(['git', 'ls-tree', '--name-only', ref, 'unreal/generated/runtime/'],
                              cwd=ROOT, capture_output=True, text=True, check=True).stdout.split()
     for name in listing:
-        data = subprocess.run(['git', 'show', 'HEAD:' + name], cwd=ROOT, capture_output=True, check=True).stdout
+        data = subprocess.run(['git', 'show', ref + ':' + name], cwd=ROOT, capture_output=True, check=True).stdout
         (temp / Path(name).name).write_bytes(data)
     return temp
 
@@ -113,7 +118,7 @@ def blueprint_index(specs):
     return full
 
 
-def lint(specs, baseline_pins):
+def lint(specs, baseline_pins, baseline_tree=None):
     problems, novel = [], []
     index = blueprint_index(specs)
     for name, spec in specs.items():
@@ -126,9 +131,12 @@ def lint(specs, baseline_pins):
             local = {v['name'] for v in graph.get('locals', [])}
             inputs = {v['name'] for v in graph.get('inputs', [])}
             outputs = {v['name'] for v in graph.get('outputs', [])}
-            if len(nodes) != len(graph.get('nodes', [])):
-                dupes = [k for k, c in collections.Counter(n['id'] for n in graph['nodes']).items() if c > 1]
+            # The kit compares node ids without case.
+            dupes = [k for k, c in collections.Counter(n['id'].lower() for n in graph.get('nodes', [])).items() if c > 1]
+            if dupes:
                 problems.append(f'{where}: duplicate node ids {dupes[:5]}')
+            for name in sorted(local & (inputs | outputs | vars_)):
+                problems.append(f'{where}: local {name!r} collides with a member or parameter')
             used_exec = collections.Counter()
             for a, b in graph.get('links', []):
                 for end in (a, b):
@@ -179,7 +187,49 @@ def lint(specs, baseline_pins):
                             problems.append(f'{where}: {n["id"]} {target} has no variable {member}')
                     elif var not in vars_ and var not in inputs:
                         problems.append(f'{where}: {n["id"]} undeclared variable {var}')
+    problems += tree_problems(specs, baseline_tree)
     return problems, novel
+
+
+def tree_pairs(specs):
+    """(parent class, slot key) and (class, property) pairs used in widget trees."""
+    slots, props = set(), set()
+
+    def walk(node, parent):
+        slots.update((parent, key) for key in node.get('slot', {}))
+        props.update((node['class'], key) for key in node.get('props', {}))
+        for child in node.get('children', []):
+            walk(child, node['class'])
+    for spec in specs.values():
+        if spec.get('tree'):
+            walk(spec['tree'], None)
+    return slots, props
+
+
+def tree_problems(specs, baseline):
+    """Slot settings a parent type never takes in the baseline (a SizeBox slot has
+    no Size), and padding that is not text."""
+    if baseline is None:
+        return []
+    slots, _ = baseline
+    problems = []
+
+    def walk(name, node, parent, path):
+        path = path + '/' + node['name']
+        for key, value in node.get('slot', {}).items():
+            if (parent, key) not in slots:
+                problems.append(f'{name}: {path}: a {parent} slot has no {key!r}')
+            if 'Padding' in key and not isinstance(value, str):
+                problems.append(f'{name}: {path}: slot {key} is not text')
+        for key, value in node.get('props', {}).items():
+            if 'Padding' in key and not isinstance(value, str):
+                problems.append(f'{name}: {path}: {key} is not text')
+        for child in node.get('children', []):
+            walk(name, child, node['class'], path)
+    for name, spec in specs.items():
+        if spec.get('tree'):
+            walk(name, spec['tree'], None, '')
+    return problems
 
 
 def main():
@@ -190,9 +240,10 @@ def main():
     args = parser.parse_args()
     baseline = load(args.baseline or head_baseline())
     pins = engine_pins(baseline)
+    pairs = tree_pairs(baseline)
     # Patterns the kit already accepts in the baseline are not reported again.
-    known = set(lint(baseline, pins)[0])
-    problems, novel = lint(load(args.folder), pins)
+    known = set(lint(baseline, pins, pairs)[0])
+    problems, novel = lint(load(args.folder), pins, pairs)
     problems = [p for p in problems if p not in known]
     for line in problems:
         print('PROBLEM', line)

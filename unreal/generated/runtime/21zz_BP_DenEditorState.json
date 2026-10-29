@@ -19663,7 +19663,7 @@
           "default": "0"
         },
         {
-          "name": "Found",
+          "name": "InLibrary",
           "type": "bool",
           "default": "false"
         }
@@ -19737,15 +19737,15 @@
         {
           "id": "yes",
           "kind": "set",
-          "var": "local:Found",
+          "var": "local:InLibrary",
           "defaults": {
-            "Found": "true"
+            "InLibrary": "true"
           }
         },
         {
           "id": "found",
           "kind": "get",
-          "var": "local:Found"
+          "var": "local:InLibrary"
         }
       ],
       "links": [
@@ -19798,7 +19798,7 @@
           "next.Cursor"
         ],
         [
-          "found.Found",
+          "found.InLibrary",
           "result.Found"
         ],
         [

@@ -72914,7 +72914,7 @@
           "defaults": {}
         },
         {
-          "id": "uploadarea",
+          "id": "whenupload",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
@@ -72932,7 +72932,7 @@
           "defaults": {}
         },
         {
-          "id": "sharesarea",
+          "id": "whenshares",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
@@ -73443,18 +73443,18 @@
         ],
         [
           "entry.Area",
-          "uploadarea.A"
+          "whenupload.A"
         ],
         [
-          "uploadarea.ReturnValue",
+          "whenupload.ReturnValue",
           "upload.Condition"
         ],
         [
           "entry.Area",
-          "sharesarea.A"
+          "whenshares.A"
         ],
         [
-          "sharesarea.ReturnValue",
+          "whenshares.ReturnValue",
           "shares.Condition"
         ],
         [

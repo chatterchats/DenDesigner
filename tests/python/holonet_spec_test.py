@@ -263,9 +263,10 @@ class GeneratedSpecTests(unittest.TestCase):
         committed = {p.name: p.read_text() for p in lint_specs.GENERATED.glob('*.json')}
         self.assertEqual(sorted(fresh), sorted(committed), 'Run python3 -I unreal/specs/runtime.py')
         self.assertEqual([n for n in fresh if fresh[n] != committed[n]], [], 'Run python3 -I unreal/specs/runtime.py')
-        pins = lint_specs.engine_pins(lint_specs.load(lint_specs.head_baseline()))
-        known = set(lint_specs.lint(lint_specs.load(lint_specs.head_baseline()), pins)[0])
-        problems, _ = lint_specs.lint(lint_specs.load(lint_specs.GENERATED), pins)
+        baseline = lint_specs.load(lint_specs.head_baseline())
+        pins, pairs = lint_specs.engine_pins(baseline), lint_specs.tree_pairs(baseline)
+        known = set(lint_specs.lint(baseline, pins, pairs)[0])
+        problems, _ = lint_specs.lint(lint_specs.load(lint_specs.GENERATED), pins, pairs)
         self.assertEqual([p for p in problems if p not in known], [])
 
 

@@ -24,6 +24,8 @@ AREAS = [('BrowseArea', 'browse'), ('BrowseDenArea', 'browse_dens'), ('UploadAre
 
 
 def fill(widget, padding=None):
+    if isinstance(padding, dict):
+        padding = padding['Padding']
     widget['slot'] = dict(widget.get('slot', {}), Size='(SizeRule=Fill,Value=1)', **({'Padding': padding} if padding else {}))
     return widget
 
@@ -229,8 +231,8 @@ def account():
         hbox('AccountActions', [e.button('RememberCommunity', 'Remember on this PC: Off', 14), e.button('DisconnectCommunity', 'Disconnect', 14), e.button('ForgetCommunity', 'Forget', 14)], slot=gap(6, 6)),
         e.text('CommunitySecurity', 'Remember on this PC saves the game key on this computer as plain text: anyone with that file can use it. Leave it off to stay connected for this session only; Forget removes the saved key. The key field clears when you connect or close.', 13, e.DIM, wrap=True, slot=gap(4, 12)),
         e.button('CommunityWebsite', 'Get a key at zcom.app/account', 14, 'outline')],
-        slot={'Size': '(SizeRule=Fill,Value=1)', 'Padding': '(Left=24,Top=20,Right=24,Bottom=16)'})
-    return area('AccountArea', [sized('AccountWidth', column, width=760, slot={'HorizontalAlignment': 'HAlign_Left'})])
+        slot={'Padding': '(Left=24,Top=20,Right=24,Bottom=16)'})
+    return area('AccountArea', [sized('AccountWidth', column, width=760, slot={'HorizontalAlignment': 'HAlign_Left', 'Size': '(SizeRule=Fill,Value=1)'})])
 
 
 def dens():

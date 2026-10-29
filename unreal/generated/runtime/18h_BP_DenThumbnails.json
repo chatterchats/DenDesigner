@@ -3512,12 +3512,12 @@
       ],
       "locals": [
         {
-          "name": "Found",
+          "name": "IsKnown",
           "type": "bool",
           "default": "false"
         },
         {
-          "name": "Size",
+          "name": "KnownSize",
           "type": "vector"
         }
       ],
@@ -3559,25 +3559,25 @@
         {
           "id": "keep",
           "kind": "set",
-          "var": "local:Size"
+          "var": "local:KnownSize"
         },
         {
           "id": "yes",
           "kind": "set",
-          "var": "local:Found",
+          "var": "local:IsKnown",
           "defaults": {
-            "Found": "true"
+            "IsKnown": "true"
           }
         },
         {
           "id": "foundvalue",
           "kind": "get",
-          "var": "local:Found"
+          "var": "local:IsKnown"
         },
         {
           "id": "sizevalue",
           "kind": "get",
-          "var": "local:Size"
+          "var": "local:KnownSize"
         }
       ],
       "links": [
@@ -3607,14 +3607,14 @@
         ],
         [
           "read.Item",
-          "keep.Size"
+          "keep.KnownSize"
         ],
         [
-          "foundvalue.Found",
+          "foundvalue.IsKnown",
           "result.Found"
         ],
         [
-          "sizevalue.Size",
+          "sizevalue.KnownSize",
           "result.Size"
         ],
         [

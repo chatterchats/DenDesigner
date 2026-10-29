@@ -109,10 +109,10 @@ def remember_footprint():
 
 def footprint():
     g=Graph();arr(g,'find','Find',get(g,'FootprintNames'));g.wire(('entry.Name','find.ItemToFind'));branch(g,'known',op(g,'found','GreaterEqual_IntInt','find.ReturnValue',B=0))
-    arr(g,'read','Get',get(g,'FootprintSizes'));g.wire(('find.ReturnValue','read.Index'));set_value(g,'keep','local:Size','read.Item')
-    g.set('yes','local:Found','true');g.get('foundvalue','local:Found');g.get('sizevalue','local:Size');g.wire(('foundvalue.Found','result.Found'),('sizevalue.Size','result.Size'))
+    arr(g,'read','Get',get(g,'FootprintSizes'));g.wire(('find.ReturnValue','read.Index'));set_value(g,'keep','local:KnownSize','read.Item')
+    g.set('yes','local:IsKnown','true');g.get('foundvalue','local:IsKnown');g.get('sizevalue','local:KnownSize');g.wire(('foundvalue.IsKnown','result.Found'),('sizevalue.KnownSize','result.Size'))
     g.chain('entry','known','keep','yes','result');g.chain('known.else','result')
-    return g.function('CompositionFootprint',inputs=[v('Name','string')],outputs=[v('Found','bool'),v('Size','vector')],locals=[v('Found','bool','false'),v('Size','vector')])
+    return g.function('CompositionFootprint',inputs=[v('Name','string')],outputs=[v('Found','bool'),v('Size','vector')],locals=[v('IsKnown','bool','false'),v('KnownSize','vector')])
 
 
 def spec():
