@@ -21277,10 +21277,6 @@
           "update.execute"
         ],
         [
-          "update.then",
-          "result.execute"
-        ],
-        [
           "same.else",
           "next.execute"
         ],
@@ -21295,10 +21291,6 @@
         [
           "none.then",
           "notarget.execute"
-        ],
-        [
-          "notarget.then",
-          "result.execute"
         ]
       ]
     },

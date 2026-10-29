@@ -168,7 +168,7 @@ def match_title():
     branch(g,'same',call(g,'match',STR+'EqualEqual_StriStri',{'A':'name.Item','B':get(g,'CommunityUploadName')}))
     set_value(g,'pick','HolonetShareTarget','i.Cursor');g.set('update','HolonetShareUpdate','true')
     set_value(g,'next','local:Cursor',op(g,'inc','Add_IntInt','i.Cursor',B=1));g.set('none','HolonetShareUpdate','false');g.set('notarget','HolonetShareTarget','-1')
-    g.chain('entry','more','same','pick','update','result');g.chain('same.else','next','more');g.chain('more.else','none','notarget','result')
+    g.chain('entry','more','same','pick','update');g.chain('same.else','next','more');g.chain('more.else','none','notarget')
     return g.function('MatchHolonetShareTitle',locals=[v('Cursor','int','0')])
 
 

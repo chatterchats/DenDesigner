@@ -133,10 +133,11 @@ def lint(specs, baseline_pins, baseline_tree=None):
         for fname, graph in graphs(spec):
             where = f'{name}:{fname}'
             nodes = {n['id']: n for n in graph.get('nodes', [])}
-            ids = set(nodes) | {'entry', 'result'}
             local = {v['name'] for v in graph.get('locals', [])}
             inputs = {v['name'] for v in graph.get('inputs', [])}
             outputs = {v['name'] for v in graph.get('outputs', [])}
+            # The kit only makes a result node for a function with outputs.
+            ids = set(nodes) | {'entry'} | ({'result'} if outputs else set())
             # The kit compares node ids without case.
             dupes = [k for k, c in collections.Counter(n['id'].lower() for n in graph.get('nodes', [])).items() if c > 1]
             if dupes:
