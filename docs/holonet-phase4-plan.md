@@ -187,17 +187,14 @@ Deviations from the mockup, to stay within engine calls the project already uses
   official Wine-SDK bridge build, the proxy and lifecycle smoke tests, ZComShare's
   `npm run dev`, live zcom.app.
 
-To check against `../ZComShare/docs/api.md` (written from this plan; the API
-docs were not available):
+API formats, checked against ZComShare `docs/api.md` and `src/` (f3187cb):
 
-- `/api/v1/compositions`: confirmed by `tests/fixtures/sharing/holonet-gallery-page.json`
-  (1-based `page`, `pages`, `total`, full listing items); covered by a bridge test.
-- `/api/v1/my/listings` items: `code`, `title`, `latest_revision` (or
-  `revision`), `import_count`, `hidden` (or `visibility: "hidden"`),
-  `updated_at`.
-- Begin upload takes `changelog`; the bridge sends it only for updates. The uploaded
-  JSON carries `dependencies.packs[{id, mount, version, title, url}]` and
-  `metadata.footprint_cm`.
+- `/api/v1/compositions`: 1-based `page`, `pages`, `total`, full listing items
+  (also `tests/fixtures/sharing/holonet-gallery-page.json`, covered by a bridge test).
+- `/api/v1/my/listings`: listing items plus `visibility` (`public`/`hidden`).
+- `/api/v1/game/profile`: `display_name`.
+- Begin upload takes `changelog`; the build file's `dependencies.packs[{id, mount,
+  version, title, url}]` (an empty `url` is allowed) and `metadata.footprint_cm`.
 
 Local development build: `DD_SERVICE_HOST=localhost DD_SERVICE_PORT=3000
 DD_SERVICE_INSECURE=1 bash native/community/build.sh` (recorded in
