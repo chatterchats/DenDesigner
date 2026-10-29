@@ -22,6 +22,7 @@ RUNTIME = '/DenDesignerGF/Runtime/'
 EDITOR = '/DenDesignerGF/Editor/'
 HOST = RUNTIME + 'BP_DenEditorHost'
 ITEM = EDITOR + 'BP_DenCatalogItem'
+LAYOUT_SAVE = RUNTIME + 'BP_DenLayoutSave'
 FIXTURES = ROOT / 'tests/fixtures/sharing'
 ENGINE.setdefault(KML + 'BreakRotator', lambda InRot=(0, 0, 0): dict(Roll=InRot[0], Pitch=InRot[1], Yaw=InRot[2]))
 
@@ -49,7 +50,10 @@ class HolonetSpecTests(unittest.TestCase):
             'ReleaseCommunityMailbox': lambda obj: None,
             'CancelCommunityFetch': lambda obj: None,
             'RefreshCommunityDetailPreview': lambda obj: None,
+            'EnsureCompositionService': lambda obj: None,
+            'ListPresets': lambda obj: {'Names': list(self.library), 'Status': 1},
         })
+        self.library = []
         self.catalog = self.sim.instance(RUNTIME + 'BP_DenCatalog')
         self.panel = self.sim.widgets(EDITOR + 'WBP_DenHolonet')
         self.host = self.sim.instance(HOST, CatalogProvider=self.catalog, CommunityPanel=self.panel, CommunityToken='tok', UIOpen=True)
@@ -70,7 +74,7 @@ class HolonetSpecTests(unittest.TestCase):
         self.sim.run(self.host, 'ReadCommunityGallery')
 
     def test_cards_readiness_and_library_badge(self):
-        self.host.vars['CommunitySourceNames'] = ['HoloNet base-game fix H7854VMD']
+        self.library = ['HoloNet base-game fix H7854VMD']
         self.load_gallery(self.listings)
         v = self.host.vars
         self.assertEqual(v['CommunityBrowseCodes'], ['T93765D1', 'H7854VMD'])
@@ -86,6 +90,33 @@ class HolonetSpecTests(unittest.TestCase):
         self.assertEqual(rows[0].vars['Preview'], 'Needs Arcade Cabinets “Deluxe” (prop pack)')
         self.assertEqual(len(self.panel.vars['CommunityListings'].items), 2)
         self.assertEqual(self.panel.vars['GalleryStatus'].text, 'Page 1 of 1 · builds: 2')
+
+    def test_library_badge_survives_previews_and_appears_after_an_import(self):
+        self.load_gallery(self.listings)
+        rows = self.host.vars['CommunityBrowseRows']
+        self.assertEqual(rows[1].vars['Detail'], 'by Rook · 1 parts')
+        self.library = ['HoloNet base-game fix H7854VMD']
+        self.sim.run(self.host, 'RefreshCommunityCardDetails')  # what an import does
+        self.assertEqual(rows[1].vars['Detail'], 'by Rook · 1 parts · IN LIBRARY')
+        self.sim.run(self.host, 'RefreshCommunityCardDetail', Index=1)  # what a finished preview does
+        self.assertEqual(rows[1].vars['Detail'], 'by Rook · 1 parts · IN LIBRARY')
+
+    def test_add_and_place_now_starts_placing_the_saved_build(self):
+        placed = []
+        document = self.sim.instance(LAYOUT_SAVE)
+        document.vars['Entries'] = [object()]
+        self.sim.overrides.update(CanEdit=lambda obj: {'Ready': True}, ValidateComposition=lambda obj, Document=None: {'Accepted': True},
+                                  RefreshCompositionLibrary=lambda obj: None, CompositionLibraryCurrent=lambda obj: {'Accepted': True},
+                                  SavePreset=lambda obj, Name='', Document=None: {'Status': 1, 'CleanName': Name},
+                                  SetEditorPanel=lambda obj, Name='': obj.vars.update(ActivePanel=Name),
+                                  LoadEditorComposition=lambda obj, Name='': placed.append(Name))
+        self.host.vars.update(CommunityDocument=document, CommunityExpected=1, CommunityName='Lamp corner H7854VMD', CommunityPending=True,
+                              CommunityRequest='DOWNLOAD/H7854VMD', CommunityPlaceAfterImport=True)
+        result = self.sim.run(self.host, 'CommitCommunityImport', Token='tok')
+        self.assertTrue(result['Accepted'])
+        self.assertEqual(placed, ['Lamp corner H7854VMD'])
+        self.assertEqual(self.host.vars['ActivePanel'], 'compositions')
+        self.assertFalse(self.host.vars['CommunityPlaceAfterImport'])
 
     def test_installed_pack_makes_a_build_ready(self):
         self.catalog.vars['RegisteredPackIDs'] = ['arcade-cabinets']
@@ -193,6 +224,23 @@ class HolonetSpecTests(unittest.TestCase):
         self.sim.run(self.host, 'PickHolonetSource', Key='y')
         self.assertEqual((self.host.vars['HolonetShareTarget'], self.host.vars['HolonetShareUpdate']), (-1, False))
         self.assertEqual(self.panel.vars['PublishTitle'].text, 'old shelf')  # a typed title is kept
+
+    def test_update_target_found_when_my_shares_arrives_after_the_pick(self):
+        self.host.vars['CommunityProfile'] = 'Connected as Rook'
+        def review(obj):
+            obj.vars['CommunityUploadName'] = obj.vars['CommunitySourceName']
+        self.sim.overrides.update(SelectCommunitySourceCard=lambda obj, Key='': obj.vars.update(CommunitySourceName='old shelf'),
+                                  ReviewCommunityComposition=review, EnsureHolonetShares=lambda obj: None)
+        self.sim.run(self.host, 'PickHolonetSource', Key='x')  # My Shares not loaded yet
+        self.assertEqual((self.host.vars['HolonetShareTarget'], self.host.vars['HolonetShareUpdate']), (-1, False))
+        self.my_shares()  # the page lands
+        self.assertEqual((self.host.vars['HolonetShareTarget'], self.host.vars['HolonetShareUpdate']), (1, True))
+        self.host.vars['CommunityArea'] = 'upload'
+        self.sim.run(self.host, 'ShareHolonetUpdate')
+        self.assertEqual(self.host.vars['CommunityArea'], 'upload')  # no detour through My Shares
+        self.sim.run(self.host, 'ShareHolonetNew')
+        self.my_shares()  # a later reload does not undo "Share as a new build"
+        self.assertFalse(self.host.vars['HolonetShareUpdate'])
 
     def test_areas_rail_and_subtitle(self):
         self.sim.overrides.update(EnsureHolonetShares=lambda obj: None, StyleEditorToggle=lambda obj, **kw: obj.vars.setdefault('toggled', []).append((kw['Label'].name, kw['On'])))

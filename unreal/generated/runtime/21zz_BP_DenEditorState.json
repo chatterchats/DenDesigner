@@ -985,6 +985,11 @@
       "default": "false"
     },
     {
+      "name": "HolonetMatchPending",
+      "type": "bool",
+      "default": "false"
+    },
+    {
       "name": "HolonetSharesPage",
       "type": "int"
     },
@@ -19643,195 +19648,6 @@
       ]
     },
     {
-      "name": "CommunityCodeInLibrary",
-      "inputs": [
-        {
-          "name": "Code",
-          "type": "string"
-        }
-      ],
-      "outputs": [
-        {
-          "name": "Found",
-          "type": "bool"
-        }
-      ],
-      "locals": [
-        {
-          "name": "Cursor",
-          "type": "int",
-          "default": "0"
-        },
-        {
-          "name": "InLibrary",
-          "type": "bool",
-          "default": "false"
-        }
-      ],
-      "nodes": [
-        {
-          "id": "i",
-          "kind": "get",
-          "var": "local:Cursor"
-        },
-        {
-          "id": "getCommunitySourceNames",
-          "kind": "get",
-          "var": "CommunitySourceNames"
-        },
-        {
-          "id": "count",
-          "kind": "array_call",
-          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
-          "defaults": {}
-        },
-        {
-          "id": "within",
-          "kind": "call",
-          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
-          "defaults": {}
-        },
-        {
-          "id": "more",
-          "kind": "branch"
-        },
-        {
-          "id": "name",
-          "kind": "array_call",
-          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
-          "defaults": {}
-        },
-        {
-          "id": "spaced",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
-          "defaults": {
-            "A": " "
-          }
-        },
-        {
-          "id": "contains",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Contains",
-          "defaults": {
-            "bUseCase": "false"
-          }
-        },
-        {
-          "id": "match",
-          "kind": "branch"
-        },
-        {
-          "id": "inc",
-          "kind": "call",
-          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
-          "defaults": {
-            "B": "1"
-          }
-        },
-        {
-          "id": "next",
-          "kind": "set",
-          "var": "local:Cursor"
-        },
-        {
-          "id": "yes",
-          "kind": "set",
-          "var": "local:InLibrary",
-          "defaults": {
-            "InLibrary": "true"
-          }
-        },
-        {
-          "id": "found",
-          "kind": "get",
-          "var": "local:InLibrary"
-        }
-      ],
-      "links": [
-        [
-          "getCommunitySourceNames.CommunitySourceNames",
-          "count.TargetArray"
-        ],
-        [
-          "i.Cursor",
-          "within.A"
-        ],
-        [
-          "count.ReturnValue",
-          "within.B"
-        ],
-        [
-          "within.ReturnValue",
-          "more.Condition"
-        ],
-        [
-          "getCommunitySourceNames.CommunitySourceNames",
-          "name.TargetArray"
-        ],
-        [
-          "i.Cursor",
-          "name.Index"
-        ],
-        [
-          "entry.Code",
-          "spaced.B"
-        ],
-        [
-          "name.Item",
-          "contains.SearchIn"
-        ],
-        [
-          "spaced.ReturnValue",
-          "contains.Substring"
-        ],
-        [
-          "contains.ReturnValue",
-          "match.Condition"
-        ],
-        [
-          "i.Cursor",
-          "inc.A"
-        ],
-        [
-          "inc.ReturnValue",
-          "next.Cursor"
-        ],
-        [
-          "found.InLibrary",
-          "result.Found"
-        ],
-        [
-          "entry.then",
-          "more.execute"
-        ],
-        [
-          "more.then",
-          "match.execute"
-        ],
-        [
-          "match.then",
-          "yes.execute"
-        ],
-        [
-          "yes.then",
-          "result.execute"
-        ],
-        [
-          "match.else",
-          "next.execute"
-        ],
-        [
-          "next.then",
-          "more.execute"
-        ],
-        [
-          "more.else",
-          "result.execute"
-        ]
-      ]
-    },
-    {
       "name": "ShowCommunityListings",
       "locals": [
         {
@@ -21292,6 +21108,197 @@
         [
           "entry.then",
           "open.execute"
+        ]
+      ]
+    },
+    {
+      "name": "MatchHolonetShareTitle",
+      "locals": [
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "getHolonetShareTitles",
+          "kind": "get",
+          "var": "HolonetShareTitles"
+        },
+        {
+          "id": "count",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "more",
+          "kind": "branch"
+        },
+        {
+          "id": "name",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "getCommunityUploadName",
+          "kind": "get",
+          "var": "CommunityUploadName"
+        },
+        {
+          "id": "match",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StriStri",
+          "defaults": {}
+        },
+        {
+          "id": "same",
+          "kind": "branch"
+        },
+        {
+          "id": "pick",
+          "kind": "set",
+          "var": "HolonetShareTarget"
+        },
+        {
+          "id": "update",
+          "kind": "set",
+          "var": "HolonetShareUpdate",
+          "defaults": {
+            "HolonetShareUpdate": "true"
+          }
+        },
+        {
+          "id": "inc",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "next",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "none",
+          "kind": "set",
+          "var": "HolonetShareUpdate",
+          "defaults": {
+            "HolonetShareUpdate": "false"
+          }
+        },
+        {
+          "id": "notarget",
+          "kind": "set",
+          "var": "HolonetShareTarget",
+          "defaults": {
+            "HolonetShareTarget": "-1"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getHolonetShareTitles.HolonetShareTitles",
+          "count.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "count.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "more.Condition"
+        ],
+        [
+          "getHolonetShareTitles.HolonetShareTitles",
+          "name.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "name.Index"
+        ],
+        [
+          "name.Item",
+          "match.A"
+        ],
+        [
+          "getCommunityUploadName.CommunityUploadName",
+          "match.B"
+        ],
+        [
+          "match.ReturnValue",
+          "same.Condition"
+        ],
+        [
+          "i.Cursor",
+          "pick.HolonetShareTarget"
+        ],
+        [
+          "i.Cursor",
+          "inc.A"
+        ],
+        [
+          "inc.ReturnValue",
+          "next.Cursor"
+        ],
+        [
+          "entry.then",
+          "more.execute"
+        ],
+        [
+          "more.then",
+          "same.execute"
+        ],
+        [
+          "same.then",
+          "pick.execute"
+        ],
+        [
+          "pick.then",
+          "update.execute"
+        ],
+        [
+          "update.then",
+          "result.execute"
+        ],
+        [
+          "same.else",
+          "next.execute"
+        ],
+        [
+          "next.then",
+          "more.execute"
+        ],
+        [
+          "more.else",
+          "none.execute"
+        ],
+        [
+          "none.then",
+          "notarget.execute"
+        ],
+        [
+          "notarget.then",
+          "result.execute"
         ]
       ]
     },

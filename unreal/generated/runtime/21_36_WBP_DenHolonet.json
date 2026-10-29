@@ -1456,7 +1456,8 @@
                                             "name": "CommunityPreview",
                                             "variable": true,
                                             "props": {
-                                              "Visibility": "Hidden"
+                                              "Visibility": "Hidden",
+                                              "Brush.ImageSize": "(X=250,Y=250)"
                                             },
                                             "slot": {
                                               "HorizontalAlignment": "HAlign_Center",

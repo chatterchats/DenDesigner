@@ -65,12 +65,10 @@ def add_listing():
     arr(g,'count','Length',get(g,'CommunityBrowseRows'));branch(g,'room',op(g,'roomcheck','Less_IntInt','count.ReturnValue',B=24))
     code=item(g,'code',fields,1);title=item(g,'title',fields,2);creator=item(g,'creator',fields,3);parts=item(g,'parts',fields,4);revision=item(g,'rev',fields,5)
     base=eq(g,'base',item(g,'basevalue',fields,7),'1');unknown=op(g,'unknown','Greater_IntInt',call(g,'unknowncount',STR+'Conv_StringToInt',{'InString':item(g,'unknownvalue',fields,8)}),B=0)
-    g.call('library','self:CommunityCodeInLibrary');g.wire((code,'library.Code'))
-    detail=join(g,'detail',prefix(g,'by','by ',creator),join(g,'partcaption',prefix(g,'partprefix',' · ',parts),call(g,'inlibrary',KML+':SelectString',{'bPickA':'library.Found'},A=' parts · IN LIBRARY',B=' parts')))
     ready=call(g,'readytext',KML+':SelectString',{'bPickA':base},A='Ready to import · base game only',B='Ready to import')
     ready=call(g,'unknowntext',KML+':SelectString',{'A':call(g,'unknownjoin',STR+'Concat_StrStr',{'A':ready},B=' · some parts come from mods HoloNet doesn’t list; they won’t appear unless you have them'),'B':ready,'bPickA':unknown})
     key=join(g,'key',get(g,'CommunityToken'),prefix(g,'keyindex',':',number(g,'index','count.ReturnValue')))
-    g.call('new','self:NewCatalogItem');g.wire((key,'new.Key'),(title,'new.Title'),(detail,'new.Detail'))
+    g.call('new','self:NewCatalogItem');g.wire((key,'new.Key'),(title,'new.Title'))
     g.wire((ready,'new.Preview'))
     description=call(g,'escapes',STR+'Replace',{'SourceString':item(g,'description',fields,11)},From='\\\\',To='\t',SearchCase='CaseSensitive')
     description=call(g,'breaks',STR+'Replace',{'SourceString':description},From='\\n',To='\n',SearchCase='CaseSensitive')
@@ -81,6 +79,8 @@ def add_listing():
     previous='new'
     for suffix,value in values.items():
         arr(g,'keep'+suffix,'Add',get(g,'CommunityBrowse'+suffix));g.wire((value,'keep'+suffix+'.NewItem'));g.chain(previous,'keep'+suffix);previous='keep'+suffix
+    # The row just added is the last one (pure nodes re-read after the adds).
+    arr(g,'added','Length',get(g,'CommunityBrowseRows'));g.call('caption','self:RefreshCommunityCardDetail');g.wire((op(g,'addedindex','Subtract_IntInt','added.ReturnValue',B=1),'caption.Index'));g.chain(previous,'caption')
     # pack rows
     branch(g,'pack',combine(g,'packcheck',[eq(g,'packword',tag,'pack'),length(g,'packcount',fields,7)]))
     arr(g,'last','Length',get(g,'CommunityBrowseCodes'));index=op(g,'lastindex','Subtract_IntInt','last.ReturnValue',B=1)
@@ -99,7 +99,7 @@ def add_listing():
     arr(g,'seturl','Set',get(g,'CommunityBrowsePackURLs'));g.wire((index,'seturl.Index'),(item(g,'packurl',fields,6),'seturl.Item'))
     arr(g,'row','Get',get(g,'CommunityBrowseRows'));g.wire((index,'row.Index'))
     set_value(g,'preview',ITEM+':Preview',call(g,'needsshort',STR+'Concat_StrStr',{'A':prefix(g,'needsshortprefix','Needs ',packtitle)},B=' (prop pack)'));g.wire(('row.Item','preview.self'))
-    g.chain('entry','card','room','library','new');g.chain('card.else','pack','owner','catalog','have','setuses');g.chain('have.else','firstmissing','setneeds','setnotready','seturl','preview');g.chain('catalog.else','firstmissing')
+    g.chain('entry','card','room','new');g.chain('card.else','pack','owner','catalog','have','setuses');g.chain('have.else','firstmissing','setneeds','setnotready','seturl','preview');g.chain('catalog.else','firstmissing')
     return g.function('AddCommunityListing',inputs=[v('Line','string')])
 
 
@@ -155,7 +155,7 @@ def finish_preview():
     set_value(g,'document',ITEM+':ThumbnailDocument','entry.Document');g.wire(('row.Item','document.self'))
     path=prefix(g,'path','/ZComDen/CompositionThumbs/Public_',call(g,'suffix',STR+'Concat_StrStr',{'A':key},B='.Composition'))
     set_value(g,'pathset',ITEM+':AssetPath',path);g.wire(('row.Item','pathset.self'))
-    arr(g,'author','Get',get(g,'CommunityBrowseCreators'));g.wire((index,'author.Index'));arr(g,'parts','Length',prop(g,'entriesvalue',LAYOUT,'Entries','entry.Document'));set_value(g,'detail',ITEM+':Detail',join(g,'partcaption','author.Item',prefix(g,'partprefix',' · parts: ',number(g,'partsnum','parts.ReturnValue'))));g.wire(('row.Item','detail.self'))
+    g.call('detail','self:RefreshCommunityCardDetail');g.wire((index,'detail.Index'))
     arr(g,'cachecount','Length',get(g,'CommunityCachedKeys'));branch(g,'room',op(g,'roomcheck','Less_IntInt','cachecount.ReturnValue',B=64));arr(g,'existing','Contains',get(g,'CommunityCachedKeys'));g.wire((key,'existing.ItemToFind'));branch(g,'exists','existing.ReturnValue')
     arr(g,'cachekey','Add',get(g,'CommunityCachedKeys'));g.wire((key,'cachekey.NewItem'));arr(g,'cachedoc','Add',get(g,'CommunityCachedDocuments'));g.wire(('entry.Document','cachedoc.NewItem'))
     g.set('pending','CommunityPending','false');g.set('release','CommunityDocument');g.call('mailbox','self:ReleaseCommunityMailbox');g.call('refresh','self:RefreshCommunityDetail');call(g,'regenerate','/Script/UMG.ListViewBase:RegenerateAllEntries',{'self':widget(g,'listrefresh','CommunityPanel','CommunityListings')});g.chain('refresh','regenerate')
@@ -179,6 +179,28 @@ def detail_image():
     g.chain('entry','active','bounds','valid','brush','show');g.chain('valid.else','hide');g.chain('bounds.else','hide');return g.function('RefreshCommunityDetailPreview')
 
 
+def card_detail():
+    """Card caption: creator, parts and IN LIBRARY. Set when the card arrives,
+    again when its preview loads, and for every card after an import."""
+    g=Graph();index='entry.Index';arr(g,'count','Length',get(g,'CommunityBrowseParts'))
+    branch(g,'bounds',combine(g,'boundscheck',[op(g,'min','GreaterEqual_IntInt',index,B=0),op(g,'max','Less_IntInt',index,'count.ReturnValue')]))
+    rows={}
+    for name in ['Rows','Codes','Creators','Parts']:
+        arr(g,name.lower(),'Get',get(g,'CommunityBrowse'+name));g.wire((index,name.lower()+'.Index'));rows[name]=name.lower()+'.Item'
+    g.call('library','self:CommunityCodeInLibrary');g.wire((rows['Codes'],'library.Code'))
+    detail=join(g,'detail',prefix(g,'by','by ',rows['Creators']),join(g,'partcaption',prefix(g,'partprefix',' · ',rows['Parts']),call(g,'inlibrary',KML+':SelectString',{'bPickA':'library.Found'},A=' parts · IN LIBRARY',B=' parts')))
+    set_value(g,'set',ITEM+':Detail',detail);g.wire((rows['Rows'],'set.self'))
+    g.chain('entry','bounds','library','set');return g.function('RefreshCommunityCardDetail',inputs=[v('Index','int')])
+
+
+def card_details():
+    g=Graph();g.get('i','local:Cursor');arr(g,'count','Length',get(g,'CommunityBrowseRows'));branch(g,'more',op(g,'within','Less_IntInt','i.Cursor','count.ReturnValue'))
+    g.call('detail','self:RefreshCommunityCardDetail');g.wire(('i.Cursor','detail.Index'));set_value(g,'next','local:Cursor',op(g,'inc','Add_IntInt','i.Cursor',B=1))
+    call(g,'regenerate','/Script/UMG.ListViewBase:RegenerateAllEntries',{'self':widget(g,'list','CommunityPanel','CommunityListings')})
+    g.chain('entry','more','detail','next','more');g.chain('more.else','regenerate')
+    return g.function('RefreshCommunityCardDetails',locals=[v('Cursor','int','0')])
+
+
 def browse_available():
     g=Graph();available=combine(g,'available',[call(g,'idle',KML+':Not_PreBool',{'A':get(g,'CommunityPending')}),call(g,'catalog',STR+'StartsWith',{'SourceString':get(g,'CommunityRequest')},InPrefix='CATALOG/',SearchCase='CaseSensitive'),call(g,'preview',STR+'StartsWith',{'SourceString':get(g,'CommunityRequest')},InPrefix='PREVIEW/',SearchCase='CaseSensitive')],True)
     g.wire((available,'result.Allowed'));g.chain('entry','result');return g.function('CanStartCommunityBrowse',outputs=[v('Allowed','bool')])
@@ -186,13 +208,17 @@ def browse_available():
 
 def code_in_library(code_var='entry.Code'):
     """Whether a local composition came from this share: imports are named
-    "<title> <code>" (CommitCommunityImport)."""
-    g=Graph();g.get('i','local:Cursor');arr(g,'count','Length',get(g,'CommunitySourceNames'));branch(g,'more',op(g,'within','Less_IntInt','i.Cursor','count.ReturnValue'))
-    arr(g,'name','Get',get(g,'CommunitySourceNames'));g.wire(('i.Cursor','name.Index'))
+    "<title> <code>" (CommitCommunityImport). Reads the store's names, so an
+    import shows at once."""
+    from runtime_layout_ui import PRESETS
+    from runtime_session import method
+    g=Graph();g.call('ensure','self:EnsureCompositionService');method(g,'list',PRESETS,'ListPresets',get(g,'CompositionService'));set_value(g,'names','local:Names','list.Names')
+    g.get('i','local:Cursor');g.get('all','local:Names');arr(g,'count','Length','all.Names');branch(g,'more',op(g,'within','Less_IntInt','i.Cursor','count.ReturnValue'))
+    arr(g,'name','Get','all.Names');g.wire(('i.Cursor','name.Index'))
     branch(g,'match',call(g,'contains',STR+'Contains',{'SearchIn':'name.Item','Substring':prefix(g,'spaced',' ',code_var)},bUseCase='false'))
     set_value(g,'next','local:Cursor',op(g,'inc','Add_IntInt','i.Cursor',B=1));g.set('yes','local:InLibrary','true');g.get('found','local:InLibrary');g.wire(('found.InLibrary','result.Found'))
-    g.chain('entry','more','match','yes','result');g.chain('match.else','next','more');g.chain('more.else','result')
-    return g.function('CommunityCodeInLibrary',inputs=[v('Code','string')],outputs=[v('Found','bool')],locals=[v('Cursor','int','0'),v('InLibrary','bool','false')])
+    g.chain('entry','ensure','list','names','more','match','yes','result');g.chain('match.else','next','more');g.chain('more.else','result')
+    return g.function('CommunityCodeInLibrary',inputs=[v('Code','string')],outputs=[v('Found','bool')],locals=[v('Cursor','int','0'),v('InLibrary','bool','false'),v('Names','string[]')])
 
 
 def show_listings():
@@ -260,4 +286,4 @@ def place():
 def variables():
     return [v('CommunityBrowseSort','string','newest'),v('CommunityBrowseUsable','bool','false'),v('CommunityPlaceAfterImport','bool','false'),v('CommunityBrowseParts','string[]'),v('CommunityBrowseFootprints','string[]'),v('CommunityBrowseDates','string[]'),v('CommunityBrowseReady','bool[]'),v('CommunityBrowsePackURLs','string[]'),v('CommunityBrowsePage','int'),v('CommunityBrowsePages','int'),v('CommunityBrowseTotal','int'),v('CommunityBrowseSelected','int','-1'),v('CommunityPreviewCursor','int'),v('CommunityPreviewIndex','int'),v('CommunityBrowseLoaded','bool'),v('CommunityBrowseSearch','string'),v('CommunityBrowseRows','object:'+ITEM+'[]')]+[v('CommunityBrowse'+name,'string[]') for name in ['Codes','Descriptions','Requirements','Creators']]+[v('CommunityBrowseRevisions','int[]'),v('CommunityBrowseDocuments','object:'+LAYOUT+'[]'),v('CommunityBrowseStates','int[]'),v('CommunityCachedKeys','string[]'),v('CommunityCachedDocuments','object:'+LAYOUT+'[]')]
 def functions():return [refresh(),ensure(),search(),page(True),page(False),gallery(),add_listing(),select(),detail(),preview_poll(),finish_preview(),download(),detail_image(),browse_available(),
-                         code_in_library(),show_listings(),sort('newest'),sort('imports'),usable(),style_browse(),get_pack(),place(),add_to_library()]
+                         code_in_library(),card_detail(),card_details(),show_listings(),sort('newest'),sort('imports'),usable(),style_browse(),get_pack(),place(),add_to_library()]

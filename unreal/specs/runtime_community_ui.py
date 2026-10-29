@@ -94,7 +94,7 @@ def copy(url):
     g.call('copy','self:StartCommunityFetch');g.wire((command,'copy.Input'));branch(g,'idle',call(g,'notpending',KML+':Not_PreBool',{'A':get(g,'CommunityPending')}));g.chain('entry','idle','hascode','copy');return g.function('CopyCommunityURL' if url else 'CopyCommunityCode')
 
 
-def variables():return [v('CommunityArea','string','browse'),v('CommunityMessage','string'),v('HolonetShareTarget','int','-1'),v('HolonetShareUpdate','bool','false'),v('HolonetShowResult','bool','false'),
+def variables():return [v('CommunityArea','string','browse'),v('CommunityMessage','string'),v('HolonetShareTarget','int','-1'),v('HolonetShareUpdate','bool','false'),v('HolonetShowResult','bool','false'),v('HolonetMatchPending','bool','false'),
                          v('HolonetSharesPage','int'),v('HolonetSharesPages','int'),v('HolonetSharesTotal','int','-1'),v('HolonetSharesStale','bool','true'),v('HolonetShareRevisions','int[]'),
                          v('HolonetShareCodes','string[]'),v('HolonetShareTitles','string[]'),v('HolonetShareRows','object:'+ITEM+'[]')]+[v(n,'string') for n in ['CommunityUploadJSON','CommunityUploadName','CommunityUploadLibraryID','CommunityUploadThumbnail','CommunityPublicURL','CommunityPublicCode','CommunityProfile','CommunityDenName']]
 def functions():return [area(),requirements(),review(),external(),copy(True),copy(False)]+share_functions()
@@ -148,18 +148,28 @@ def pick_source():
 
 def chosen_source():
     """Review the chosen saved composition at once and suggest the share to
-    update: the one with the same title, if any. A typed title is kept."""
+    update: the one with the same title, if any. A typed title is kept. My
+    Shares may still be loading; ReadHolonetShares matches again when it lands."""
     g=Graph();g.set('fresh','HolonetShowResult','false');g.call('review','self:ReviewCommunityComposition')
     branch(g,'empty',call(g,'notitle',STR+'EqualEqual_StrStr',{'A':read(g,'PublishTitle')},B=''))
     call(g,'title','/Script/UMG.EditableTextBox:SetText',{'self':widget(g,'titlewidget','CommunityPanel','PublishTitle'),'InText':get(g,'CommunityUploadName')})
+    g.set('pending','HolonetMatchPending','true');g.call('match','self:MatchHolonetShareTitle')
+    g.call('refresh','self:RefreshHolonetShare');g.call('stale','self:EnsureHolonetShares')
+    g.chain('entry','fresh','pending','stale','review','empty','title','match','refresh');g.chain('empty.else','match')
+    return g.function('ShareChosenSource')
+
+
+def match_title():
+    """The share with the chosen composition's title becomes the update target;
+    with none, Share as a new build."""
+    g=Graph()
     g.get('i','local:Cursor');arr(g,'count','Length',get(g,'HolonetShareTitles'));branch(g,'more',op(g,'within','Less_IntInt','i.Cursor','count.ReturnValue'))
     arr(g,'name','Get',get(g,'HolonetShareTitles'));g.wire(('i.Cursor','name.Index'))
     branch(g,'same',call(g,'match',STR+'EqualEqual_StriStri',{'A':'name.Item','B':get(g,'CommunityUploadName')}))
     set_value(g,'pick','HolonetShareTarget','i.Cursor');g.set('update','HolonetShareUpdate','true')
     set_value(g,'next','local:Cursor',op(g,'inc','Add_IntInt','i.Cursor',B=1));g.set('none','HolonetShareUpdate','false');g.set('notarget','HolonetShareTarget','-1')
-    g.call('refresh','self:RefreshHolonetShare');g.call('stale','self:EnsureHolonetShares')
-    g.chain('entry','fresh','stale','review','empty','title','more','same','pick','update','refresh');g.chain('empty.else','more');g.chain('same.else','next','more');g.chain('more.else','none','notarget','refresh')
-    return g.function('ShareChosenSource',locals=[v('Cursor','int','0')])
+    g.chain('entry','more','same','pick','update','result');g.chain('same.else','next','more');g.chain('more.else','none','notarget','result')
+    return g.function('MatchHolonetShareTitle',locals=[v('Cursor','int','0')])
 
 
 def share_selected():
@@ -176,11 +186,13 @@ def share_selected():
 def share_mode(update):
     g=Graph()
     if update:
+        # A share with this title is the target; only without one, pick it in My Shares.
         branch(g,'targeted',has_target(g));g.set('on','HolonetShareUpdate','true');g.call('refresh','self:RefreshHolonetShare')
+        g.call('match','self:MatchHolonetShareTitle');branch(g,'matched',has_target(g,'matchedtarget'))
         g.set('message','CommunityMessage','Pick the share to update in My Shares.');g.call('feedback','self:RefreshCommunityFeedback');g.call('shares','self:SetCommunityArea',Area='shares')
-        g.chain('entry','targeted','on','refresh');g.chain('targeted.else','message','feedback','shares')
+        g.chain('entry','targeted','on','refresh');g.chain('targeted.else','match','matched','on');g.chain('matched.else','message','feedback','shares')
     else:
-        g.set('off','HolonetShareUpdate','false');g.call('refresh','self:RefreshHolonetShare');g.chain('entry','off','refresh')
+        g.set('off','HolonetShareUpdate','false');g.set('nomatch','HolonetMatchPending','false');g.call('refresh','self:RefreshHolonetShare');g.chain('entry','off','nomatch','refresh')
     return g.function('ShareHolonetUpdate' if update else 'ShareHolonetNew')
 
 
@@ -252,8 +264,10 @@ def read_shares():
     text(g,'statusset','CommunityPanel','SharesStatus',value=status)
     text(g,'countset','CommunityPanel','SharesCount',value=call(g,'counttext',KML+':SelectString',{'A':prefix(g,'countprefix','Shares: ',number(g,'countnum',get(g,'HolonetSharesTotal'))),'bPickA':op(g,'known','GreaterEqual_IntInt',get(g,'HolonetSharesTotal'),B=0)},B=''))
     g.call('share','self:RefreshHolonetShare')
+    # A composition picked while this page loaded is matched now.
+    branch(g,'matchpending',get(g,'HolonetMatchPending'));g.set('matched','HolonetMatchPending','false');g.call('match','self:MatchHolonetShareTitle')
     g.chain('entry','headerok','pages','total');g.chain('clearlist','more','row','new');g.chain('show','next','more');g.chain('row.else','next')
-    g.chain('more.else','fresh','pending','release','statusset','countset','share')
+    g.chain('more.else','fresh','pending','release','statusset','countset','matchpending','matched','match','share');g.chain('matchpending.else','share')
     return g.function('ReadHolonetShares',locals=[v('Cursor','int','2')])
 
 
@@ -280,4 +294,4 @@ def pick_share():
     return g.function('PickHolonetShare',inputs=[v('Key','string')])
 
 
-def share_functions():return [refresh_share(),pick_source(),chosen_source(),share_selected(),share_mode(True),share_mode(False),submit(),ensure_shares(),load_shares(),read_shares(),shares_page(True),shares_page(False),reload_shares(),pick_share()]
+def share_functions():return [refresh_share(),pick_source(),chosen_source(),match_title(),share_selected(),share_mode(True),share_mode(False),submit(),ensure_shares(),load_shares(),read_shares(),shares_page(True),shares_page(False),reload_shares(),pick_share()]

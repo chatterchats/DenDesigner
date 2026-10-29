@@ -25,6 +25,10 @@ Versions restart at 0.9.20 ahead of 1.0.0; this follows 1.1.0-preview.22.
   A cancelled share deletes its unfinished upload.
 - `native/community/e2e/run.sh`: Wine end-to-end tests of the bridge, including
   caught crashes, cancels, timeouts and fuzzed input.
+- In-game test fixes: IN LIBRARY no longer disappears when a card's preview
+  loads, and appears right after an import; the detail preview is full size;
+  Add and place now starts placing; picking a composition finds the share to
+  update even while My Shares is still loading, so Update needs one click.
 - **Prop packs**: optional `nexus_url` in pack.json and the in-editor tool, checked
   the same way as HoloNet (a Star Wars Zero Company page on nexusmods.com; else a
   Nexus title search). `BP_DenPropPack` gains `NexusURL`.

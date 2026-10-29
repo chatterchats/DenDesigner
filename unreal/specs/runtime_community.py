@@ -144,13 +144,14 @@ def commit():
     method(g,'save',PRESETS,'SavePreset',get(g,'CompositionService'),{'Name':get(g,'CommunityName'),'Document':get(g,'CommunityDocument')});branch(g,'saved',op(g,'success','EqualEqual_IntInt','save.Status',B=1))
     set_value(g,'selected','SelectedComposition','save.CleanName');g.set('pending','CommunityPending','false');g.set('token','CommunityToken','');g.set('release','CommunityDocument')
     set_value(g,'message','CommunityMessage',call(g,'caption',STR+'Concat_StrStr',{'B':get(g,'CommunityReport')},A='Added to your Compositions. ' ))
-    g.call('cards','self:RefreshCompositionLibrary');g.set('yes','local:OK','true');finish_bool(g)
+    g.call('cards','self:RefreshCompositionLibrary');g.call('badges','self:RefreshCommunityCardDetails');g.set('yes','local:OK','true');finish_bool(g)
     # Add and place now: open Compositions and place the new card, as Place selected does.
     branch(g,'place',get(g,'CommunityPlaceAfterImport'));g.set('placed','CommunityPlaceAfterImport','false')
-    g.call('compositions','self:SetEditorPanel',Name='compositions');g.call('placing','self:QueueCompositionAction',Name='load_composition',Argument='')
+    # Start placing directly (Place selected ends here too); a failure leaves Compositions open with its message.
+    g.call('compositions','self:SetEditorPanel',Name='compositions');g.call('placing','self:LoadEditorComposition');g.wire(('save.CleanName','placing.Name'))
     branch(g,'preview',call(g,'previewmode',STR+'StartsWith',{'SourceString':get(g,'CommunityRequest')},InPrefix='PREVIEW/',SearchCase='CaseSensitive'));g.call('cachepreview','self:FinishCommunityPreview');g.wire((get(g,'CommunityDocument'),'cachepreview.Document'))
     g.chain('entry','current','ready','readycheck','validate','valid','complete','preview','cachepreview','yes','result');g.chain('preview.else','refresh','fresh','freshcheck','duplicate')
-    g.chain('duplicate.else','save','saved','pending','token','release','message','cards','place','placed','compositions','placing','yes','result');g.chain('place.else','yes')
+    g.chain('duplicate.else','save','saved','pending','token','release','message','cards','badges','place','placed','compositions','placing','yes','result');g.chain('place.else','yes')
     for pin in ['current.else','readycheck.else','valid.else','complete.else','freshcheck.else','duplicate.then','saved.else']:g.chain(pin,'result')
     return g.function('CommitCommunityImport',inputs=[v('Token','string')],outputs=[v('Accepted','bool')],locals=[v('OK','bool','false')])
 

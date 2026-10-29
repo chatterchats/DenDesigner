@@ -143,7 +143,7 @@ def browse():
     picture = sized('DetailPictureSize', {'class': '/Script/UMG.Overlay', 'name': 'DetailPictureLayers', 'children': [
         {'class': '/Script/UMG.Border', 'name': 'DetailPictureBack', 'props': e.surface(e.rgba(0.004, 0.005, 0.006), None, 6, '(Left=0,Top=0,Right=0,Bottom=0)'),
          'slot': {'HorizontalAlignment': 'HAlign_Fill', 'VerticalAlignment': 'VAlign_Fill'}},
-        {'class': '/Script/UMG.Image', 'name': 'CommunityPreview', 'variable': True, 'props': {'Visibility': 'Hidden'},
+        {'class': '/Script/UMG.Image', 'name': 'CommunityPreview', 'variable': True, 'props': {'Visibility': 'Hidden', 'Brush.ImageSize': '(X=250,Y=250)'},
          'slot': {'HorizontalAlignment': 'HAlign_Center', 'VerticalAlignment': 'VAlign_Center'}}]}, width=DETAIL - 40, height=250, slot=gap(0, 12))
     facts = vbox('Facts', [hbox('Fact' + name, [e.text('Fact' + name + 'Label', label, 15, e.SOFT, slot={'Size': '(SizeRule=Fill,Value=1)'}), e.text('Fact' + name + 'Value', '', 15, e.GOLD if name == 'Code' else e.WHITE)], slot=gap(4, 4))
                            for name, label in [('Parts', 'Parts'), ('Footprint', 'Footprint'), ('Code', 'Code')]], slot=gap(4, 8))
