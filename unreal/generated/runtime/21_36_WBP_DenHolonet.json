@@ -252,7 +252,7 @@
                                         "class": "/Script/UMG.HorizontalBox",
                                         "name": "RailCompositionsContent",
                                         "slot": {
-                                          "HorizontalAlignment": "HAlign_Center",
+                                          "HorizontalAlignment": "HAlign_Left",
                                           "VerticalAlignment": "VAlign_Center"
                                         },
                                         "children": [
@@ -341,7 +341,7 @@
                                         "class": "/Script/UMG.HorizontalBox",
                                         "name": "RailDensContent",
                                         "slot": {
-                                          "HorizontalAlignment": "HAlign_Center",
+                                          "HorizontalAlignment": "HAlign_Left",
                                           "VerticalAlignment": "VAlign_Center"
                                         },
                                         "children": [
@@ -387,13 +387,13 @@
                                 "class": "/Script/UMG.TextBlock",
                                 "name": "RailDensSoon",
                                 "props": {
-                                  "Text": "Dens: coming soon",
+                                  "Text": "Coming soon",
                                   "Font.Size": 11,
                                   "ColorAndOpacity": "(SpecifiedColor=(R=0.386,G=0.423,B=0.479,A=1),ColorUseRule=UseColor_Specified)"
                                 },
                                 "variable": true,
                                 "slot": {
-                                  "Padding": "(Left=14,Top=0,Right=0,Bottom=0)"
+                                  "Padding": "(Left=37,Top=0,Right=0,Bottom=4)"
                                 }
                               },
                               {
@@ -457,7 +457,7 @@
                                         "class": "/Script/UMG.HorizontalBox",
                                         "name": "RailShareContent",
                                         "slot": {
-                                          "HorizontalAlignment": "HAlign_Center",
+                                          "HorizontalAlignment": "HAlign_Left",
                                           "VerticalAlignment": "VAlign_Center"
                                         },
                                         "children": [
@@ -546,7 +546,7 @@
                                         "class": "/Script/UMG.HorizontalBox",
                                         "name": "RailSharesContent",
                                         "slot": {
-                                          "HorizontalAlignment": "HAlign_Center",
+                                          "HorizontalAlignment": "HAlign_Left",
                                           "VerticalAlignment": "VAlign_Center"
                                         },
                                         "children": [
@@ -635,7 +635,7 @@
                                         "class": "/Script/UMG.HorizontalBox",
                                         "name": "RailAccountContent",
                                         "slot": {
-                                          "HorizontalAlignment": "HAlign_Center",
+                                          "HorizontalAlignment": "HAlign_Left",
                                           "VerticalAlignment": "VAlign_Center"
                                         },
                                         "children": [
@@ -687,7 +687,7 @@
                                 },
                                 "variable": true,
                                 "slot": {
-                                  "Padding": "(Left=14,Top=0,Right=0,Bottom=0)"
+                                  "Padding": "(Left=37,Top=0,Right=0,Bottom=4)"
                                 }
                               },
                               {

@@ -109,13 +109,22 @@ def title_bar():
                 spacer('TitleSpace'), pill, close])]}
 
 
+def rail_entry(name, label, icon):
+    """A rail toggle with its icon and caption on the left, so every entry lines up."""
+    entry = e.toggle(name, label, icon)
+    entry['children'][0]['children'][0]['slot']['HorizontalAlignment'] = 'HAlign_Left'
+    return entry
+
+
 def rail():
+    # Hints sit under their entry's caption: button padding 10 + icon 20 + gap 7.
+    hint = {'Padding': '(Left=37,Top=0,Right=0,Bottom=4)'}
     entries = [e.label('RailBrowseLabel', 'Browse', slot=gap(6, 8))]
-    entries += [e.toggle(n, l, i) for n, l, _, i in RAIL_BROWSE]
-    entries.append(e.text('RailDensSoon', 'Dens: coming soon', 11, e.DIM, slot={'Padding': '(Left=14,Top=0,Right=0,Bottom=0)'}))
+    entries += [rail_entry(n, l, i) for n, l, _, i in RAIL_BROWSE]
+    entries.append(e.text('RailDensSoon', 'Coming soon', 11, e.DIM, slot=hint))
     entries.append(e.label('RailYoursLabel', 'Yours', slot=gap(18, 8)))
-    entries += [e.toggle(n, l, i) for n, l, _, i in RAIL_YOURS]
-    entries.append(e.text('SharesCount', '', 12, e.DIM, slot={'Padding': '(Left=14,Top=0,Right=0,Bottom=0)'}))
+    entries += [rail_entry(n, l, i) for n, l, _, i in RAIL_YOURS]
+    entries.append(e.text('SharesCount', '', 12, e.DIM, slot=hint))
     entries.append(spacer('RailSpace'))
     code = e.box('CommunityCode', 'Code or zcom.app link', select_all=True)
     entries.append(panel('CodeBox', [
