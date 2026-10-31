@@ -21,7 +21,7 @@ def run(unreal,root,source,fixture,field,field_name,check):
         return list(names),status
 
     def save(name,doc=source):
-        return manager.call_method('SavePreset',(name,doc))
+        return manager.call_method('SavePreset',(name,doc,''))
 
     def load(name):
         return manager.call_method('LoadPreset',(name,))

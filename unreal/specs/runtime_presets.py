@@ -6,7 +6,9 @@ from runtime_store import call, branch, combine, STR, ARRAY
 def library_specs(root, layout, entry_type, struct, save_variables, store_spec, arr, unpack):
     preset=root+'ST_DenPresetValue'
     library=root+'BP_DenPresetLibrary'
-    yield '08_ST_DenPresetValue',struct(preset,[v('Name','string'),v('GameVersion','string'),v('HasCompositionAnchor','bool'),v('CompositionAnchor','vector'),v('Entries','struct:'+entry_type+'[]')])
+    yield '08_ST_DenPresetValue',struct(preset,[v('Name','string'),v('GameVersion','string'),v('HasCompositionAnchor','bool'),v('CompositionAnchor','vector'),v('Entries','struct:'+entry_type+'[]'),
+                                                    # The HoloNet code a composition was imported from (empty for your own).
+                                                    v('ShareCode','string')])
     yield '09_BP_DenPresetLibrary',dict(kind='blueprint',path=library,parent='/Script/Engine.SaveGame',
                                       variables=save_variables(preset,'preset-library'))
     yield '10_BP_DenPresetStore',store_spec(root,library,'BP_DenPresetStore','AsBP Den Preset Library','Library')
@@ -124,7 +126,7 @@ def library_specs(root, layout, entry_type, struct, save_variables, store_spec, 
         for field in ['Entries','GameVersion','HasCompositionAnchor','CompositionAnchor']:
             g.get('source'+field,layout+':'+field)
             g.wire(('entry.Document','source'+field+'.self'),('source'+field+'.'+field,'preset.'+field))
-        g.wire(('name.CleanName','preset.Name'))
+        g.wire(('name.CleanName','preset.Name'),('entry.ShareCode','preset.ShareCode'))
         found=call(g,'found',KML+':GreaterEqual_IntInt',{'A':'find.Index'},B=0)
         branch(g,'replace',found)
         arr(g,'set','Set','rows.Entries',bSizeToFit='false')
@@ -139,7 +141,7 @@ def library_specs(root, layout, entry_type, struct, save_variables, store_spec, 
         g.chain('replace.else','add','save')
         g.chain('hasdoc.else','bad','result')
         g.chain('current.else','bad')
-        return g.function('SavePreset',inputs=[v('Name','string'),v('Document','object:'+layout)],
+        return g.function('SavePreset',inputs=[v('Name','string'),v('Document','object:'+layout),v('ShareCode','string')],
                           outputs=[v('Status','int'),v('CleanName','string')],locals=[v('ResultStatus','int','7')])
 
     def load():
@@ -213,5 +215,69 @@ def library_specs(root, layout, entry_type, struct, save_variables, store_spec, 
         g.chain('usable.else','result')
         return g.function('ListPresets',outputs=[v('Names','string[]'),v('Status','int')],locals=[v('ResultNames','string[]'),v('Cursor','int','0')])
 
+    def find_code():
+        """The entry imported from a HoloNet code (case-insensitive), or -1: its ShareCode, or for an import that kept
+        its old name, "<title> <code>"."""
+        g=Graph();g.call('open','self:OpenLibrary');branch(g,'usable',call(g,'healthy',KML+':LessEqual_IntInt',{'A':'open.Status'},B=2))
+        branch(g,'given',call(g,'hascode',STR+'NotEqual_StrStr',{'A':'entry.Code'},B=''))
+        g.get('rows',library+':Entries');g.wire(('open.Library','rows.self'));arr(g,'length','Length','rows.Entries')
+        g.get('i','local:Cursor');branch(g,'loop',call(g,'within',KML+':Less_IntInt',{'A':'i.Cursor','B':'length.ReturnValue'}))
+        arr(g,'row','Get','rows.Entries');g.wire(('i.Cursor','row.Index'));unpack(g,'fields',preset,'row.Item')
+        spaced=call(g,'spaced',STR+'Concat_StrStr',{'B':'entry.Code'},A=' ')
+        branch(g,'match',combine(g,'either',[call(g,'same',STR+'EqualEqual_StriStri',{'A':'entry.Code','B':'fields.ShareCode'}),
+                                             call(g,'named',STR+'Contains',{'SearchIn':'fields.Name','Substring':spaced},bUseCase='false')],True))
+        g.set('found','local:FoundIndex');g.wire(('i.Cursor','found.FoundIndex'));g.set('foundname','local:FoundName');g.wire(('fields.Name','foundname.FoundName'))
+        g.set('advance','local:Cursor');g.wire((call(g,'next',KML+':Add_IntInt',{'A':'i.Cursor'},B=1),'advance.Cursor'))
+        g.get('out','local:FoundIndex');g.get('outname','local:FoundName');g.wire(('out.FoundIndex','result.Index'),('outname.FoundName','result.Name'))
+        g.chain('entry','given','open','usable','loop','match','found','foundname','result');g.chain('given.else','result');g.chain('usable.else','result');g.chain('loop.else','result');g.chain('match.else','advance','loop')
+        return g.function('FindShareCode',inputs=[v('Code','string')],outputs=[v('Index','int'),v('Name','string')],
+                          locals=[v('Cursor','int','0'),v('FoundIndex','int','-1'),v('FoundName','string')])
+
+    def code_suffix():
+        """Splits "<title> <code>", the name imports had before ShareCode: a code is 8 Crockford base32 capitals
+        with at least one digit (so a capitalised last word is not taken for one)."""
+        g=Graph();call(g,'split',STR+'Split',{'SourceString':'entry.Name'},InStr=' ',SearchCase='CaseSensitive',SearchDir='FromEnd')
+        title=call(g,'title',STR+'TrimTrailing',{'SourceString':'split.LeftS'})
+        branch(g,'shape',combine(g,'shapeok',['split.ReturnValue',call(g,'eight',KML+':EqualEqual_IntInt',{'A':call(g,'len',STR+'Len',{'S':'split.RightS'})},B=8),
+                                              call(g,'titled',KML+':Greater_IntInt',{'A':call(g,'titlelen',STR+'Len',{'S':title})},B=0)]))
+        g.get('i','local:Cursor');branch(g,'loop',call(g,'within',KML+':Less_IntInt',{'A':'i.Cursor'},B=8))
+        char=call(g,'char',STR+'GetSubstring',{'SourceString':'split.RightS','StartIndex':'i.Cursor'},Length=1)
+        branch(g,'allowed',call(g,'base32',STR+'Contains',{'Substring':char},SearchIn='0123456789ABCDEFGHJKMNPQRSTVWXYZ',bUseCase='true'))
+        g.get('digits','local:HasDigit');g.set('digit','local:HasDigit')
+        g.wire((combine(g,'anydigit',['digits.HasDigit',call(g,'isdigit',STR+'Contains',{'Substring':char},SearchIn='0123456789',bUseCase='true')],True),'digit.HasDigit'))
+        g.set('advance','local:Cursor');g.wire((call(g,'next',KML+':Add_IntInt',{'A':'i.Cursor'},B=1),'advance.Cursor'))
+        g.get('hasdigit','local:HasDigit');branch(g,'coded','hasdigit.HasDigit');g.set('yes','local:IsCoded','true')
+        g.get('out','local:IsCoded');g.wire(('out.IsCoded','result.Valid'),(title,'result.Title'),('split.RightS','result.Code'))
+        g.chain('entry','shape','loop','allowed','digit','advance','loop');g.chain('loop.else','coded','yes','result')
+        for pin in ['shape.else','allowed.else','coded.else']:g.chain(pin,'result')
+        return g.function('SplitShareCode',inputs=[v('Name','string')],outputs=[v('Valid','bool'),v('Title','string'),v('Code','string')],
+                          locals=[v('Cursor','int','0'),v('HasDigit','bool','false'),v('IsCoded','bool','false')])
+
+    def adopt_codes():
+        """Once per editor session: an old import "<title> <code>" keeps its code as ShareCode and, when no other
+        entry is called <title>, is renamed <title>. Saves the library only when something changed."""
+        g=Graph();g.call('open','self:OpenLibrary');branch(g,'usable',call(g,'healthy',KML+':LessEqual_IntInt',{'A':'open.Status'},B=2))
+        g.get('rows',library+':Entries');g.wire(('open.Library','rows.self'));arr(g,'length','Length','rows.Entries')
+        g.get('i','local:Cursor');branch(g,'loop',call(g,'within',KML+':Less_IntInt',{'A':'i.Cursor','B':'length.ReturnValue'}))
+        arr(g,'row','Get','rows.Entries');g.wire(('i.Cursor','row.Index'));unpack(g,'fields',preset,'row.Item')
+        branch(g,'uncoded',call(g,'nocode',STR+'EqualEqual_StrStr',{'A':'fields.ShareCode'},B=''))
+        g.call('split','self:SplitShareCode');g.wire(('fields.Name','split.Name'));branch(g,'coded','split.Valid')
+        g.call('find','self:FindPreset');g.wire(('open.Library','find.Library'),('split.Title','find.Name'))
+        name=call(g,'newname',KML+':SelectString',{'A':'split.Title','B':'fields.Name','bPickA':call(g,'free',KML+':Less_IntInt',{'A':'find.Index'},B=0)})
+        g.node('value','make_struct',struct=preset)
+        for field in ['Entries','GameVersion','HasCompositionAnchor','CompositionAnchor']:g.wire(('fields.'+field,'value.'+field))
+        g.wire((name,'value.Name'),('split.Code','value.ShareCode'))
+        arr(g,'set','Set','rows.Entries',bSizeToFit='false');g.wire(('i.Cursor','set.Index'),('value.ST_DenPresetValue','set.Item'))
+        g.set('changed','local:AnyChange','true')
+        g.set('advance','local:Cursor');g.wire((call(g,'next',KML+':Add_IntInt',{'A':'i.Cursor'},B=1),'advance.Cursor'))
+        g.get('anychange','local:AnyChange');branch(g,'dirty','anychange.AnyChange')
+        g.get('librarykey','LibraryKey');g.call('save','self:SaveLibrary',Draft='false',BaseRevision=0,BaseID='');g.wire(('librarykey.LibraryKey','save.Key'),('open.Library','save.Document'))
+        g.set('savedstatus','local:ResultStatus');g.wire(('save.Status','savedstatus.ResultStatus'))
+        g.get('statusout','local:ResultStatus');g.wire(('statusout.ResultStatus','result.Status'),('anychange.AnyChange','result.Changed'))
+        g.chain('entry','open','usable','loop','uncoded','split','coded','find','set','changed','advance','loop');g.chain('uncoded.else','advance');g.chain('coded.else','advance')
+        g.chain('loop.else','dirty','save','savedstatus','result');g.chain('dirty.else','result');g.chain('usable.else','result')
+        return g.function('AdoptShareCodes',outputs=[v('Status','int'),v('Changed','bool')],locals=[v('Cursor','int','0'),v('AnyChange','bool','false'),v('ResultStatus','int','1')])
+
     yield '11_BP_DenPresets',dict(kind='blueprint',path=root+'BP_DenPresets',parent=root+'BP_DenPresetStore',
-                                variables=[v('LibraryKey','string','presets')],functions=[normalize(),open_library(),find(),save(),load(),delete(),listing()])
+                                variables=[v('LibraryKey','string','presets')],functions=[normalize(),open_library(),find(),save(),load(),delete(),listing(),
+                                                                                       find_code(),code_suffix(),adopt_codes()])

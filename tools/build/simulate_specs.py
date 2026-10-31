@@ -245,7 +245,7 @@ class Frame:
             value = self.pin(node['id'], next(iter(self._pins_in(node['id']))) if self._pins_in(node['id']) else '')
             return dict(value or {})
         if kind == 'make_struct':
-            return {node['struct'].rsplit('.', 1)[-1]: {p: self.pin(node['id'], p) for p in self._pins_in(node['id'])}}
+            return {node['struct'].rsplit('/', 1)[-1].rsplit('.', 1)[-1]: {p: self.pin(node['id'], p) for p in self._pins_in(node['id'])}}
         if kind in ('call', 'array_call'):
             return self.call(node)
         raise SimulationError(f'cannot evaluate {kind} {node["id"]}')
@@ -386,6 +386,7 @@ class Widget:
 
     def __init__(self, name):
         self.name, self.text, self.visibility, self.items, self.color = name, '', 'Visible', [], None
+        self.focused, self.offsets, self.position = False, None, None
 
     def __repr__(self):
         return f'<{self.name} {self.text!r}>'
@@ -401,6 +402,13 @@ UMG = {
     '/Script/UMG.EditableTextBox:SetText': _set_text,
     '/Script/UMG.EditableTextBox:GetText': lambda self=None: {'ReturnValue': self.text},
     '/Script/UMG.Widget:SetVisibility': lambda self=None, InVisibility='Visible': (setattr(self, 'visibility', InVisibility), {})[1],
+    '/Script/UMG.TextBlock:GetText': lambda self=None: {'ReturnValue': self.text},
+    '/Script/UMG.Widget:SetKeyboardFocus': lambda self=None: (setattr(self, 'focused', True), {})[1],
+    # A canvas slot stands for its widget: the widget records its offsets and position.
+    '/Script/UMG.WidgetLayoutLibrary:SlotAsCanvasSlot': lambda Widget=None: {'ReturnValue': Widget},
+    '/Script/UMG.CanvasPanelSlot:SetOffsets': lambda self=None, InOffset=None: (setattr(self, 'offsets', InOffset), {})[1],
+    '/Script/UMG.CanvasPanelSlot:SetPosition': lambda self=None, InPosition=None: (setattr(self, 'position', InPosition), {})[1],
+    '/Script/Engine.KismetMathLibrary:MakeVector2D': lambda X=0, Y=0: {'ReturnValue': (float(X), float(Y))},
     '/Script/UMG.ListView:ClearListItems': lambda self=None: (self.items.clear(), {})[1],
     '/Script/UMG.ListView:AddItem': lambda self=None, Item=None: (self.items.append(Item), {})[1],
     '/Script/UMG.ListViewBase:RegenerateAllEntries': lambda self=None: {},

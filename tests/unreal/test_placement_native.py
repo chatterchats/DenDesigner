@@ -39,12 +39,14 @@ def run(unreal,host,bus,get,field,check,settle,command,set_):
         emit('item',key);job=get(host,'PlacementJob')
         check(get(host,'PlacementActive') and job is not None and get(host,'ActivePanel')=='',
               'valid card closes catalog and owns one asynchronous asset job')
+        check(get(host,'RailAutoFold') and get(host,'RailLabels'),'placing folds the rail without changing its pin')
         unchanged('choosing a catalog card changes no layout or history')
         check(not host.call_method('CommitPlacement',(False,)), 'click before preview pose cannot create a prop')
         command('back')
         check(not get(host,'PlacementActive') and get(host,'PlacementJob') is None and not unreal.SystemLibrary.is_valid(job),
               'Escape during loading destroys the latent callback target without closing editor')
         check(get(host,'UIOpen'),'cancelling pending placement leaves editor open')
+        check(not get(host,'RailAutoFold'),'Escape gives the rail back its pin')
         emit('item',start());ghost=load()
         comp=ghost.get_component_by_class(unreal.StaticMeshComponent)
         check(comp.static_mesh==mesh and comp.get_collision_enabled()==unreal.CollisionEnabled.NO_COLLISION,
@@ -61,6 +63,7 @@ def run(unreal,host,bus,get,field,check,settle,command,set_):
         unchanged('preview transforms remain outside history')
         check(host.call_method('CommitPlacement',(True,)),'Shift-style placement accepts one transaction and retains preview')
         settle();check(get(host,'PlacementActive') and get(host,'PlacementGhost')==ghost,'repeat placement keeps the same ghost after world apply')
+        check(get(host,'RailAutoFold'),'the rail stays folded while Shift-click keeps placing')
         rows=[r for r in get(doc,'Entries') if field(r,'Key') not in [field(x,'Key') for x in baseline]]
         check(len(rows)==1 and field(rows[0],'Key')!='preview' and field(rows[0],'Position')==field(value,'Position') and field(rows[0],'Scale')==field(value,'Scale'),
               'placement commits a fresh stable identity and exact preview pose')
@@ -71,6 +74,7 @@ def run(unreal,host,bus,get,field,check,settle,command,set_):
         check(host.call_method('CommitPlacement',(False,)),'normal placement commits another independent instance')
         settle();check(not get(host,'PlacementActive') and get(host,'PlacementGhost') is None and not unreal.SystemLibrary.is_valid(ghost),
               'normal placement destroys its transient ghost and releases preview ownership')
+        check(not get(host,'RailAutoFold'),'a drop gives the rail back its pin')
         check(get(host,'HasSelection') and field(get(host,'Selected'),'Kind',__import__('runtime_pick').FACT)==0,'normal placement selects the newly applied managed prop')
         check(get(history,'Version')==next_version+2 and len(get(history,'UndoSteps'))==undo_count+2,'each placement creates exactly one history step')
         command('undo');settle();check(not get(host,'HasSelection') and get(host,'SelectionMessage')=='','undoing the selected placement quietly clears its selection')

@@ -15,7 +15,7 @@ def spec():
         e.row('LibraryRow',[e.button('LoadComposition','Place selected',14),e.button('ShareComposition','Share',14),e.button('DeleteComposition','Delete selected',14)]),
         e.text('Footer','',12,e.DIM,wrap=True),
     ])
-    g.click('SelectParts','composition_select');g.click('ClearParts','composition_clear')
+    g.click('ClosePanel','library_close');g.click('SelectParts','composition_select');g.click('ClearParts','composition_clear')
     g.click_with_text('SaveComposition','save_composition','CompositionName');g.commit('CompositionName','save_composition')
     # Focus loss must not save again after Enter or before the Save button click.
     g.links.remove(['CompositionName.then','CompositionName_event.execute'])

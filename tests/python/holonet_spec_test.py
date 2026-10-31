@@ -52,11 +52,14 @@ class HolonetSpecTests(unittest.TestCase):
             'RefreshCommunityDetailPreview': lambda obj: None,
             'EnsureCompositionService': lambda obj: None,
             'ListPresets': lambda obj: {'Names': list(self.library), 'Status': 1},
+            'FindShareCode': lambda obj, Code='': {'Index': 0 if Code in self.codes or any(n.lower().endswith(' ' + Code.lower()) for n in self.library) else -1, 'Name': self.codes.get(Code, '')},
         })
         self.library = []
+        self.codes = {}  # ShareCode -> composition name
         self.catalog = self.sim.instance(RUNTIME + 'BP_DenCatalog')
         self.panel = self.sim.widgets(EDITOR + 'WBP_DenHolonet')
-        self.host = self.sim.instance(HOST, CatalogProvider=self.catalog, CommunityPanel=self.panel, CommunityToken='tok', UIOpen=True)
+        self.toolbar = self.sim.widgets(EDITOR + 'WBP_DenToolbar')
+        self.host = self.sim.instance(HOST, CatalogProvider=self.catalog, CommunityPanel=self.panel, Toolbar=self.toolbar, CommunityToken='tok', UIOpen=True)
 
     def new_item(self, obj, **fields):
         item = self.sim.instance(ITEM)
@@ -91,6 +94,12 @@ class HolonetSpecTests(unittest.TestCase):
         self.assertEqual(len(self.panel.vars['CommunityListings'].items), 2)
         self.assertEqual(self.panel.vars['GalleryStatus'].text, 'Page 1 of 1 · builds: 2')
 
+    def test_library_badge_from_share_code(self):
+        self.library, self.codes = ['HoloNet base-game fix'], {'H7854VMD': 'HoloNet base-game fix'}
+        self.load_gallery(self.listings)
+        rows = self.host.vars['CommunityBrowseRows']
+        self.assertEqual([r.vars['Detail'] for r in rows], ['by Rook · 3 parts', 'by Rook · 1 parts · IN LIBRARY'])
+
     def test_library_badge_survives_previews_and_appears_after_an_import(self):
         self.load_gallery(self.listings)
         rows = self.host.vars['CommunityBrowseRows']
@@ -107,16 +116,65 @@ class HolonetSpecTests(unittest.TestCase):
         document.vars['Entries'] = [object()]
         self.sim.overrides.update(CanEdit=lambda obj: {'Ready': True}, ValidateComposition=lambda obj, Document=None: {'Accepted': True},
                                   RefreshCompositionLibrary=lambda obj: None, CompositionLibraryCurrent=lambda obj: {'Accepted': True},
-                                  SavePreset=lambda obj, Name='', Document=None: {'Status': 1, 'CleanName': Name},
+                                  SavePreset=lambda obj, Name='', Document=None, ShareCode='': {'Status': 1, 'CleanName': Name},
                                   SetEditorPanel=lambda obj, Name='': obj.vars.update(ActivePanel=Name),
                                   LoadEditorComposition=lambda obj, Name='': placed.append(Name))
-        self.host.vars.update(CommunityDocument=document, CommunityExpected=1, CommunityName='Lamp corner H7854VMD', CommunityPending=True,
-                              CommunityRequest='DOWNLOAD/H7854VMD', CommunityPlaceAfterImport=True)
+        self.host.vars.update(CommunityDocument=document, CommunityExpected=1, CommunityName='Lamp corner', CommunityFullName='Lamp corner H7854VMD',
+                              CommunityShareCode='H7854VMD', CommunityPending=True, CommunityRequest='DOWNLOAD/H7854VMD', CommunityPlaceAfterImport=True)
         result = self.sim.run(self.host, 'CommitCommunityImport', Token='tok')
         self.assertTrue(result['Accepted'])
-        self.assertEqual(placed, ['Lamp corner H7854VMD'])
+        self.assertEqual(placed, ['Lamp corner'])
         self.assertEqual(self.host.vars['ActivePanel'], 'compositions')
         self.assertFalse(self.host.vars['CommunityPlaceAfterImport'])
+
+    def import_as(self, names=(), codes=None):
+        """Commits an import of "Lamp corner" (H7854VMD) into a library with these names: (saved name, ShareCode) or None."""
+        saved = []
+        document = self.sim.instance(LAYOUT_SAVE)
+        document.vars['Entries'] = [object()]
+        self.codes = codes or {}
+        self.sim.overrides.update(CanEdit=lambda obj: {'Ready': True}, ValidateComposition=lambda obj, Document=None: {'Accepted': True},
+                                  RefreshCompositionLibrary=lambda obj: None, CompositionLibraryCurrent=lambda obj: {'Accepted': True},
+                                  SavePreset=lambda obj, Name='', Document=None, ShareCode='': saved.append((Name, ShareCode)) or {'Status': 1, 'CleanName': Name})
+        self.sim.engine['/Script/Engine.GameplayStatics:CreateSaveGameObject'] = lambda **kw: {'ReturnValue': document}
+        self.host.vars.update(CommunityDocument=document, CommunityExpected=1, CommunityPending=True, CommunityRequest='DOWNLOAD/H7854VMD', CommunityToken='tok',
+                              CompositionNames=list(names), CommunityPlaceAfterImport=False)
+        self.sim.run(self.host, 'BeginCommunityImport', Token='tok', Name='Lamp corner H7854VMD', Report='Base game only.', Count=1, Anchor=(0, 0, 0))
+        accepted = self.sim.run(self.host, 'CommitCommunityImport', Token='tok')['Accepted']
+        return saved[0] if accepted else None
+
+    def test_imports_get_clean_names_and_keep_their_code(self):
+        self.sim.overrides.update(NormalizeName=lambda obj, Name='': {'CleanName': Name.strip(), 'Valid': True}, EnsureCompositionService=lambda obj: None)
+        self.assertEqual(self.import_as(), ('Lamp corner', 'H7854VMD'))
+        # A taken title (names match case-insensitively) falls back to the old "<title> <code>" name.
+        self.assertEqual(self.import_as(['lamp CORNER']), ('Lamp corner H7854VMD', 'H7854VMD'))
+        # Already imported, by code or under its old name: stopped, as before.
+        self.assertIsNone(self.import_as(['Lamp corner'], {'H7854VMD': 'Lamp corner'}))
+        self.assertIsNone(self.import_as(['Lamp corner H7854VMD']))
+
+    def test_old_imports_adopt_their_code_once(self):
+        presets = EDITOR.replace('Editor', 'Runtime') + 'BP_DenPresets'
+        library = self.sim.instance(RUNTIME + 'BP_DenPresetLibrary')
+        row = lambda name, code='': {'Name': name, 'ShareCode': code, 'Entries': [], 'GameVersion': '', 'HasCompositionAnchor': True, 'CompositionAnchor': (0, 0, 0)}
+        library.vars['Entries'] = [row('Stack O\' Boxes 7FCX178E'), row('Lamp corner H7854VMD'), row('Lamp corner'),
+                                   row('Shelf STACKERS'), row('Bar K7MP2XQ9', 'K7MP2XQ9'), row('Mine')]
+        saves = []
+        self.sim.overrides.update(OpenLibrary=lambda obj: {'Library': library, 'Status': 1},
+                                  SaveLibrary=lambda obj, **kw: saves.append(kw) or {'Status': 1})
+        service = self.sim.instance(presets)
+        del self.sim.overrides['FindShareCode']  # the real lookup, not the host-side stub
+        find = lambda code: self.sim.run(service, 'FindShareCode', Code=code)['Index']
+        self.assertEqual([find(c) for c in ['k7mp2xq9', '7FCX178E', 'ZZZZ1111', '']], [4, 0, -1, -1])  # by code, by old name
+        result = self.sim.run(service, 'AdoptShareCodes')
+        self.assertEqual([(r['Name'], r['ShareCode']) for r in library.vars['Entries']],
+                         [('Stack O\' Boxes', '7FCX178E'), ('Lamp corner H7854VMD', 'H7854VMD'), ('Lamp corner', ''),
+                          ('Shelf STACKERS', ''), ('Bar K7MP2XQ9', 'K7MP2XQ9'), ('Mine', '')])
+        self.assertTrue(result['Changed'])
+        self.assertEqual(len(saves), 1)
+        self.assertEqual([find(c) for c in ['7fcx178e', 'H7854VMD']], [0, 1])
+        saves.clear()
+        self.assertFalse(self.sim.run(service, 'AdoptShareCodes')['Changed'])
+        self.assertEqual(saves, [])
 
     def test_installed_pack_makes_a_build_ready(self):
         self.catalog.vars['RegisteredPackIDs'] = ['arcade-cabinets']
@@ -172,7 +230,7 @@ class HolonetSpecTests(unittest.TestCase):
         self.assertEqual(v['HolonetShareRevisions'], [3, 2])
         self.assertEqual([i.vars['Title'] for i in self.panel.vars['ShareListings'].items],
                          ['Rook’s arcade nook — v2…  ·  T93765D1  ·  revision 3  ·  imports: 12  ·  Public', 'Old shelf  ·  H7854VMD  ·  revision 2  ·  imports: 0  ·  Hidden'])
-        self.assertEqual(self.panel.vars['SharesCount'].text, 'Shares: 2')
+        self.assertEqual(self.toolbar.vars['RailSharesCount'].text, '2')
         self.sim.run(self.host, 'PickHolonetShare', Key='share:1')
         self.assertEqual((v['HolonetShareTarget'], v['HolonetShareUpdate'], v['CommunityArea']), (1, True, 'upload'))
         self.assertEqual(self.panel.vars['ShareUpdateLabel'].text, 'Update Old shelf · H7854VMD (becomes revision 3)')
@@ -243,15 +301,152 @@ class HolonetSpecTests(unittest.TestCase):
         self.assertFalse(self.host.vars['HolonetShareUpdate'])
 
     def test_areas_rail_and_subtitle(self):
-        self.sim.overrides.update(EnsureHolonetShares=lambda obj: None, StyleEditorToggle=lambda obj, **kw: obj.vars.setdefault('toggled', []).append((kw['Label'].name, kw['On'])))
+        self.sim.overrides.update(EnsureHolonetShares=lambda obj: None, StyleEditorToggle=lambda obj, **kw: obj.vars.setdefault('toggled', []).append((kw['Back'].name, kw['On'])))
+        self.host.vars['ActivePanel'] = 'community'
         self.sim.run(self.host, 'SetCommunityArea', Area='shares')
         visible = {name for name in ['BrowseArea', 'BrowseDenArea', 'UploadArea', 'SharesArea', 'AccountArea'] if self.panel.vars[name].visibility == 'Visible'}
         self.assertEqual(visible, {'SharesArea'})
         self.assertEqual(self.panel.vars['HolonetSubtitle'].text, 'My Shares')
         rail = dict(t for t in self.host.vars['toggled'] if t[0].startswith('Rail'))
-        self.assertEqual({k for k, on in rail.items() if on}, {'RailSharesLabel'})
+        self.assertEqual({k for k, on in rail.items() if on}, {'RailSharesBack'})
         self.sim.run(self.host, 'SetCommunityArea', Area='browse')
         self.assertEqual(self.panel.vars['HolonetSubtitle'].text, 'Builds shared by other captains')
+
+    def test_rail_entries_open_holonet_on_their_area(self):
+        areas = []
+        self.sim.overrides.update(SetEditorPanel=lambda obj, Name='': obj.vars.update(ActivePanel=Name),
+                                  SetCommunityArea=lambda obj, Area='': areas.append(Area))
+        self.host.vars['ActivePanel'] = 'catalog'
+        self.sim.run(self.host, 'OpenHolonetArea', Area='shares')
+        # Opening the window shows the remembered area (CommunityPanelChanged), so no second switch.
+        self.assertEqual((self.host.vars['ActivePanel'], self.host.vars['CommunityArea'], areas), ('community', 'shares', []))
+        self.sim.run(self.host, 'OpenHolonetArea', Area='account')
+        self.assertEqual((self.host.vars['ActivePanel'], areas), ('community', ['account']))
+
+    def test_import_from_your_den_opens_browse_first(self):
+        fetched = []
+        self.sim.overrides.update(SetEditorPanel=lambda obj, Name='': obj.vars.update(ActivePanel=Name),
+                                  SetCommunityArea=lambda obj, Area='': obj.vars.update(CommunityArea=Area),
+                                  StartCommunityFetch=lambda obj, Input='': fetched.append((obj.vars['ActivePanel'], Input)))
+        self.host.vars.update(ActivePanel='layouts', CommunityArea='account')
+        self.sim.run(self.host, 'ImportCommunityCode', Input='K7MP2XQ9')
+        self.assertEqual((fetched, self.host.vars['CommunityArea']), ([('community', 'K7MP2XQ9')], 'browse'))
+        self.host.vars['CommunityArea'] = 'account'
+        self.sim.run(self.host, 'ImportCommunityCode', Input='H7854VMD')
+        self.assertEqual((fetched[-1], self.host.vars['CommunityArea']), (('community', 'H7854VMD'), 'account'))
+
+    def test_preload_connects_then_loads_my_shares_once(self):
+        steps = []
+        self.sim.overrides.update(CanEdit=lambda obj: {'Ready': True}, EnsureHolonetShares=lambda obj: steps.append('shares'),
+                                  StartCommunityFetch=lambda obj, Input='': steps.append(Input) or obj.vars.update(CommunityPending=True))
+        self.host.vars.update(CommunityProfile='', CommunityPending=False, HolonetPreload=0)
+        for _ in range(2):
+            self.sim.run(self.host, 'PollHolonetPreload')
+        self.assertEqual(steps, ['CONNECT'])  # waits while the connection request runs
+        self.host.vars.update(CommunityPending=False, CommunityProfile='Connected as Rook')
+        for _ in range(3):
+            self.sim.run(self.host, 'PollHolonetPreload')
+        self.assertEqual(steps, ['CONNECT', 'shares'])
+
+    def test_import_waits_for_a_running_request(self):
+        fetched = []
+        self.sim.overrides.update(CanEdit=lambda obj: {'Ready': True}, EnsureHolonetShares=lambda obj: None,
+                                  StartCommunityFetch=lambda obj, Input='': fetched.append(Input) or obj.vars.update(CommunityPending=True))
+        self.host.vars.update(ActivePanel='community', CommunityPending=True, HolonetPreload=2)
+        self.sim.run(self.host, 'ImportCommunityCode', Input='1CZZ6YPV')
+        self.assertEqual((fetched, self.host.vars['CommunityQueuedCode']), ([], '1CZZ6YPV'))
+        self.assertEqual(self.panel.vars['Footer'].text, 'Importing as soon as HoloNet finishes its current request…')
+        self.sim.run(self.host, 'PollHolonetPreload')
+        self.assertEqual(fetched, [])  # still busy
+        self.host.vars['CommunityPending'] = False
+        self.sim.run(self.host, 'PollHolonetPreload')
+        self.assertEqual((fetched, self.host.vars['CommunityQueuedCode']), (['1CZZ6YPV'], ''))
+        # Cancel drops a waiting import.
+        self.host.vars.update(CommunityPending=True, CommunityQueuedCode='H7854VMD')
+        self.sim.run(self.host, 'CancelHolonetRequest')
+        self.assertEqual(self.host.vars['CommunityQueuedCode'], '')
+
+    def test_rail_lights_the_open_entry_and_joins_its_content(self):
+        toggled = {}
+        self.sim.overrides.update(StyleEditorToggle=lambda obj, **kw: toggled.__setitem__(kw['Back'].name, kw['On']))
+        history = self.sim.instance(RUNTIME + 'BP_DenHistory')
+        history.vars['Version'] = 5
+        self.host.vars['History'] = history
+        t = self.toolbar.vars
+        # The folded rail's icon lights with its labelled entry.
+        for panel, area, lit, joined in [('', 'browse', set(), False), ('catalog', 'upload', {'CatalogBack', 'IconCatalogBack'}, True),
+                                         ('community', 'upload', {'RailShareBack', 'IconShareBack'}, True), ('settings', 'upload', set(), False)]:
+            self.host.vars.update(ActivePanel=panel, CommunityArea=area)
+            self.sim.run(self.host, 'RefreshEditorRail')
+            self.assertEqual({name for name, on in toggled.items() if on}, lit, panel)
+            self.assertFalse({'RailDensBack', 'IconDensBack'} & set(toggled))
+            self.assertEqual((t['RailJoined'].visibility, t['RailAlone'].visibility),
+                             ('HitTestInvisible', 'Collapsed') if joined else ('Collapsed', 'HitTestInvisible'), panel)
+        for profile, dot in [('Connected as Rook', 'HitTestInvisible'), ('Not connected.', 'Collapsed')]:
+            self.host.vars['CommunityProfile'] = profile
+            self.sim.run(self.host, 'RefreshEditorRail')
+            self.assertEqual((t['HolonetDot'].visibility, t['HolonetIconDot'].visibility), (dot, dot))
+        # The stored count holds while the layout is at the version the Storeroom last listed; folded, it's a badge.
+        self.host.vars.update(StoreCountVersion=5, StoreBuilding=False, StoreTotal=12)
+        self.sim.run(self.host, 'RefreshEditorRail')
+        self.assertEqual((t['StoreroomCount'].text, t['IconStoreroomBadgeText'].text, t['IconStoreroomBadge'].visibility), ('12', '12', 'HitTestInvisible'))
+        for change in [dict(StoreBuilding=True), dict(StoreCountVersion=4), dict(StoreTotal=0)]:
+            self.host.vars.update({'StoreCountVersion': 5, 'StoreBuilding': False, 'StoreTotal': 12, **change})
+            self.sim.run(self.host, 'RefreshEditorRail')
+            self.assertEqual((t['StoreroomCount'].text, t['IconStoreroomBadge'].visibility), ('', 'Collapsed'), change)
+        # My Shares' badge copies the count ReadHolonetShares wrote.
+        for count, shown in [('3', 'HitTestInvisible'), ('', 'Collapsed')]:
+            t['RailSharesCount'].text = count
+            self.sim.run(self.host, 'RefreshEditorRail')
+            self.assertEqual((t['IconSharesBadgeText'].text, t['IconSharesBadge'].visibility), (count, shown))
+
+    def test_rail_folds_to_icons_and_the_content_follows(self):
+        t = self.toolbar.vars
+        for labels, frame, icons, width, left in [(True, 'Visible', 'Collapsed', 232, 243), (False, 'Collapsed', 'Visible', 64, 75)]:
+            self.host.vars['RailLabels'] = labels
+            self.sim.run(self.host, 'RefreshEditorRail')
+            self.assertEqual((t['RailFrame'].visibility, t['RailIcons'].visibility), (frame, icons), labels)
+            self.assertEqual(t['LibraryTabs'].offsets, f'(Left=12,Top=80,Right={width},Bottom=58)')
+            # The content starts on the rail's last pixel, whichever entry is open.
+            self.assertEqual(self.panel.vars['Panel'].position, (left, 80))
+
+    def test_placing_folds_the_rail_until_the_drop(self):
+        t = self.toolbar.vars
+        self.host.vars.update(RailLabels=True, RailAutoFold=True)
+        self.sim.run(self.host, 'RefreshEditorRail')
+        self.assertEqual((t['RailIcons'].visibility, self.panel.vars['Panel'].position), ('Visible', (75, 80)))
+        self.sim.run(self.host, 'CancelPlacement')
+        self.assertEqual((self.host.vars['RailAutoFold'], t['RailFrame'].visibility, self.host.vars['RailLabels']), (False, 'Visible', True))
+        # Folded by hand, a drop leaves it folded.
+        self.host.vars.update(RailLabels=False, RailAutoFold=True)
+        self.sim.run(self.host, 'CancelPlacement')
+        self.assertEqual(t['RailIcons'].visibility, 'Visible')
+
+    def test_fold_pin_is_saved_and_the_code_icon_unfolds_and_focuses(self):
+        saved = []
+        document = self.sim.instance(RUNTIME + 'BP_DenPreferencesSave')
+        self.sim.overrides.update(EnsurePreferenceService=lambda obj: None,
+                                  ChangePreference=lambda obj, Key='', Value='': saved.append((Key, Value)) or {'Status': 1, 'Document': document, 'Changed': True})
+        self.host.vars['PreferenceService'] = self.sim.instance(RUNTIME + 'BP_DenPreferences')
+        self.sim.run(self.host, 'SetRailLabels', Labels=False)
+        self.assertEqual((self.host.vars['RailLabels'], saved, self.toolbar.vars['RailIcons'].visibility), (False, [('rail_labels', 'false')], 'Visible'))
+        self.assertIs(self.host.vars['PreferencesDocument'], document)
+        self.sim.run(self.host, 'OpenRailCode')
+        self.assertEqual((self.host.vars['RailLabels'], saved[-1], self.toolbar.vars['RailFrame'].visibility), (True, ('rail_labels', 'true'), 'Visible'))
+        # The field takes focus on the next tick, once the unfolded rail has laid out.
+        code = self.toolbar.vars['CommunityCode']
+        self.assertFalse(code.focused)
+        self.sim.run(self.host, 'PollRailCodeFocus')
+        self.assertEqual((code.focused, self.host.vars['RailCodeFocus']), (True, False))
+
+    def test_a_finished_request_clears_contacting(self):
+        del self.sim.overrides['ReleaseCommunityMailbox']
+        self.sim.engine['/Script/Engine.GameplayStatics:DeleteGameInSlot'] = lambda **kw: dict(ReturnValue=True)
+        for message, shown in [('Contacting HoloNet… (needs the Den Designer HoloNet bridge installed)', ''),
+                               ('Added to your Compositions. 14 parts.', 'Added to your Compositions. 14 parts.')]:
+            self.host.vars['CommunityMessage'] = message
+            self.sim.run(self.host, 'ReleaseCommunityMailbox')
+            self.assertEqual((self.host.vars['CommunityMessage'], self.panel.vars['Footer'].text), (shown, shown))
 
     def test_connection_pill(self):
         for profile, pill in [('', 'Not connected'), ('Connected as Rook - Remembered connection.', 'Connected as Rook'),

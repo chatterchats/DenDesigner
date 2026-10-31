@@ -27,6 +27,11 @@
       "name": "Entries",
       "type": "struct:/DenDesignerGF/Runtime/ST_DenEntry[]",
       "guid": "117dc38e-17bc-5d5a-868b-6972fd62da7c"
+    },
+    {
+      "name": "ShareCode",
+      "type": "string",
+      "guid": "0655b73e-60c3-5a15-8817-69eff22d071e"
     }
   ]
 }

@@ -1,3 +1,54 @@
+## 0.9.25 (HoloNet bridge 0.9.20 unchanged; preview for in-game testing)
+
+- **The rail folds while you place**: placing from the Catalog or Compositions
+  (including HoloNet's Add and place now) folds the rail to icons. A drop, Esc
+  or a load that fails puts it back as you pinned it; Shift-click keeps it
+  folded while you place more. Show labels or the code icon unfolds it at once.
+  Storeroom Restore is unchanged: it puts props back without a placing step.
+- The code field's hint reads "Code or link", which fits the field.
+
+## 0.9.24 (HoloNet bridge 0.9.20 unchanged; preview for in-game testing)
+
+- **Fold to icons**: a button at the bottom of the rail folds it to a 64 px
+  column of icons, and the open entry's content moves along beside it. Icons
+  have tooltips, the Storeroom and My Shares counts become badges, and the
+  HoloNet header becomes a divider that carries the connection dot. The code box
+  becomes one icon: clicking it shows the labels again and puts the cursor in
+  the code field. Show labels unfolds the rail. The choice is saved in
+  preferences (`rail_labels`) and used the next time the editor opens.
+
+## 0.9.23 (HoloNet bridge 0.9.20 unchanged; preview for in-game testing)
+
+- Fix: reopening the editor loads My Shares and the Browse gallery again (they
+  stayed empty until Refresh, because the new window was taken as already loaded).
+
+## 0.9.22 (HoloNet bridge 0.9.20 unchanged; preview for in-game testing)
+
+- **Clean names for imports**: a build imported from HoloNet is saved under its
+  title, with its code kept as metadata (`ShareCode`) instead of in the name.
+  If that name is taken, it falls back to "<title> <code>". IN LIBRARY and
+  "already imported" use the code. Once per session, earlier imports named
+  "<title> <code>" get their code moved into the metadata and, when the title is
+  free, are renamed to it.
+- **HoloNet loads early**: opening the editor connects to HoloNet and loads My
+  Shares, so the rail's dot and count show before HoloNet is opened. Import
+  waits for a running request (such as the window's first load) instead of
+  cancelling it; Cancel also drops a waiting import.
+- Fix: the footer no longer stays on "Contacting HoloNet…" after a request
+  finishes, and shows the import result.
+
+## 0.9.21 (HoloNet bridge 0.9.20 unchanged; preview for in-game testing)
+
+- **One window** for the library and HoloNet (approved board "One window"): a
+  labelled rail on the left edge with Your Den (Catalog, Storeroom, Compositions,
+  Layouts) and HoloNet (Browse, Dens marked Soon, Share a build, My Shares,
+  Account), and Have a code? at the bottom. The open entry's content sits beside
+  the rail: the 470 px library panels, or HoloNet widened to the screen's right
+  margin. HoloNet's own rail is gone. The rail stays up when nothing is open.
+- Each content area has an X that closes it. The Storeroom and My Shares entries
+  show their counts once listed; a green dot after HOLONET shows a connection.
+- Import (Have a code?) opens HoloNet on Browse first, so its progress shows.
+
 ## 0.9.20 / HoloNet bridge 0.9.20 (Phase 4; not yet built or tested in game)
 
 Versions restart at 0.9.20 ahead of 1.0.0; this follows 1.1.0-preview.22.

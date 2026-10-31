@@ -695,6 +695,10 @@
         {
           "name": "Document",
           "type": "object:/DenDesignerGF/Runtime/BP_DenLayoutSave"
+        },
+        {
+          "name": "ShareCode",
+          "type": "string"
         }
       ],
       "outputs": [
@@ -995,6 +999,10 @@
         [
           "name.CleanName",
           "preset.Name"
+        ],
+        [
+          "entry.ShareCode",
+          "preset.ShareCode"
         ],
         [
           "find.Index",
@@ -1929,6 +1937,1114 @@
         ],
         [
           "sort.then",
+          "result.execute"
+        ],
+        [
+          "usable.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "FindShareCode",
+      "inputs": [
+        {
+          "name": "Code",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Index",
+          "type": "int"
+        },
+        {
+          "name": "Name",
+          "type": "string"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "FoundIndex",
+          "type": "int",
+          "default": "-1"
+        },
+        {
+          "name": "FoundName",
+          "type": "string"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "open",
+          "kind": "call",
+          "function": "self:OpenLibrary",
+          "defaults": {}
+        },
+        {
+          "id": "healthy",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "usable",
+          "kind": "branch"
+        },
+        {
+          "id": "hascode",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:NotEqual_StrStr",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "given",
+          "kind": "branch"
+        },
+        {
+          "id": "rows",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPresetLibrary:Entries"
+        },
+        {
+          "id": "length",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "row",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "fields",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenPresetValue"
+        },
+        {
+          "id": "spaced",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "A": " "
+          }
+        },
+        {
+          "id": "same",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StriStri",
+          "defaults": {}
+        },
+        {
+          "id": "named",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "bUseCase": "false"
+          }
+        },
+        {
+          "id": "either0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "match",
+          "kind": "branch"
+        },
+        {
+          "id": "found",
+          "kind": "set",
+          "var": "local:FoundIndex"
+        },
+        {
+          "id": "foundname",
+          "kind": "set",
+          "var": "local:FoundName"
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:FoundIndex"
+        },
+        {
+          "id": "outname",
+          "kind": "get",
+          "var": "local:FoundName"
+        }
+      ],
+      "links": [
+        [
+          "open.Status",
+          "healthy.A"
+        ],
+        [
+          "healthy.ReturnValue",
+          "usable.Condition"
+        ],
+        [
+          "entry.Code",
+          "hascode.A"
+        ],
+        [
+          "hascode.ReturnValue",
+          "given.Condition"
+        ],
+        [
+          "open.Library",
+          "rows.self"
+        ],
+        [
+          "rows.Entries",
+          "length.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "length.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "rows.Entries",
+          "row.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "row.Index"
+        ],
+        [
+          "row.Item",
+          "fields.ST_DenPresetValue"
+        ],
+        [
+          "entry.Code",
+          "spaced.B"
+        ],
+        [
+          "entry.Code",
+          "same.A"
+        ],
+        [
+          "fields.ShareCode",
+          "same.B"
+        ],
+        [
+          "fields.Name",
+          "named.SearchIn"
+        ],
+        [
+          "spaced.ReturnValue",
+          "named.Substring"
+        ],
+        [
+          "same.ReturnValue",
+          "either0.A"
+        ],
+        [
+          "named.ReturnValue",
+          "either0.B"
+        ],
+        [
+          "either0.ReturnValue",
+          "match.Condition"
+        ],
+        [
+          "i.Cursor",
+          "found.FoundIndex"
+        ],
+        [
+          "fields.Name",
+          "foundname.FoundName"
+        ],
+        [
+          "i.Cursor",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.Cursor"
+        ],
+        [
+          "out.FoundIndex",
+          "result.Index"
+        ],
+        [
+          "outname.FoundName",
+          "result.Name"
+        ],
+        [
+          "entry.then",
+          "given.execute"
+        ],
+        [
+          "given.then",
+          "open.execute"
+        ],
+        [
+          "open.then",
+          "usable.execute"
+        ],
+        [
+          "usable.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "match.execute"
+        ],
+        [
+          "match.then",
+          "found.execute"
+        ],
+        [
+          "found.then",
+          "foundname.execute"
+        ],
+        [
+          "foundname.then",
+          "result.execute"
+        ],
+        [
+          "given.else",
+          "result.execute"
+        ],
+        [
+          "usable.else",
+          "result.execute"
+        ],
+        [
+          "loop.else",
+          "result.execute"
+        ],
+        [
+          "match.else",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "loop.execute"
+        ]
+      ]
+    },
+    {
+      "name": "SplitShareCode",
+      "inputs": [
+        {
+          "name": "Name",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Valid",
+          "type": "bool"
+        },
+        {
+          "name": "Title",
+          "type": "string"
+        },
+        {
+          "name": "Code",
+          "type": "string"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "HasDigit",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "IsCoded",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "split",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Split",
+          "defaults": {
+            "InStr": " ",
+            "SearchCase": "CaseSensitive",
+            "SearchDir": "FromEnd"
+          }
+        },
+        {
+          "id": "title",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:TrimTrailing",
+          "defaults": {}
+        },
+        {
+          "id": "len",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Len",
+          "defaults": {}
+        },
+        {
+          "id": "eight",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "8"
+          }
+        },
+        {
+          "id": "titlelen",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Len",
+          "defaults": {}
+        },
+        {
+          "id": "titled",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "shapeok0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "shapeok1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "shape",
+          "kind": "branch"
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {
+            "B": "8"
+          }
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "char",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:GetSubstring",
+          "defaults": {
+            "Length": "1"
+          }
+        },
+        {
+          "id": "base32",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "SearchIn": "0123456789ABCDEFGHJKMNPQRSTVWXYZ",
+            "bUseCase": "true"
+          }
+        },
+        {
+          "id": "allowed",
+          "kind": "branch"
+        },
+        {
+          "id": "digits",
+          "kind": "get",
+          "var": "local:HasDigit"
+        },
+        {
+          "id": "digit",
+          "kind": "set",
+          "var": "local:HasDigit"
+        },
+        {
+          "id": "isdigit",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Contains",
+          "defaults": {
+            "SearchIn": "0123456789",
+            "bUseCase": "true"
+          }
+        },
+        {
+          "id": "anydigit0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanOR",
+          "defaults": {}
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "hasdigit",
+          "kind": "get",
+          "var": "local:HasDigit"
+        },
+        {
+          "id": "coded",
+          "kind": "branch"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:IsCoded",
+          "defaults": {
+            "IsCoded": "true"
+          }
+        },
+        {
+          "id": "out",
+          "kind": "get",
+          "var": "local:IsCoded"
+        }
+      ],
+      "links": [
+        [
+          "entry.Name",
+          "split.SourceString"
+        ],
+        [
+          "split.LeftS",
+          "title.SourceString"
+        ],
+        [
+          "split.RightS",
+          "len.S"
+        ],
+        [
+          "len.ReturnValue",
+          "eight.A"
+        ],
+        [
+          "title.ReturnValue",
+          "titlelen.S"
+        ],
+        [
+          "titlelen.ReturnValue",
+          "titled.A"
+        ],
+        [
+          "split.ReturnValue",
+          "shapeok0.A"
+        ],
+        [
+          "eight.ReturnValue",
+          "shapeok0.B"
+        ],
+        [
+          "shapeok0.ReturnValue",
+          "shapeok1.A"
+        ],
+        [
+          "titled.ReturnValue",
+          "shapeok1.B"
+        ],
+        [
+          "shapeok1.ReturnValue",
+          "shape.Condition"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "split.RightS",
+          "char.SourceString"
+        ],
+        [
+          "i.Cursor",
+          "char.StartIndex"
+        ],
+        [
+          "char.ReturnValue",
+          "base32.Substring"
+        ],
+        [
+          "base32.ReturnValue",
+          "allowed.Condition"
+        ],
+        [
+          "char.ReturnValue",
+          "isdigit.Substring"
+        ],
+        [
+          "digits.HasDigit",
+          "anydigit0.A"
+        ],
+        [
+          "isdigit.ReturnValue",
+          "anydigit0.B"
+        ],
+        [
+          "anydigit0.ReturnValue",
+          "digit.HasDigit"
+        ],
+        [
+          "i.Cursor",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.Cursor"
+        ],
+        [
+          "hasdigit.HasDigit",
+          "coded.Condition"
+        ],
+        [
+          "out.IsCoded",
+          "result.Valid"
+        ],
+        [
+          "title.ReturnValue",
+          "result.Title"
+        ],
+        [
+          "split.RightS",
+          "result.Code"
+        ],
+        [
+          "entry.then",
+          "shape.execute"
+        ],
+        [
+          "shape.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "allowed.execute"
+        ],
+        [
+          "allowed.then",
+          "digit.execute"
+        ],
+        [
+          "digit.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "loop.execute"
+        ],
+        [
+          "loop.else",
+          "coded.execute"
+        ],
+        [
+          "coded.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "shape.else",
+          "result.execute"
+        ],
+        [
+          "allowed.else",
+          "result.execute"
+        ],
+        [
+          "coded.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
+      "name": "AdoptShareCodes",
+      "outputs": [
+        {
+          "name": "Status",
+          "type": "int"
+        },
+        {
+          "name": "Changed",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "AnyChange",
+          "type": "bool",
+          "default": "false"
+        },
+        {
+          "name": "ResultStatus",
+          "type": "int",
+          "default": "1"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "open",
+          "kind": "call",
+          "function": "self:OpenLibrary",
+          "defaults": {}
+        },
+        {
+          "id": "healthy",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:LessEqual_IntInt",
+          "defaults": {
+            "B": "2"
+          }
+        },
+        {
+          "id": "usable",
+          "kind": "branch"
+        },
+        {
+          "id": "rows",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenPresetLibrary:Entries"
+        },
+        {
+          "id": "length",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "loop",
+          "kind": "branch"
+        },
+        {
+          "id": "row",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "fields",
+          "kind": "break_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenPresetValue"
+        },
+        {
+          "id": "nocode",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "uncoded",
+          "kind": "branch"
+        },
+        {
+          "id": "split",
+          "kind": "call",
+          "function": "self:SplitShareCode",
+          "defaults": {}
+        },
+        {
+          "id": "coded",
+          "kind": "branch"
+        },
+        {
+          "id": "find",
+          "kind": "call",
+          "function": "self:FindPreset",
+          "defaults": {}
+        },
+        {
+          "id": "free",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "newname",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectString",
+          "defaults": {}
+        },
+        {
+          "id": "value",
+          "kind": "make_struct",
+          "struct": "/DenDesignerGF/Runtime/ST_DenPresetValue"
+        },
+        {
+          "id": "set",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Set",
+          "defaults": {
+            "bSizeToFit": "false"
+          }
+        },
+        {
+          "id": "changed",
+          "kind": "set",
+          "var": "local:AnyChange",
+          "defaults": {
+            "AnyChange": "true"
+          }
+        },
+        {
+          "id": "advance",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "next",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "anychange",
+          "kind": "get",
+          "var": "local:AnyChange"
+        },
+        {
+          "id": "dirty",
+          "kind": "branch"
+        },
+        {
+          "id": "librarykey",
+          "kind": "get",
+          "var": "LibraryKey"
+        },
+        {
+          "id": "save",
+          "kind": "call",
+          "function": "self:SaveLibrary",
+          "defaults": {
+            "Draft": "false",
+            "BaseRevision": "0",
+            "BaseID": ""
+          }
+        },
+        {
+          "id": "savedstatus",
+          "kind": "set",
+          "var": "local:ResultStatus"
+        },
+        {
+          "id": "statusout",
+          "kind": "get",
+          "var": "local:ResultStatus"
+        }
+      ],
+      "links": [
+        [
+          "open.Status",
+          "healthy.A"
+        ],
+        [
+          "healthy.ReturnValue",
+          "usable.Condition"
+        ],
+        [
+          "open.Library",
+          "rows.self"
+        ],
+        [
+          "rows.Entries",
+          "length.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "length.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "loop.Condition"
+        ],
+        [
+          "rows.Entries",
+          "row.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "row.Index"
+        ],
+        [
+          "row.Item",
+          "fields.ST_DenPresetValue"
+        ],
+        [
+          "fields.ShareCode",
+          "nocode.A"
+        ],
+        [
+          "nocode.ReturnValue",
+          "uncoded.Condition"
+        ],
+        [
+          "fields.Name",
+          "split.Name"
+        ],
+        [
+          "split.Valid",
+          "coded.Condition"
+        ],
+        [
+          "open.Library",
+          "find.Library"
+        ],
+        [
+          "split.Title",
+          "find.Name"
+        ],
+        [
+          "find.Index",
+          "free.A"
+        ],
+        [
+          "split.Title",
+          "newname.A"
+        ],
+        [
+          "fields.Name",
+          "newname.B"
+        ],
+        [
+          "free.ReturnValue",
+          "newname.bPickA"
+        ],
+        [
+          "fields.Entries",
+          "value.Entries"
+        ],
+        [
+          "fields.GameVersion",
+          "value.GameVersion"
+        ],
+        [
+          "fields.HasCompositionAnchor",
+          "value.HasCompositionAnchor"
+        ],
+        [
+          "fields.CompositionAnchor",
+          "value.CompositionAnchor"
+        ],
+        [
+          "newname.ReturnValue",
+          "value.Name"
+        ],
+        [
+          "split.Code",
+          "value.ShareCode"
+        ],
+        [
+          "rows.Entries",
+          "set.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "set.Index"
+        ],
+        [
+          "value.ST_DenPresetValue",
+          "set.Item"
+        ],
+        [
+          "i.Cursor",
+          "next.A"
+        ],
+        [
+          "next.ReturnValue",
+          "advance.Cursor"
+        ],
+        [
+          "anychange.AnyChange",
+          "dirty.Condition"
+        ],
+        [
+          "librarykey.LibraryKey",
+          "save.Key"
+        ],
+        [
+          "open.Library",
+          "save.Document"
+        ],
+        [
+          "save.Status",
+          "savedstatus.ResultStatus"
+        ],
+        [
+          "statusout.ResultStatus",
+          "result.Status"
+        ],
+        [
+          "anychange.AnyChange",
+          "result.Changed"
+        ],
+        [
+          "entry.then",
+          "open.execute"
+        ],
+        [
+          "open.then",
+          "usable.execute"
+        ],
+        [
+          "usable.then",
+          "loop.execute"
+        ],
+        [
+          "loop.then",
+          "uncoded.execute"
+        ],
+        [
+          "uncoded.then",
+          "split.execute"
+        ],
+        [
+          "split.then",
+          "coded.execute"
+        ],
+        [
+          "coded.then",
+          "find.execute"
+        ],
+        [
+          "find.then",
+          "set.execute"
+        ],
+        [
+          "set.then",
+          "changed.execute"
+        ],
+        [
+          "changed.then",
+          "advance.execute"
+        ],
+        [
+          "advance.then",
+          "loop.execute"
+        ],
+        [
+          "uncoded.else",
+          "advance.execute"
+        ],
+        [
+          "coded.else",
+          "advance.execute"
+        ],
+        [
+          "loop.else",
+          "dirty.execute"
+        ],
+        [
+          "dirty.then",
+          "save.execute"
+        ],
+        [
+          "save.then",
+          "savedstatus.execute"
+        ],
+        [
+          "savedstatus.then",
+          "result.execute"
+        ],
+        [
+          "dirty.else",
           "result.execute"
         ],
         [

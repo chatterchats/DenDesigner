@@ -137,6 +137,19 @@
       "default": "centre"
     },
     {
+      "name": "RailLabels",
+      "type": "bool",
+      "default": "true"
+    },
+    {
+      "name": "RailAutoFold",
+      "type": "bool"
+    },
+    {
+      "name": "RailCodeFocus",
+      "type": "bool"
+    },
+    {
       "name": "CompositionParts",
       "type": "struct:/DenDesignerGF/Runtime/ST_DenCompositionPick[]"
     },
@@ -612,6 +625,11 @@
       "default": "-1"
     },
     {
+      "name": "StoreCountVersion",
+      "type": "int",
+      "default": "-1"
+    },
+    {
       "name": "PresetService",
       "type": "object:/DenDesignerGF/Runtime/BP_DenPresets"
     },
@@ -966,6 +984,15 @@
       "default": "browse"
     },
     {
+      "name": "CommunityQueuedCode",
+      "type": "string"
+    },
+    {
+      "name": "HolonetPreload",
+      "type": "int",
+      "default": "0"
+    },
+    {
       "name": "CommunityMessage",
       "type": "string"
     },
@@ -1090,6 +1117,14 @@
     },
     {
       "name": "CommunityName",
+      "type": "string"
+    },
+    {
+      "name": "CommunityFullName",
+      "type": "string"
+    },
+    {
+      "name": "CommunityShareCode",
       "type": "string"
     },
     {
@@ -1221,6 +1256,17 @@
           }
         },
         {
+          "id": "registerToolbarCommunityCodewidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:CommunityCode"
+        },
+        {
+          "id": "registerToolbarCommunityCode",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenEditorBus:RegisterTextInput",
+          "defaults": {}
+        },
+        {
           "id": "yes",
           "kind": "set",
           "var": "local:OK",
@@ -1296,11 +1342,27 @@
           "result.execute"
         ],
         [
+          "getToolbar.Toolbar",
+          "registerToolbarCommunityCodewidget.self"
+        ],
+        [
+          "getInputBus.InputBus",
+          "registerToolbarCommunityCode.self"
+        ],
+        [
+          "registerToolbarCommunityCodewidget.CommunityCode",
+          "registerToolbarCommunityCode.Widget"
+        ],
+        [
+          "visibleToolbar.then",
+          "registerToolbarCommunityCode.execute"
+        ],
+        [
           "out.OK",
           "result.Accepted"
         ],
         [
-          "visibleToolbar.then",
+          "registerToolbarCommunityCode.then",
           "yes.execute"
         ],
         [
@@ -3334,17 +3396,6 @@
           }
         },
         {
-          "id": "registerCommunityPanelCommunityCodewidget",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:CommunityCode"
-        },
-        {
-          "id": "registerCommunityPanelCommunityCode",
-          "kind": "call",
-          "function": "/DenDesignerGF/Runtime/BP_DenEditorBus:RegisterTextInput",
-          "defaults": {}
-        },
-        {
           "id": "registerCommunityPanelCommunitySearchwidget",
           "kind": "get",
           "var": "/DenDesignerGF/Editor/WBP_DenHolonet:CommunitySearch"
@@ -3476,22 +3527,6 @@
         ],
         [
           "getCommunityPanel.CommunityPanel",
-          "registerCommunityPanelCommunityCodewidget.self"
-        ],
-        [
-          "getInputBus.InputBus",
-          "registerCommunityPanelCommunityCode.self"
-        ],
-        [
-          "registerCommunityPanelCommunityCodewidget.CommunityCode",
-          "registerCommunityPanelCommunityCode.Widget"
-        ],
-        [
-          "visibleCommunityPanel.then",
-          "registerCommunityPanelCommunityCode.execute"
-        ],
-        [
-          "getCommunityPanel.CommunityPanel",
           "registerCommunityPanelCommunitySearchwidget.self"
         ],
         [
@@ -3503,7 +3538,7 @@
           "registerCommunityPanelCommunitySearch.Widget"
         ],
         [
-          "registerCommunityPanelCommunityCode.then",
+          "visibleCommunityPanel.then",
           "registerCommunityPanelCommunitySearch.execute"
         ],
         [
@@ -5007,6 +5042,17 @@
           "id": "key",
           "kind": "set",
           "var": "/DenDesignerGF/Runtime/BP_DenPresets:LibraryKey"
+        },
+        {
+          "id": "newkey",
+          "kind": "set",
+          "var": "/DenDesignerGF/Runtime/BP_DenPresets:LibraryKey"
+        },
+        {
+          "id": "adopt",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPresets:AdoptShareCodes",
+          "defaults": {}
         }
       ],
       "links": [
@@ -5039,6 +5085,18 @@
           "key.self"
         ],
         [
+          "getCompositionStorageKey.CompositionStorageKey",
+          "newkey.LibraryKey"
+        ],
+        [
+          "getCompositionService.CompositionService",
+          "newkey.self"
+        ],
+        [
+          "getCompositionService.CompositionService",
+          "adopt.self"
+        ],
+        [
           "entry.then",
           "exists.execute"
         ],
@@ -5060,7 +5118,11 @@
         ],
         [
           "remember.then",
-          "key.execute"
+          "newkey.execute"
+        ],
+        [
+          "newkey.then",
+          "adopt.execute"
         ]
       ]
     },
@@ -5972,6 +6034,111 @@
         [
           "labelvalid.then",
           "labelset.execute"
+        ]
+      ]
+    },
+    {
+      "name": "PollRailCodeFocus",
+      "nodes": [
+        {
+          "id": "getRailCodeFocus",
+          "kind": "get",
+          "var": "RailCodeFocus"
+        },
+        {
+          "id": "pending",
+          "kind": "branch"
+        },
+        {
+          "id": "clear",
+          "kind": "set",
+          "var": "RailCodeFocus",
+          "defaults": {
+            "RailCodeFocus": "false"
+          }
+        },
+        {
+          "id": "getUIOpen",
+          "kind": "get",
+          "var": "UIOpen"
+        },
+        {
+          "id": "getToolbar",
+          "kind": "get",
+          "var": "Toolbar"
+        },
+        {
+          "id": "toolbarvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "ready0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "code",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:CommunityCode"
+        },
+        {
+          "id": "focus",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetKeyboardFocus",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getRailCodeFocus.RailCodeFocus",
+          "pending.Condition"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "toolbarvalid.Object"
+        ],
+        [
+          "getUIOpen.UIOpen",
+          "ready0.A"
+        ],
+        [
+          "toolbarvalid.ReturnValue",
+          "ready0.B"
+        ],
+        [
+          "ready0.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "code.self"
+        ],
+        [
+          "code.CommunityCode",
+          "focus.self"
+        ],
+        [
+          "entry.then",
+          "pending.execute"
+        ],
+        [
+          "pending.then",
+          "clear.execute"
+        ],
+        [
+          "clear.then",
+          "valid.execute"
+        ],
+        [
+          "valid.then",
+          "focus.execute"
         ]
       ]
     },
@@ -12254,190 +12421,6 @@
       ]
     },
     {
-      "name": "CancelPlacement",
-      "nodes": [
-        {
-          "id": "stop",
-          "kind": "set",
-          "var": "PlacementActive",
-          "defaults": {
-            "PlacementActive": "false"
-          }
-        },
-        {
-          "id": "pose",
-          "kind": "set",
-          "var": "PlacementPoseValid",
-          "defaults": {
-            "PlacementPoseValid": "false"
-          }
-        },
-        {
-          "id": "getPlacementJob",
-          "kind": "get",
-          "var": "PlacementJob"
-        },
-        {
-          "id": "PlacementJobcheck",
-          "kind": "call",
-          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
-          "defaults": {}
-        },
-        {
-          "id": "PlacementJobvalid",
-          "kind": "branch"
-        },
-        {
-          "id": "PlacementJobdestroy",
-          "kind": "call",
-          "function": "/Script/Engine.Actor:K2_DestroyActor",
-          "defaults": {}
-        },
-        {
-          "id": "PlacementJobclear",
-          "kind": "set",
-          "var": "PlacementJob"
-        },
-        {
-          "id": "getPlacementGhost",
-          "kind": "get",
-          "var": "PlacementGhost"
-        },
-        {
-          "id": "PlacementGhostcheck",
-          "kind": "call",
-          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
-          "defaults": {}
-        },
-        {
-          "id": "PlacementGhostvalid",
-          "kind": "branch"
-        },
-        {
-          "id": "PlacementGhostdestroy",
-          "kind": "call",
-          "function": "/Script/Engine.Actor:K2_DestroyActor",
-          "defaults": {}
-        },
-        {
-          "id": "PlacementGhostclear",
-          "kind": "set",
-          "var": "PlacementGhost"
-        },
-        {
-          "id": "PlacementMeshclear",
-          "kind": "set",
-          "var": "PlacementMesh"
-        },
-        {
-          "id": "PlacementPathclear",
-          "kind": "set",
-          "var": "PlacementPath"
-        },
-        {
-          "id": "PlacementEntryclear",
-          "kind": "set",
-          "var": "PlacementEntry"
-        },
-        {
-          "id": "PlacementIndexclear",
-          "kind": "set",
-          "var": "PlacementIndex"
-        },
-        {
-          "id": "SelectionMessageclear",
-          "kind": "set",
-          "var": "SelectionMessage"
-        }
-      ],
-      "links": [
-        [
-          "getPlacementJob.PlacementJob",
-          "PlacementJobcheck.Object"
-        ],
-        [
-          "PlacementJobcheck.ReturnValue",
-          "PlacementJobvalid.Condition"
-        ],
-        [
-          "getPlacementJob.PlacementJob",
-          "PlacementJobdestroy.self"
-        ],
-        [
-          "pose.then",
-          "PlacementJobvalid.execute"
-        ],
-        [
-          "PlacementJobvalid.then",
-          "PlacementJobdestroy.execute"
-        ],
-        [
-          "PlacementJobdestroy.then",
-          "PlacementJobclear.execute"
-        ],
-        [
-          "PlacementJobvalid.else",
-          "PlacementJobclear.execute"
-        ],
-        [
-          "getPlacementGhost.PlacementGhost",
-          "PlacementGhostcheck.Object"
-        ],
-        [
-          "PlacementGhostcheck.ReturnValue",
-          "PlacementGhostvalid.Condition"
-        ],
-        [
-          "getPlacementGhost.PlacementGhost",
-          "PlacementGhostdestroy.self"
-        ],
-        [
-          "PlacementJobclear.then",
-          "PlacementGhostvalid.execute"
-        ],
-        [
-          "PlacementGhostvalid.then",
-          "PlacementGhostdestroy.execute"
-        ],
-        [
-          "PlacementGhostdestroy.then",
-          "PlacementGhostclear.execute"
-        ],
-        [
-          "PlacementGhostvalid.else",
-          "PlacementGhostclear.execute"
-        ],
-        [
-          "PlacementGhostclear.then",
-          "PlacementMeshclear.execute"
-        ],
-        [
-          "PlacementMeshclear.then",
-          "PlacementPathclear.execute"
-        ],
-        [
-          "PlacementPathclear.then",
-          "PlacementEntryclear.execute"
-        ],
-        [
-          "PlacementEntryclear.then",
-          "PlacementIndexclear.execute"
-        ],
-        [
-          "PlacementIndexclear.then",
-          "SelectionMessageclear.execute"
-        ],
-        [
-          "entry.then",
-          "stop.execute"
-        ],
-        [
-          "stop.then",
-          "pose.execute"
-        ]
-      ]
-    },
-    {
       "name": "CreatePlacementPreview",
       "inputs": [
         {
@@ -14937,347 +14920,6 @@
         [
           "fallbacktitle.then",
           "result.execute"
-        ]
-      ]
-    },
-    {
-      "name": "RefreshStoreroomLabels",
-      "nodes": [
-        {
-          "id": "getStoreroomPanel",
-          "kind": "get",
-          "var": "StoreroomPanel"
-        },
-        {
-          "id": "valid",
-          "kind": "call",
-          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
-          "defaults": {}
-        },
-        {
-          "id": "panel",
-          "kind": "branch"
-        },
-        {
-          "id": "getStoredRows",
-          "kind": "get",
-          "var": "StoredRows"
-        },
-        {
-          "id": "shown",
-          "kind": "array_call",
-          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
-          "defaults": {}
-        },
-        {
-          "id": "getDormantRows",
-          "kind": "get",
-          "var": "DormantRows"
-        },
-        {
-          "id": "dormant",
-          "kind": "array_call",
-          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
-          "defaults": {}
-        },
-        {
-          "id": "shownstr",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Conv_IntToString",
-          "defaults": {}
-        },
-        {
-          "id": "getStoreTotal",
-          "kind": "get",
-          "var": "StoreTotal"
-        },
-        {
-          "id": "total",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Conv_IntToString",
-          "defaults": {}
-        },
-        {
-          "id": "ofprefix",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
-          "defaults": {
-            "A": " of "
-          }
-        },
-        {
-          "id": "suffix",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
-          "defaults": {
-            "A": " stored props \u00b7 Click one to restore it.",
-            "B": ""
-          }
-        },
-        {
-          "id": "of",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
-          "defaults": {}
-        },
-        {
-          "id": "caption",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
-          "defaults": {}
-        },
-        {
-          "id": "none",
-          "kind": "call",
-          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
-          "defaults": {
-            "B": "0"
-          }
-        },
-        {
-          "id": "empty",
-          "kind": "call",
-          "function": "/Script/Engine.KismetMathLibrary:SelectString",
-          "defaults": {
-            "A": "Your Storeroom is empty. Select a prop and choose Store to keep it here."
-          }
-        },
-        {
-          "id": "storedwidget",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenStoreroom:StoredText"
-        },
-        {
-          "id": "stored",
-          "kind": "call",
-          "function": "/Script/UMG.TextBlock:SetText",
-          "defaults": {}
-        },
-        {
-          "id": "dormantstr",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Conv_IntToString",
-          "defaults": {}
-        },
-        {
-          "id": "dormantcaption",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
-          "defaults": {
-            "B": " edits could not be applied in this Den. They remain in your layout. Click one to forget it; Undo can bring it back."
-          }
-        },
-        {
-          "id": "allfound",
-          "kind": "call",
-          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
-          "defaults": {
-            "B": "0"
-          }
-        },
-        {
-          "id": "resolved",
-          "kind": "call",
-          "function": "/Script/Engine.KismetMathLibrary:SelectString",
-          "defaults": {
-            "A": "Every edit in this layout found its object."
-          }
-        },
-        {
-          "id": "missingwidget",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenStoreroom:DormantText"
-        },
-        {
-          "id": "missing",
-          "kind": "call",
-          "function": "/Script/UMG.TextBlock:SetText",
-          "defaults": {}
-        },
-        {
-          "id": "getStoreMessage",
-          "kind": "get",
-          "var": "StoreMessage"
-        },
-        {
-          "id": "footerwidget",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenStoreroom:Footer"
-        },
-        {
-          "id": "footer",
-          "kind": "call",
-          "function": "/Script/UMG.TextBlock:SetText",
-          "defaults": {}
-        },
-        {
-          "id": "restoreall",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenStoreroom:RestoreAll"
-        },
-        {
-          "id": "any",
-          "kind": "call",
-          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
-          "defaults": {
-            "B": "0"
-          }
-        },
-        {
-          "id": "button",
-          "kind": "call",
-          "function": "/Script/UMG.Widget:SetIsEnabled",
-          "defaults": {}
-        }
-      ],
-      "links": [
-        [
-          "getStoreroomPanel.StoreroomPanel",
-          "valid.Object"
-        ],
-        [
-          "valid.ReturnValue",
-          "panel.Condition"
-        ],
-        [
-          "getStoredRows.StoredRows",
-          "shown.TargetArray"
-        ],
-        [
-          "getDormantRows.DormantRows",
-          "dormant.TargetArray"
-        ],
-        [
-          "shown.ReturnValue",
-          "shownstr.InInt"
-        ],
-        [
-          "getStoreTotal.StoreTotal",
-          "total.InInt"
-        ],
-        [
-          "total.ReturnValue",
-          "ofprefix.B"
-        ],
-        [
-          "ofprefix.ReturnValue",
-          "of.A"
-        ],
-        [
-          "suffix.ReturnValue",
-          "of.B"
-        ],
-        [
-          "shownstr.ReturnValue",
-          "caption.A"
-        ],
-        [
-          "of.ReturnValue",
-          "caption.B"
-        ],
-        [
-          "getStoreTotal.StoreTotal",
-          "none.A"
-        ],
-        [
-          "caption.ReturnValue",
-          "empty.B"
-        ],
-        [
-          "none.ReturnValue",
-          "empty.bPickA"
-        ],
-        [
-          "getStoreroomPanel.StoreroomPanel",
-          "storedwidget.self"
-        ],
-        [
-          "storedwidget.StoredText",
-          "stored.self"
-        ],
-        [
-          "empty.ReturnValue",
-          "stored.InText"
-        ],
-        [
-          "dormant.ReturnValue",
-          "dormantstr.InInt"
-        ],
-        [
-          "dormantstr.ReturnValue",
-          "dormantcaption.A"
-        ],
-        [
-          "dormant.ReturnValue",
-          "allfound.A"
-        ],
-        [
-          "dormantcaption.ReturnValue",
-          "resolved.B"
-        ],
-        [
-          "allfound.ReturnValue",
-          "resolved.bPickA"
-        ],
-        [
-          "getStoreroomPanel.StoreroomPanel",
-          "missingwidget.self"
-        ],
-        [
-          "missingwidget.DormantText",
-          "missing.self"
-        ],
-        [
-          "resolved.ReturnValue",
-          "missing.InText"
-        ],
-        [
-          "getStoreroomPanel.StoreroomPanel",
-          "footerwidget.self"
-        ],
-        [
-          "footerwidget.Footer",
-          "footer.self"
-        ],
-        [
-          "getStoreMessage.StoreMessage",
-          "footer.InText"
-        ],
-        [
-          "getStoreroomPanel.StoreroomPanel",
-          "restoreall.self"
-        ],
-        [
-          "getStoreTotal.StoreTotal",
-          "any.A"
-        ],
-        [
-          "restoreall.RestoreAll",
-          "button.self"
-        ],
-        [
-          "any.ReturnValue",
-          "button.bInIsEnabled"
-        ],
-        [
-          "entry.then",
-          "panel.execute"
-        ],
-        [
-          "panel.then",
-          "stored.execute"
-        ],
-        [
-          "stored.then",
-          "missing.execute"
-        ],
-        [
-          "missing.then",
-          "footer.execute"
-        ],
-        [
-          "footer.then",
-          "button.execute"
         ]
       ]
     },
@@ -21737,6 +21379,181 @@
       ]
     },
     {
+      "name": "CompositionNameTaken",
+      "inputs": [
+        {
+          "name": "Name",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Taken",
+          "type": "bool"
+        }
+      ],
+      "locals": [
+        {
+          "name": "Cursor",
+          "type": "int",
+          "default": "0"
+        },
+        {
+          "name": "Found",
+          "type": "bool",
+          "default": "false"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "i",
+          "kind": "get",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "getCompositionNames",
+          "kind": "get",
+          "var": "CompositionNames"
+        },
+        {
+          "id": "count",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "within",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "more",
+          "kind": "branch"
+        },
+        {
+          "id": "name",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
+          "defaults": {}
+        },
+        {
+          "id": "samename",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StriStri",
+          "defaults": {}
+        },
+        {
+          "id": "same",
+          "kind": "branch"
+        },
+        {
+          "id": "inc",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "next",
+          "kind": "set",
+          "var": "local:Cursor"
+        },
+        {
+          "id": "yes",
+          "kind": "set",
+          "var": "local:Found",
+          "defaults": {
+            "Found": "true"
+          }
+        },
+        {
+          "id": "found",
+          "kind": "get",
+          "var": "local:Found"
+        }
+      ],
+      "links": [
+        [
+          "getCompositionNames.CompositionNames",
+          "count.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "within.A"
+        ],
+        [
+          "count.ReturnValue",
+          "within.B"
+        ],
+        [
+          "within.ReturnValue",
+          "more.Condition"
+        ],
+        [
+          "getCompositionNames.CompositionNames",
+          "name.TargetArray"
+        ],
+        [
+          "i.Cursor",
+          "name.Index"
+        ],
+        [
+          "name.Item",
+          "samename.A"
+        ],
+        [
+          "entry.Name",
+          "samename.B"
+        ],
+        [
+          "samename.ReturnValue",
+          "same.Condition"
+        ],
+        [
+          "i.Cursor",
+          "inc.A"
+        ],
+        [
+          "inc.ReturnValue",
+          "next.Cursor"
+        ],
+        [
+          "found.Found",
+          "result.Taken"
+        ],
+        [
+          "entry.then",
+          "more.execute"
+        ],
+        [
+          "more.then",
+          "same.execute"
+        ],
+        [
+          "same.then",
+          "yes.execute"
+        ],
+        [
+          "yes.then",
+          "result.execute"
+        ],
+        [
+          "same.else",
+          "next.execute"
+        ],
+        [
+          "next.then",
+          "more.execute"
+        ],
+        [
+          "more.else",
+          "result.execute"
+        ]
+      ]
+    },
+    {
       "name": "ValidCommunityKey",
       "inputs": [
         {
@@ -22027,57 +21844,6 @@
         [
           "valid.then",
           "clear.execute"
-        ]
-      ]
-    },
-    {
-      "name": "ReleaseCommunityMailbox",
-      "nodes": [
-        {
-          "id": "delete",
-          "kind": "call",
-          "function": "/Script/Engine.GameplayStatics:DeleteGameInSlot",
-          "defaults": {
-            "SlotName": "ZComDen/Community/v1/request",
-            "UserIndex": "0"
-          }
-        },
-        {
-          "id": "getCommunityWireLines",
-          "kind": "get",
-          "var": "CommunityWireLines"
-        },
-        {
-          "id": "release",
-          "kind": "array_call",
-          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
-          "defaults": {}
-        },
-        {
-          "id": "cursor",
-          "kind": "set",
-          "var": "CommunityWireCursor",
-          "defaults": {
-            "CommunityWireCursor": "0"
-          }
-        }
-      ],
-      "links": [
-        [
-          "getCommunityWireLines.CommunityWireLines",
-          "release.TargetArray"
-        ],
-        [
-          "entry.then",
-          "delete.execute"
-        ],
-        [
-          "delete.then",
-          "release.execute"
-        ],
-        [
-          "release.then",
-          "cursor.execute"
         ]
       ]
     }

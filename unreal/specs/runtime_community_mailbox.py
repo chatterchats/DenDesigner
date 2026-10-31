@@ -42,7 +42,10 @@ def bad(g,pins,message='HoloNet sent something unexpected. Nothing was imported.
 def delete():
     g=Graph();call(g,'delete',GS+':DeleteGameInSlot',SlotName=REQUEST,UserIndex=0)
     arr(g,'release','Clear',get(g,'CommunityWireLines'));g.set('cursor','CommunityWireCursor','0')
-    g.chain('entry','delete','release','cursor');return g.function('ReleaseCommunityMailbox')
+    # A finished request ends its "Contacting HoloNet…" line; a result message set by the reply stays, and shows now.
+    branch(g,'progress',call(g,'contacting',STR+'StartsWith',{'SourceString':get(g,'CommunityMessage')},InPrefix='Contacting HoloNet',SearchCase='CaseSensitive'))
+    g.set('clear','CommunityMessage','');g.call('feedback','self:RefreshCommunityFeedback')
+    g.chain('entry','delete','release','cursor','progress','clear','feedback');g.chain('progress.else','feedback');return g.function('ReleaseCommunityMailbox')
 
 
 def write():

@@ -18,16 +18,13 @@ def connected(g,name='connected'):
 
 
 def area():
-    from runtime_holonet_widget import AREAS, RAIL_BROWSE, RAIL_YOURS
-    from runtime_editor_host import style_toggle
+    from runtime_holonet_widget import AREAS
     g=Graph();set_value(g,'remember','CommunityArea','entry.Area');branch(g,'panel',validity(g,'panelalive',get(g,'CommunityPanel')));g.chain('entry','remember','panel');previous='panel'
     for field,value in AREAS:
         branch(g,field,call(g,field+'match',STR+'EqualEqual_StrStr',{'A':'entry.Area'},B=value))
         visibility(g,field+'show',widget(g,field+'widget','CommunityPanel',field),'Visible');visibility(g,field+'hide',widget(g,field+'hidden','CommunityPanel',field),'Collapsed')
         g.node(field+'done','sequence',outputs=1);g.chain(previous,field,field+'show',field+'done');g.chain(field+'.else',field+'hide',field+'done');previous=field+'done.then_0'
-    for name,_,event,_ in RAIL_BROWSE+RAIL_YOURS:
-        value={'community_browse':'browse','community_browse_dens':'browse_dens','community_upload':'upload','holonet_shares':'shares','community_account':'account'}[event]
-        style_toggle(g,'rail'+name,'CommunityPanel',name,call(g,'on'+name,STR+'EqualEqual_StrStr',{'A':'entry.Area'},B=value));g.chain(previous,'rail'+name);previous='rail'+name
+    g.call('rail','self:RefreshEditorRail');g.chain(previous,'rail');previous='rail'
     subtitle=call(g,'subtitledefault',STR+'Concat_StrStr',A='Builds shared by other captains',B='')
     for value,label in [('browse_dens','Dens'),('upload','Share a build'),('shares','My Shares'),('account','Account')]:
         subtitle=call(g,'subtitle'+value,KML+':SelectString',{'B':subtitle,'bPickA':call(g,'is'+value,STR+'EqualEqual_StrStr',{'A':'entry.Area'},B=value)},A=label)
@@ -37,6 +34,49 @@ def area():
     g.call('style','self:StyleHolonetBrowse')
     g.chain(previous,'style','upload','share');g.chain('upload.else','shares','loadshares')
     return g.function('SetCommunityArea',inputs=[v('Area','string')])
+
+
+def open_area():
+    """A HoloNet rail entry: opens the HoloNet window on its area, or switches area while it is open."""
+    g=Graph();set_value(g,'remember','CommunityArea','entry.Area')
+    branch(g,'open',call(g,'isopen',STR+'EqualEqual_StrStr',{'A':get(g,'ActivePanel')},B='community'))
+    g.call('area','self:SetCommunityArea');g.wire(('entry.Area','area.Area'));g.call('panel','self:SetEditorPanel',Name='community')
+    g.chain('entry','remember','open','area');g.chain('open.else','panel')
+    return g.function('OpenHolonetArea',inputs=[v('Area','string')])
+
+
+def import_code():
+    """Have a code? Import: opens HoloNet on Browse first (unless it is open), so the import's progress and result show.
+    A request already running (such as the window's first load) finishes first; PollHolonetPreload then starts the import."""
+    g=Graph();branch(g,'open',call(g,'isopen',STR+'EqualEqual_StrStr',{'A':get(g,'ActivePanel')},B='community'))
+    g.call('show','self:OpenHolonetArea',Area='browse');g.call('fetch','self:StartCommunityFetch');g.wire(('entry.Input','fetch.Input'))
+    branch(g,'busy',get(g,'CommunityPending'));set_value(g,'queue','CommunityQueuedCode','entry.Input')
+    g.set('waiting','CommunityMessage','Importing as soon as HoloNet finishes its current request…');g.call('feedback','self:RefreshCommunityFeedback')
+    g.chain('entry','open','busy','queue','waiting','feedback');g.chain('open.else','show','busy');g.chain('busy.else','fetch')
+    return g.function('ImportCommunityCode',inputs=[v('Input','string')])
+
+
+def cancel_request():
+    """Cancel: stops the running request and drops an import waiting behind it."""
+    g=Graph();g.set('drop','CommunityQueuedCode','');g.call('cancel','self:CancelCommunityFetch');g.chain('entry','drop','cancel')
+    return g.function('CancelHolonetRequest')
+
+
+def preload():
+    """Each tick, while HoloNet is idle: start a queued import; else, once per editor visit, connect (when there is
+    no profile yet) and then load My Shares page 1, so the rail's dot and count show before HoloNet is opened."""
+    g=Graph();idle=call(g,'idle',KML+':Not_PreBool',{'A':get(g,'CommunityPending')})
+    branch(g,'queued',combine(g,'queuedready',[idle,call(g,'hasqueue',STR+'NotEqual_StrStr',{'A':get(g,'CommunityQueuedCode')},B='')]))
+    g.get('code','CommunityQueuedCode');g.set('dequeue','CommunityQueuedCode','');g.call('fetch','self:StartCommunityFetch');g.wire(('code.CommunityQueuedCode','fetch.Input'))
+    g.call('ready','self:CanEdit')
+    branch(g,'start',combine(g,'startready',[idle,get(g,'UIOpen'),'ready.Ready',op(g,'first','EqualEqual_IntInt',get(g,'HolonetPreload'),B=0)]))
+    g.set('connecting','HolonetPreload','1');branch(g,'unknown',call(g,'noprofile',STR+'EqualEqual_StrStr',{'A':get(g,'CommunityProfile')},B=''))
+    g.call('connect','self:StartCommunityFetch',Input='CONNECT')
+    branch(g,'connected',combine(g,'connectdone',[idle,op(g,'second','EqualEqual_IntInt',get(g,'HolonetPreload'),B=1)]))
+    g.set('done','HolonetPreload','2');g.call('shares','self:EnsureHolonetShares')
+    # The fetch reads the code before it is cleared: StartCommunityFetch runs first.
+    g.chain('entry','queued','fetch','dequeue');g.chain('queued.else','ready','start','connecting','unknown','connect');g.chain('start.else','connected','done','shares')
+    return g.function('PollHolonetPreload')
 
 
 def read(g,field):
@@ -94,10 +134,10 @@ def copy(url):
     g.call('copy','self:StartCommunityFetch');g.wire((command,'copy.Input'));branch(g,'idle',call(g,'notpending',KML+':Not_PreBool',{'A':get(g,'CommunityPending')}));g.chain('entry','idle','hascode','copy');return g.function('CopyCommunityURL' if url else 'CopyCommunityCode')
 
 
-def variables():return [v('CommunityArea','string','browse'),v('CommunityMessage','string'),v('HolonetShareTarget','int','-1'),v('HolonetShareUpdate','bool','false'),v('HolonetShowResult','bool','false'),v('HolonetMatchPending','bool','false'),
+def variables():return [v('CommunityArea','string','browse'),v('CommunityQueuedCode','string'),v('HolonetPreload','int','0'),v('CommunityMessage','string'),v('HolonetShareTarget','int','-1'),v('HolonetShareUpdate','bool','false'),v('HolonetShowResult','bool','false'),v('HolonetMatchPending','bool','false'),
                          v('HolonetSharesPage','int'),v('HolonetSharesPages','int'),v('HolonetSharesTotal','int','-1'),v('HolonetSharesStale','bool','true'),v('HolonetShareRevisions','int[]'),
                          v('HolonetShareCodes','string[]'),v('HolonetShareTitles','string[]'),v('HolonetShareRows','object:'+ITEM+'[]')]+[v(n,'string') for n in ['CommunityUploadJSON','CommunityUploadName','CommunityUploadLibraryID','CommunityUploadThumbnail','CommunityPublicURL','CommunityPublicCode','CommunityProfile','CommunityDenName']]
-def functions():return [area(),requirements(),review(),external(),copy(True),copy(False)]+share_functions()
+def functions():return [area(),open_area(),import_code(),cancel_request(),preload(),requirements(),review(),external(),copy(True),copy(False)]+share_functions()
 
 
 def text_value(g,field):
@@ -262,12 +302,13 @@ def read_shares():
     status=join(g,'status',prefix(g,'pageprefix','Page ',number(g,'pagenum',op(g,'onebased','Add_IntInt',get(g,'HolonetSharesPage'),B=1))),join(g,'statustotal',prefix(g,'of',' of ',number(g,'pagesnum',get(g,'HolonetSharesPages'))),prefix(g,'totalprefix',' · shares: ',number(g,'totalnum',get(g,'HolonetSharesTotal')))))
     status=call(g,'statustext',KML+':SelectString',{'A':status,'bPickA':op(g,'any','Greater_IntInt',get(g,'HolonetSharesTotal'),B=0)},B='You haven’t shared anything yet. Pick Share a build.')
     text(g,'statusset','CommunityPanel','SharesStatus',value=status)
-    text(g,'countset','CommunityPanel','SharesCount',value=call(g,'counttext',KML+':SelectString',{'A':prefix(g,'countprefix','Shares: ',number(g,'countnum',get(g,'HolonetSharesTotal'))),'bPickA':op(g,'known','GreaterEqual_IntInt',get(g,'HolonetSharesTotal'),B=0)},B=''))
-    g.call('share','self:RefreshHolonetShare')
+    text(g,'countset','Toolbar','RailSharesCount',value=call(g,'counttext',KML+':SelectString',{'A':number(g,'countnum',get(g,'HolonetSharesTotal')),'bPickA':op(g,'known','Greater_IntInt',get(g,'HolonetSharesTotal'),B=0)},B=''))
+    g.call('share','self:RefreshHolonetShare');g.call('railbadge','self:RefreshEditorRail')
     # A composition picked while this page loaded is matched now.
     branch(g,'matchpending',get(g,'HolonetMatchPending'));g.set('matched','HolonetMatchPending','false');g.call('match','self:MatchHolonetShareTitle')
     g.chain('entry','headerok','pages','total');g.chain('clearlist','more','row','new');g.chain('show','next','more');g.chain('row.else','next')
-    g.chain('more.else','fresh','pending','release','statusset','countset','matchpending','matched','match','share');g.chain('matchpending.else','share')
+    branch(g,'toolbar',validity(g,'toolbarvalid',get(g,'Toolbar')))
+    g.chain('more.else','fresh','pending','release','statusset','toolbar','countset','railbadge','matchpending','matched','match','share');g.chain('toolbar.else','matchpending');g.chain('matchpending.else','share')
     return g.function('ReadHolonetShares',locals=[v('Cursor','int','2')])
 
 

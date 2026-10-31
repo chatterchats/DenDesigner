@@ -45,7 +45,7 @@ def install():
 def apply_preferences():
     g=Graph();branch(g,'valid',validity(g,'doc',get(g,'PreferencesDocument')));previous='valid'
     for key,field in [('unlock_structure','StructureEnabled'),('select_floors','FloorsEnabled'),('select_walls','WallsEnabled'),('autosave','DraftEnabled'),('thumbnails','ThumbnailsEnabled'),
-                      ('neighbour_snap','SnapEnabled'),('snap_guides','SnapGuidesEnabled')]:
+                      ('neighbour_snap','SnapEnabled'),('snap_guides','SnapGuidesEnabled'),('rail_labels','RailLabels')]:
         method(g,key,DOCUMENT,'ReadPreference',get(g,'PreferencesDocument'),Key=key)
         set_value(g,key+'apply',field,call(g,key+'value',STR+'EqualEqual_StrStr',{'A':key+'.Value'},B='true'))
         g.chain(previous,key,key+'apply');previous=key+'apply'

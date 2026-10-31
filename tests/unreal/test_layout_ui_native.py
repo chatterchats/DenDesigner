@@ -42,7 +42,7 @@ def run(unreal,host,bus,fixture,get,field,field_name,check,settle,command,set_,s
         before=version();emit('load_preset');check(version()==before,'loading an identical preset makes no empty history step')
         stale=get(get(host,'PresetRows')[0],'Key');refresh();emit('preset',stale)
         check(get(host,'SelectedPreset')=='Bed arrangement','stale preset card cannot change current selection')
-        service=get(host,'PresetService');service.call_method('SavePreset',('External snapshot',get(host,'WorkingDocument')))
+        service=get(host,'PresetService');service.call_method('SavePreset',('External snapshot',get(host,'WorkingDocument'),''))
         before=version();emit('load_preset');check(version()==before and 'External snapshot' in names() and 'changed' in get(host,'LayoutMessage'),
               'external library update refreshes the list and refuses the stale action')
         select('Two props');emit('delete_preset');check(get(host,'ConfirmMode')==5 and 'Two props' in names(),'preset deletion waits for an explicit in-editor confirmation')

@@ -6,8 +6,8 @@ no UE4SS, Python, or additional DLL is required to play.
 The **Compositions** toolbar destination is local: create, browse, place and delete
 saved arrangements. **HoloNet** opens a window for zcom.app: browse and import other
 captains' builds, share your own (updates keep their code and ask what changed), see
-your shares, and connect your account. It needs the matching HoloNet bridge **0.9.20**
-with this **0.9.20** pak; see its guide. The offline editor and local Compositions work
+your shares, and connect your account. It needs the HoloNet bridge **0.9.20**
+with this **0.9.25** pak; see its guide. The offline editor and local Compositions work
 without the bridge.
 
 The archive mirrors the game's `SWZeroCompany` folder. Its single component lives under

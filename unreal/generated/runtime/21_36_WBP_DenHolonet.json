@@ -13,12 +13,12 @@
           "BrushColor": "(R=1,G=1,B=1,A=1)",
           "Background.DrawAs": "RoundedBox",
           "Background.TintColor": "(SpecifiedColor=(R=0.0027,G=0.003,B=0.004,A=0.94))",
-          "Background.OutlineSettings": "(CornerRadii=(X=10,Y=10,Z=10,W=10),Color=(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.3)),Width=1.0,RoundingType=FixedRadius)",
+          "Background.OutlineSettings": "(CornerRadii=(X=0,Y=8,Z=8,W=0),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.1)),Width=1.0,RoundingType=FixedRadius)",
           "Padding": "(Left=0,Top=0,Right=0,Bottom=0)",
           "Clipping": "ClipToBounds"
         },
         "slot": {
-          "LayoutData": "(Offsets=(Left=114,Top=80,Right=166,Bottom=58),Anchors=(Minimum=(X=0,Y=0),Maximum=(X=1,Y=1)))"
+          "LayoutData": "(Offsets=(Left=243,Top=80,Right=12,Bottom=58),Anchors=(Minimum=(X=0,Y=0),Maximum=(X=1,Y=1)))"
         },
         "children": [
           {
@@ -136,26 +136,27 @@
                           "WidgetStyle.Disabled.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0))",
                           "WidgetStyle.Disabled.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
                           "WidgetStyle.NormalPadding": "(Left=10,Top=7,Right=10,Bottom=7)",
-                          "WidgetStyle.PressedPadding": "(Left=10,Top=8,Right=10,Bottom=6)"
+                          "WidgetStyle.PressedPadding": "(Left=10,Top=8,Right=10,Bottom=6)",
+                          "ToolTipText": "Close"
                         },
                         "slot": {
-                          "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
+                          "VerticalAlignment": "VAlign_Center"
                         },
                         "children": [
                           {
-                            "class": "/Script/UMG.TextBlock",
-                            "name": "CommunityCloseLabel",
-                            "props": {
-                              "Text": "Close",
-                              "Font.Size": 14,
-                              "ColorAndOpacity": "(SpecifiedColor=(R=0.584,G=0.611,B=0.651,A=1),ColorUseRule=UseColor_Specified)",
-                              "TextTransformPolicy": "ToUpper",
-                              "Justification": "Center"
-                            },
+                            "class": "/Script/UMG.Image",
+                            "name": "CommunityCloseIcon",
                             "variable": true,
+                            "props": {
+                              "Brush.ResourceObject": "/DenDesignerGF/Editor/Icons/T_Icon_close",
+                              "Brush.ImageSize": "(X=20,Y=20)",
+                              "ColorAndOpacity": "(R=0.84,G=0.81,B=0.75,A=1)",
+                              "Visibility": "HitTestInvisible"
+                            },
                             "slot": {
                               "HorizontalAlignment": "HAlign_Center",
-                              "VerticalAlignment": "VAlign_Center"
+                              "VerticalAlignment": "VAlign_Center",
+                              "Padding": "(Left=0,Top=0,Right=0,Bottom=0)"
                             }
                           }
                         ]
@@ -168,658 +169,6 @@
                 "class": "/Script/UMG.HorizontalBox",
                 "name": "Body",
                 "children": [
-                  {
-                    "class": "/Script/UMG.SizeBox",
-                    "name": "Rail",
-                    "props": {
-                      "WidthOverride": 232,
-                      "bOverride_WidthOverride": "true"
-                    },
-                    "children": [
-                      {
-                        "class": "/Script/UMG.Border",
-                        "name": "RailFrame",
-                        "props": {
-                          "BrushColor": "(R=1,G=1,B=1,A=1)",
-                          "Background.DrawAs": "RoundedBox",
-                          "Background.TintColor": "(SpecifiedColor=(R=0,G=0,B=0,A=0.15))",
-                          "Background.OutlineSettings": "(CornerRadii=(X=0,Y=0,Z=0,W=0),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                          "Padding": "(Left=12,Top=16,Right=12,Bottom=16)"
-                        },
-                        "children": [
-                          {
-                            "class": "/Script/UMG.VerticalBox",
-                            "name": "RailColumn",
-                            "children": [
-                              {
-                                "class": "/Script/UMG.TextBlock",
-                                "name": "RailBrowseLabel",
-                                "props": {
-                                  "Text": "Browse",
-                                  "Font.Size": 13,
-                                  "ColorAndOpacity": "(SpecifiedColor=(R=0.386,G=0.423,B=0.479,A=1),ColorUseRule=UseColor_Specified)",
-                                  "TextTransformPolicy": "ToUpper"
-                                },
-                                "variable": true,
-                                "slot": {
-                                  "Padding": "(Left=0,Top=6,Right=0,Bottom=8)"
-                                }
-                              },
-                              {
-                                "class": "/Script/UMG.Border",
-                                "name": "RailCompositionsBack",
-                                "variable": true,
-                                "props": {
-                                  "BrushColor": "(R=1,G=1,B=1,A=0)",
-                                  "Background.DrawAs": "RoundedBox",
-                                  "Background.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=1))",
-                                  "Background.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                  "Padding": "(Left=0,Top=0,Right=0,Bottom=0)"
-                                },
-                                "slot": {
-                                  "Padding": "(Left=0,Top=0,Right=2,Bottom=0)",
-                                  "VerticalAlignment": "VAlign_Fill"
-                                },
-                                "children": [
-                                  {
-                                    "class": "/Script/UMG.Button",
-                                    "name": "RailCompositions",
-                                    "variable": true,
-                                    "props": {
-                                      "BackgroundColor": "(R=1,G=1,B=1,A=1)",
-                                      "IsFocusable": "false",
-                                      "WidgetStyle.Normal.DrawAs": "RoundedBox",
-                                      "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0))",
-                                      "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                      "WidgetStyle.Hovered.DrawAs": "RoundedBox",
-                                      "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.08))",
-                                      "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                      "WidgetStyle.Pressed.DrawAs": "RoundedBox",
-                                      "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.04))",
-                                      "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                      "WidgetStyle.Disabled.DrawAs": "RoundedBox",
-                                      "WidgetStyle.Disabled.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0))",
-                                      "WidgetStyle.Disabled.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                      "WidgetStyle.NormalPadding": "(Left=10,Top=7,Right=10,Bottom=7)",
-                                      "WidgetStyle.PressedPadding": "(Left=10,Top=8,Right=10,Bottom=6)"
-                                    },
-                                    "slot": {
-                                      "HorizontalAlignment": "HAlign_Fill",
-                                      "VerticalAlignment": "VAlign_Fill"
-                                    },
-                                    "children": [
-                                      {
-                                        "class": "/Script/UMG.HorizontalBox",
-                                        "name": "RailCompositionsContent",
-                                        "slot": {
-                                          "HorizontalAlignment": "HAlign_Left",
-                                          "VerticalAlignment": "VAlign_Center"
-                                        },
-                                        "children": [
-                                          {
-                                            "class": "/Script/UMG.Image",
-                                            "name": "RailCompositionsIcon",
-                                            "variable": true,
-                                            "props": {
-                                              "Brush.ResourceObject": "/DenDesignerGF/Editor/Icons/T_Icon_compositions",
-                                              "Brush.ImageSize": "(X=20,Y=20)",
-                                              "ColorAndOpacity": "(R=0.584,G=0.611,B=0.651,A=1)",
-                                              "Visibility": "HitTestInvisible"
-                                            },
-                                            "slot": {
-                                              "HorizontalAlignment": "HAlign_Center",
-                                              "VerticalAlignment": "VAlign_Center",
-                                              "Padding": "(Left=0,Top=0,Right=7,Bottom=0)"
-                                            }
-                                          },
-                                          {
-                                            "class": "/Script/UMG.TextBlock",
-                                            "name": "RailCompositionsLabel",
-                                            "props": {
-                                              "Text": "Compositions",
-                                              "Font.Size": 15,
-                                              "ColorAndOpacity": "(SpecifiedColor=(R=0.584,G=0.611,B=0.651,A=1),ColorUseRule=UseColor_Specified)",
-                                              "TextTransformPolicy": "ToUpper",
-                                              "Justification": "Center"
-                                            },
-                                            "variable": true,
-                                            "slot": {
-                                              "HorizontalAlignment": "HAlign_Center",
-                                              "VerticalAlignment": "VAlign_Center"
-                                            }
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                ]
-                              },
-                              {
-                                "class": "/Script/UMG.Border",
-                                "name": "RailDensBack",
-                                "variable": true,
-                                "props": {
-                                  "BrushColor": "(R=1,G=1,B=1,A=0)",
-                                  "Background.DrawAs": "RoundedBox",
-                                  "Background.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=1))",
-                                  "Background.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                  "Padding": "(Left=0,Top=0,Right=0,Bottom=0)"
-                                },
-                                "slot": {
-                                  "Padding": "(Left=0,Top=0,Right=2,Bottom=0)",
-                                  "VerticalAlignment": "VAlign_Fill"
-                                },
-                                "children": [
-                                  {
-                                    "class": "/Script/UMG.Button",
-                                    "name": "RailDens",
-                                    "variable": true,
-                                    "props": {
-                                      "BackgroundColor": "(R=1,G=1,B=1,A=1)",
-                                      "IsFocusable": "false",
-                                      "WidgetStyle.Normal.DrawAs": "RoundedBox",
-                                      "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0))",
-                                      "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                      "WidgetStyle.Hovered.DrawAs": "RoundedBox",
-                                      "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.08))",
-                                      "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                      "WidgetStyle.Pressed.DrawAs": "RoundedBox",
-                                      "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.04))",
-                                      "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                      "WidgetStyle.Disabled.DrawAs": "RoundedBox",
-                                      "WidgetStyle.Disabled.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0))",
-                                      "WidgetStyle.Disabled.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                      "WidgetStyle.NormalPadding": "(Left=10,Top=7,Right=10,Bottom=7)",
-                                      "WidgetStyle.PressedPadding": "(Left=10,Top=8,Right=10,Bottom=6)"
-                                    },
-                                    "slot": {
-                                      "HorizontalAlignment": "HAlign_Fill",
-                                      "VerticalAlignment": "VAlign_Fill"
-                                    },
-                                    "children": [
-                                      {
-                                        "class": "/Script/UMG.HorizontalBox",
-                                        "name": "RailDensContent",
-                                        "slot": {
-                                          "HorizontalAlignment": "HAlign_Left",
-                                          "VerticalAlignment": "VAlign_Center"
-                                        },
-                                        "children": [
-                                          {
-                                            "class": "/Script/UMG.Image",
-                                            "name": "RailDensIcon",
-                                            "variable": true,
-                                            "props": {
-                                              "Brush.ResourceObject": "/DenDesignerGF/Editor/Icons/T_Icon_layouts",
-                                              "Brush.ImageSize": "(X=20,Y=20)",
-                                              "ColorAndOpacity": "(R=0.584,G=0.611,B=0.651,A=1)",
-                                              "Visibility": "HitTestInvisible"
-                                            },
-                                            "slot": {
-                                              "HorizontalAlignment": "HAlign_Center",
-                                              "VerticalAlignment": "VAlign_Center",
-                                              "Padding": "(Left=0,Top=0,Right=7,Bottom=0)"
-                                            }
-                                          },
-                                          {
-                                            "class": "/Script/UMG.TextBlock",
-                                            "name": "RailDensLabel",
-                                            "props": {
-                                              "Text": "Dens",
-                                              "Font.Size": 15,
-                                              "ColorAndOpacity": "(SpecifiedColor=(R=0.584,G=0.611,B=0.651,A=1),ColorUseRule=UseColor_Specified)",
-                                              "TextTransformPolicy": "ToUpper",
-                                              "Justification": "Center"
-                                            },
-                                            "variable": true,
-                                            "slot": {
-                                              "HorizontalAlignment": "HAlign_Center",
-                                              "VerticalAlignment": "VAlign_Center"
-                                            }
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                ]
-                              },
-                              {
-                                "class": "/Script/UMG.TextBlock",
-                                "name": "RailDensSoon",
-                                "props": {
-                                  "Text": "Coming soon",
-                                  "Font.Size": 11,
-                                  "ColorAndOpacity": "(SpecifiedColor=(R=0.386,G=0.423,B=0.479,A=1),ColorUseRule=UseColor_Specified)"
-                                },
-                                "variable": true,
-                                "slot": {
-                                  "Padding": "(Left=37,Top=0,Right=0,Bottom=4)"
-                                }
-                              },
-                              {
-                                "class": "/Script/UMG.TextBlock",
-                                "name": "RailYoursLabel",
-                                "props": {
-                                  "Text": "Yours",
-                                  "Font.Size": 13,
-                                  "ColorAndOpacity": "(SpecifiedColor=(R=0.386,G=0.423,B=0.479,A=1),ColorUseRule=UseColor_Specified)",
-                                  "TextTransformPolicy": "ToUpper"
-                                },
-                                "variable": true,
-                                "slot": {
-                                  "Padding": "(Left=0,Top=18,Right=0,Bottom=8)"
-                                }
-                              },
-                              {
-                                "class": "/Script/UMG.Border",
-                                "name": "RailShareBack",
-                                "variable": true,
-                                "props": {
-                                  "BrushColor": "(R=1,G=1,B=1,A=0)",
-                                  "Background.DrawAs": "RoundedBox",
-                                  "Background.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=1))",
-                                  "Background.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                  "Padding": "(Left=0,Top=0,Right=0,Bottom=0)"
-                                },
-                                "slot": {
-                                  "Padding": "(Left=0,Top=0,Right=2,Bottom=0)",
-                                  "VerticalAlignment": "VAlign_Fill"
-                                },
-                                "children": [
-                                  {
-                                    "class": "/Script/UMG.Button",
-                                    "name": "RailShare",
-                                    "variable": true,
-                                    "props": {
-                                      "BackgroundColor": "(R=1,G=1,B=1,A=1)",
-                                      "IsFocusable": "false",
-                                      "WidgetStyle.Normal.DrawAs": "RoundedBox",
-                                      "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0))",
-                                      "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                      "WidgetStyle.Hovered.DrawAs": "RoundedBox",
-                                      "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.08))",
-                                      "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                      "WidgetStyle.Pressed.DrawAs": "RoundedBox",
-                                      "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.04))",
-                                      "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                      "WidgetStyle.Disabled.DrawAs": "RoundedBox",
-                                      "WidgetStyle.Disabled.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0))",
-                                      "WidgetStyle.Disabled.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                      "WidgetStyle.NormalPadding": "(Left=10,Top=7,Right=10,Bottom=7)",
-                                      "WidgetStyle.PressedPadding": "(Left=10,Top=8,Right=10,Bottom=6)"
-                                    },
-                                    "slot": {
-                                      "HorizontalAlignment": "HAlign_Fill",
-                                      "VerticalAlignment": "VAlign_Fill"
-                                    },
-                                    "children": [
-                                      {
-                                        "class": "/Script/UMG.HorizontalBox",
-                                        "name": "RailShareContent",
-                                        "slot": {
-                                          "HorizontalAlignment": "HAlign_Left",
-                                          "VerticalAlignment": "VAlign_Center"
-                                        },
-                                        "children": [
-                                          {
-                                            "class": "/Script/UMG.Image",
-                                            "name": "RailShareIcon",
-                                            "variable": true,
-                                            "props": {
-                                              "Brush.ResourceObject": "/DenDesignerGF/Editor/Icons/T_Icon_save",
-                                              "Brush.ImageSize": "(X=20,Y=20)",
-                                              "ColorAndOpacity": "(R=0.584,G=0.611,B=0.651,A=1)",
-                                              "Visibility": "HitTestInvisible"
-                                            },
-                                            "slot": {
-                                              "HorizontalAlignment": "HAlign_Center",
-                                              "VerticalAlignment": "VAlign_Center",
-                                              "Padding": "(Left=0,Top=0,Right=7,Bottom=0)"
-                                            }
-                                          },
-                                          {
-                                            "class": "/Script/UMG.TextBlock",
-                                            "name": "RailShareLabel",
-                                            "props": {
-                                              "Text": "Share a build",
-                                              "Font.Size": 15,
-                                              "ColorAndOpacity": "(SpecifiedColor=(R=0.584,G=0.611,B=0.651,A=1),ColorUseRule=UseColor_Specified)",
-                                              "TextTransformPolicy": "ToUpper",
-                                              "Justification": "Center"
-                                            },
-                                            "variable": true,
-                                            "slot": {
-                                              "HorizontalAlignment": "HAlign_Center",
-                                              "VerticalAlignment": "VAlign_Center"
-                                            }
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                ]
-                              },
-                              {
-                                "class": "/Script/UMG.Border",
-                                "name": "RailSharesBack",
-                                "variable": true,
-                                "props": {
-                                  "BrushColor": "(R=1,G=1,B=1,A=0)",
-                                  "Background.DrawAs": "RoundedBox",
-                                  "Background.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=1))",
-                                  "Background.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                  "Padding": "(Left=0,Top=0,Right=0,Bottom=0)"
-                                },
-                                "slot": {
-                                  "Padding": "(Left=0,Top=0,Right=2,Bottom=0)",
-                                  "VerticalAlignment": "VAlign_Fill"
-                                },
-                                "children": [
-                                  {
-                                    "class": "/Script/UMG.Button",
-                                    "name": "RailShares",
-                                    "variable": true,
-                                    "props": {
-                                      "BackgroundColor": "(R=1,G=1,B=1,A=1)",
-                                      "IsFocusable": "false",
-                                      "WidgetStyle.Normal.DrawAs": "RoundedBox",
-                                      "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0))",
-                                      "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                      "WidgetStyle.Hovered.DrawAs": "RoundedBox",
-                                      "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.08))",
-                                      "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                      "WidgetStyle.Pressed.DrawAs": "RoundedBox",
-                                      "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.04))",
-                                      "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                      "WidgetStyle.Disabled.DrawAs": "RoundedBox",
-                                      "WidgetStyle.Disabled.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0))",
-                                      "WidgetStyle.Disabled.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                      "WidgetStyle.NormalPadding": "(Left=10,Top=7,Right=10,Bottom=7)",
-                                      "WidgetStyle.PressedPadding": "(Left=10,Top=8,Right=10,Bottom=6)"
-                                    },
-                                    "slot": {
-                                      "HorizontalAlignment": "HAlign_Fill",
-                                      "VerticalAlignment": "VAlign_Fill"
-                                    },
-                                    "children": [
-                                      {
-                                        "class": "/Script/UMG.HorizontalBox",
-                                        "name": "RailSharesContent",
-                                        "slot": {
-                                          "HorizontalAlignment": "HAlign_Left",
-                                          "VerticalAlignment": "VAlign_Center"
-                                        },
-                                        "children": [
-                                          {
-                                            "class": "/Script/UMG.Image",
-                                            "name": "RailSharesIcon",
-                                            "variable": true,
-                                            "props": {
-                                              "Brush.ResourceObject": "/DenDesignerGF/Editor/Icons/T_Icon_storeroom",
-                                              "Brush.ImageSize": "(X=20,Y=20)",
-                                              "ColorAndOpacity": "(R=0.584,G=0.611,B=0.651,A=1)",
-                                              "Visibility": "HitTestInvisible"
-                                            },
-                                            "slot": {
-                                              "HorizontalAlignment": "HAlign_Center",
-                                              "VerticalAlignment": "VAlign_Center",
-                                              "Padding": "(Left=0,Top=0,Right=7,Bottom=0)"
-                                            }
-                                          },
-                                          {
-                                            "class": "/Script/UMG.TextBlock",
-                                            "name": "RailSharesLabel",
-                                            "props": {
-                                              "Text": "My Shares",
-                                              "Font.Size": 15,
-                                              "ColorAndOpacity": "(SpecifiedColor=(R=0.584,G=0.611,B=0.651,A=1),ColorUseRule=UseColor_Specified)",
-                                              "TextTransformPolicy": "ToUpper",
-                                              "Justification": "Center"
-                                            },
-                                            "variable": true,
-                                            "slot": {
-                                              "HorizontalAlignment": "HAlign_Center",
-                                              "VerticalAlignment": "VAlign_Center"
-                                            }
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                ]
-                              },
-                              {
-                                "class": "/Script/UMG.Border",
-                                "name": "RailAccountBack",
-                                "variable": true,
-                                "props": {
-                                  "BrushColor": "(R=1,G=1,B=1,A=0)",
-                                  "Background.DrawAs": "RoundedBox",
-                                  "Background.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=1))",
-                                  "Background.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                  "Padding": "(Left=0,Top=0,Right=0,Bottom=0)"
-                                },
-                                "slot": {
-                                  "Padding": "(Left=0,Top=0,Right=2,Bottom=0)",
-                                  "VerticalAlignment": "VAlign_Fill"
-                                },
-                                "children": [
-                                  {
-                                    "class": "/Script/UMG.Button",
-                                    "name": "RailAccount",
-                                    "variable": true,
-                                    "props": {
-                                      "BackgroundColor": "(R=1,G=1,B=1,A=1)",
-                                      "IsFocusable": "false",
-                                      "WidgetStyle.Normal.DrawAs": "RoundedBox",
-                                      "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0))",
-                                      "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                      "WidgetStyle.Hovered.DrawAs": "RoundedBox",
-                                      "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.08))",
-                                      "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                      "WidgetStyle.Pressed.DrawAs": "RoundedBox",
-                                      "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0.04))",
-                                      "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                      "WidgetStyle.Disabled.DrawAs": "RoundedBox",
-                                      "WidgetStyle.Disabled.TintColor": "(SpecifiedColor=(R=1,G=1,B=1,A=0))",
-                                      "WidgetStyle.Disabled.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                      "WidgetStyle.NormalPadding": "(Left=10,Top=7,Right=10,Bottom=7)",
-                                      "WidgetStyle.PressedPadding": "(Left=10,Top=8,Right=10,Bottom=6)"
-                                    },
-                                    "slot": {
-                                      "HorizontalAlignment": "HAlign_Fill",
-                                      "VerticalAlignment": "VAlign_Fill"
-                                    },
-                                    "children": [
-                                      {
-                                        "class": "/Script/UMG.HorizontalBox",
-                                        "name": "RailAccountContent",
-                                        "slot": {
-                                          "HorizontalAlignment": "HAlign_Left",
-                                          "VerticalAlignment": "VAlign_Center"
-                                        },
-                                        "children": [
-                                          {
-                                            "class": "/Script/UMG.Image",
-                                            "name": "RailAccountIcon",
-                                            "variable": true,
-                                            "props": {
-                                              "Brush.ResourceObject": "/DenDesignerGF/Editor/Icons/T_Icon_settings",
-                                              "Brush.ImageSize": "(X=20,Y=20)",
-                                              "ColorAndOpacity": "(R=0.584,G=0.611,B=0.651,A=1)",
-                                              "Visibility": "HitTestInvisible"
-                                            },
-                                            "slot": {
-                                              "HorizontalAlignment": "HAlign_Center",
-                                              "VerticalAlignment": "VAlign_Center",
-                                              "Padding": "(Left=0,Top=0,Right=7,Bottom=0)"
-                                            }
-                                          },
-                                          {
-                                            "class": "/Script/UMG.TextBlock",
-                                            "name": "RailAccountLabel",
-                                            "props": {
-                                              "Text": "Account",
-                                              "Font.Size": 15,
-                                              "ColorAndOpacity": "(SpecifiedColor=(R=0.584,G=0.611,B=0.651,A=1),ColorUseRule=UseColor_Specified)",
-                                              "TextTransformPolicy": "ToUpper",
-                                              "Justification": "Center"
-                                            },
-                                            "variable": true,
-                                            "slot": {
-                                              "HorizontalAlignment": "HAlign_Center",
-                                              "VerticalAlignment": "VAlign_Center"
-                                            }
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                ]
-                              },
-                              {
-                                "class": "/Script/UMG.TextBlock",
-                                "name": "SharesCount",
-                                "props": {
-                                  "Text": "",
-                                  "Font.Size": 12,
-                                  "ColorAndOpacity": "(SpecifiedColor=(R=0.386,G=0.423,B=0.479,A=1),ColorUseRule=UseColor_Specified)"
-                                },
-                                "variable": true,
-                                "slot": {
-                                  "Padding": "(Left=37,Top=0,Right=0,Bottom=4)"
-                                }
-                              },
-                              {
-                                "class": "/Script/UMG.Spacer",
-                                "name": "RailSpace",
-                                "slot": {
-                                  "Size": "(SizeRule=Fill,Value=1)"
-                                }
-                              },
-                              {
-                                "class": "/Script/UMG.Border",
-                                "name": "CodeBox",
-                                "props": {
-                                  "BrushColor": "(R=1,G=1,B=1,A=1)",
-                                  "Background.DrawAs": "RoundedBox",
-                                  "Background.TintColor": "(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.07))",
-                                  "Background.OutlineSettings": "(CornerRadii=(X=8,Y=8,Z=8,W=8),Color=(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.3)),Width=1.0,RoundingType=FixedRadius)",
-                                  "Padding": "(Left=14,Top=12,Right=14,Bottom=12)"
-                                },
-                                "children": [
-                                  {
-                                    "class": "/Script/UMG.VerticalBox",
-                                    "name": "CodeBoxColumn",
-                                    "children": [
-                                      {
-                                        "class": "/Script/UMG.TextBlock",
-                                        "name": "CodeLabel",
-                                        "props": {
-                                          "Text": "Have a code?",
-                                          "Font.Size": 13,
-                                          "ColorAndOpacity": "(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=1),ColorUseRule=UseColor_Specified)",
-                                          "TextTransformPolicy": "ToUpper"
-                                        },
-                                        "variable": true,
-                                        "slot": {
-                                          "Padding": "(Left=0,Top=0,Right=0,Bottom=8)"
-                                        }
-                                      },
-                                      {
-                                        "class": "/Script/UMG.EditableTextBox",
-                                        "name": "CommunityCode",
-                                        "variable": true,
-                                        "props": {
-                                          "WidgetStyle.ForegroundColor": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
-                                          "WidgetStyle.FocusedForegroundColor": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
-                                          "WidgetStyle.TextStyle.ColorAndOpacity": "(SpecifiedColor=(R=0.84,G=0.81,B=0.75,A=1),ColorUseRule=UseColor_Specified)",
-                                          "WidgetStyle.TextStyle.Font.Size": 14,
-                                          "WidgetStyle.Padding": "(Left=12,Top=8,Right=10,Bottom=8)",
-                                          "WidgetStyle.BackgroundImageNormal.DrawAs": "RoundedBox",
-                                          "WidgetStyle.BackgroundImageNormal.TintColor": "(SpecifiedColor=(R=0,G=0,B=0,A=0.35))",
-                                          "WidgetStyle.BackgroundImageNormal.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.12)),Width=1.0,RoundingType=FixedRadius)",
-                                          "WidgetStyle.BackgroundImageHovered.DrawAs": "RoundedBox",
-                                          "WidgetStyle.BackgroundImageHovered.TintColor": "(SpecifiedColor=(R=0,G=0,B=0,A=0.35))",
-                                          "WidgetStyle.BackgroundImageHovered.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.2)),Width=1.0,RoundingType=FixedRadius)",
-                                          "WidgetStyle.BackgroundImageFocused.DrawAs": "RoundedBox",
-                                          "WidgetStyle.BackgroundImageFocused.TintColor": "(SpecifiedColor=(R=0,G=0,B=0,A=0.35))",
-                                          "WidgetStyle.BackgroundImageFocused.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.8)),Width=1.0,RoundingType=FixedRadius)",
-                                          "WidgetStyle.BackgroundImageReadOnly.DrawAs": "RoundedBox",
-                                          "WidgetStyle.BackgroundImageReadOnly.TintColor": "(SpecifiedColor=(R=0,G=0,B=0,A=0.35))",
-                                          "WidgetStyle.BackgroundImageReadOnly.OutlineSettings": "(CornerRadii=(X=4,Y=4,Z=4,W=4),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0.12)),Width=1.0,RoundingType=FixedRadius)",
-                                          "HintText": "Code or zcom.app link",
-                                          "SelectAllTextWhenFocused": "true"
-                                        },
-                                        "slot": {
-                                          "Padding": "(Left=0,Top=0,Right=0,Bottom=8)"
-                                        }
-                                      },
-                                      {
-                                        "class": "/Script/UMG.Button",
-                                        "name": "FetchCommunity",
-                                        "variable": true,
-                                        "props": {
-                                          "BackgroundColor": "(R=1,G=1,B=1,A=1)",
-                                          "IsFocusable": "false",
-                                          "WidgetStyle.Normal.DrawAs": "RoundedBox",
-                                          "WidgetStyle.Normal.TintColor": "(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=1))",
-                                          "WidgetStyle.Normal.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                          "WidgetStyle.Hovered.DrawAs": "RoundedBox",
-                                          "WidgetStyle.Hovered.TintColor": "(SpecifiedColor=(R=1,G=0.62,B=0.16,A=1))",
-                                          "WidgetStyle.Hovered.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                          "WidgetStyle.Pressed.DrawAs": "RoundedBox",
-                                          "WidgetStyle.Pressed.TintColor": "(SpecifiedColor=(R=0.7,G=0.36,B=0.05,A=1))",
-                                          "WidgetStyle.Pressed.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                          "WidgetStyle.Disabled.DrawAs": "RoundedBox",
-                                          "WidgetStyle.Disabled.TintColor": "(SpecifiedColor=(R=0.888,G=0.479,B=0.07,A=0.35))",
-                                          "WidgetStyle.Disabled.OutlineSettings": "(CornerRadii=(X=6,Y=6,Z=6,W=6),Color=(SpecifiedColor=(R=1,G=1,B=1,A=0)),Width=0.0,RoundingType=FixedRadius)",
-                                          "WidgetStyle.NormalPadding": "(Left=16,Top=9,Right=16,Bottom=9)",
-                                          "WidgetStyle.PressedPadding": "(Left=16,Top=10,Right=16,Bottom=8)"
-                                        },
-                                        "slot": {
-                                          "Padding": "(Left=0,Top=0,Right=6,Bottom=6)"
-                                        },
-                                        "children": [
-                                          {
-                                            "class": "/Script/UMG.TextBlock",
-                                            "name": "FetchCommunityLabel",
-                                            "props": {
-                                              "Text": "Import",
-                                              "Font.Size": 15,
-                                              "ColorAndOpacity": "(SpecifiedColor=(R=0.0075,G=0.006,B=0.0035,A=1),ColorUseRule=UseColor_Specified)",
-                                              "TextTransformPolicy": "ToUpper",
-                                              "Justification": "Center"
-                                            },
-                                            "variable": true,
-                                            "slot": {
-                                              "HorizontalAlignment": "HAlign_Center",
-                                              "VerticalAlignment": "VAlign_Center"
-                                            }
-                                          }
-                                        ]
-                                      },
-                                      {
-                                        "class": "/Script/UMG.TextBlock",
-                                        "name": "CodeHint",
-                                        "props": {
-                                          "Text": "Codes or zcom.app links both work.",
-                                          "Font.Size": 12,
-                                          "ColorAndOpacity": "(SpecifiedColor=(R=0.386,G=0.423,B=0.479,A=1),ColorUseRule=UseColor_Specified)",
-                                          "AutoWrapText": "true"
-                                        },
-                                        "variable": true
-                                      }
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  },
                   {
                     "class": "/Script/UMG.HorizontalBox",
                     "name": "BrowseArea",
@@ -3576,7 +2925,7 @@
         {
           "id": "font3widget",
           "kind": "get",
-          "var": "CommunityCloseLabel"
+          "var": "SearchCommunityLabel"
         },
         {
           "id": "font3set",
@@ -3604,15 +2953,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Bold",
-            "Size": "13",
-            "LetterSpacing": "120"
+            "TypefaceFontName": "Medium",
+            "Size": "15",
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font4widget",
           "kind": "get",
-          "var": "RailBrowseLabel"
+          "var": "SortNewestLabel"
         },
         {
           "id": "font4set",
@@ -3648,7 +2997,7 @@
         {
           "id": "font5widget",
           "kind": "get",
-          "var": "RailCompositionsLabel"
+          "var": "SortImportsLabel"
         },
         {
           "id": "font5set",
@@ -3684,7 +3033,7 @@
         {
           "id": "font6widget",
           "kind": "get",
-          "var": "RailDensLabel"
+          "var": "FilterUsableLabel"
         },
         {
           "id": "font6set",
@@ -3713,14 +3062,14 @@
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
             "TypefaceFontName": "Regular",
-            "Size": "11",
+            "Size": "13",
             "LetterSpacing": "0"
           }
         },
         {
           "id": "font7widget",
           "kind": "get",
-          "var": "RailDensSoon"
+          "var": "BrowseStatus"
         },
         {
           "id": "font7set",
@@ -3748,15 +3097,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Bold",
-            "Size": "13",
-            "LetterSpacing": "120"
+            "TypefaceFontName": "Medium",
+            "Size": "14",
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font8widget",
           "kind": "get",
-          "var": "RailYoursLabel"
+          "var": "PreviousCommunityLabel"
         },
         {
           "id": "font8set",
@@ -3767,7 +3116,7 @@
         {
           "id": "font9",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font9check",
@@ -3785,14 +3134,14 @@
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
             "TypefaceFontName": "Medium",
-            "Size": "15",
-            "LetterSpacing": "70"
+            "Size": "14",
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font9widget",
           "kind": "get",
-          "var": "RailShareLabel"
+          "var": "GalleryStatus"
         },
         {
           "id": "font9set",
@@ -3821,14 +3170,14 @@
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
             "TypefaceFontName": "Medium",
-            "Size": "15",
+            "Size": "14",
             "LetterSpacing": "70"
           }
         },
         {
           "id": "font10widget",
           "kind": "get",
-          "var": "RailSharesLabel"
+          "var": "NextCommunityLabel"
         },
         {
           "id": "font10set",
@@ -3857,14 +3206,14 @@
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
             "TypefaceFontName": "Medium",
-            "Size": "15",
+            "Size": "14",
             "LetterSpacing": "70"
           }
         },
         {
           "id": "font11widget",
           "kind": "get",
-          "var": "RailAccountLabel"
+          "var": "RefreshCommunityLabel"
         },
         {
           "id": "font11set",
@@ -3875,7 +3224,7 @@
         {
           "id": "font12",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font12check",
@@ -3892,15 +3241,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Regular",
-            "Size": "12",
-            "LetterSpacing": "0"
+            "TypefaceFontName": "Bold",
+            "Size": "24",
+            "LetterSpacing": "20"
           }
         },
         {
           "id": "font12widget",
           "kind": "get",
-          "var": "SharesCount"
+          "var": "DetailTitle"
         },
         {
           "id": "font12set",
@@ -3911,7 +3260,7 @@
         {
           "id": "font13",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font13check",
@@ -3928,15 +3277,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Bold",
-            "Size": "13",
-            "LetterSpacing": "120"
+            "TypefaceFontName": "Medium",
+            "Size": "15",
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font13widget",
           "kind": "get",
-          "var": "CodeLabel"
+          "var": "DetailByline"
         },
         {
           "id": "font13set",
@@ -3947,7 +3296,7 @@
         {
           "id": "font14",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font14check",
@@ -3966,13 +3315,13 @@
           "defaults": {
             "TypefaceFontName": "Medium",
             "Size": "15",
-            "LetterSpacing": "70"
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font14widget",
           "kind": "get",
-          "var": "FetchCommunityLabel"
+          "var": "CommunityDetail"
         },
         {
           "id": "font14set",
@@ -4000,15 +3349,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Regular",
-            "Size": "12",
+            "TypefaceFontName": "Medium",
+            "Size": "15",
             "LetterSpacing": "0"
           }
         },
         {
           "id": "font15widget",
           "kind": "get",
-          "var": "CodeHint"
+          "var": "DetailReadyText"
         },
         {
           "id": "font15set",
@@ -4037,14 +3386,14 @@
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
             "TypefaceFontName": "Medium",
-            "Size": "14",
+            "Size": "13",
             "LetterSpacing": "70"
           }
         },
         {
           "id": "font16widget",
           "kind": "get",
-          "var": "SearchCommunityLabel"
+          "var": "GetPackLabel"
         },
         {
           "id": "font16set",
@@ -4055,7 +3404,7 @@
         {
           "id": "font17",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font17check",
@@ -4074,13 +3423,13 @@
           "defaults": {
             "TypefaceFontName": "Medium",
             "Size": "15",
-            "LetterSpacing": "70"
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font17widget",
           "kind": "get",
-          "var": "SortNewestLabel"
+          "var": "FactPartsLabel"
         },
         {
           "id": "font17set",
@@ -4091,7 +3440,7 @@
         {
           "id": "font18",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font18check",
@@ -4110,13 +3459,13 @@
           "defaults": {
             "TypefaceFontName": "Medium",
             "Size": "15",
-            "LetterSpacing": "70"
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font18widget",
           "kind": "get",
-          "var": "SortImportsLabel"
+          "var": "FactPartsValue"
         },
         {
           "id": "font18set",
@@ -4127,7 +3476,7 @@
         {
           "id": "font19",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font19check",
@@ -4146,13 +3495,13 @@
           "defaults": {
             "TypefaceFontName": "Medium",
             "Size": "15",
-            "LetterSpacing": "70"
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font19widget",
           "kind": "get",
-          "var": "FilterUsableLabel"
+          "var": "FactFootprintLabel"
         },
         {
           "id": "font19set",
@@ -4180,15 +3529,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Regular",
-            "Size": "13",
+            "TypefaceFontName": "Medium",
+            "Size": "15",
             "LetterSpacing": "0"
           }
         },
         {
           "id": "font20widget",
           "kind": "get",
-          "var": "BrowseStatus"
+          "var": "FactFootprintValue"
         },
         {
           "id": "font20set",
@@ -4199,7 +3548,7 @@
         {
           "id": "font21",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font21check",
@@ -4217,14 +3566,14 @@
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
             "TypefaceFontName": "Medium",
-            "Size": "14",
-            "LetterSpacing": "70"
+            "Size": "15",
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font21widget",
           "kind": "get",
-          "var": "PreviousCommunityLabel"
+          "var": "FactCodeLabel"
         },
         {
           "id": "font21set",
@@ -4235,7 +3584,7 @@
         {
           "id": "font22",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font22check",
@@ -4252,15 +3601,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "14",
-            "LetterSpacing": "0"
+            "TypefaceFontName": "Bold",
+            "Size": "15",
+            "LetterSpacing": "20"
           }
         },
         {
           "id": "font22widget",
           "kind": "get",
-          "var": "GalleryStatus"
+          "var": "FactCodeValue"
         },
         {
           "id": "font22set",
@@ -4289,14 +3638,14 @@
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
             "TypefaceFontName": "Medium",
-            "Size": "14",
+            "Size": "15",
             "LetterSpacing": "70"
           }
         },
         {
           "id": "font23widget",
           "kind": "get",
-          "var": "NextCommunityLabel"
+          "var": "DownloadCommunityLabel"
         },
         {
           "id": "font23set",
@@ -4325,14 +3674,14 @@
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
             "TypefaceFontName": "Medium",
-            "Size": "14",
+            "Size": "15",
             "LetterSpacing": "70"
           }
         },
         {
           "id": "font24widget",
           "kind": "get",
-          "var": "RefreshCommunityLabel"
+          "var": "PlaceCommunityLabel"
         },
         {
           "id": "font24set",
@@ -4361,14 +3710,14 @@
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
             "TypefaceFontName": "Bold",
-            "Size": "24",
+            "Size": "22",
             "LetterSpacing": "20"
           }
         },
         {
           "id": "font25widget",
           "kind": "get",
-          "var": "DetailTitle"
+          "var": "DensTitle"
         },
         {
           "id": "font25set",
@@ -4404,7 +3753,7 @@
         {
           "id": "font26widget",
           "kind": "get",
-          "var": "DetailByline"
+          "var": "DensSoon"
         },
         {
           "id": "font26set",
@@ -4415,7 +3764,7 @@
         {
           "id": "font27",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font27check",
@@ -4432,15 +3781,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "15",
-            "LetterSpacing": "0"
+            "TypefaceFontName": "Bold",
+            "Size": "13",
+            "LetterSpacing": "120"
           }
         },
         {
           "id": "font27widget",
           "kind": "get",
-          "var": "CommunityDetail"
+          "var": "ShareStepOne"
         },
         {
           "id": "font27set",
@@ -4468,15 +3817,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "15",
+            "TypefaceFontName": "Regular",
+            "Size": "13",
             "LetterSpacing": "0"
           }
         },
         {
           "id": "font28widget",
           "kind": "get",
-          "var": "DetailReadyText"
+          "var": "UploadSelection"
         },
         {
           "id": "font28set",
@@ -4504,15 +3853,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Medium",
+            "TypefaceFontName": "Bold",
             "Size": "13",
-            "LetterSpacing": "70"
+            "LetterSpacing": "120"
           }
         },
         {
           "id": "font29widget",
           "kind": "get",
-          "var": "GetPackLabel"
+          "var": "ShareStepTwo"
         },
         {
           "id": "font29set",
@@ -4548,7 +3897,7 @@
         {
           "id": "font30widget",
           "kind": "get",
-          "var": "FactPartsLabel"
+          "var": "ShareSummary"
         },
         {
           "id": "font30set",
@@ -4559,7 +3908,7 @@
         {
           "id": "font31",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font31check",
@@ -4576,15 +3925,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "15",
-            "LetterSpacing": "0"
+            "TypefaceFontName": "Bold",
+            "Size": "18",
+            "LetterSpacing": "20"
           }
         },
         {
           "id": "font31widget",
           "kind": "get",
-          "var": "FactPartsValue"
+          "var": "ShareOfflineTitle"
         },
         {
           "id": "font31set",
@@ -4620,7 +3969,7 @@
         {
           "id": "font32widget",
           "kind": "get",
-          "var": "FactFootprintLabel"
+          "var": "ShareOfflineText"
         },
         {
           "id": "font32set",
@@ -4631,7 +3980,7 @@
         {
           "id": "font33",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font33check",
@@ -4650,13 +3999,13 @@
           "defaults": {
             "TypefaceFontName": "Medium",
             "Size": "15",
-            "LetterSpacing": "0"
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font33widget",
           "kind": "get",
-          "var": "FactFootprintValue"
+          "var": "ShareGoAccountLabel"
         },
         {
           "id": "font33set",
@@ -4667,7 +4016,7 @@
         {
           "id": "font34",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font34check",
@@ -4684,15 +4033,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "15",
-            "LetterSpacing": "0"
+            "TypefaceFontName": "Bold",
+            "Size": "18",
+            "LetterSpacing": "20"
           }
         },
         {
           "id": "font34widget",
           "kind": "get",
-          "var": "FactCodeLabel"
+          "var": "ShareResultTitle"
         },
         {
           "id": "font34set",
@@ -4721,14 +4070,14 @@
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
             "TypefaceFontName": "Bold",
-            "Size": "15",
-            "LetterSpacing": "20"
+            "Size": "13",
+            "LetterSpacing": "120"
           }
         },
         {
           "id": "font35widget",
           "kind": "get",
-          "var": "FactCodeValue"
+          "var": "ShareResultCodeLabel"
         },
         {
           "id": "font35set",
@@ -4739,7 +4088,7 @@
         {
           "id": "font36",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:TitleFont"
         },
         {
           "id": "font36check",
@@ -4756,15 +4105,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "15",
-            "LetterSpacing": "70"
+            "TypefaceFontName": "DmBd",
+            "Size": "46",
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font36widget",
           "kind": "get",
-          "var": "DownloadCommunityLabel"
+          "var": "ShareResultCode"
         },
         {
           "id": "font36set",
@@ -4775,7 +4124,7 @@
         {
           "id": "font37",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font37check",
@@ -4794,13 +4143,13 @@
           "defaults": {
             "TypefaceFontName": "Medium",
             "Size": "15",
-            "LetterSpacing": "70"
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font37widget",
           "kind": "get",
-          "var": "PlaceCommunityLabel"
+          "var": "PublishResult"
         },
         {
           "id": "font37set",
@@ -4828,15 +4177,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Bold",
-            "Size": "22",
-            "LetterSpacing": "20"
+            "TypefaceFontName": "Medium",
+            "Size": "15",
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font38widget",
           "kind": "get",
-          "var": "DensTitle"
+          "var": "CopyCommunityCodeLabel"
         },
         {
           "id": "font38set",
@@ -4847,7 +4196,7 @@
         {
           "id": "font39",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font39check",
@@ -4866,13 +4215,13 @@
           "defaults": {
             "TypefaceFontName": "Medium",
             "Size": "15",
-            "LetterSpacing": "0"
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font39widget",
           "kind": "get",
-          "var": "DensSoon"
+          "var": "CopyCommunityURLLabel"
         },
         {
           "id": "font39set",
@@ -4908,7 +4257,7 @@
         {
           "id": "font40widget",
           "kind": "get",
-          "var": "ShareStepOne"
+          "var": "TitleLabel"
         },
         {
           "id": "font40set",
@@ -4919,7 +4268,7 @@
         {
           "id": "font41",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font41check",
@@ -4936,15 +4285,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Regular",
+            "TypefaceFontName": "Bold",
             "Size": "13",
-            "LetterSpacing": "0"
+            "LetterSpacing": "120"
           }
         },
         {
           "id": "font41widget",
           "kind": "get",
-          "var": "UploadSelection"
+          "var": "DescriptionLabel"
         },
         {
           "id": "font41set",
@@ -4980,7 +4329,7 @@
         {
           "id": "font42widget",
           "kind": "get",
-          "var": "ShareStepTwo"
+          "var": "ShareChoiceLabel"
         },
         {
           "id": "font42set",
@@ -4991,7 +4340,7 @@
         {
           "id": "font43",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font43check",
@@ -5010,13 +4359,13 @@
           "defaults": {
             "TypefaceFontName": "Medium",
             "Size": "15",
-            "LetterSpacing": "0"
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font43widget",
           "kind": "get",
-          "var": "ShareSummary"
+          "var": "ShareUpdateLabel"
         },
         {
           "id": "font43set",
@@ -5044,15 +4393,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Bold",
-            "Size": "18",
-            "LetterSpacing": "20"
+            "TypefaceFontName": "Medium",
+            "Size": "15",
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font44widget",
           "kind": "get",
-          "var": "ShareOfflineTitle"
+          "var": "ShareNewLabel"
         },
         {
           "id": "font44set",
@@ -5063,7 +4412,7 @@
         {
           "id": "font45",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font45check",
@@ -5080,15 +4429,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "15",
-            "LetterSpacing": "0"
+            "TypefaceFontName": "Bold",
+            "Size": "13",
+            "LetterSpacing": "120"
           }
         },
         {
           "id": "font45widget",
           "kind": "get",
-          "var": "ShareOfflineText"
+          "var": "ChangelogLabel"
         },
         {
           "id": "font45set",
@@ -5099,7 +4448,7 @@
         {
           "id": "font46",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font46check",
@@ -5116,15 +4465,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "15",
-            "LetterSpacing": "70"
+            "TypefaceFontName": "Regular",
+            "Size": "13",
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font46widget",
           "kind": "get",
-          "var": "ShareGoAccountLabel"
+          "var": "ChangelogHint"
         },
         {
           "id": "font46set",
@@ -5135,7 +4484,7 @@
         {
           "id": "font47",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font47check",
@@ -5152,15 +4501,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Bold",
-            "Size": "18",
-            "LetterSpacing": "20"
+            "TypefaceFontName": "Medium",
+            "Size": "14",
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font47widget",
           "kind": "get",
-          "var": "ShareResultTitle"
+          "var": "PublishRequirements"
         },
         {
           "id": "font47set",
@@ -5171,7 +4520,7 @@
         {
           "id": "font48",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font48check",
@@ -5188,15 +4537,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Bold",
-            "Size": "13",
-            "LetterSpacing": "120"
+            "TypefaceFontName": "Regular",
+            "Size": "14",
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font48widget",
           "kind": "get",
-          "var": "ShareResultCodeLabel"
+          "var": "ShareNote"
         },
         {
           "id": "font48set",
@@ -5207,7 +4556,7 @@
         {
           "id": "font49",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:TitleFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font49check",
@@ -5224,15 +4573,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "DmBd",
-            "Size": "46",
-            "LetterSpacing": "0"
+            "TypefaceFontName": "Medium",
+            "Size": "17",
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font49widget",
           "kind": "get",
-          "var": "ShareResultCode"
+          "var": "SubmitCommunityLabel"
         },
         {
           "id": "font49set",
@@ -5243,7 +4592,7 @@
         {
           "id": "font50",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font50check",
@@ -5262,13 +4611,13 @@
           "defaults": {
             "TypefaceFontName": "Medium",
             "Size": "15",
-            "LetterSpacing": "0"
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font50widget",
           "kind": "get",
-          "var": "PublishResult"
+          "var": "CancelCommunityLabel"
         },
         {
           "id": "font50set",
@@ -5296,15 +4645,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "15",
-            "LetterSpacing": "70"
+            "TypefaceFontName": "Bold",
+            "Size": "22",
+            "LetterSpacing": "20"
           }
         },
         {
           "id": "font51widget",
           "kind": "get",
-          "var": "CopyCommunityCodeLabel"
+          "var": "SharesTitle"
         },
         {
           "id": "font51set",
@@ -5315,7 +4664,7 @@
         {
           "id": "font52",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font52check",
@@ -5334,13 +4683,13 @@
           "defaults": {
             "TypefaceFontName": "Medium",
             "Size": "15",
-            "LetterSpacing": "70"
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font52widget",
           "kind": "get",
-          "var": "CopyCommunityURLLabel"
+          "var": "SharesStatus"
         },
         {
           "id": "font52set",
@@ -5368,15 +4717,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Bold",
-            "Size": "13",
-            "LetterSpacing": "120"
+            "TypefaceFontName": "Medium",
+            "Size": "14",
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font53widget",
           "kind": "get",
-          "var": "TitleLabel"
+          "var": "SharesPreviousLabel"
         },
         {
           "id": "font53set",
@@ -5404,15 +4753,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Bold",
-            "Size": "13",
-            "LetterSpacing": "120"
+            "TypefaceFontName": "Medium",
+            "Size": "14",
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font54widget",
           "kind": "get",
-          "var": "DescriptionLabel"
+          "var": "SharesNextLabel"
         },
         {
           "id": "font54set",
@@ -5440,15 +4789,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Bold",
-            "Size": "13",
-            "LetterSpacing": "120"
+            "TypefaceFontName": "Medium",
+            "Size": "14",
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font55widget",
           "kind": "get",
-          "var": "ShareChoiceLabel"
+          "var": "SharesRefreshLabel"
         },
         {
           "id": "font55set",
@@ -5459,7 +4808,7 @@
         {
           "id": "font56",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font56check",
@@ -5476,15 +4825,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "15",
-            "LetterSpacing": "70"
+            "TypefaceFontName": "Regular",
+            "Size": "13",
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font56widget",
           "kind": "get",
-          "var": "ShareUpdateLabel"
+          "var": "SharesHint"
         },
         {
           "id": "font56set",
@@ -5512,15 +4861,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "15",
-            "LetterSpacing": "70"
+            "TypefaceFontName": "Bold",
+            "Size": "22",
+            "LetterSpacing": "20"
           }
         },
         {
           "id": "font57widget",
           "kind": "get",
-          "var": "ShareNewLabel"
+          "var": "AccountTitle"
         },
         {
           "id": "font57set",
@@ -5531,7 +4880,7 @@
         {
           "id": "font58",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font58check",
@@ -5548,15 +4897,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Bold",
-            "Size": "13",
-            "LetterSpacing": "120"
+            "TypefaceFontName": "Medium",
+            "Size": "15",
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font58widget",
           "kind": "get",
-          "var": "ChangelogLabel"
+          "var": "CommunityProfile"
         },
         {
           "id": "font58set",
@@ -5567,7 +4916,7 @@
         {
           "id": "font59",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font59check",
@@ -5584,15 +4933,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Regular",
-            "Size": "13",
-            "LetterSpacing": "0"
+            "TypefaceFontName": "Medium",
+            "Size": "15",
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font59widget",
           "kind": "get",
-          "var": "ChangelogHint"
+          "var": "ConnectCommunityLabel"
         },
         {
           "id": "font59set",
@@ -5603,7 +4952,7 @@
         {
           "id": "font60",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font60check",
@@ -5622,13 +4971,13 @@
           "defaults": {
             "TypefaceFontName": "Medium",
             "Size": "14",
-            "LetterSpacing": "0"
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font60widget",
           "kind": "get",
-          "var": "PublishRequirements"
+          "var": "RememberCommunityLabel"
         },
         {
           "id": "font60set",
@@ -5639,7 +4988,7 @@
         {
           "id": "font61",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
         },
         {
           "id": "font61check",
@@ -5656,15 +5005,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Regular",
+            "TypefaceFontName": "Medium",
             "Size": "14",
-            "LetterSpacing": "0"
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font61widget",
           "kind": "get",
-          "var": "ShareNote"
+          "var": "DisconnectCommunityLabel"
         },
         {
           "id": "font61set",
@@ -5693,14 +5042,14 @@
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
             "TypefaceFontName": "Medium",
-            "Size": "17",
+            "Size": "14",
             "LetterSpacing": "70"
           }
         },
         {
           "id": "font62widget",
           "kind": "get",
-          "var": "SubmitCommunityLabel"
+          "var": "ForgetCommunityLabel"
         },
         {
           "id": "font62set",
@@ -5711,7 +5060,7 @@
         {
           "id": "font63",
           "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
+          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
         },
         {
           "id": "font63check",
@@ -5728,15 +5077,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "15",
-            "LetterSpacing": "70"
+            "TypefaceFontName": "Regular",
+            "Size": "13",
+            "LetterSpacing": "0"
           }
         },
         {
           "id": "font63widget",
           "kind": "get",
-          "var": "CancelCommunityLabel"
+          "var": "CommunitySecurity"
         },
         {
           "id": "font63set",
@@ -5764,15 +5113,15 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Bold",
-            "Size": "22",
-            "LetterSpacing": "20"
+            "TypefaceFontName": "Medium",
+            "Size": "14",
+            "LetterSpacing": "70"
           }
         },
         {
           "id": "font64widget",
           "kind": "get",
-          "var": "SharesTitle"
+          "var": "CommunityWebsiteLabel"
         },
         {
           "id": "font64set",
@@ -5800,486 +5149,18 @@
           "kind": "make_struct",
           "struct": "/Script/SlateCore.SlateFontInfo",
           "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "15",
+            "TypefaceFontName": "Regular",
+            "Size": "13",
             "LetterSpacing": "0"
           }
         },
         {
           "id": "font65widget",
           "kind": "get",
-          "var": "SharesStatus"
-        },
-        {
-          "id": "font65set",
-          "kind": "call",
-          "function": "/Script/UMG.TextBlock:SetFont",
-          "defaults": {}
-        },
-        {
-          "id": "font66",
-          "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
-        },
-        {
-          "id": "font66check",
-          "kind": "call",
-          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
-          "defaults": {}
-        },
-        {
-          "id": "font66valid",
-          "kind": "branch"
-        },
-        {
-          "id": "font66info",
-          "kind": "make_struct",
-          "struct": "/Script/SlateCore.SlateFontInfo",
-          "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "14",
-            "LetterSpacing": "70"
-          }
-        },
-        {
-          "id": "font66widget",
-          "kind": "get",
-          "var": "SharesPreviousLabel"
-        },
-        {
-          "id": "font66set",
-          "kind": "call",
-          "function": "/Script/UMG.TextBlock:SetFont",
-          "defaults": {}
-        },
-        {
-          "id": "font67",
-          "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
-        },
-        {
-          "id": "font67check",
-          "kind": "call",
-          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
-          "defaults": {}
-        },
-        {
-          "id": "font67valid",
-          "kind": "branch"
-        },
-        {
-          "id": "font67info",
-          "kind": "make_struct",
-          "struct": "/Script/SlateCore.SlateFontInfo",
-          "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "14",
-            "LetterSpacing": "70"
-          }
-        },
-        {
-          "id": "font67widget",
-          "kind": "get",
-          "var": "SharesNextLabel"
-        },
-        {
-          "id": "font67set",
-          "kind": "call",
-          "function": "/Script/UMG.TextBlock:SetFont",
-          "defaults": {}
-        },
-        {
-          "id": "font68",
-          "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
-        },
-        {
-          "id": "font68check",
-          "kind": "call",
-          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
-          "defaults": {}
-        },
-        {
-          "id": "font68valid",
-          "kind": "branch"
-        },
-        {
-          "id": "font68info",
-          "kind": "make_struct",
-          "struct": "/Script/SlateCore.SlateFontInfo",
-          "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "14",
-            "LetterSpacing": "70"
-          }
-        },
-        {
-          "id": "font68widget",
-          "kind": "get",
-          "var": "SharesRefreshLabel"
-        },
-        {
-          "id": "font68set",
-          "kind": "call",
-          "function": "/Script/UMG.TextBlock:SetFont",
-          "defaults": {}
-        },
-        {
-          "id": "font69",
-          "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
-        },
-        {
-          "id": "font69check",
-          "kind": "call",
-          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
-          "defaults": {}
-        },
-        {
-          "id": "font69valid",
-          "kind": "branch"
-        },
-        {
-          "id": "font69info",
-          "kind": "make_struct",
-          "struct": "/Script/SlateCore.SlateFontInfo",
-          "defaults": {
-            "TypefaceFontName": "Regular",
-            "Size": "13",
-            "LetterSpacing": "0"
-          }
-        },
-        {
-          "id": "font69widget",
-          "kind": "get",
-          "var": "SharesHint"
-        },
-        {
-          "id": "font69set",
-          "kind": "call",
-          "function": "/Script/UMG.TextBlock:SetFont",
-          "defaults": {}
-        },
-        {
-          "id": "font70",
-          "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
-        },
-        {
-          "id": "font70check",
-          "kind": "call",
-          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
-          "defaults": {}
-        },
-        {
-          "id": "font70valid",
-          "kind": "branch"
-        },
-        {
-          "id": "font70info",
-          "kind": "make_struct",
-          "struct": "/Script/SlateCore.SlateFontInfo",
-          "defaults": {
-            "TypefaceFontName": "Bold",
-            "Size": "22",
-            "LetterSpacing": "20"
-          }
-        },
-        {
-          "id": "font70widget",
-          "kind": "get",
-          "var": "AccountTitle"
-        },
-        {
-          "id": "font70set",
-          "kind": "call",
-          "function": "/Script/UMG.TextBlock:SetFont",
-          "defaults": {}
-        },
-        {
-          "id": "font71",
-          "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
-        },
-        {
-          "id": "font71check",
-          "kind": "call",
-          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
-          "defaults": {}
-        },
-        {
-          "id": "font71valid",
-          "kind": "branch"
-        },
-        {
-          "id": "font71info",
-          "kind": "make_struct",
-          "struct": "/Script/SlateCore.SlateFontInfo",
-          "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "15",
-            "LetterSpacing": "0"
-          }
-        },
-        {
-          "id": "font71widget",
-          "kind": "get",
-          "var": "CommunityProfile"
-        },
-        {
-          "id": "font71set",
-          "kind": "call",
-          "function": "/Script/UMG.TextBlock:SetFont",
-          "defaults": {}
-        },
-        {
-          "id": "font72",
-          "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
-        },
-        {
-          "id": "font72check",
-          "kind": "call",
-          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
-          "defaults": {}
-        },
-        {
-          "id": "font72valid",
-          "kind": "branch"
-        },
-        {
-          "id": "font72info",
-          "kind": "make_struct",
-          "struct": "/Script/SlateCore.SlateFontInfo",
-          "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "15",
-            "LetterSpacing": "70"
-          }
-        },
-        {
-          "id": "font72widget",
-          "kind": "get",
-          "var": "ConnectCommunityLabel"
-        },
-        {
-          "id": "font72set",
-          "kind": "call",
-          "function": "/Script/UMG.TextBlock:SetFont",
-          "defaults": {}
-        },
-        {
-          "id": "font73",
-          "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
-        },
-        {
-          "id": "font73check",
-          "kind": "call",
-          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
-          "defaults": {}
-        },
-        {
-          "id": "font73valid",
-          "kind": "branch"
-        },
-        {
-          "id": "font73info",
-          "kind": "make_struct",
-          "struct": "/Script/SlateCore.SlateFontInfo",
-          "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "14",
-            "LetterSpacing": "70"
-          }
-        },
-        {
-          "id": "font73widget",
-          "kind": "get",
-          "var": "RememberCommunityLabel"
-        },
-        {
-          "id": "font73set",
-          "kind": "call",
-          "function": "/Script/UMG.TextBlock:SetFont",
-          "defaults": {}
-        },
-        {
-          "id": "font74",
-          "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
-        },
-        {
-          "id": "font74check",
-          "kind": "call",
-          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
-          "defaults": {}
-        },
-        {
-          "id": "font74valid",
-          "kind": "branch"
-        },
-        {
-          "id": "font74info",
-          "kind": "make_struct",
-          "struct": "/Script/SlateCore.SlateFontInfo",
-          "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "14",
-            "LetterSpacing": "70"
-          }
-        },
-        {
-          "id": "font74widget",
-          "kind": "get",
-          "var": "DisconnectCommunityLabel"
-        },
-        {
-          "id": "font74set",
-          "kind": "call",
-          "function": "/Script/UMG.TextBlock:SetFont",
-          "defaults": {}
-        },
-        {
-          "id": "font75",
-          "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
-        },
-        {
-          "id": "font75check",
-          "kind": "call",
-          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
-          "defaults": {}
-        },
-        {
-          "id": "font75valid",
-          "kind": "branch"
-        },
-        {
-          "id": "font75info",
-          "kind": "make_struct",
-          "struct": "/Script/SlateCore.SlateFontInfo",
-          "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "14",
-            "LetterSpacing": "70"
-          }
-        },
-        {
-          "id": "font75widget",
-          "kind": "get",
-          "var": "ForgetCommunityLabel"
-        },
-        {
-          "id": "font75set",
-          "kind": "call",
-          "function": "/Script/UMG.TextBlock:SetFont",
-          "defaults": {}
-        },
-        {
-          "id": "font76",
-          "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
-        },
-        {
-          "id": "font76check",
-          "kind": "call",
-          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
-          "defaults": {}
-        },
-        {
-          "id": "font76valid",
-          "kind": "branch"
-        },
-        {
-          "id": "font76info",
-          "kind": "make_struct",
-          "struct": "/Script/SlateCore.SlateFontInfo",
-          "defaults": {
-            "TypefaceFontName": "Regular",
-            "Size": "13",
-            "LetterSpacing": "0"
-          }
-        },
-        {
-          "id": "font76widget",
-          "kind": "get",
-          "var": "CommunitySecurity"
-        },
-        {
-          "id": "font76set",
-          "kind": "call",
-          "function": "/Script/UMG.TextBlock:SetFont",
-          "defaults": {}
-        },
-        {
-          "id": "font77",
-          "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:SecondaryFont"
-        },
-        {
-          "id": "font77check",
-          "kind": "call",
-          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
-          "defaults": {}
-        },
-        {
-          "id": "font77valid",
-          "kind": "branch"
-        },
-        {
-          "id": "font77info",
-          "kind": "make_struct",
-          "struct": "/Script/SlateCore.SlateFontInfo",
-          "defaults": {
-            "TypefaceFontName": "Medium",
-            "Size": "14",
-            "LetterSpacing": "70"
-          }
-        },
-        {
-          "id": "font77widget",
-          "kind": "get",
-          "var": "CommunityWebsiteLabel"
-        },
-        {
-          "id": "font77set",
-          "kind": "call",
-          "function": "/Script/UMG.TextBlock:SetFont",
-          "defaults": {}
-        },
-        {
-          "id": "font78",
-          "kind": "get",
-          "var": "/DenDesignerGF/Runtime/BP_DenEditorBus:PrimaryFont"
-        },
-        {
-          "id": "font78check",
-          "kind": "call",
-          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
-          "defaults": {}
-        },
-        {
-          "id": "font78valid",
-          "kind": "branch"
-        },
-        {
-          "id": "font78info",
-          "kind": "make_struct",
-          "struct": "/Script/SlateCore.SlateFontInfo",
-          "defaults": {
-            "TypefaceFontName": "Regular",
-            "Size": "13",
-            "LetterSpacing": "0"
-          }
-        },
-        {
-          "id": "font78widget",
-          "kind": "get",
           "var": "Footer"
         },
         {
-          "id": "font78set",
+          "id": "font65set",
           "kind": "call",
           "function": "/Script/UMG.TextBlock:SetFont",
           "defaults": {}
@@ -6419,7 +5300,7 @@
           "font3info.FontObject"
         ],
         [
-          "font3widget.CommunityCloseLabel",
+          "font3widget.SearchCommunityLabel",
           "font3set.self"
         ],
         [
@@ -6455,7 +5336,7 @@
           "font4info.FontObject"
         ],
         [
-          "font4widget.RailBrowseLabel",
+          "font4widget.SortNewestLabel",
           "font4set.self"
         ],
         [
@@ -6491,7 +5372,7 @@
           "font5info.FontObject"
         ],
         [
-          "font5widget.RailCompositionsLabel",
+          "font5widget.SortImportsLabel",
           "font5set.self"
         ],
         [
@@ -6527,7 +5408,7 @@
           "font6info.FontObject"
         ],
         [
-          "font6widget.RailDensLabel",
+          "font6widget.FilterUsableLabel",
           "font6set.self"
         ],
         [
@@ -6563,7 +5444,7 @@
           "font7info.FontObject"
         ],
         [
-          "font7widget.RailDensSoon",
+          "font7widget.BrowseStatus",
           "font7set.self"
         ],
         [
@@ -6599,7 +5480,7 @@
           "font8info.FontObject"
         ],
         [
-          "font8widget.RailYoursLabel",
+          "font8widget.PreviousCommunityLabel",
           "font8set.self"
         ],
         [
@@ -6623,7 +5504,7 @@
           "font9.self"
         ],
         [
-          "font9.SecondaryFont",
+          "font9.PrimaryFont",
           "font9check.Object"
         ],
         [
@@ -6631,11 +5512,11 @@
           "font9valid.Condition"
         ],
         [
-          "font9.SecondaryFont",
+          "font9.PrimaryFont",
           "font9info.FontObject"
         ],
         [
-          "font9widget.RailShareLabel",
+          "font9widget.GalleryStatus",
           "font9set.self"
         ],
         [
@@ -6671,7 +5552,7 @@
           "font10info.FontObject"
         ],
         [
-          "font10widget.RailSharesLabel",
+          "font10widget.NextCommunityLabel",
           "font10set.self"
         ],
         [
@@ -6707,7 +5588,7 @@
           "font11info.FontObject"
         ],
         [
-          "font11widget.RailAccountLabel",
+          "font11widget.RefreshCommunityLabel",
           "font11set.self"
         ],
         [
@@ -6731,7 +5612,7 @@
           "font12.self"
         ],
         [
-          "font12.PrimaryFont",
+          "font12.SecondaryFont",
           "font12check.Object"
         ],
         [
@@ -6739,11 +5620,11 @@
           "font12valid.Condition"
         ],
         [
-          "font12.PrimaryFont",
+          "font12.SecondaryFont",
           "font12info.FontObject"
         ],
         [
-          "font12widget.SharesCount",
+          "font12widget.DetailTitle",
           "font12set.self"
         ],
         [
@@ -6767,7 +5648,7 @@
           "font13.self"
         ],
         [
-          "font13.SecondaryFont",
+          "font13.PrimaryFont",
           "font13check.Object"
         ],
         [
@@ -6775,11 +5656,11 @@
           "font13valid.Condition"
         ],
         [
-          "font13.SecondaryFont",
+          "font13.PrimaryFont",
           "font13info.FontObject"
         ],
         [
-          "font13widget.CodeLabel",
+          "font13widget.DetailByline",
           "font13set.self"
         ],
         [
@@ -6803,7 +5684,7 @@
           "font14.self"
         ],
         [
-          "font14.SecondaryFont",
+          "font14.PrimaryFont",
           "font14check.Object"
         ],
         [
@@ -6811,11 +5692,11 @@
           "font14valid.Condition"
         ],
         [
-          "font14.SecondaryFont",
+          "font14.PrimaryFont",
           "font14info.FontObject"
         ],
         [
-          "font14widget.FetchCommunityLabel",
+          "font14widget.CommunityDetail",
           "font14set.self"
         ],
         [
@@ -6851,7 +5732,7 @@
           "font15info.FontObject"
         ],
         [
-          "font15widget.CodeHint",
+          "font15widget.DetailReadyText",
           "font15set.self"
         ],
         [
@@ -6887,7 +5768,7 @@
           "font16info.FontObject"
         ],
         [
-          "font16widget.SearchCommunityLabel",
+          "font16widget.GetPackLabel",
           "font16set.self"
         ],
         [
@@ -6911,7 +5792,7 @@
           "font17.self"
         ],
         [
-          "font17.SecondaryFont",
+          "font17.PrimaryFont",
           "font17check.Object"
         ],
         [
@@ -6919,11 +5800,11 @@
           "font17valid.Condition"
         ],
         [
-          "font17.SecondaryFont",
+          "font17.PrimaryFont",
           "font17info.FontObject"
         ],
         [
-          "font17widget.SortNewestLabel",
+          "font17widget.FactPartsLabel",
           "font17set.self"
         ],
         [
@@ -6947,7 +5828,7 @@
           "font18.self"
         ],
         [
-          "font18.SecondaryFont",
+          "font18.PrimaryFont",
           "font18check.Object"
         ],
         [
@@ -6955,11 +5836,11 @@
           "font18valid.Condition"
         ],
         [
-          "font18.SecondaryFont",
+          "font18.PrimaryFont",
           "font18info.FontObject"
         ],
         [
-          "font18widget.SortImportsLabel",
+          "font18widget.FactPartsValue",
           "font18set.self"
         ],
         [
@@ -6983,7 +5864,7 @@
           "font19.self"
         ],
         [
-          "font19.SecondaryFont",
+          "font19.PrimaryFont",
           "font19check.Object"
         ],
         [
@@ -6991,11 +5872,11 @@
           "font19valid.Condition"
         ],
         [
-          "font19.SecondaryFont",
+          "font19.PrimaryFont",
           "font19info.FontObject"
         ],
         [
-          "font19widget.FilterUsableLabel",
+          "font19widget.FactFootprintLabel",
           "font19set.self"
         ],
         [
@@ -7031,7 +5912,7 @@
           "font20info.FontObject"
         ],
         [
-          "font20widget.BrowseStatus",
+          "font20widget.FactFootprintValue",
           "font20set.self"
         ],
         [
@@ -7055,7 +5936,7 @@
           "font21.self"
         ],
         [
-          "font21.SecondaryFont",
+          "font21.PrimaryFont",
           "font21check.Object"
         ],
         [
@@ -7063,11 +5944,11 @@
           "font21valid.Condition"
         ],
         [
-          "font21.SecondaryFont",
+          "font21.PrimaryFont",
           "font21info.FontObject"
         ],
         [
-          "font21widget.PreviousCommunityLabel",
+          "font21widget.FactCodeLabel",
           "font21set.self"
         ],
         [
@@ -7091,7 +5972,7 @@
           "font22.self"
         ],
         [
-          "font22.PrimaryFont",
+          "font22.SecondaryFont",
           "font22check.Object"
         ],
         [
@@ -7099,11 +5980,11 @@
           "font22valid.Condition"
         ],
         [
-          "font22.PrimaryFont",
+          "font22.SecondaryFont",
           "font22info.FontObject"
         ],
         [
-          "font22widget.GalleryStatus",
+          "font22widget.FactCodeValue",
           "font22set.self"
         ],
         [
@@ -7139,7 +6020,7 @@
           "font23info.FontObject"
         ],
         [
-          "font23widget.NextCommunityLabel",
+          "font23widget.DownloadCommunityLabel",
           "font23set.self"
         ],
         [
@@ -7175,7 +6056,7 @@
           "font24info.FontObject"
         ],
         [
-          "font24widget.RefreshCommunityLabel",
+          "font24widget.PlaceCommunityLabel",
           "font24set.self"
         ],
         [
@@ -7211,7 +6092,7 @@
           "font25info.FontObject"
         ],
         [
-          "font25widget.DetailTitle",
+          "font25widget.DensTitle",
           "font25set.self"
         ],
         [
@@ -7247,7 +6128,7 @@
           "font26info.FontObject"
         ],
         [
-          "font26widget.DetailByline",
+          "font26widget.DensSoon",
           "font26set.self"
         ],
         [
@@ -7271,7 +6152,7 @@
           "font27.self"
         ],
         [
-          "font27.PrimaryFont",
+          "font27.SecondaryFont",
           "font27check.Object"
         ],
         [
@@ -7279,11 +6160,11 @@
           "font27valid.Condition"
         ],
         [
-          "font27.PrimaryFont",
+          "font27.SecondaryFont",
           "font27info.FontObject"
         ],
         [
-          "font27widget.CommunityDetail",
+          "font27widget.ShareStepOne",
           "font27set.self"
         ],
         [
@@ -7319,7 +6200,7 @@
           "font28info.FontObject"
         ],
         [
-          "font28widget.DetailReadyText",
+          "font28widget.UploadSelection",
           "font28set.self"
         ],
         [
@@ -7355,7 +6236,7 @@
           "font29info.FontObject"
         ],
         [
-          "font29widget.GetPackLabel",
+          "font29widget.ShareStepTwo",
           "font29set.self"
         ],
         [
@@ -7391,7 +6272,7 @@
           "font30info.FontObject"
         ],
         [
-          "font30widget.FactPartsLabel",
+          "font30widget.ShareSummary",
           "font30set.self"
         ],
         [
@@ -7415,7 +6296,7 @@
           "font31.self"
         ],
         [
-          "font31.PrimaryFont",
+          "font31.SecondaryFont",
           "font31check.Object"
         ],
         [
@@ -7423,11 +6304,11 @@
           "font31valid.Condition"
         ],
         [
-          "font31.PrimaryFont",
+          "font31.SecondaryFont",
           "font31info.FontObject"
         ],
         [
-          "font31widget.FactPartsValue",
+          "font31widget.ShareOfflineTitle",
           "font31set.self"
         ],
         [
@@ -7463,7 +6344,7 @@
           "font32info.FontObject"
         ],
         [
-          "font32widget.FactFootprintLabel",
+          "font32widget.ShareOfflineText",
           "font32set.self"
         ],
         [
@@ -7487,7 +6368,7 @@
           "font33.self"
         ],
         [
-          "font33.PrimaryFont",
+          "font33.SecondaryFont",
           "font33check.Object"
         ],
         [
@@ -7495,11 +6376,11 @@
           "font33valid.Condition"
         ],
         [
-          "font33.PrimaryFont",
+          "font33.SecondaryFont",
           "font33info.FontObject"
         ],
         [
-          "font33widget.FactFootprintValue",
+          "font33widget.ShareGoAccountLabel",
           "font33set.self"
         ],
         [
@@ -7523,7 +6404,7 @@
           "font34.self"
         ],
         [
-          "font34.PrimaryFont",
+          "font34.SecondaryFont",
           "font34check.Object"
         ],
         [
@@ -7531,11 +6412,11 @@
           "font34valid.Condition"
         ],
         [
-          "font34.PrimaryFont",
+          "font34.SecondaryFont",
           "font34info.FontObject"
         ],
         [
-          "font34widget.FactCodeLabel",
+          "font34widget.ShareResultTitle",
           "font34set.self"
         ],
         [
@@ -7571,7 +6452,7 @@
           "font35info.FontObject"
         ],
         [
-          "font35widget.FactCodeValue",
+          "font35widget.ShareResultCodeLabel",
           "font35set.self"
         ],
         [
@@ -7595,7 +6476,7 @@
           "font36.self"
         ],
         [
-          "font36.SecondaryFont",
+          "font36.TitleFont",
           "font36check.Object"
         ],
         [
@@ -7603,11 +6484,11 @@
           "font36valid.Condition"
         ],
         [
-          "font36.SecondaryFont",
+          "font36.TitleFont",
           "font36info.FontObject"
         ],
         [
-          "font36widget.DownloadCommunityLabel",
+          "font36widget.ShareResultCode",
           "font36set.self"
         ],
         [
@@ -7631,7 +6512,7 @@
           "font37.self"
         ],
         [
-          "font37.SecondaryFont",
+          "font37.PrimaryFont",
           "font37check.Object"
         ],
         [
@@ -7639,11 +6520,11 @@
           "font37valid.Condition"
         ],
         [
-          "font37.SecondaryFont",
+          "font37.PrimaryFont",
           "font37info.FontObject"
         ],
         [
-          "font37widget.PlaceCommunityLabel",
+          "font37widget.PublishResult",
           "font37set.self"
         ],
         [
@@ -7679,7 +6560,7 @@
           "font38info.FontObject"
         ],
         [
-          "font38widget.DensTitle",
+          "font38widget.CopyCommunityCodeLabel",
           "font38set.self"
         ],
         [
@@ -7703,7 +6584,7 @@
           "font39.self"
         ],
         [
-          "font39.PrimaryFont",
+          "font39.SecondaryFont",
           "font39check.Object"
         ],
         [
@@ -7711,11 +6592,11 @@
           "font39valid.Condition"
         ],
         [
-          "font39.PrimaryFont",
+          "font39.SecondaryFont",
           "font39info.FontObject"
         ],
         [
-          "font39widget.DensSoon",
+          "font39widget.CopyCommunityURLLabel",
           "font39set.self"
         ],
         [
@@ -7751,7 +6632,7 @@
           "font40info.FontObject"
         ],
         [
-          "font40widget.ShareStepOne",
+          "font40widget.TitleLabel",
           "font40set.self"
         ],
         [
@@ -7775,7 +6656,7 @@
           "font41.self"
         ],
         [
-          "font41.PrimaryFont",
+          "font41.SecondaryFont",
           "font41check.Object"
         ],
         [
@@ -7783,11 +6664,11 @@
           "font41valid.Condition"
         ],
         [
-          "font41.PrimaryFont",
+          "font41.SecondaryFont",
           "font41info.FontObject"
         ],
         [
-          "font41widget.UploadSelection",
+          "font41widget.DescriptionLabel",
           "font41set.self"
         ],
         [
@@ -7823,7 +6704,7 @@
           "font42info.FontObject"
         ],
         [
-          "font42widget.ShareStepTwo",
+          "font42widget.ShareChoiceLabel",
           "font42set.self"
         ],
         [
@@ -7847,7 +6728,7 @@
           "font43.self"
         ],
         [
-          "font43.PrimaryFont",
+          "font43.SecondaryFont",
           "font43check.Object"
         ],
         [
@@ -7855,11 +6736,11 @@
           "font43valid.Condition"
         ],
         [
-          "font43.PrimaryFont",
+          "font43.SecondaryFont",
           "font43info.FontObject"
         ],
         [
-          "font43widget.ShareSummary",
+          "font43widget.ShareUpdateLabel",
           "font43set.self"
         ],
         [
@@ -7895,7 +6776,7 @@
           "font44info.FontObject"
         ],
         [
-          "font44widget.ShareOfflineTitle",
+          "font44widget.ShareNewLabel",
           "font44set.self"
         ],
         [
@@ -7919,7 +6800,7 @@
           "font45.self"
         ],
         [
-          "font45.PrimaryFont",
+          "font45.SecondaryFont",
           "font45check.Object"
         ],
         [
@@ -7927,11 +6808,11 @@
           "font45valid.Condition"
         ],
         [
-          "font45.PrimaryFont",
+          "font45.SecondaryFont",
           "font45info.FontObject"
         ],
         [
-          "font45widget.ShareOfflineText",
+          "font45widget.ChangelogLabel",
           "font45set.self"
         ],
         [
@@ -7955,7 +6836,7 @@
           "font46.self"
         ],
         [
-          "font46.SecondaryFont",
+          "font46.PrimaryFont",
           "font46check.Object"
         ],
         [
@@ -7963,11 +6844,11 @@
           "font46valid.Condition"
         ],
         [
-          "font46.SecondaryFont",
+          "font46.PrimaryFont",
           "font46info.FontObject"
         ],
         [
-          "font46widget.ShareGoAccountLabel",
+          "font46widget.ChangelogHint",
           "font46set.self"
         ],
         [
@@ -7991,7 +6872,7 @@
           "font47.self"
         ],
         [
-          "font47.SecondaryFont",
+          "font47.PrimaryFont",
           "font47check.Object"
         ],
         [
@@ -7999,11 +6880,11 @@
           "font47valid.Condition"
         ],
         [
-          "font47.SecondaryFont",
+          "font47.PrimaryFont",
           "font47info.FontObject"
         ],
         [
-          "font47widget.ShareResultTitle",
+          "font47widget.PublishRequirements",
           "font47set.self"
         ],
         [
@@ -8027,7 +6908,7 @@
           "font48.self"
         ],
         [
-          "font48.SecondaryFont",
+          "font48.PrimaryFont",
           "font48check.Object"
         ],
         [
@@ -8035,11 +6916,11 @@
           "font48valid.Condition"
         ],
         [
-          "font48.SecondaryFont",
+          "font48.PrimaryFont",
           "font48info.FontObject"
         ],
         [
-          "font48widget.ShareResultCodeLabel",
+          "font48widget.ShareNote",
           "font48set.self"
         ],
         [
@@ -8063,7 +6944,7 @@
           "font49.self"
         ],
         [
-          "font49.TitleFont",
+          "font49.SecondaryFont",
           "font49check.Object"
         ],
         [
@@ -8071,11 +6952,11 @@
           "font49valid.Condition"
         ],
         [
-          "font49.TitleFont",
+          "font49.SecondaryFont",
           "font49info.FontObject"
         ],
         [
-          "font49widget.ShareResultCode",
+          "font49widget.SubmitCommunityLabel",
           "font49set.self"
         ],
         [
@@ -8099,7 +6980,7 @@
           "font50.self"
         ],
         [
-          "font50.PrimaryFont",
+          "font50.SecondaryFont",
           "font50check.Object"
         ],
         [
@@ -8107,11 +6988,11 @@
           "font50valid.Condition"
         ],
         [
-          "font50.PrimaryFont",
+          "font50.SecondaryFont",
           "font50info.FontObject"
         ],
         [
-          "font50widget.PublishResult",
+          "font50widget.CancelCommunityLabel",
           "font50set.self"
         ],
         [
@@ -8147,7 +7028,7 @@
           "font51info.FontObject"
         ],
         [
-          "font51widget.CopyCommunityCodeLabel",
+          "font51widget.SharesTitle",
           "font51set.self"
         ],
         [
@@ -8171,7 +7052,7 @@
           "font52.self"
         ],
         [
-          "font52.SecondaryFont",
+          "font52.PrimaryFont",
           "font52check.Object"
         ],
         [
@@ -8179,11 +7060,11 @@
           "font52valid.Condition"
         ],
         [
-          "font52.SecondaryFont",
+          "font52.PrimaryFont",
           "font52info.FontObject"
         ],
         [
-          "font52widget.CopyCommunityURLLabel",
+          "font52widget.SharesStatus",
           "font52set.self"
         ],
         [
@@ -8219,7 +7100,7 @@
           "font53info.FontObject"
         ],
         [
-          "font53widget.TitleLabel",
+          "font53widget.SharesPreviousLabel",
           "font53set.self"
         ],
         [
@@ -8255,7 +7136,7 @@
           "font54info.FontObject"
         ],
         [
-          "font54widget.DescriptionLabel",
+          "font54widget.SharesNextLabel",
           "font54set.self"
         ],
         [
@@ -8291,7 +7172,7 @@
           "font55info.FontObject"
         ],
         [
-          "font55widget.ShareChoiceLabel",
+          "font55widget.SharesRefreshLabel",
           "font55set.self"
         ],
         [
@@ -8315,7 +7196,7 @@
           "font56.self"
         ],
         [
-          "font56.SecondaryFont",
+          "font56.PrimaryFont",
           "font56check.Object"
         ],
         [
@@ -8323,11 +7204,11 @@
           "font56valid.Condition"
         ],
         [
-          "font56.SecondaryFont",
+          "font56.PrimaryFont",
           "font56info.FontObject"
         ],
         [
-          "font56widget.ShareUpdateLabel",
+          "font56widget.SharesHint",
           "font56set.self"
         ],
         [
@@ -8363,7 +7244,7 @@
           "font57info.FontObject"
         ],
         [
-          "font57widget.ShareNewLabel",
+          "font57widget.AccountTitle",
           "font57set.self"
         ],
         [
@@ -8387,7 +7268,7 @@
           "font58.self"
         ],
         [
-          "font58.SecondaryFont",
+          "font58.PrimaryFont",
           "font58check.Object"
         ],
         [
@@ -8395,11 +7276,11 @@
           "font58valid.Condition"
         ],
         [
-          "font58.SecondaryFont",
+          "font58.PrimaryFont",
           "font58info.FontObject"
         ],
         [
-          "font58widget.ChangelogLabel",
+          "font58widget.CommunityProfile",
           "font58set.self"
         ],
         [
@@ -8423,7 +7304,7 @@
           "font59.self"
         ],
         [
-          "font59.PrimaryFont",
+          "font59.SecondaryFont",
           "font59check.Object"
         ],
         [
@@ -8431,11 +7312,11 @@
           "font59valid.Condition"
         ],
         [
-          "font59.PrimaryFont",
+          "font59.SecondaryFont",
           "font59info.FontObject"
         ],
         [
-          "font59widget.ChangelogHint",
+          "font59widget.ConnectCommunityLabel",
           "font59set.self"
         ],
         [
@@ -8459,7 +7340,7 @@
           "font60.self"
         ],
         [
-          "font60.PrimaryFont",
+          "font60.SecondaryFont",
           "font60check.Object"
         ],
         [
@@ -8467,11 +7348,11 @@
           "font60valid.Condition"
         ],
         [
-          "font60.PrimaryFont",
+          "font60.SecondaryFont",
           "font60info.FontObject"
         ],
         [
-          "font60widget.PublishRequirements",
+          "font60widget.RememberCommunityLabel",
           "font60set.self"
         ],
         [
@@ -8495,7 +7376,7 @@
           "font61.self"
         ],
         [
-          "font61.PrimaryFont",
+          "font61.SecondaryFont",
           "font61check.Object"
         ],
         [
@@ -8503,11 +7384,11 @@
           "font61valid.Condition"
         ],
         [
-          "font61.PrimaryFont",
+          "font61.SecondaryFont",
           "font61info.FontObject"
         ],
         [
-          "font61widget.ShareNote",
+          "font61widget.DisconnectCommunityLabel",
           "font61set.self"
         ],
         [
@@ -8543,7 +7424,7 @@
           "font62info.FontObject"
         ],
         [
-          "font62widget.SubmitCommunityLabel",
+          "font62widget.ForgetCommunityLabel",
           "font62set.self"
         ],
         [
@@ -8567,7 +7448,7 @@
           "font63.self"
         ],
         [
-          "font63.SecondaryFont",
+          "font63.PrimaryFont",
           "font63check.Object"
         ],
         [
@@ -8575,11 +7456,11 @@
           "font63valid.Condition"
         ],
         [
-          "font63.SecondaryFont",
+          "font63.PrimaryFont",
           "font63info.FontObject"
         ],
         [
-          "font63widget.CancelCommunityLabel",
+          "font63widget.CommunitySecurity",
           "font63set.self"
         ],
         [
@@ -8615,7 +7496,7 @@
           "font64info.FontObject"
         ],
         [
-          "font64widget.SharesTitle",
+          "font64widget.CommunityWebsiteLabel",
           "font64set.self"
         ],
         [
@@ -8651,7 +7532,7 @@
           "font65info.FontObject"
         ],
         [
-          "font65widget.SharesStatus",
+          "font65widget.Footer",
           "font65set.self"
         ],
         [
@@ -8669,550 +7550,12 @@
         [
           "font64valid.else",
           "font65valid.execute"
-        ],
-        [
-          "bus.EditorBus",
-          "font66.self"
-        ],
-        [
-          "font66.SecondaryFont",
-          "font66check.Object"
-        ],
-        [
-          "font66check.ReturnValue",
-          "font66valid.Condition"
-        ],
-        [
-          "font66.SecondaryFont",
-          "font66info.FontObject"
-        ],
-        [
-          "font66widget.SharesPreviousLabel",
-          "font66set.self"
-        ],
-        [
-          "font66info.SlateFontInfo",
-          "font66set.InFontInfo"
-        ],
-        [
-          "font65set.then",
-          "font66valid.execute"
-        ],
-        [
-          "font66valid.then",
-          "font66set.execute"
-        ],
-        [
-          "font65valid.else",
-          "font66valid.execute"
-        ],
-        [
-          "bus.EditorBus",
-          "font67.self"
-        ],
-        [
-          "font67.SecondaryFont",
-          "font67check.Object"
-        ],
-        [
-          "font67check.ReturnValue",
-          "font67valid.Condition"
-        ],
-        [
-          "font67.SecondaryFont",
-          "font67info.FontObject"
-        ],
-        [
-          "font67widget.SharesNextLabel",
-          "font67set.self"
-        ],
-        [
-          "font67info.SlateFontInfo",
-          "font67set.InFontInfo"
-        ],
-        [
-          "font66set.then",
-          "font67valid.execute"
-        ],
-        [
-          "font67valid.then",
-          "font67set.execute"
-        ],
-        [
-          "font66valid.else",
-          "font67valid.execute"
-        ],
-        [
-          "bus.EditorBus",
-          "font68.self"
-        ],
-        [
-          "font68.SecondaryFont",
-          "font68check.Object"
-        ],
-        [
-          "font68check.ReturnValue",
-          "font68valid.Condition"
-        ],
-        [
-          "font68.SecondaryFont",
-          "font68info.FontObject"
-        ],
-        [
-          "font68widget.SharesRefreshLabel",
-          "font68set.self"
-        ],
-        [
-          "font68info.SlateFontInfo",
-          "font68set.InFontInfo"
-        ],
-        [
-          "font67set.then",
-          "font68valid.execute"
-        ],
-        [
-          "font68valid.then",
-          "font68set.execute"
-        ],
-        [
-          "font67valid.else",
-          "font68valid.execute"
-        ],
-        [
-          "bus.EditorBus",
-          "font69.self"
-        ],
-        [
-          "font69.PrimaryFont",
-          "font69check.Object"
-        ],
-        [
-          "font69check.ReturnValue",
-          "font69valid.Condition"
-        ],
-        [
-          "font69.PrimaryFont",
-          "font69info.FontObject"
-        ],
-        [
-          "font69widget.SharesHint",
-          "font69set.self"
-        ],
-        [
-          "font69info.SlateFontInfo",
-          "font69set.InFontInfo"
-        ],
-        [
-          "font68set.then",
-          "font69valid.execute"
-        ],
-        [
-          "font69valid.then",
-          "font69set.execute"
-        ],
-        [
-          "font68valid.else",
-          "font69valid.execute"
-        ],
-        [
-          "bus.EditorBus",
-          "font70.self"
-        ],
-        [
-          "font70.SecondaryFont",
-          "font70check.Object"
-        ],
-        [
-          "font70check.ReturnValue",
-          "font70valid.Condition"
-        ],
-        [
-          "font70.SecondaryFont",
-          "font70info.FontObject"
-        ],
-        [
-          "font70widget.AccountTitle",
-          "font70set.self"
-        ],
-        [
-          "font70info.SlateFontInfo",
-          "font70set.InFontInfo"
-        ],
-        [
-          "font69set.then",
-          "font70valid.execute"
-        ],
-        [
-          "font70valid.then",
-          "font70set.execute"
-        ],
-        [
-          "font69valid.else",
-          "font70valid.execute"
-        ],
-        [
-          "bus.EditorBus",
-          "font71.self"
-        ],
-        [
-          "font71.PrimaryFont",
-          "font71check.Object"
-        ],
-        [
-          "font71check.ReturnValue",
-          "font71valid.Condition"
-        ],
-        [
-          "font71.PrimaryFont",
-          "font71info.FontObject"
-        ],
-        [
-          "font71widget.CommunityProfile",
-          "font71set.self"
-        ],
-        [
-          "font71info.SlateFontInfo",
-          "font71set.InFontInfo"
-        ],
-        [
-          "font70set.then",
-          "font71valid.execute"
-        ],
-        [
-          "font71valid.then",
-          "font71set.execute"
-        ],
-        [
-          "font70valid.else",
-          "font71valid.execute"
-        ],
-        [
-          "bus.EditorBus",
-          "font72.self"
-        ],
-        [
-          "font72.SecondaryFont",
-          "font72check.Object"
-        ],
-        [
-          "font72check.ReturnValue",
-          "font72valid.Condition"
-        ],
-        [
-          "font72.SecondaryFont",
-          "font72info.FontObject"
-        ],
-        [
-          "font72widget.ConnectCommunityLabel",
-          "font72set.self"
-        ],
-        [
-          "font72info.SlateFontInfo",
-          "font72set.InFontInfo"
-        ],
-        [
-          "font71set.then",
-          "font72valid.execute"
-        ],
-        [
-          "font72valid.then",
-          "font72set.execute"
-        ],
-        [
-          "font71valid.else",
-          "font72valid.execute"
-        ],
-        [
-          "bus.EditorBus",
-          "font73.self"
-        ],
-        [
-          "font73.SecondaryFont",
-          "font73check.Object"
-        ],
-        [
-          "font73check.ReturnValue",
-          "font73valid.Condition"
-        ],
-        [
-          "font73.SecondaryFont",
-          "font73info.FontObject"
-        ],
-        [
-          "font73widget.RememberCommunityLabel",
-          "font73set.self"
-        ],
-        [
-          "font73info.SlateFontInfo",
-          "font73set.InFontInfo"
-        ],
-        [
-          "font72set.then",
-          "font73valid.execute"
-        ],
-        [
-          "font73valid.then",
-          "font73set.execute"
-        ],
-        [
-          "font72valid.else",
-          "font73valid.execute"
-        ],
-        [
-          "bus.EditorBus",
-          "font74.self"
-        ],
-        [
-          "font74.SecondaryFont",
-          "font74check.Object"
-        ],
-        [
-          "font74check.ReturnValue",
-          "font74valid.Condition"
-        ],
-        [
-          "font74.SecondaryFont",
-          "font74info.FontObject"
-        ],
-        [
-          "font74widget.DisconnectCommunityLabel",
-          "font74set.self"
-        ],
-        [
-          "font74info.SlateFontInfo",
-          "font74set.InFontInfo"
-        ],
-        [
-          "font73set.then",
-          "font74valid.execute"
-        ],
-        [
-          "font74valid.then",
-          "font74set.execute"
-        ],
-        [
-          "font73valid.else",
-          "font74valid.execute"
-        ],
-        [
-          "bus.EditorBus",
-          "font75.self"
-        ],
-        [
-          "font75.SecondaryFont",
-          "font75check.Object"
-        ],
-        [
-          "font75check.ReturnValue",
-          "font75valid.Condition"
-        ],
-        [
-          "font75.SecondaryFont",
-          "font75info.FontObject"
-        ],
-        [
-          "font75widget.ForgetCommunityLabel",
-          "font75set.self"
-        ],
-        [
-          "font75info.SlateFontInfo",
-          "font75set.InFontInfo"
-        ],
-        [
-          "font74set.then",
-          "font75valid.execute"
-        ],
-        [
-          "font75valid.then",
-          "font75set.execute"
-        ],
-        [
-          "font74valid.else",
-          "font75valid.execute"
-        ],
-        [
-          "bus.EditorBus",
-          "font76.self"
-        ],
-        [
-          "font76.PrimaryFont",
-          "font76check.Object"
-        ],
-        [
-          "font76check.ReturnValue",
-          "font76valid.Condition"
-        ],
-        [
-          "font76.PrimaryFont",
-          "font76info.FontObject"
-        ],
-        [
-          "font76widget.CommunitySecurity",
-          "font76set.self"
-        ],
-        [
-          "font76info.SlateFontInfo",
-          "font76set.InFontInfo"
-        ],
-        [
-          "font75set.then",
-          "font76valid.execute"
-        ],
-        [
-          "font76valid.then",
-          "font76set.execute"
-        ],
-        [
-          "font75valid.else",
-          "font76valid.execute"
-        ],
-        [
-          "bus.EditorBus",
-          "font77.self"
-        ],
-        [
-          "font77.SecondaryFont",
-          "font77check.Object"
-        ],
-        [
-          "font77check.ReturnValue",
-          "font77valid.Condition"
-        ],
-        [
-          "font77.SecondaryFont",
-          "font77info.FontObject"
-        ],
-        [
-          "font77widget.CommunityWebsiteLabel",
-          "font77set.self"
-        ],
-        [
-          "font77info.SlateFontInfo",
-          "font77set.InFontInfo"
-        ],
-        [
-          "font76set.then",
-          "font77valid.execute"
-        ],
-        [
-          "font77valid.then",
-          "font77set.execute"
-        ],
-        [
-          "font76valid.else",
-          "font77valid.execute"
-        ],
-        [
-          "bus.EditorBus",
-          "font78.self"
-        ],
-        [
-          "font78.PrimaryFont",
-          "font78check.Object"
-        ],
-        [
-          "font78check.ReturnValue",
-          "font78valid.Condition"
-        ],
-        [
-          "font78.PrimaryFont",
-          "font78info.FontObject"
-        ],
-        [
-          "font78widget.Footer",
-          "font78set.self"
-        ],
-        [
-          "font78info.SlateFontInfo",
-          "font78set.InFontInfo"
-        ],
-        [
-          "font77set.then",
-          "font78valid.execute"
-        ],
-        [
-          "font78valid.then",
-          "font78set.execute"
-        ],
-        [
-          "font77valid.else",
-          "font78valid.execute"
         ]
       ]
     }
   ],
   "graph": {
     "nodes": [
-      {
-        "id": "RailCompositions",
-        "kind": "bound_event",
-        "widget": "RailCompositions",
-        "delegate": "OnClicked"
-      },
-      {
-        "id": "RailCompositions_event",
-        "kind": "call",
-        "function": "self:Native_Event",
-        "defaults": {
-          "Name": "community_browse"
-        }
-      },
-      {
-        "id": "RailDens",
-        "kind": "bound_event",
-        "widget": "RailDens",
-        "delegate": "OnClicked"
-      },
-      {
-        "id": "RailDens_event",
-        "kind": "call",
-        "function": "self:Native_Event",
-        "defaults": {
-          "Name": "community_browse_dens"
-        }
-      },
-      {
-        "id": "RailShare",
-        "kind": "bound_event",
-        "widget": "RailShare",
-        "delegate": "OnClicked"
-      },
-      {
-        "id": "RailShare_event",
-        "kind": "call",
-        "function": "self:Native_Event",
-        "defaults": {
-          "Name": "community_upload"
-        }
-      },
-      {
-        "id": "RailShares",
-        "kind": "bound_event",
-        "widget": "RailShares",
-        "delegate": "OnClicked"
-      },
-      {
-        "id": "RailShares_event",
-        "kind": "call",
-        "function": "self:Native_Event",
-        "defaults": {
-          "Name": "holonet_shares"
-        }
-      },
-      {
-        "id": "RailAccount",
-        "kind": "bound_event",
-        "widget": "RailAccount",
-        "delegate": "OnClicked"
-      },
-      {
-        "id": "RailAccount_event",
-        "kind": "call",
-        "function": "self:Native_Event",
-        "defaults": {
-          "Name": "community_account"
-        }
-      },
       {
         "id": "CommunityClose",
         "kind": "bound_event",
@@ -9564,30 +7907,6 @@
         }
       },
       {
-        "id": "FetchCommunity",
-        "kind": "bound_event",
-        "widget": "FetchCommunity",
-        "delegate": "OnClicked"
-      },
-      {
-        "id": "FetchCommunity_event",
-        "kind": "call",
-        "function": "self:Native_Event",
-        "defaults": {
-          "Name": "community_fetch"
-        }
-      },
-      {
-        "id": "FetchCommunity_box",
-        "kind": "get",
-        "var": "CommunityCode"
-      },
-      {
-        "id": "FetchCommunity_text",
-        "kind": "call",
-        "function": "/Script/UMG.EditableTextBox:GetText"
-      },
-      {
         "id": "SearchCommunity",
         "kind": "bound_event",
         "widget": "SearchCommunity",
@@ -9712,26 +8031,6 @@
     ],
     "links": [
       [
-        "RailCompositions.then",
-        "RailCompositions_event.execute"
-      ],
-      [
-        "RailDens.then",
-        "RailDens_event.execute"
-      ],
-      [
-        "RailShare.then",
-        "RailShare_event.execute"
-      ],
-      [
-        "RailShares.then",
-        "RailShares_event.execute"
-      ],
-      [
-        "RailAccount.then",
-        "RailAccount_event.execute"
-      ],
-      [
         "CommunityClose.then",
         "CommunityClose_event.execute"
       ],
@@ -9830,18 +8129,6 @@
       [
         "CommunityWebsite.then",
         "CommunityWebsite_event.execute"
-      ],
-      [
-        "FetchCommunity.then",
-        "FetchCommunity_event.execute"
-      ],
-      [
-        "FetchCommunity_box.CommunityCode",
-        "FetchCommunity_text.self"
-      ],
-      [
-        "FetchCommunity_text.ReturnValue",
-        "FetchCommunity_event.Arg"
       ],
       [
         "SearchCommunity.then",

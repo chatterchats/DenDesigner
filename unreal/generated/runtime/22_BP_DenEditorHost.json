@@ -23,6 +23,12 @@
         "defaults": {}
       },
       {
+        "id": "railfocus",
+        "kind": "call",
+        "function": "self:PollRailCodeFocus",
+        "defaults": {}
+      },
+      {
         "id": "events",
         "kind": "call",
         "function": "self:ProcessEditorEvents",
@@ -56,6 +62,12 @@
         "id": "community",
         "kind": "call",
         "function": "self:PollCommunityFetch",
+        "defaults": {}
+      },
+      {
+        "id": "holonetpreload",
+        "kind": "call",
+        "function": "self:PollHolonetPreload",
         "defaults": {}
       },
       {
@@ -181,6 +193,10 @@
       ],
       [
         "draft.then",
+        "railfocus.execute"
+      ],
+      [
+        "railfocus.then",
         "events.execute"
       ],
       [
@@ -205,6 +221,10 @@
       ],
       [
         "community.then",
+        "holonetpreload.execute"
+      ],
+      [
+        "holonetpreload.then",
         "communitypreviews.execute"
       ],
       [
@@ -930,6 +950,30 @@
           }
         },
         {
+          "id": "preloadreset",
+          "kind": "set",
+          "var": "HolonetPreload",
+          "defaults": {
+            "HolonetPreload": "0"
+          }
+        },
+        {
+          "id": "sharesreset",
+          "kind": "set",
+          "var": "HolonetSharesStale",
+          "defaults": {
+            "HolonetSharesStale": "true"
+          }
+        },
+        {
+          "id": "galleryreset",
+          "kind": "set",
+          "var": "CommunityBrowseLoaded",
+          "defaults": {
+            "CommunityBrowseLoaded": "false"
+          }
+        },
+        {
           "id": "selection",
           "kind": "call",
           "function": "self:InitializeSelection",
@@ -1368,6 +1412,18 @@
         ],
         [
           "helpreset.then",
+          "preloadreset.execute"
+        ],
+        [
+          "preloadreset.then",
+          "sharesreset.execute"
+        ],
+        [
+          "sharesreset.then",
+          "galleryreset.execute"
+        ],
+        [
+          "galleryreset.then",
           "selection.execute"
         ],
         [
@@ -8723,6 +8779,14 @@
           }
         },
         {
+          "id": "unfold",
+          "kind": "set",
+          "var": "RailAutoFold",
+          "defaults": {
+            "RailAutoFold": "false"
+          }
+        },
+        {
           "id": "refresh",
           "kind": "call",
           "function": "self:RefreshEditorUI",
@@ -8812,6 +8876,10 @@
         ],
         [
           "message.then",
+          "unfold.execute"
+        ],
+        [
+          "unfold.then",
           "refresh.execute"
         ]
       ]
@@ -9025,6 +9093,20 @@
           "var": "local:OK"
         },
         {
+          "id": "fold",
+          "kind": "set",
+          "var": "RailAutoFold",
+          "defaults": {
+            "RailAutoFold": "true"
+          }
+        },
+        {
+          "id": "rail",
+          "kind": "call",
+          "function": "self:RefreshEditorRail",
+          "defaults": {}
+        },
+        {
           "id": "failed",
           "kind": "call",
           "function": "self:CancelCompositionPreview",
@@ -9208,6 +9290,14 @@
         ],
         [
           "focus.then",
+          "fold.execute"
+        ],
+        [
+          "fold.then",
+          "rail.execute"
+        ],
+        [
+          "rail.then",
           "yes.execute"
         ],
         [
@@ -11368,6 +11458,2463 @@
         [
           "yaw.then",
           "pose.execute"
+        ]
+      ]
+    },
+    {
+      "name": "RefreshEditorRail",
+      "nodes": [
+        {
+          "id": "getToolbar",
+          "kind": "get",
+          "var": "Toolbar"
+        },
+        {
+          "id": "toolbarvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "valid",
+          "kind": "branch"
+        },
+        {
+          "id": "getRailLabels",
+          "kind": "get",
+          "var": "RailLabels"
+        },
+        {
+          "id": "getRailAutoFold",
+          "kind": "get",
+          "var": "RailAutoFold"
+        },
+        {
+          "id": "unplacing",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "shown0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "labels",
+          "kind": "branch"
+        },
+        {
+          "id": "labelsnext",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "labelsframewidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:RailFrame"
+        },
+        {
+          "id": "labelsframe",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetVisibility",
+          "defaults": {
+            "InVisibility": "Visible"
+          }
+        },
+        {
+          "id": "labelsiconswidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:RailIcons"
+        },
+        {
+          "id": "labelsicons",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetVisibility",
+          "defaults": {
+            "InVisibility": "Collapsed"
+          }
+        },
+        {
+          "id": "labelstabs",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:LibraryTabs"
+        },
+        {
+          "id": "labelsslot",
+          "kind": "call",
+          "function": "/Script/UMG.WidgetLayoutLibrary:SlotAsCanvasSlot",
+          "defaults": {}
+        },
+        {
+          "id": "labelswidth",
+          "kind": "call",
+          "function": "/Script/UMG.CanvasPanelSlot:SetOffsets",
+          "defaults": {
+            "InOffset": "(Left=12,Top=80,Right=232,Bottom=58)"
+          }
+        },
+        {
+          "id": "foldedframewidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:RailFrame"
+        },
+        {
+          "id": "foldedframe",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetVisibility",
+          "defaults": {
+            "InVisibility": "Collapsed"
+          }
+        },
+        {
+          "id": "foldediconswidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:RailIcons"
+        },
+        {
+          "id": "foldedicons",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetVisibility",
+          "defaults": {
+            "InVisibility": "Visible"
+          }
+        },
+        {
+          "id": "foldedtabs",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:LibraryTabs"
+        },
+        {
+          "id": "foldedslot",
+          "kind": "call",
+          "function": "/Script/UMG.WidgetLayoutLibrary:SlotAsCanvasSlot",
+          "defaults": {}
+        },
+        {
+          "id": "foldedwidth",
+          "kind": "call",
+          "function": "/Script/UMG.CanvasPanelSlot:SetOffsets",
+          "defaults": {
+            "InOffset": "(Left=12,Top=80,Right=64,Bottom=58)"
+          }
+        },
+        {
+          "id": "leftx",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectFloat",
+          "defaults": {
+            "A": "243",
+            "B": "75"
+          }
+        },
+        {
+          "id": "left",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:MakeVector2D",
+          "defaults": {
+            "Y": "80"
+          }
+        },
+        {
+          "id": "getCatalogPanel",
+          "kind": "get",
+          "var": "CatalogPanel"
+        },
+        {
+          "id": "CatalogPanelcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "CatalogPanelvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "CatalogPanelnext",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "CatalogPanelpanel",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenCatalog:Panel"
+        },
+        {
+          "id": "CatalogPanelslot",
+          "kind": "call",
+          "function": "/Script/UMG.WidgetLayoutLibrary:SlotAsCanvasSlot",
+          "defaults": {}
+        },
+        {
+          "id": "CatalogPanelplace",
+          "kind": "call",
+          "function": "/Script/UMG.CanvasPanelSlot:SetPosition",
+          "defaults": {}
+        },
+        {
+          "id": "getLayoutsPanel",
+          "kind": "get",
+          "var": "LayoutsPanel"
+        },
+        {
+          "id": "LayoutsPanelcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "LayoutsPanelvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "LayoutsPanelnext",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "LayoutsPanelpanel",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenLayouts:Panel"
+        },
+        {
+          "id": "LayoutsPanelslot",
+          "kind": "call",
+          "function": "/Script/UMG.WidgetLayoutLibrary:SlotAsCanvasSlot",
+          "defaults": {}
+        },
+        {
+          "id": "LayoutsPanelplace",
+          "kind": "call",
+          "function": "/Script/UMG.CanvasPanelSlot:SetPosition",
+          "defaults": {}
+        },
+        {
+          "id": "getStoreroomPanel",
+          "kind": "get",
+          "var": "StoreroomPanel"
+        },
+        {
+          "id": "StoreroomPanelcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "StoreroomPanelvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "StoreroomPanelnext",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "StoreroomPanelpanel",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenStoreroom:Panel"
+        },
+        {
+          "id": "StoreroomPanelslot",
+          "kind": "call",
+          "function": "/Script/UMG.WidgetLayoutLibrary:SlotAsCanvasSlot",
+          "defaults": {}
+        },
+        {
+          "id": "StoreroomPanelplace",
+          "kind": "call",
+          "function": "/Script/UMG.CanvasPanelSlot:SetPosition",
+          "defaults": {}
+        },
+        {
+          "id": "getCompositionsPanel",
+          "kind": "get",
+          "var": "CompositionsPanel"
+        },
+        {
+          "id": "CompositionsPanelcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "CompositionsPanelvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "CompositionsPanelnext",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "CompositionsPanelpanel",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenCompositions:Panel"
+        },
+        {
+          "id": "CompositionsPanelslot",
+          "kind": "call",
+          "function": "/Script/UMG.WidgetLayoutLibrary:SlotAsCanvasSlot",
+          "defaults": {}
+        },
+        {
+          "id": "CompositionsPanelplace",
+          "kind": "call",
+          "function": "/Script/UMG.CanvasPanelSlot:SetPosition",
+          "defaults": {}
+        },
+        {
+          "id": "getCommunityPanel",
+          "kind": "get",
+          "var": "CommunityPanel"
+        },
+        {
+          "id": "CommunityPanelcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "CommunityPanelvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "CommunityPanelnext",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "CommunityPanelpanel",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:Panel"
+        },
+        {
+          "id": "CommunityPanelslot",
+          "kind": "call",
+          "function": "/Script/UMG.WidgetLayoutLibrary:SlotAsCanvasSlot",
+          "defaults": {}
+        },
+        {
+          "id": "CommunityPanelplace",
+          "kind": "call",
+          "function": "/Script/UMG.CanvasPanelSlot:SetPosition",
+          "defaults": {}
+        },
+        {
+          "id": "getActivePanel",
+          "kind": "get",
+          "var": "ActivePanel"
+        },
+        {
+          "id": "holonet",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "community"
+          }
+        },
+        {
+          "id": "tabCatalog",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "catalog"
+          }
+        },
+        {
+          "id": "tabStoreroom",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "storeroom"
+          }
+        },
+        {
+          "id": "tabCompositions",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "compositions"
+          }
+        },
+        {
+          "id": "tabLayouts",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "layouts"
+          }
+        },
+        {
+          "id": "getCommunityArea",
+          "kind": "get",
+          "var": "CommunityArea"
+        },
+        {
+          "id": "isRailBrowse",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "browse"
+          }
+        },
+        {
+          "id": "areaRailBrowse0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "isRailShare",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "upload"
+          }
+        },
+        {
+          "id": "areaRailShare0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "isRailShares",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "shares"
+          }
+        },
+        {
+          "id": "areaRailShares0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "isRailAccount",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "account"
+          }
+        },
+        {
+          "id": "areaRailAccount0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "styleCatalog",
+          "kind": "call",
+          "function": "self:StyleEditorToggle",
+          "defaults": {}
+        },
+        {
+          "id": "styleCatalogback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:CatalogBack"
+        },
+        {
+          "id": "styleCatalogicon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:CatalogIcon"
+        },
+        {
+          "id": "styleCataloglabel",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:CatalogLabel"
+        },
+        {
+          "id": "iconCatalog",
+          "kind": "call",
+          "function": "self:StyleEditorToggle",
+          "defaults": {}
+        },
+        {
+          "id": "iconCatalogback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:IconCatalogBack"
+        },
+        {
+          "id": "iconCatalogicon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:IconCatalogIcon"
+        },
+        {
+          "id": "styleStoreroom",
+          "kind": "call",
+          "function": "self:StyleEditorToggle",
+          "defaults": {}
+        },
+        {
+          "id": "styleStoreroomback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:StoreroomBack"
+        },
+        {
+          "id": "styleStoreroomicon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:StoreroomIcon"
+        },
+        {
+          "id": "styleStoreroomlabel",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:StoreroomLabel"
+        },
+        {
+          "id": "iconStoreroom",
+          "kind": "call",
+          "function": "self:StyleEditorToggle",
+          "defaults": {}
+        },
+        {
+          "id": "iconStoreroomback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:IconStoreroomBack"
+        },
+        {
+          "id": "iconStoreroomicon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:IconStoreroomIcon"
+        },
+        {
+          "id": "styleCompositions",
+          "kind": "call",
+          "function": "self:StyleEditorToggle",
+          "defaults": {}
+        },
+        {
+          "id": "styleCompositionsback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:CompositionsBack"
+        },
+        {
+          "id": "styleCompositionsicon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:CompositionsIcon"
+        },
+        {
+          "id": "styleCompositionslabel",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:CompositionsLabel"
+        },
+        {
+          "id": "iconCompositions",
+          "kind": "call",
+          "function": "self:StyleEditorToggle",
+          "defaults": {}
+        },
+        {
+          "id": "iconCompositionsback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:IconCompositionsBack"
+        },
+        {
+          "id": "iconCompositionsicon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:IconCompositionsIcon"
+        },
+        {
+          "id": "styleLayouts",
+          "kind": "call",
+          "function": "self:StyleEditorToggle",
+          "defaults": {}
+        },
+        {
+          "id": "styleLayoutsback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:LayoutsBack"
+        },
+        {
+          "id": "styleLayoutsicon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:LayoutsIcon"
+        },
+        {
+          "id": "styleLayoutslabel",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:LayoutsLabel"
+        },
+        {
+          "id": "iconLayouts",
+          "kind": "call",
+          "function": "self:StyleEditorToggle",
+          "defaults": {}
+        },
+        {
+          "id": "iconLayoutsback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:IconLayoutsBack"
+        },
+        {
+          "id": "iconLayoutsicon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:IconLayoutsIcon"
+        },
+        {
+          "id": "styleRailBrowse",
+          "kind": "call",
+          "function": "self:StyleEditorToggle",
+          "defaults": {}
+        },
+        {
+          "id": "styleRailBrowseback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:RailBrowseBack"
+        },
+        {
+          "id": "styleRailBrowseicon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:RailBrowseIcon"
+        },
+        {
+          "id": "styleRailBrowselabel",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:RailBrowseLabel"
+        },
+        {
+          "id": "iconRailBrowse",
+          "kind": "call",
+          "function": "self:StyleEditorToggle",
+          "defaults": {}
+        },
+        {
+          "id": "iconRailBrowseback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:IconBrowseBack"
+        },
+        {
+          "id": "iconRailBrowseicon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:IconBrowseIcon"
+        },
+        {
+          "id": "styleRailShare",
+          "kind": "call",
+          "function": "self:StyleEditorToggle",
+          "defaults": {}
+        },
+        {
+          "id": "styleRailShareback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:RailShareBack"
+        },
+        {
+          "id": "styleRailShareicon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:RailShareIcon"
+        },
+        {
+          "id": "styleRailSharelabel",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:RailShareLabel"
+        },
+        {
+          "id": "iconRailShare",
+          "kind": "call",
+          "function": "self:StyleEditorToggle",
+          "defaults": {}
+        },
+        {
+          "id": "iconRailShareback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:IconShareBack"
+        },
+        {
+          "id": "iconRailShareicon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:IconShareIcon"
+        },
+        {
+          "id": "styleRailShares",
+          "kind": "call",
+          "function": "self:StyleEditorToggle",
+          "defaults": {}
+        },
+        {
+          "id": "styleRailSharesback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:RailSharesBack"
+        },
+        {
+          "id": "styleRailSharesicon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:RailSharesIcon"
+        },
+        {
+          "id": "styleRailShareslabel",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:RailSharesLabel"
+        },
+        {
+          "id": "iconRailShares",
+          "kind": "call",
+          "function": "self:StyleEditorToggle",
+          "defaults": {}
+        },
+        {
+          "id": "iconRailSharesback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:IconSharesBack"
+        },
+        {
+          "id": "iconRailSharesicon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:IconSharesIcon"
+        },
+        {
+          "id": "styleRailAccount",
+          "kind": "call",
+          "function": "self:StyleEditorToggle",
+          "defaults": {}
+        },
+        {
+          "id": "styleRailAccountback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:RailAccountBack"
+        },
+        {
+          "id": "styleRailAccounticon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:RailAccountIcon"
+        },
+        {
+          "id": "styleRailAccountlabel",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:RailAccountLabel"
+        },
+        {
+          "id": "iconRailAccount",
+          "kind": "call",
+          "function": "self:StyleEditorToggle",
+          "defaults": {}
+        },
+        {
+          "id": "iconRailAccountback",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:IconAccountBack"
+        },
+        {
+          "id": "iconRailAccounticon",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:IconAccountIcon"
+        },
+        {
+          "id": "anypanel",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:NotEqual_StrStr",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "notsettings",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:NotEqual_StrStr",
+          "defaults": {
+            "B": "settings"
+          }
+        },
+        {
+          "id": "content0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "getCommunityProfile",
+          "kind": "get",
+          "var": "CommunityProfile"
+        },
+        {
+          "id": "connected",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:StartsWith",
+          "defaults": {
+            "InPrefix": "Connected",
+            "SearchCase": "CaseSensitive"
+          }
+        },
+        {
+          "id": "joined",
+          "kind": "branch"
+        },
+        {
+          "id": "joinednext",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "dot",
+          "kind": "branch"
+        },
+        {
+          "id": "dotnext",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "joinedwidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:RailJoined"
+        },
+        {
+          "id": "joinedon",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetVisibility",
+          "defaults": {
+            "InVisibility": "HitTestInvisible"
+          }
+        },
+        {
+          "id": "joinedoff",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetVisibility",
+          "defaults": {
+            "InVisibility": "Collapsed"
+          }
+        },
+        {
+          "id": "joinedalonewidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:RailAlone"
+        },
+        {
+          "id": "joinedaloneon",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetVisibility",
+          "defaults": {
+            "InVisibility": "Collapsed"
+          }
+        },
+        {
+          "id": "joinedaloneoff",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetVisibility",
+          "defaults": {
+            "InVisibility": "HitTestInvisible"
+          }
+        },
+        {
+          "id": "dotwidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:HolonetDot"
+        },
+        {
+          "id": "doton",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetVisibility",
+          "defaults": {
+            "InVisibility": "HitTestInvisible"
+          }
+        },
+        {
+          "id": "dotoff",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetVisibility",
+          "defaults": {
+            "InVisibility": "Collapsed"
+          }
+        },
+        {
+          "id": "doticonwidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:HolonetIconDot"
+        },
+        {
+          "id": "doticonon",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetVisibility",
+          "defaults": {
+            "InVisibility": "HitTestInvisible"
+          }
+        },
+        {
+          "id": "doticonoff",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetVisibility",
+          "defaults": {
+            "InVisibility": "Collapsed"
+          }
+        },
+        {
+          "id": "getHistory",
+          "kind": "get",
+          "var": "History"
+        },
+        {
+          "id": "historyvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "history",
+          "kind": "branch"
+        },
+        {
+          "id": "getStoreCountVersion",
+          "kind": "get",
+          "var": "StoreCountVersion"
+        },
+        {
+          "id": "historyversion",
+          "kind": "get",
+          "var": "/DenDesignerGF/Runtime/BP_DenHistory:Version"
+        },
+        {
+          "id": "listed",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {}
+        },
+        {
+          "id": "getStoreBuilding",
+          "kind": "get",
+          "var": "StoreBuilding"
+        },
+        {
+          "id": "listdone",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "getStoreTotal",
+          "kind": "get",
+          "var": "StoreTotal"
+        },
+        {
+          "id": "anystored",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "storecurrent0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "storecurrent1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "storetotal",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Conv_IntToString",
+          "defaults": {}
+        },
+        {
+          "id": "storecount",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectString",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "storedwidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:StoreroomCount"
+        },
+        {
+          "id": "stored",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {}
+        },
+        {
+          "id": "storedbadgewidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:IconStoreroomBadgeText"
+        },
+        {
+          "id": "storedbadge",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {}
+        },
+        {
+          "id": "sharesfield",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:RailSharesCount"
+        },
+        {
+          "id": "sharestext",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:GetText",
+          "defaults": {}
+        },
+        {
+          "id": "sharescount",
+          "kind": "call",
+          "function": "/Script/Engine.KismetTextLibrary:Conv_TextToString",
+          "defaults": {}
+        },
+        {
+          "id": "sharesbadgewidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:IconSharesBadgeText"
+        },
+        {
+          "id": "sharesbadge",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {}
+        },
+        {
+          "id": "anyshares",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:NotEqual_StrStr",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "storeshown",
+          "kind": "branch"
+        },
+        {
+          "id": "storeshownnext",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "storeshownwidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:IconStoreroomBadge"
+        },
+        {
+          "id": "storeshownon",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetVisibility",
+          "defaults": {
+            "InVisibility": "HitTestInvisible"
+          }
+        },
+        {
+          "id": "storeshownoff",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetVisibility",
+          "defaults": {
+            "InVisibility": "Collapsed"
+          }
+        },
+        {
+          "id": "sharesshown",
+          "kind": "branch"
+        },
+        {
+          "id": "sharesshownnext",
+          "kind": "sequence",
+          "outputs": 1
+        },
+        {
+          "id": "sharesshownwidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:IconSharesBadge"
+        },
+        {
+          "id": "sharesshownon",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetVisibility",
+          "defaults": {
+            "InVisibility": "HitTestInvisible"
+          }
+        },
+        {
+          "id": "sharesshownoff",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetVisibility",
+          "defaults": {
+            "InVisibility": "Collapsed"
+          }
+        }
+      ],
+      "links": [
+        [
+          "getToolbar.Toolbar",
+          "toolbarvalid.Object"
+        ],
+        [
+          "toolbarvalid.ReturnValue",
+          "valid.Condition"
+        ],
+        [
+          "entry.then",
+          "valid.execute"
+        ],
+        [
+          "getRailAutoFold.RailAutoFold",
+          "unplacing.A"
+        ],
+        [
+          "getRailLabels.RailLabels",
+          "shown0.A"
+        ],
+        [
+          "unplacing.ReturnValue",
+          "shown0.B"
+        ],
+        [
+          "shown0.ReturnValue",
+          "labels.Condition"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "labelsframewidget.self"
+        ],
+        [
+          "labelsframewidget.RailFrame",
+          "labelsframe.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "labelsiconswidget.self"
+        ],
+        [
+          "labelsiconswidget.RailIcons",
+          "labelsicons.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "labelstabs.self"
+        ],
+        [
+          "labelstabs.LibraryTabs",
+          "labelsslot.Widget"
+        ],
+        [
+          "labelsslot.ReturnValue",
+          "labelswidth.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "foldedframewidget.self"
+        ],
+        [
+          "foldedframewidget.RailFrame",
+          "foldedframe.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "foldediconswidget.self"
+        ],
+        [
+          "foldediconswidget.RailIcons",
+          "foldedicons.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "foldedtabs.self"
+        ],
+        [
+          "foldedtabs.LibraryTabs",
+          "foldedslot.Widget"
+        ],
+        [
+          "foldedslot.ReturnValue",
+          "foldedwidth.self"
+        ],
+        [
+          "valid.then",
+          "labels.execute"
+        ],
+        [
+          "labels.then",
+          "labelsframe.execute"
+        ],
+        [
+          "labelsframe.then",
+          "labelsicons.execute"
+        ],
+        [
+          "labelsicons.then",
+          "labelswidth.execute"
+        ],
+        [
+          "labelswidth.then",
+          "labelsnext.execute"
+        ],
+        [
+          "labels.else",
+          "foldedframe.execute"
+        ],
+        [
+          "foldedframe.then",
+          "foldedicons.execute"
+        ],
+        [
+          "foldedicons.then",
+          "foldedwidth.execute"
+        ],
+        [
+          "foldedwidth.then",
+          "labelsnext.execute"
+        ],
+        [
+          "shown0.ReturnValue",
+          "leftx.bPickA"
+        ],
+        [
+          "leftx.ReturnValue",
+          "left.X"
+        ],
+        [
+          "getCatalogPanel.CatalogPanel",
+          "CatalogPanelcheck.Object"
+        ],
+        [
+          "CatalogPanelcheck.ReturnValue",
+          "CatalogPanelvalid.Condition"
+        ],
+        [
+          "getCatalogPanel.CatalogPanel",
+          "CatalogPanelpanel.self"
+        ],
+        [
+          "CatalogPanelpanel.Panel",
+          "CatalogPanelslot.Widget"
+        ],
+        [
+          "CatalogPanelslot.ReturnValue",
+          "CatalogPanelplace.self"
+        ],
+        [
+          "left.ReturnValue",
+          "CatalogPanelplace.InPosition"
+        ],
+        [
+          "labelsnext.then_0",
+          "CatalogPanelvalid.execute"
+        ],
+        [
+          "CatalogPanelvalid.then",
+          "CatalogPanelplace.execute"
+        ],
+        [
+          "CatalogPanelplace.then",
+          "CatalogPanelnext.execute"
+        ],
+        [
+          "CatalogPanelvalid.else",
+          "CatalogPanelnext.execute"
+        ],
+        [
+          "getLayoutsPanel.LayoutsPanel",
+          "LayoutsPanelcheck.Object"
+        ],
+        [
+          "LayoutsPanelcheck.ReturnValue",
+          "LayoutsPanelvalid.Condition"
+        ],
+        [
+          "getLayoutsPanel.LayoutsPanel",
+          "LayoutsPanelpanel.self"
+        ],
+        [
+          "LayoutsPanelpanel.Panel",
+          "LayoutsPanelslot.Widget"
+        ],
+        [
+          "LayoutsPanelslot.ReturnValue",
+          "LayoutsPanelplace.self"
+        ],
+        [
+          "left.ReturnValue",
+          "LayoutsPanelplace.InPosition"
+        ],
+        [
+          "CatalogPanelnext.then_0",
+          "LayoutsPanelvalid.execute"
+        ],
+        [
+          "LayoutsPanelvalid.then",
+          "LayoutsPanelplace.execute"
+        ],
+        [
+          "LayoutsPanelplace.then",
+          "LayoutsPanelnext.execute"
+        ],
+        [
+          "LayoutsPanelvalid.else",
+          "LayoutsPanelnext.execute"
+        ],
+        [
+          "getStoreroomPanel.StoreroomPanel",
+          "StoreroomPanelcheck.Object"
+        ],
+        [
+          "StoreroomPanelcheck.ReturnValue",
+          "StoreroomPanelvalid.Condition"
+        ],
+        [
+          "getStoreroomPanel.StoreroomPanel",
+          "StoreroomPanelpanel.self"
+        ],
+        [
+          "StoreroomPanelpanel.Panel",
+          "StoreroomPanelslot.Widget"
+        ],
+        [
+          "StoreroomPanelslot.ReturnValue",
+          "StoreroomPanelplace.self"
+        ],
+        [
+          "left.ReturnValue",
+          "StoreroomPanelplace.InPosition"
+        ],
+        [
+          "LayoutsPanelnext.then_0",
+          "StoreroomPanelvalid.execute"
+        ],
+        [
+          "StoreroomPanelvalid.then",
+          "StoreroomPanelplace.execute"
+        ],
+        [
+          "StoreroomPanelplace.then",
+          "StoreroomPanelnext.execute"
+        ],
+        [
+          "StoreroomPanelvalid.else",
+          "StoreroomPanelnext.execute"
+        ],
+        [
+          "getCompositionsPanel.CompositionsPanel",
+          "CompositionsPanelcheck.Object"
+        ],
+        [
+          "CompositionsPanelcheck.ReturnValue",
+          "CompositionsPanelvalid.Condition"
+        ],
+        [
+          "getCompositionsPanel.CompositionsPanel",
+          "CompositionsPanelpanel.self"
+        ],
+        [
+          "CompositionsPanelpanel.Panel",
+          "CompositionsPanelslot.Widget"
+        ],
+        [
+          "CompositionsPanelslot.ReturnValue",
+          "CompositionsPanelplace.self"
+        ],
+        [
+          "left.ReturnValue",
+          "CompositionsPanelplace.InPosition"
+        ],
+        [
+          "StoreroomPanelnext.then_0",
+          "CompositionsPanelvalid.execute"
+        ],
+        [
+          "CompositionsPanelvalid.then",
+          "CompositionsPanelplace.execute"
+        ],
+        [
+          "CompositionsPanelplace.then",
+          "CompositionsPanelnext.execute"
+        ],
+        [
+          "CompositionsPanelvalid.else",
+          "CompositionsPanelnext.execute"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "CommunityPanelcheck.Object"
+        ],
+        [
+          "CommunityPanelcheck.ReturnValue",
+          "CommunityPanelvalid.Condition"
+        ],
+        [
+          "getCommunityPanel.CommunityPanel",
+          "CommunityPanelpanel.self"
+        ],
+        [
+          "CommunityPanelpanel.Panel",
+          "CommunityPanelslot.Widget"
+        ],
+        [
+          "CommunityPanelslot.ReturnValue",
+          "CommunityPanelplace.self"
+        ],
+        [
+          "left.ReturnValue",
+          "CommunityPanelplace.InPosition"
+        ],
+        [
+          "CompositionsPanelnext.then_0",
+          "CommunityPanelvalid.execute"
+        ],
+        [
+          "CommunityPanelvalid.then",
+          "CommunityPanelplace.execute"
+        ],
+        [
+          "CommunityPanelplace.then",
+          "CommunityPanelnext.execute"
+        ],
+        [
+          "CommunityPanelvalid.else",
+          "CommunityPanelnext.execute"
+        ],
+        [
+          "getActivePanel.ActivePanel",
+          "holonet.A"
+        ],
+        [
+          "getActivePanel.ActivePanel",
+          "tabCatalog.A"
+        ],
+        [
+          "getActivePanel.ActivePanel",
+          "tabStoreroom.A"
+        ],
+        [
+          "getActivePanel.ActivePanel",
+          "tabCompositions.A"
+        ],
+        [
+          "getActivePanel.ActivePanel",
+          "tabLayouts.A"
+        ],
+        [
+          "getCommunityArea.CommunityArea",
+          "isRailBrowse.A"
+        ],
+        [
+          "holonet.ReturnValue",
+          "areaRailBrowse0.A"
+        ],
+        [
+          "isRailBrowse.ReturnValue",
+          "areaRailBrowse0.B"
+        ],
+        [
+          "getCommunityArea.CommunityArea",
+          "isRailShare.A"
+        ],
+        [
+          "holonet.ReturnValue",
+          "areaRailShare0.A"
+        ],
+        [
+          "isRailShare.ReturnValue",
+          "areaRailShare0.B"
+        ],
+        [
+          "getCommunityArea.CommunityArea",
+          "isRailShares.A"
+        ],
+        [
+          "holonet.ReturnValue",
+          "areaRailShares0.A"
+        ],
+        [
+          "isRailShares.ReturnValue",
+          "areaRailShares0.B"
+        ],
+        [
+          "getCommunityArea.CommunityArea",
+          "isRailAccount.A"
+        ],
+        [
+          "holonet.ReturnValue",
+          "areaRailAccount0.A"
+        ],
+        [
+          "isRailAccount.ReturnValue",
+          "areaRailAccount0.B"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleCatalogback.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleCatalogicon.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleCataloglabel.self"
+        ],
+        [
+          "styleCatalogback.CatalogBack",
+          "styleCatalog.Back"
+        ],
+        [
+          "styleCatalogicon.CatalogIcon",
+          "styleCatalog.Icon"
+        ],
+        [
+          "styleCataloglabel.CatalogLabel",
+          "styleCatalog.Label"
+        ],
+        [
+          "tabCatalog.ReturnValue",
+          "styleCatalog.On"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "iconCatalogback.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "iconCatalogicon.self"
+        ],
+        [
+          "iconCatalogback.IconCatalogBack",
+          "iconCatalog.Back"
+        ],
+        [
+          "iconCatalogicon.IconCatalogIcon",
+          "iconCatalog.Icon"
+        ],
+        [
+          "tabCatalog.ReturnValue",
+          "iconCatalog.On"
+        ],
+        [
+          "CommunityPanelnext.then_0",
+          "styleCatalog.execute"
+        ],
+        [
+          "styleCatalog.then",
+          "iconCatalog.execute"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleStoreroomback.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleStoreroomicon.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleStoreroomlabel.self"
+        ],
+        [
+          "styleStoreroomback.StoreroomBack",
+          "styleStoreroom.Back"
+        ],
+        [
+          "styleStoreroomicon.StoreroomIcon",
+          "styleStoreroom.Icon"
+        ],
+        [
+          "styleStoreroomlabel.StoreroomLabel",
+          "styleStoreroom.Label"
+        ],
+        [
+          "tabStoreroom.ReturnValue",
+          "styleStoreroom.On"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "iconStoreroomback.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "iconStoreroomicon.self"
+        ],
+        [
+          "iconStoreroomback.IconStoreroomBack",
+          "iconStoreroom.Back"
+        ],
+        [
+          "iconStoreroomicon.IconStoreroomIcon",
+          "iconStoreroom.Icon"
+        ],
+        [
+          "tabStoreroom.ReturnValue",
+          "iconStoreroom.On"
+        ],
+        [
+          "iconCatalog.then",
+          "styleStoreroom.execute"
+        ],
+        [
+          "styleStoreroom.then",
+          "iconStoreroom.execute"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleCompositionsback.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleCompositionsicon.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleCompositionslabel.self"
+        ],
+        [
+          "styleCompositionsback.CompositionsBack",
+          "styleCompositions.Back"
+        ],
+        [
+          "styleCompositionsicon.CompositionsIcon",
+          "styleCompositions.Icon"
+        ],
+        [
+          "styleCompositionslabel.CompositionsLabel",
+          "styleCompositions.Label"
+        ],
+        [
+          "tabCompositions.ReturnValue",
+          "styleCompositions.On"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "iconCompositionsback.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "iconCompositionsicon.self"
+        ],
+        [
+          "iconCompositionsback.IconCompositionsBack",
+          "iconCompositions.Back"
+        ],
+        [
+          "iconCompositionsicon.IconCompositionsIcon",
+          "iconCompositions.Icon"
+        ],
+        [
+          "tabCompositions.ReturnValue",
+          "iconCompositions.On"
+        ],
+        [
+          "iconStoreroom.then",
+          "styleCompositions.execute"
+        ],
+        [
+          "styleCompositions.then",
+          "iconCompositions.execute"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleLayoutsback.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleLayoutsicon.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleLayoutslabel.self"
+        ],
+        [
+          "styleLayoutsback.LayoutsBack",
+          "styleLayouts.Back"
+        ],
+        [
+          "styleLayoutsicon.LayoutsIcon",
+          "styleLayouts.Icon"
+        ],
+        [
+          "styleLayoutslabel.LayoutsLabel",
+          "styleLayouts.Label"
+        ],
+        [
+          "tabLayouts.ReturnValue",
+          "styleLayouts.On"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "iconLayoutsback.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "iconLayoutsicon.self"
+        ],
+        [
+          "iconLayoutsback.IconLayoutsBack",
+          "iconLayouts.Back"
+        ],
+        [
+          "iconLayoutsicon.IconLayoutsIcon",
+          "iconLayouts.Icon"
+        ],
+        [
+          "tabLayouts.ReturnValue",
+          "iconLayouts.On"
+        ],
+        [
+          "iconCompositions.then",
+          "styleLayouts.execute"
+        ],
+        [
+          "styleLayouts.then",
+          "iconLayouts.execute"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleRailBrowseback.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleRailBrowseicon.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleRailBrowselabel.self"
+        ],
+        [
+          "styleRailBrowseback.RailBrowseBack",
+          "styleRailBrowse.Back"
+        ],
+        [
+          "styleRailBrowseicon.RailBrowseIcon",
+          "styleRailBrowse.Icon"
+        ],
+        [
+          "styleRailBrowselabel.RailBrowseLabel",
+          "styleRailBrowse.Label"
+        ],
+        [
+          "areaRailBrowse0.ReturnValue",
+          "styleRailBrowse.On"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "iconRailBrowseback.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "iconRailBrowseicon.self"
+        ],
+        [
+          "iconRailBrowseback.IconBrowseBack",
+          "iconRailBrowse.Back"
+        ],
+        [
+          "iconRailBrowseicon.IconBrowseIcon",
+          "iconRailBrowse.Icon"
+        ],
+        [
+          "areaRailBrowse0.ReturnValue",
+          "iconRailBrowse.On"
+        ],
+        [
+          "iconLayouts.then",
+          "styleRailBrowse.execute"
+        ],
+        [
+          "styleRailBrowse.then",
+          "iconRailBrowse.execute"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleRailShareback.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleRailShareicon.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleRailSharelabel.self"
+        ],
+        [
+          "styleRailShareback.RailShareBack",
+          "styleRailShare.Back"
+        ],
+        [
+          "styleRailShareicon.RailShareIcon",
+          "styleRailShare.Icon"
+        ],
+        [
+          "styleRailSharelabel.RailShareLabel",
+          "styleRailShare.Label"
+        ],
+        [
+          "areaRailShare0.ReturnValue",
+          "styleRailShare.On"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "iconRailShareback.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "iconRailShareicon.self"
+        ],
+        [
+          "iconRailShareback.IconShareBack",
+          "iconRailShare.Back"
+        ],
+        [
+          "iconRailShareicon.IconShareIcon",
+          "iconRailShare.Icon"
+        ],
+        [
+          "areaRailShare0.ReturnValue",
+          "iconRailShare.On"
+        ],
+        [
+          "iconRailBrowse.then",
+          "styleRailShare.execute"
+        ],
+        [
+          "styleRailShare.then",
+          "iconRailShare.execute"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleRailSharesback.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleRailSharesicon.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleRailShareslabel.self"
+        ],
+        [
+          "styleRailSharesback.RailSharesBack",
+          "styleRailShares.Back"
+        ],
+        [
+          "styleRailSharesicon.RailSharesIcon",
+          "styleRailShares.Icon"
+        ],
+        [
+          "styleRailShareslabel.RailSharesLabel",
+          "styleRailShares.Label"
+        ],
+        [
+          "areaRailShares0.ReturnValue",
+          "styleRailShares.On"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "iconRailSharesback.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "iconRailSharesicon.self"
+        ],
+        [
+          "iconRailSharesback.IconSharesBack",
+          "iconRailShares.Back"
+        ],
+        [
+          "iconRailSharesicon.IconSharesIcon",
+          "iconRailShares.Icon"
+        ],
+        [
+          "areaRailShares0.ReturnValue",
+          "iconRailShares.On"
+        ],
+        [
+          "iconRailShare.then",
+          "styleRailShares.execute"
+        ],
+        [
+          "styleRailShares.then",
+          "iconRailShares.execute"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleRailAccountback.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleRailAccounticon.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "styleRailAccountlabel.self"
+        ],
+        [
+          "styleRailAccountback.RailAccountBack",
+          "styleRailAccount.Back"
+        ],
+        [
+          "styleRailAccounticon.RailAccountIcon",
+          "styleRailAccount.Icon"
+        ],
+        [
+          "styleRailAccountlabel.RailAccountLabel",
+          "styleRailAccount.Label"
+        ],
+        [
+          "areaRailAccount0.ReturnValue",
+          "styleRailAccount.On"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "iconRailAccountback.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "iconRailAccounticon.self"
+        ],
+        [
+          "iconRailAccountback.IconAccountBack",
+          "iconRailAccount.Back"
+        ],
+        [
+          "iconRailAccounticon.IconAccountIcon",
+          "iconRailAccount.Icon"
+        ],
+        [
+          "areaRailAccount0.ReturnValue",
+          "iconRailAccount.On"
+        ],
+        [
+          "iconRailShares.then",
+          "styleRailAccount.execute"
+        ],
+        [
+          "styleRailAccount.then",
+          "iconRailAccount.execute"
+        ],
+        [
+          "getActivePanel.ActivePanel",
+          "anypanel.A"
+        ],
+        [
+          "getActivePanel.ActivePanel",
+          "notsettings.A"
+        ],
+        [
+          "anypanel.ReturnValue",
+          "content0.A"
+        ],
+        [
+          "notsettings.ReturnValue",
+          "content0.B"
+        ],
+        [
+          "getCommunityProfile.CommunityProfile",
+          "connected.SourceString"
+        ],
+        [
+          "content0.ReturnValue",
+          "joined.Condition"
+        ],
+        [
+          "connected.ReturnValue",
+          "dot.Condition"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "joinedwidget.self"
+        ],
+        [
+          "joinedwidget.RailJoined",
+          "joinedon.self"
+        ],
+        [
+          "joinedwidget.RailJoined",
+          "joinedoff.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "joinedalonewidget.self"
+        ],
+        [
+          "joinedalonewidget.RailAlone",
+          "joinedaloneon.self"
+        ],
+        [
+          "joinedalonewidget.RailAlone",
+          "joinedaloneoff.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "dotwidget.self"
+        ],
+        [
+          "dotwidget.HolonetDot",
+          "doton.self"
+        ],
+        [
+          "dotwidget.HolonetDot",
+          "dotoff.self"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "doticonwidget.self"
+        ],
+        [
+          "doticonwidget.HolonetIconDot",
+          "doticonon.self"
+        ],
+        [
+          "doticonwidget.HolonetIconDot",
+          "doticonoff.self"
+        ],
+        [
+          "iconRailAccount.then",
+          "joined.execute"
+        ],
+        [
+          "joined.then",
+          "joinedon.execute"
+        ],
+        [
+          "joinedon.then",
+          "joinedaloneon.execute"
+        ],
+        [
+          "joinedaloneon.then",
+          "joinednext.execute"
+        ],
+        [
+          "joined.else",
+          "joinedoff.execute"
+        ],
+        [
+          "joinedoff.then",
+          "joinedaloneoff.execute"
+        ],
+        [
+          "joinedaloneoff.then",
+          "joinednext.execute"
+        ],
+        [
+          "joinednext.then_0",
+          "dot.execute"
+        ],
+        [
+          "dot.then",
+          "doton.execute"
+        ],
+        [
+          "doton.then",
+          "doticonon.execute"
+        ],
+        [
+          "doticonon.then",
+          "dotnext.execute"
+        ],
+        [
+          "dot.else",
+          "dotoff.execute"
+        ],
+        [
+          "dotoff.then",
+          "doticonoff.execute"
+        ],
+        [
+          "doticonoff.then",
+          "dotnext.execute"
+        ],
+        [
+          "getHistory.History",
+          "historyvalid.Object"
+        ],
+        [
+          "historyvalid.ReturnValue",
+          "history.Condition"
+        ],
+        [
+          "getHistory.History",
+          "historyversion.self"
+        ],
+        [
+          "getStoreCountVersion.StoreCountVersion",
+          "listed.A"
+        ],
+        [
+          "historyversion.Version",
+          "listed.B"
+        ],
+        [
+          "getStoreBuilding.StoreBuilding",
+          "listdone.A"
+        ],
+        [
+          "getStoreTotal.StoreTotal",
+          "anystored.A"
+        ],
+        [
+          "listed.ReturnValue",
+          "storecurrent0.A"
+        ],
+        [
+          "listdone.ReturnValue",
+          "storecurrent0.B"
+        ],
+        [
+          "storecurrent0.ReturnValue",
+          "storecurrent1.A"
+        ],
+        [
+          "anystored.ReturnValue",
+          "storecurrent1.B"
+        ],
+        [
+          "getStoreTotal.StoreTotal",
+          "storetotal.InInt"
+        ],
+        [
+          "storetotal.ReturnValue",
+          "storecount.A"
+        ],
+        [
+          "storecurrent1.ReturnValue",
+          "storecount.bPickA"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "storedwidget.self"
+        ],
+        [
+          "storedwidget.StoreroomCount",
+          "stored.self"
+        ],
+        [
+          "storecount.ReturnValue",
+          "stored.InText"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "storedbadgewidget.self"
+        ],
+        [
+          "storedbadgewidget.IconStoreroomBadgeText",
+          "storedbadge.self"
+        ],
+        [
+          "storecount.ReturnValue",
+          "storedbadge.InText"
+        ],
+        [
+          "dotnext.then_0",
+          "history.execute"
+        ],
+        [
+          "history.then",
+          "stored.execute"
+        ],
+        [
+          "stored.then",
+          "storedbadge.execute"
+        ],
+        [
+          "storedbadge.then",
+          "storeshown.execute"
+        ],
+        [
+          "history.else",
+          "sharesbadge.execute"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "sharesfield.self"
+        ],
+        [
+          "sharesfield.RailSharesCount",
+          "sharestext.self"
+        ],
+        [
+          "sharestext.ReturnValue",
+          "sharescount.InText"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "sharesbadgewidget.self"
+        ],
+        [
+          "sharesbadgewidget.IconSharesBadgeText",
+          "sharesbadge.self"
+        ],
+        [
+          "sharescount.ReturnValue",
+          "sharesbadge.InText"
+        ],
+        [
+          "sharescount.ReturnValue",
+          "anyshares.A"
+        ],
+        [
+          "storecurrent1.ReturnValue",
+          "storeshown.Condition"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "storeshownwidget.self"
+        ],
+        [
+          "storeshownwidget.IconStoreroomBadge",
+          "storeshownon.self"
+        ],
+        [
+          "storeshownwidget.IconStoreroomBadge",
+          "storeshownoff.self"
+        ],
+        [
+          "storeshown.then",
+          "storeshownon.execute"
+        ],
+        [
+          "storeshownon.then",
+          "storeshownnext.execute"
+        ],
+        [
+          "storeshown.else",
+          "storeshownoff.execute"
+        ],
+        [
+          "storeshownoff.then",
+          "storeshownnext.execute"
+        ],
+        [
+          "anyshares.ReturnValue",
+          "sharesshown.Condition"
+        ],
+        [
+          "getToolbar.Toolbar",
+          "sharesshownwidget.self"
+        ],
+        [
+          "sharesshownwidget.IconSharesBadge",
+          "sharesshownon.self"
+        ],
+        [
+          "sharesshownwidget.IconSharesBadge",
+          "sharesshownoff.self"
+        ],
+        [
+          "sharesshown.then",
+          "sharesshownon.execute"
+        ],
+        [
+          "sharesshownon.then",
+          "sharesshownnext.execute"
+        ],
+        [
+          "sharesshown.else",
+          "sharesshownoff.execute"
+        ],
+        [
+          "sharesshownoff.then",
+          "sharesshownnext.execute"
+        ],
+        [
+          "storeshownnext.then_0",
+          "sharesbadge.execute"
+        ],
+        [
+          "sharesbadge.then",
+          "sharesshown.execute"
+        ]
+      ]
+    },
+    {
+      "name": "SetRailLabels",
+      "inputs": [
+        {
+          "name": "Labels",
+          "type": "bool"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "pin",
+          "kind": "set",
+          "var": "RailLabels"
+        },
+        {
+          "id": "unfold",
+          "kind": "set",
+          "var": "RailAutoFold",
+          "defaults": {
+            "RailAutoFold": "false"
+          }
+        },
+        {
+          "id": "refresh",
+          "kind": "call",
+          "function": "self:RefreshEditorRail",
+          "defaults": {}
+        },
+        {
+          "id": "ensure",
+          "kind": "call",
+          "function": "self:EnsurePreferenceService",
+          "defaults": {}
+        },
+        {
+          "id": "getPreferenceService",
+          "kind": "get",
+          "var": "PreferenceService"
+        },
+        {
+          "id": "servicevalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "service",
+          "kind": "branch"
+        },
+        {
+          "id": "value",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectString",
+          "defaults": {
+            "A": "true",
+            "B": "false"
+          }
+        },
+        {
+          "id": "save",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferences:ChangePreference",
+          "defaults": {
+            "Key": "rail_labels"
+          }
+        },
+        {
+          "id": "status",
+          "kind": "set",
+          "var": "PreferencesStatus"
+        },
+        {
+          "id": "documentvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "document",
+          "kind": "branch"
+        },
+        {
+          "id": "copy",
+          "kind": "set",
+          "var": "PreferencesDocument"
+        }
+      ],
+      "links": [
+        [
+          "entry.Labels",
+          "pin.RailLabels"
+        ],
+        [
+          "getPreferenceService.PreferenceService",
+          "servicevalid.Object"
+        ],
+        [
+          "servicevalid.ReturnValue",
+          "service.Condition"
+        ],
+        [
+          "entry.Labels",
+          "value.bPickA"
+        ],
+        [
+          "getPreferenceService.PreferenceService",
+          "save.self"
+        ],
+        [
+          "value.ReturnValue",
+          "save.Value"
+        ],
+        [
+          "save.Status",
+          "status.PreferencesStatus"
+        ],
+        [
+          "save.Document",
+          "documentvalid.Object"
+        ],
+        [
+          "documentvalid.ReturnValue",
+          "document.Condition"
+        ],
+        [
+          "save.Document",
+          "copy.PreferencesDocument"
+        ],
+        [
+          "entry.then",
+          "pin.execute"
+        ],
+        [
+          "pin.then",
+          "unfold.execute"
+        ],
+        [
+          "unfold.then",
+          "refresh.execute"
+        ],
+        [
+          "refresh.then",
+          "ensure.execute"
+        ],
+        [
+          "ensure.then",
+          "service.execute"
+        ],
+        [
+          "service.then",
+          "save.execute"
+        ],
+        [
+          "save.then",
+          "status.execute"
+        ],
+        [
+          "status.then",
+          "document.execute"
+        ],
+        [
+          "document.then",
+          "copy.execute"
+        ]
+      ]
+    },
+    {
+      "name": "OpenRailCode",
+      "nodes": [
+        {
+          "id": "labels",
+          "kind": "call",
+          "function": "self:SetRailLabels",
+          "defaults": {
+            "Labels": "true"
+          }
+        },
+        {
+          "id": "focus",
+          "kind": "set",
+          "var": "RailCodeFocus",
+          "defaults": {
+            "RailCodeFocus": "true"
+          }
+        }
+      ],
+      "links": [
+        [
+          "entry.then",
+          "labels.execute"
+        ],
+        [
+          "labels.then",
+          "focus.execute"
         ]
       ]
     },
@@ -14168,7 +16715,7 @@
         {
           "id": "call10",
           "kind": "call",
-          "function": "self:SetCommunityArea",
+          "function": "self:OpenHolonetArea",
           "defaults": {
             "Area": "browse"
           }
@@ -14188,7 +16735,7 @@
         {
           "id": "call11",
           "kind": "call",
-          "function": "self:SetCommunityArea",
+          "function": "self:OpenHolonetArea",
           "defaults": {
             "Area": "upload"
           }
@@ -14208,7 +16755,7 @@
         {
           "id": "call12",
           "kind": "call",
-          "function": "self:SetCommunityArea",
+          "function": "self:OpenHolonetArea",
           "defaults": {
             "Area": "account"
           }
@@ -14228,7 +16775,7 @@
         {
           "id": "call13",
           "kind": "call",
-          "function": "self:SetCommunityArea",
+          "function": "self:OpenHolonetArea",
           "defaults": {
             "Area": "shares"
           }
@@ -14446,7 +16993,7 @@
         {
           "id": "call25",
           "kind": "call",
-          "function": "self:SetCommunityArea",
+          "function": "self:OpenHolonetArea",
           "defaults": {
             "Area": "browse_dens"
           }
@@ -14476,7 +17023,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_review"
+            "B": "library_close"
           }
         },
         {
@@ -14486,15 +17033,17 @@
         {
           "id": "call27",
           "kind": "call",
-          "function": "self:ReviewCommunityComposition",
-          "defaults": {}
+          "function": "self:SetEditorPanel",
+          "defaults": {
+            "Name": ""
+          }
         },
         {
           "id": "eq28",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_presets"
+            "B": "rail_fold"
           }
         },
         {
@@ -14504,9 +17053,9 @@
         {
           "id": "call28",
           "kind": "call",
-          "function": "self:SetEditorPanel",
+          "function": "self:SetRailLabels",
           "defaults": {
-            "Name": "layouts"
+            "Labels": "false"
           }
         },
         {
@@ -14514,7 +17063,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_website"
+            "B": "rail_labels"
           }
         },
         {
@@ -14524,15 +17073,17 @@
         {
           "id": "call29",
           "kind": "call",
-          "function": "self:OpenCommunityAccount",
-          "defaults": {}
+          "function": "self:SetRailLabels",
+          "defaults": {
+            "Labels": "true"
+          }
         },
         {
           "id": "eq30",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_copy_url"
+            "B": "rail_code"
           }
         },
         {
@@ -14542,7 +17093,7 @@
         {
           "id": "call30",
           "kind": "call",
-          "function": "self:CopyCommunityURL",
+          "function": "self:OpenRailCode",
           "defaults": {}
         },
         {
@@ -14550,7 +17101,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_copy_code"
+            "B": "community_review"
           }
         },
         {
@@ -14560,7 +17111,7 @@
         {
           "id": "call31",
           "kind": "call",
-          "function": "self:CopyCommunityCode",
+          "function": "self:ReviewCommunityComposition",
           "defaults": {}
         },
         {
@@ -14568,7 +17119,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_connect"
+            "B": "community_presets"
           }
         },
         {
@@ -14578,15 +17129,17 @@
         {
           "id": "call32",
           "kind": "call",
-          "function": "self:ConnectCommunity",
-          "defaults": {}
+          "function": "self:SetEditorPanel",
+          "defaults": {
+            "Name": "layouts"
+          }
         },
         {
           "id": "eq33",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_remember"
+            "B": "community_website"
           }
         },
         {
@@ -14596,7 +17149,7 @@
         {
           "id": "call33",
           "kind": "call",
-          "function": "self:ToggleRememberCommunity",
+          "function": "self:OpenCommunityAccount",
           "defaults": {}
         },
         {
@@ -14604,7 +17157,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_forget"
+            "B": "community_copy_url"
           }
         },
         {
@@ -14614,7 +17167,7 @@
         {
           "id": "call34",
           "kind": "call",
-          "function": "self:ForgetCommunity",
+          "function": "self:CopyCommunityURL",
           "defaults": {}
         },
         {
@@ -14622,7 +17175,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_disconnect"
+            "B": "community_copy_code"
           }
         },
         {
@@ -14632,17 +17185,15 @@
         {
           "id": "call35",
           "kind": "call",
-          "function": "self:StartCommunityFetch",
-          "defaults": {
-            "Input": "DISCONNECT"
-          }
+          "function": "self:CopyCommunityCode",
+          "defaults": {}
         },
         {
           "id": "eq36",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_submit"
+            "B": "community_connect"
           }
         },
         {
@@ -14652,7 +17203,7 @@
         {
           "id": "call36",
           "kind": "call",
-          "function": "self:SubmitCommunityComposition",
+          "function": "self:ConnectCommunity",
           "defaults": {}
         },
         {
@@ -14660,7 +17211,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "community_cancel"
+            "B": "community_remember"
           }
         },
         {
@@ -14670,7 +17221,7 @@
         {
           "id": "call37",
           "kind": "call",
-          "function": "self:CancelCommunityFetch",
+          "function": "self:ToggleRememberCommunity",
           "defaults": {}
         },
         {
@@ -14678,7 +17229,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "rotation_pivot"
+            "B": "community_forget"
           }
         },
         {
@@ -14688,17 +17239,15 @@
         {
           "id": "call38",
           "kind": "call",
-          "function": "self:CycleEditorSetting",
-          "defaults": {
-            "Key": "rotation_pivot"
-          }
+          "function": "self:ForgetCommunity",
+          "defaults": {}
         },
         {
           "id": "eq39",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "compositions"
+            "B": "community_disconnect"
           }
         },
         {
@@ -14708,9 +17257,9 @@
         {
           "id": "call39",
           "kind": "call",
-          "function": "self:ToggleEditorPanel",
+          "function": "self:StartCommunityFetch",
           "defaults": {
-            "Name": "compositions"
+            "Input": "DISCONNECT"
           }
         },
         {
@@ -14718,7 +17267,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "composition_select"
+            "B": "community_submit"
           }
         },
         {
@@ -14728,7 +17277,7 @@
         {
           "id": "call40",
           "kind": "call",
-          "function": "self:ToggleCompositionSelection",
+          "function": "self:SubmitCommunityComposition",
           "defaults": {}
         },
         {
@@ -14736,7 +17285,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "composition_clear"
+            "B": "community_cancel"
           }
         },
         {
@@ -14746,7 +17295,7 @@
         {
           "id": "call41",
           "kind": "call",
-          "function": "self:ClearCompositionSelection",
+          "function": "self:CancelHolonetRequest",
           "defaults": {}
         },
         {
@@ -14754,7 +17303,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "settings"
+            "B": "rotation_pivot"
           }
         },
         {
@@ -14764,9 +17313,9 @@
         {
           "id": "call42",
           "kind": "call",
-          "function": "self:ToggleEditorPanel",
+          "function": "self:CycleEditorSetting",
           "defaults": {
-            "Name": "settings"
+            "Key": "rotation_pivot"
           }
         },
         {
@@ -14774,7 +17323,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "settings_close"
+            "B": "compositions"
           }
         },
         {
@@ -14784,9 +17333,9 @@
         {
           "id": "call43",
           "kind": "call",
-          "function": "self:SetEditorPanel",
+          "function": "self:ToggleEditorPanel",
           "defaults": {
-            "Name": ""
+            "Name": "compositions"
           }
         },
         {
@@ -14794,7 +17343,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "settings_reset"
+            "B": "composition_select"
           }
         },
         {
@@ -14804,17 +17353,15 @@
         {
           "id": "call44",
           "kind": "call",
-          "function": "self:ChangeEditorSetting",
-          "defaults": {
-            "Reset": "true"
-          }
+          "function": "self:ToggleCompositionSelection",
+          "defaults": {}
         },
         {
           "id": "eq45",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "catalog"
+            "B": "composition_clear"
           }
         },
         {
@@ -14824,17 +17371,15 @@
         {
           "id": "call45",
           "kind": "call",
-          "function": "self:ToggleEditorPanel",
-          "defaults": {
-            "Name": "catalog"
-          }
+          "function": "self:ClearCompositionSelection",
+          "defaults": {}
         },
         {
           "id": "eq46",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "layouts"
+            "B": "settings"
           }
         },
         {
@@ -14846,7 +17391,7 @@
           "kind": "call",
           "function": "self:ToggleEditorPanel",
           "defaults": {
-            "Name": "layouts"
+            "Name": "settings"
           }
         },
         {
@@ -14854,7 +17399,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "storeroom"
+            "B": "settings_close"
           }
         },
         {
@@ -14864,9 +17409,9 @@
         {
           "id": "call47",
           "kind": "call",
-          "function": "self:ToggleEditorPanel",
+          "function": "self:SetEditorPanel",
           "defaults": {
-            "Name": "storeroom"
+            "Name": ""
           }
         },
         {
@@ -14874,7 +17419,7 @@
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "help"
+            "B": "settings_reset"
           }
         },
         {
@@ -14884,15 +17429,17 @@
         {
           "id": "call48",
           "kind": "call",
-          "function": "self:ToggleEditorHelp",
-          "defaults": {}
+          "function": "self:ChangeEditorSetting",
+          "defaults": {
+            "Reset": "true"
+          }
         },
         {
           "id": "eq49",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "snap"
+            "B": "catalog"
           }
         },
         {
@@ -14902,15 +17449,17 @@
         {
           "id": "call49",
           "kind": "call",
-          "function": "self:CycleEditorGrid",
-          "defaults": {}
+          "function": "self:ToggleEditorPanel",
+          "defaults": {
+            "Name": "catalog"
+          }
         },
         {
           "id": "eq50",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "reach"
+            "B": "layouts"
           }
         },
         {
@@ -14920,15 +17469,17 @@
         {
           "id": "call50",
           "kind": "call",
-          "function": "self:CycleEditorReach",
-          "defaults": {}
+          "function": "self:ToggleEditorPanel",
+          "defaults": {
+            "Name": "layouts"
+          }
         },
         {
           "id": "eq51",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "numeric_done"
+            "B": "storeroom"
           }
         },
         {
@@ -14938,15 +17489,17 @@
         {
           "id": "call51",
           "kind": "call",
-          "function": "self:FocusEditorViewport",
-          "defaults": {}
+          "function": "self:ToggleEditorPanel",
+          "defaults": {
+            "Name": "storeroom"
+          }
         },
         {
           "id": "eq52",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "mode_select"
+            "B": "help"
           }
         },
         {
@@ -14956,17 +17509,15 @@
         {
           "id": "call52",
           "kind": "call",
-          "function": "self:SetGizmoMode",
-          "defaults": {
-            "Mode": "0"
-          }
+          "function": "self:ToggleEditorHelp",
+          "defaults": {}
         },
         {
           "id": "eq53",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "mode_move"
+            "B": "snap"
           }
         },
         {
@@ -14976,17 +17527,15 @@
         {
           "id": "call53",
           "kind": "call",
-          "function": "self:SetGizmoMode",
-          "defaults": {
-            "Mode": "1"
-          }
+          "function": "self:CycleEditorGrid",
+          "defaults": {}
         },
         {
           "id": "eq54",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "mode_rotate"
+            "B": "reach"
           }
         },
         {
@@ -14996,17 +17545,15 @@
         {
           "id": "call54",
           "kind": "call",
-          "function": "self:SetGizmoMode",
-          "defaults": {
-            "Mode": "2"
-          }
+          "function": "self:CycleEditorReach",
+          "defaults": {}
         },
         {
           "id": "eq55",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "mode_scale"
+            "B": "numeric_done"
           }
         },
         {
@@ -15016,17 +17563,15 @@
         {
           "id": "call55",
           "kind": "call",
-          "function": "self:SetGizmoMode",
-          "defaults": {
-            "Mode": "3"
-          }
+          "function": "self:FocusEditorViewport",
+          "defaults": {}
         },
         {
           "id": "eq56",
           "kind": "call",
           "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
           "defaults": {
-            "B": "gimbal"
+            "B": "mode_select"
           }
         },
         {
@@ -15035,6 +17580,86 @@
         },
         {
           "id": "call56",
+          "kind": "call",
+          "function": "self:SetGizmoMode",
+          "defaults": {
+            "Mode": "0"
+          }
+        },
+        {
+          "id": "eq57",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "mode_move"
+          }
+        },
+        {
+          "id": "name57",
+          "kind": "branch"
+        },
+        {
+          "id": "call57",
+          "kind": "call",
+          "function": "self:SetGizmoMode",
+          "defaults": {
+            "Mode": "1"
+          }
+        },
+        {
+          "id": "eq58",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "mode_rotate"
+          }
+        },
+        {
+          "id": "name58",
+          "kind": "branch"
+        },
+        {
+          "id": "call58",
+          "kind": "call",
+          "function": "self:SetGizmoMode",
+          "defaults": {
+            "Mode": "2"
+          }
+        },
+        {
+          "id": "eq59",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "mode_scale"
+          }
+        },
+        {
+          "id": "name59",
+          "kind": "branch"
+        },
+        {
+          "id": "call59",
+          "kind": "call",
+          "function": "self:SetGizmoMode",
+          "defaults": {
+            "Mode": "3"
+          }
+        },
+        {
+          "id": "eq60",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "gimbal"
+          }
+        },
+        {
+          "id": "name60",
+          "kind": "branch"
+        },
+        {
+          "id": "call60",
           "kind": "call",
           "function": "self:CycleGizmoMode",
           "defaults": {}
@@ -15687,7 +18312,7 @@
         {
           "id": "catalogcommunity_fetchrun",
           "kind": "call",
-          "function": "self:StartCommunityFetch",
+          "function": "self:ImportCommunityCode",
           "defaults": {}
         },
         {
@@ -17664,6 +20289,70 @@
         ],
         [
           "event.EventName",
+          "eq57.A"
+        ],
+        [
+          "eq57.ReturnValue",
+          "name57.Condition"
+        ],
+        [
+          "name56.else",
+          "name57.execute"
+        ],
+        [
+          "name57.then",
+          "call57.execute"
+        ],
+        [
+          "event.EventName",
+          "eq58.A"
+        ],
+        [
+          "eq58.ReturnValue",
+          "name58.Condition"
+        ],
+        [
+          "name57.else",
+          "name58.execute"
+        ],
+        [
+          "name58.then",
+          "call58.execute"
+        ],
+        [
+          "event.EventName",
+          "eq59.A"
+        ],
+        [
+          "eq59.ReturnValue",
+          "name59.Condition"
+        ],
+        [
+          "name58.else",
+          "name59.execute"
+        ],
+        [
+          "name59.then",
+          "call59.execute"
+        ],
+        [
+          "event.EventName",
+          "eq60.A"
+        ],
+        [
+          "eq60.ReturnValue",
+          "name60.Condition"
+        ],
+        [
+          "name59.else",
+          "name60.execute"
+        ],
+        [
+          "name60.then",
+          "call60.execute"
+        ],
+        [
+          "event.EventName",
           "setting0eq.A"
         ],
         [
@@ -17675,7 +20364,7 @@
           "setting0apply.Value"
         ],
         [
-          "name56.else",
+          "name60.else",
           "setting0.execute"
         ],
         [
@@ -19815,51 +22504,6 @@
           "var": "StructureEnabled"
         },
         {
-          "id": "getActivePanel",
-          "kind": "get",
-          "var": "ActivePanel"
-        },
-        {
-          "id": "tabCatalog",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
-          "defaults": {
-            "B": "catalog"
-          }
-        },
-        {
-          "id": "tabStoreroom",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
-          "defaults": {
-            "B": "storeroom"
-          }
-        },
-        {
-          "id": "tabCompositions",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
-          "defaults": {
-            "B": "compositions"
-          }
-        },
-        {
-          "id": "tabCommunity",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
-          "defaults": {
-            "B": "community"
-          }
-        },
-        {
-          "id": "tabLayouts",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
-          "defaults": {
-            "B": "layouts"
-          }
-        },
-        {
           "id": "styleMagnet",
           "kind": "call",
           "function": "self:StyleEditorToggle",
@@ -19965,109 +22609,10 @@
           "var": "/DenDesignerGF/Editor/WBP_DenToolbar:LockLabel"
         },
         {
-          "id": "styleCatalog",
+          "id": "rail",
           "kind": "call",
-          "function": "self:StyleEditorToggle",
+          "function": "self:RefreshEditorRail",
           "defaults": {}
-        },
-        {
-          "id": "styleCatalogback",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:CatalogBack"
-        },
-        {
-          "id": "styleCatalogicon",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:CatalogIcon"
-        },
-        {
-          "id": "styleCataloglabel",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:CatalogLabel"
-        },
-        {
-          "id": "styleStoreroom",
-          "kind": "call",
-          "function": "self:StyleEditorToggle",
-          "defaults": {}
-        },
-        {
-          "id": "styleStoreroomback",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:StoreroomBack"
-        },
-        {
-          "id": "styleStoreroomicon",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:StoreroomIcon"
-        },
-        {
-          "id": "styleStoreroomlabel",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:StoreroomLabel"
-        },
-        {
-          "id": "styleCompositions",
-          "kind": "call",
-          "function": "self:StyleEditorToggle",
-          "defaults": {}
-        },
-        {
-          "id": "styleCompositionsback",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:CompositionsBack"
-        },
-        {
-          "id": "styleCompositionsicon",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:CompositionsIcon"
-        },
-        {
-          "id": "styleCompositionslabel",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:CompositionsLabel"
-        },
-        {
-          "id": "styleCommunity",
-          "kind": "call",
-          "function": "self:StyleEditorToggle",
-          "defaults": {}
-        },
-        {
-          "id": "styleCommunityback",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:CommunityBack"
-        },
-        {
-          "id": "styleCommunityicon",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:CommunityIcon"
-        },
-        {
-          "id": "styleCommunitylabel",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:CommunityLabel"
-        },
-        {
-          "id": "styleLayouts",
-          "kind": "call",
-          "function": "self:StyleEditorToggle",
-          "defaults": {}
-        },
-        {
-          "id": "styleLayoutsback",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:LayoutsBack"
-        },
-        {
-          "id": "styleLayoutsicon",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:LayoutsIcon"
-        },
-        {
-          "id": "styleLayoutslabel",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:LayoutsLabel"
         },
         {
           "id": "modes",
@@ -20428,26 +22973,6 @@
           "gridon.A"
         ],
         [
-          "getActivePanel.ActivePanel",
-          "tabCatalog.A"
-        ],
-        [
-          "getActivePanel.ActivePanel",
-          "tabStoreroom.A"
-        ],
-        [
-          "getActivePanel.ActivePanel",
-          "tabCompositions.A"
-        ],
-        [
-          "getActivePanel.ActivePanel",
-          "tabCommunity.A"
-        ],
-        [
-          "getActivePanel.ActivePanel",
-          "tabLayouts.A"
-        ],
-        [
           "getToolbar.Toolbar",
           "styleMagnetback.self"
         ],
@@ -20608,167 +23133,11 @@
           "styleLock.execute"
         ],
         [
-          "getToolbar.Toolbar",
-          "styleCatalogback.self"
-        ],
-        [
-          "getToolbar.Toolbar",
-          "styleCatalogicon.self"
-        ],
-        [
-          "getToolbar.Toolbar",
-          "styleCataloglabel.self"
-        ],
-        [
-          "styleCatalogback.CatalogBack",
-          "styleCatalog.Back"
-        ],
-        [
-          "styleCatalogicon.CatalogIcon",
-          "styleCatalog.Icon"
-        ],
-        [
-          "styleCataloglabel.CatalogLabel",
-          "styleCatalog.Label"
-        ],
-        [
-          "tabCatalog.ReturnValue",
-          "styleCatalog.On"
-        ],
-        [
           "styleLock.then",
-          "styleCatalog.execute"
+          "rail.execute"
         ],
         [
-          "getToolbar.Toolbar",
-          "styleStoreroomback.self"
-        ],
-        [
-          "getToolbar.Toolbar",
-          "styleStoreroomicon.self"
-        ],
-        [
-          "getToolbar.Toolbar",
-          "styleStoreroomlabel.self"
-        ],
-        [
-          "styleStoreroomback.StoreroomBack",
-          "styleStoreroom.Back"
-        ],
-        [
-          "styleStoreroomicon.StoreroomIcon",
-          "styleStoreroom.Icon"
-        ],
-        [
-          "styleStoreroomlabel.StoreroomLabel",
-          "styleStoreroom.Label"
-        ],
-        [
-          "tabStoreroom.ReturnValue",
-          "styleStoreroom.On"
-        ],
-        [
-          "styleCatalog.then",
-          "styleStoreroom.execute"
-        ],
-        [
-          "getToolbar.Toolbar",
-          "styleCompositionsback.self"
-        ],
-        [
-          "getToolbar.Toolbar",
-          "styleCompositionsicon.self"
-        ],
-        [
-          "getToolbar.Toolbar",
-          "styleCompositionslabel.self"
-        ],
-        [
-          "styleCompositionsback.CompositionsBack",
-          "styleCompositions.Back"
-        ],
-        [
-          "styleCompositionsicon.CompositionsIcon",
-          "styleCompositions.Icon"
-        ],
-        [
-          "styleCompositionslabel.CompositionsLabel",
-          "styleCompositions.Label"
-        ],
-        [
-          "tabCompositions.ReturnValue",
-          "styleCompositions.On"
-        ],
-        [
-          "styleStoreroom.then",
-          "styleCompositions.execute"
-        ],
-        [
-          "getToolbar.Toolbar",
-          "styleCommunityback.self"
-        ],
-        [
-          "getToolbar.Toolbar",
-          "styleCommunityicon.self"
-        ],
-        [
-          "getToolbar.Toolbar",
-          "styleCommunitylabel.self"
-        ],
-        [
-          "styleCommunityback.CommunityBack",
-          "styleCommunity.Back"
-        ],
-        [
-          "styleCommunityicon.CommunityIcon",
-          "styleCommunity.Icon"
-        ],
-        [
-          "styleCommunitylabel.CommunityLabel",
-          "styleCommunity.Label"
-        ],
-        [
-          "tabCommunity.ReturnValue",
-          "styleCommunity.On"
-        ],
-        [
-          "styleCompositions.then",
-          "styleCommunity.execute"
-        ],
-        [
-          "getToolbar.Toolbar",
-          "styleLayoutsback.self"
-        ],
-        [
-          "getToolbar.Toolbar",
-          "styleLayoutsicon.self"
-        ],
-        [
-          "getToolbar.Toolbar",
-          "styleLayoutslabel.self"
-        ],
-        [
-          "styleLayoutsback.LayoutsBack",
-          "styleLayouts.Back"
-        ],
-        [
-          "styleLayoutsicon.LayoutsIcon",
-          "styleLayouts.Icon"
-        ],
-        [
-          "styleLayoutslabel.LayoutsLabel",
-          "styleLayouts.Label"
-        ],
-        [
-          "tabLayouts.ReturnValue",
-          "styleLayouts.On"
-        ],
-        [
-          "styleCommunity.then",
-          "styleLayouts.execute"
-        ],
-        [
-          "styleLayouts.then",
+          "rail.then",
           "modes.execute"
         ],
         [
@@ -45657,6 +48026,229 @@
       ]
     },
     {
+      "name": "CancelPlacement",
+      "nodes": [
+        {
+          "id": "stop",
+          "kind": "set",
+          "var": "PlacementActive",
+          "defaults": {
+            "PlacementActive": "false"
+          }
+        },
+        {
+          "id": "pose",
+          "kind": "set",
+          "var": "PlacementPoseValid",
+          "defaults": {
+            "PlacementPoseValid": "false"
+          }
+        },
+        {
+          "id": "getPlacementJob",
+          "kind": "get",
+          "var": "PlacementJob"
+        },
+        {
+          "id": "PlacementJobcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "PlacementJobvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "PlacementJobdestroy",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:K2_DestroyActor",
+          "defaults": {}
+        },
+        {
+          "id": "PlacementJobclear",
+          "kind": "set",
+          "var": "PlacementJob"
+        },
+        {
+          "id": "getPlacementGhost",
+          "kind": "get",
+          "var": "PlacementGhost"
+        },
+        {
+          "id": "PlacementGhostcheck",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "PlacementGhostvalid",
+          "kind": "branch"
+        },
+        {
+          "id": "PlacementGhostdestroy",
+          "kind": "call",
+          "function": "/Script/Engine.Actor:K2_DestroyActor",
+          "defaults": {}
+        },
+        {
+          "id": "PlacementGhostclear",
+          "kind": "set",
+          "var": "PlacementGhost"
+        },
+        {
+          "id": "PlacementMeshclear",
+          "kind": "set",
+          "var": "PlacementMesh"
+        },
+        {
+          "id": "PlacementPathclear",
+          "kind": "set",
+          "var": "PlacementPath"
+        },
+        {
+          "id": "PlacementEntryclear",
+          "kind": "set",
+          "var": "PlacementEntry"
+        },
+        {
+          "id": "PlacementIndexclear",
+          "kind": "set",
+          "var": "PlacementIndex"
+        },
+        {
+          "id": "SelectionMessageclear",
+          "kind": "set",
+          "var": "SelectionMessage"
+        },
+        {
+          "id": "getRailAutoFold",
+          "kind": "get",
+          "var": "RailAutoFold"
+        },
+        {
+          "id": "folded",
+          "kind": "branch"
+        },
+        {
+          "id": "unfold",
+          "kind": "set",
+          "var": "RailAutoFold",
+          "defaults": {
+            "RailAutoFold": "false"
+          }
+        },
+        {
+          "id": "rail",
+          "kind": "call",
+          "function": "self:RefreshEditorRail",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getPlacementJob.PlacementJob",
+          "PlacementJobcheck.Object"
+        ],
+        [
+          "PlacementJobcheck.ReturnValue",
+          "PlacementJobvalid.Condition"
+        ],
+        [
+          "getPlacementJob.PlacementJob",
+          "PlacementJobdestroy.self"
+        ],
+        [
+          "pose.then",
+          "PlacementJobvalid.execute"
+        ],
+        [
+          "PlacementJobvalid.then",
+          "PlacementJobdestroy.execute"
+        ],
+        [
+          "PlacementJobdestroy.then",
+          "PlacementJobclear.execute"
+        ],
+        [
+          "PlacementJobvalid.else",
+          "PlacementJobclear.execute"
+        ],
+        [
+          "getPlacementGhost.PlacementGhost",
+          "PlacementGhostcheck.Object"
+        ],
+        [
+          "PlacementGhostcheck.ReturnValue",
+          "PlacementGhostvalid.Condition"
+        ],
+        [
+          "getPlacementGhost.PlacementGhost",
+          "PlacementGhostdestroy.self"
+        ],
+        [
+          "PlacementJobclear.then",
+          "PlacementGhostvalid.execute"
+        ],
+        [
+          "PlacementGhostvalid.then",
+          "PlacementGhostdestroy.execute"
+        ],
+        [
+          "PlacementGhostdestroy.then",
+          "PlacementGhostclear.execute"
+        ],
+        [
+          "PlacementGhostvalid.else",
+          "PlacementGhostclear.execute"
+        ],
+        [
+          "PlacementGhostclear.then",
+          "PlacementMeshclear.execute"
+        ],
+        [
+          "PlacementMeshclear.then",
+          "PlacementPathclear.execute"
+        ],
+        [
+          "PlacementPathclear.then",
+          "PlacementEntryclear.execute"
+        ],
+        [
+          "PlacementEntryclear.then",
+          "PlacementIndexclear.execute"
+        ],
+        [
+          "PlacementIndexclear.then",
+          "SelectionMessageclear.execute"
+        ],
+        [
+          "getRailAutoFold.RailAutoFold",
+          "folded.Condition"
+        ],
+        [
+          "SelectionMessageclear.then",
+          "folded.execute"
+        ],
+        [
+          "folded.then",
+          "unfold.execute"
+        ],
+        [
+          "unfold.then",
+          "rail.execute"
+        ],
+        [
+          "entry.then",
+          "stop.execute"
+        ],
+        [
+          "stop.then",
+          "pose.execute"
+        ]
+      ]
+    },
+    {
       "name": "ChooseCatalogItem",
       "inputs": [
         {
@@ -46021,6 +48613,20 @@
           "kind": "call",
           "function": "self:CancelPlacement",
           "defaults": {}
+        },
+        {
+          "id": "fold",
+          "kind": "set",
+          "var": "RailAutoFold",
+          "defaults": {
+            "RailAutoFold": "true"
+          }
+        },
+        {
+          "id": "rail",
+          "kind": "call",
+          "function": "self:RefreshEditorRail",
+          "defaults": {}
         }
       ],
       "links": [
@@ -46351,6 +48957,14 @@
         [
           "focus.then",
           "message.execute"
+        ],
+        [
+          "message.then",
+          "fold.execute"
+        ],
+        [
+          "fold.then",
+          "rail.execute"
         ],
         [
           "accepted.else",
@@ -48980,6 +51594,375 @@
         [
           "more.else",
           "stop.execute"
+        ]
+      ]
+    },
+    {
+      "name": "RefreshStoreroomLabels",
+      "nodes": [
+        {
+          "id": "getStoreroomPanel",
+          "kind": "get",
+          "var": "StoreroomPanel"
+        },
+        {
+          "id": "valid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "panel",
+          "kind": "branch"
+        },
+        {
+          "id": "getStoredRows",
+          "kind": "get",
+          "var": "StoredRows"
+        },
+        {
+          "id": "shown",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "getDormantRows",
+          "kind": "get",
+          "var": "DormantRows"
+        },
+        {
+          "id": "dormant",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
+          "defaults": {}
+        },
+        {
+          "id": "shownstr",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Conv_IntToString",
+          "defaults": {}
+        },
+        {
+          "id": "getStoreTotal",
+          "kind": "get",
+          "var": "StoreTotal"
+        },
+        {
+          "id": "total",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Conv_IntToString",
+          "defaults": {}
+        },
+        {
+          "id": "ofprefix",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "A": " of "
+          }
+        },
+        {
+          "id": "suffix",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "A": " stored props \u00b7 Click one to restore it.",
+            "B": ""
+          }
+        },
+        {
+          "id": "of",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "caption",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {}
+        },
+        {
+          "id": "none",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "empty",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectString",
+          "defaults": {
+            "A": "Your Storeroom is empty. Select a prop and choose Store to keep it here."
+          }
+        },
+        {
+          "id": "storedwidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenStoreroom:StoredText"
+        },
+        {
+          "id": "stored",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {}
+        },
+        {
+          "id": "dormantstr",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Conv_IntToString",
+          "defaults": {}
+        },
+        {
+          "id": "dormantcaption",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "defaults": {
+            "B": " edits could not be applied in this Den. They remain in your layout. Click one to forget it; Undo can bring it back."
+          }
+        },
+        {
+          "id": "allfound",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "resolved",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectString",
+          "defaults": {
+            "A": "Every edit in this layout found its object."
+          }
+        },
+        {
+          "id": "missingwidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenStoreroom:DormantText"
+        },
+        {
+          "id": "missing",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {}
+        },
+        {
+          "id": "getStoreMessage",
+          "kind": "get",
+          "var": "StoreMessage"
+        },
+        {
+          "id": "footerwidget",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenStoreroom:Footer"
+        },
+        {
+          "id": "footer",
+          "kind": "call",
+          "function": "/Script/UMG.TextBlock:SetText",
+          "defaults": {}
+        },
+        {
+          "id": "restoreall",
+          "kind": "get",
+          "var": "/DenDesignerGF/Editor/WBP_DenStoreroom:RestoreAll"
+        },
+        {
+          "id": "any",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "button",
+          "kind": "call",
+          "function": "/Script/UMG.Widget:SetIsEnabled",
+          "defaults": {}
+        },
+        {
+          "id": "getStoreSeenVersion",
+          "kind": "get",
+          "var": "StoreSeenVersion"
+        },
+        {
+          "id": "countversion",
+          "kind": "set",
+          "var": "StoreCountVersion"
+        },
+        {
+          "id": "rail",
+          "kind": "call",
+          "function": "self:RefreshEditorRail",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getStoreroomPanel.StoreroomPanel",
+          "valid.Object"
+        ],
+        [
+          "valid.ReturnValue",
+          "panel.Condition"
+        ],
+        [
+          "getStoredRows.StoredRows",
+          "shown.TargetArray"
+        ],
+        [
+          "getDormantRows.DormantRows",
+          "dormant.TargetArray"
+        ],
+        [
+          "shown.ReturnValue",
+          "shownstr.InInt"
+        ],
+        [
+          "getStoreTotal.StoreTotal",
+          "total.InInt"
+        ],
+        [
+          "total.ReturnValue",
+          "ofprefix.B"
+        ],
+        [
+          "ofprefix.ReturnValue",
+          "of.A"
+        ],
+        [
+          "suffix.ReturnValue",
+          "of.B"
+        ],
+        [
+          "shownstr.ReturnValue",
+          "caption.A"
+        ],
+        [
+          "of.ReturnValue",
+          "caption.B"
+        ],
+        [
+          "getStoreTotal.StoreTotal",
+          "none.A"
+        ],
+        [
+          "caption.ReturnValue",
+          "empty.B"
+        ],
+        [
+          "none.ReturnValue",
+          "empty.bPickA"
+        ],
+        [
+          "getStoreroomPanel.StoreroomPanel",
+          "storedwidget.self"
+        ],
+        [
+          "storedwidget.StoredText",
+          "stored.self"
+        ],
+        [
+          "empty.ReturnValue",
+          "stored.InText"
+        ],
+        [
+          "dormant.ReturnValue",
+          "dormantstr.InInt"
+        ],
+        [
+          "dormantstr.ReturnValue",
+          "dormantcaption.A"
+        ],
+        [
+          "dormant.ReturnValue",
+          "allfound.A"
+        ],
+        [
+          "dormantcaption.ReturnValue",
+          "resolved.B"
+        ],
+        [
+          "allfound.ReturnValue",
+          "resolved.bPickA"
+        ],
+        [
+          "getStoreroomPanel.StoreroomPanel",
+          "missingwidget.self"
+        ],
+        [
+          "missingwidget.DormantText",
+          "missing.self"
+        ],
+        [
+          "resolved.ReturnValue",
+          "missing.InText"
+        ],
+        [
+          "getStoreroomPanel.StoreroomPanel",
+          "footerwidget.self"
+        ],
+        [
+          "footerwidget.Footer",
+          "footer.self"
+        ],
+        [
+          "getStoreMessage.StoreMessage",
+          "footer.InText"
+        ],
+        [
+          "getStoreroomPanel.StoreroomPanel",
+          "restoreall.self"
+        ],
+        [
+          "getStoreTotal.StoreTotal",
+          "any.A"
+        ],
+        [
+          "restoreall.RestoreAll",
+          "button.self"
+        ],
+        [
+          "any.ReturnValue",
+          "button.bInIsEnabled"
+        ],
+        [
+          "getStoreSeenVersion.StoreSeenVersion",
+          "countversion.StoreCountVersion"
+        ],
+        [
+          "entry.then",
+          "panel.execute"
+        ],
+        [
+          "panel.then",
+          "stored.execute"
+        ],
+        [
+          "stored.then",
+          "missing.execute"
+        ],
+        [
+          "missing.then",
+          "footer.execute"
+        ],
+        [
+          "footer.then",
+          "button.execute"
+        ],
+        [
+          "button.then",
+          "countversion.execute"
+        ],
+        [
+          "countversion.then",
+          "rail.execute"
         ]
       ]
     },
@@ -55817,6 +58800,27 @@
           "var": "SnapGuidesEnabled"
         },
         {
+          "id": "rail_labels",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
+          "defaults": {
+            "Key": "rail_labels"
+          }
+        },
+        {
+          "id": "rail_labelsvalue",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "true"
+          }
+        },
+        {
+          "id": "rail_labelsapply",
+          "kind": "set",
+          "var": "RailLabels"
+        },
+        {
           "id": "snap",
           "kind": "call",
           "function": "/DenDesignerGF/Runtime/BP_DenPreferencesSave:ReadPreference",
@@ -56455,6 +59459,26 @@
         ],
         [
           "getPreferencesDocument.PreferencesDocument",
+          "rail_labels.self"
+        ],
+        [
+          "rail_labels.Value",
+          "rail_labelsvalue.A"
+        ],
+        [
+          "rail_labelsvalue.ReturnValue",
+          "rail_labelsapply.RailLabels"
+        ],
+        [
+          "snap_guidesapply.then",
+          "rail_labels.execute"
+        ],
+        [
+          "rail_labels.then",
+          "rail_labelsapply.execute"
+        ],
+        [
+          "getPreferencesDocument.PreferencesDocument",
           "snap.self"
         ],
         [
@@ -56466,7 +59490,7 @@
           "snapapply.GridStep"
         ],
         [
-          "snap_guidesapply.then",
+          "rail_labelsapply.then",
           "snap.execute"
         ],
         [
@@ -70715,22 +73739,6 @@
           "type": "bool"
         }
       ],
-      "locals": [
-        {
-          "name": "Cursor",
-          "type": "int",
-          "default": "0"
-        },
-        {
-          "name": "InLibrary",
-          "type": "bool",
-          "default": "false"
-        },
-        {
-          "name": "Names",
-          "type": "string[]"
-        }
-      ],
       "nodes": [
         {
           "id": "ensure",
@@ -70744,154 +73752,35 @@
           "var": "CompositionService"
         },
         {
-          "id": "list",
+          "id": "coded",
           "kind": "call",
-          "function": "/DenDesignerGF/Runtime/BP_DenPresets:ListPresets",
+          "function": "/DenDesignerGF/Runtime/BP_DenPresets:FindShareCode",
           "defaults": {}
         },
         {
-          "id": "names",
-          "kind": "set",
-          "var": "local:Names"
-        },
-        {
-          "id": "i",
-          "kind": "get",
-          "var": "local:Cursor"
-        },
-        {
-          "id": "all",
-          "kind": "get",
-          "var": "local:Names"
-        },
-        {
-          "id": "count",
-          "kind": "array_call",
-          "function": "/Script/Engine.KismetArrayLibrary:Array_Length",
-          "defaults": {}
-        },
-        {
-          "id": "within",
+          "id": "hascode",
           "kind": "call",
-          "function": "/Script/Engine.KismetMathLibrary:Less_IntInt",
-          "defaults": {}
-        },
-        {
-          "id": "more",
-          "kind": "branch"
-        },
-        {
-          "id": "name",
-          "kind": "array_call",
-          "function": "/Script/Engine.KismetArrayLibrary:Array_Get",
-          "defaults": {}
-        },
-        {
-          "id": "spaced",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
           "defaults": {
-            "A": " "
+            "B": "0"
           }
-        },
-        {
-          "id": "contains",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Contains",
-          "defaults": {
-            "bUseCase": "false"
-          }
-        },
-        {
-          "id": "match",
-          "kind": "branch"
-        },
-        {
-          "id": "inc",
-          "kind": "call",
-          "function": "/Script/Engine.KismetMathLibrary:Add_IntInt",
-          "defaults": {
-            "B": "1"
-          }
-        },
-        {
-          "id": "next",
-          "kind": "set",
-          "var": "local:Cursor"
-        },
-        {
-          "id": "yes",
-          "kind": "set",
-          "var": "local:InLibrary",
-          "defaults": {
-            "InLibrary": "true"
-          }
-        },
-        {
-          "id": "found",
-          "kind": "get",
-          "var": "local:InLibrary"
         }
       ],
       "links": [
         [
           "getCompositionService.CompositionService",
-          "list.self"
-        ],
-        [
-          "list.Names",
-          "names.Names"
-        ],
-        [
-          "all.Names",
-          "count.TargetArray"
-        ],
-        [
-          "i.Cursor",
-          "within.A"
-        ],
-        [
-          "count.ReturnValue",
-          "within.B"
-        ],
-        [
-          "within.ReturnValue",
-          "more.Condition"
-        ],
-        [
-          "all.Names",
-          "name.TargetArray"
-        ],
-        [
-          "i.Cursor",
-          "name.Index"
+          "coded.self"
         ],
         [
           "entry.Code",
-          "spaced.B"
+          "coded.Code"
         ],
         [
-          "name.Item",
-          "contains.SearchIn"
+          "coded.Index",
+          "hascode.A"
         ],
         [
-          "spaced.ReturnValue",
-          "contains.Substring"
-        ],
-        [
-          "contains.ReturnValue",
-          "match.Condition"
-        ],
-        [
-          "i.Cursor",
-          "inc.A"
-        ],
-        [
-          "inc.ReturnValue",
-          "next.Cursor"
-        ],
-        [
-          "found.InLibrary",
+          "hascode.ReturnValue",
           "result.Found"
         ],
         [
@@ -70900,38 +73789,10 @@
         ],
         [
           "ensure.then",
-          "list.execute"
+          "coded.execute"
         ],
         [
-          "list.then",
-          "names.execute"
-        ],
-        [
-          "names.then",
-          "more.execute"
-        ],
-        [
-          "more.then",
-          "match.execute"
-        ],
-        [
-          "match.then",
-          "yes.execute"
-        ],
-        [
-          "yes.then",
-          "result.execute"
-        ],
-        [
-          "match.else",
-          "next.execute"
-        ],
-        [
-          "next.then",
-          "more.execute"
-        ],
-        [
-          "more.else",
+          "coded.then",
           "result.execute"
         ]
       ]
@@ -72728,6 +75589,12 @@
           "kind": "call",
           "function": "self:RefreshHolonetShare",
           "defaults": {}
+        },
+        {
+          "id": "rail",
+          "kind": "call",
+          "function": "self:RefreshEditorRail",
+          "defaults": {}
         }
       ],
       "links": [
@@ -72814,6 +75681,10 @@
         [
           "pill.then",
           "share.execute"
+        ],
+        [
+          "share.then",
+          "rail.execute"
         ]
       ]
     },
@@ -73208,149 +76079,10 @@
           "outputs": 1
         },
         {
-          "id": "onRailCompositions",
+          "id": "rail",
           "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
-          "defaults": {
-            "B": "browse"
-          }
-        },
-        {
-          "id": "railRailCompositions",
-          "kind": "call",
-          "function": "self:StyleEditorToggle",
+          "function": "self:RefreshEditorRail",
           "defaults": {}
-        },
-        {
-          "id": "railRailCompositionsback",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:RailCompositionsBack"
-        },
-        {
-          "id": "railRailCompositionsicon",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:RailCompositionsIcon"
-        },
-        {
-          "id": "railRailCompositionslabel",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:RailCompositionsLabel"
-        },
-        {
-          "id": "onRailDens",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
-          "defaults": {
-            "B": "browse_dens"
-          }
-        },
-        {
-          "id": "railRailDens",
-          "kind": "call",
-          "function": "self:StyleEditorToggle",
-          "defaults": {}
-        },
-        {
-          "id": "railRailDensback",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:RailDensBack"
-        },
-        {
-          "id": "railRailDensicon",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:RailDensIcon"
-        },
-        {
-          "id": "railRailDenslabel",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:RailDensLabel"
-        },
-        {
-          "id": "onRailShare",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
-          "defaults": {
-            "B": "upload"
-          }
-        },
-        {
-          "id": "railRailShare",
-          "kind": "call",
-          "function": "self:StyleEditorToggle",
-          "defaults": {}
-        },
-        {
-          "id": "railRailShareback",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:RailShareBack"
-        },
-        {
-          "id": "railRailShareicon",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:RailShareIcon"
-        },
-        {
-          "id": "railRailSharelabel",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:RailShareLabel"
-        },
-        {
-          "id": "onRailShares",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
-          "defaults": {
-            "B": "shares"
-          }
-        },
-        {
-          "id": "railRailShares",
-          "kind": "call",
-          "function": "self:StyleEditorToggle",
-          "defaults": {}
-        },
-        {
-          "id": "railRailSharesback",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:RailSharesBack"
-        },
-        {
-          "id": "railRailSharesicon",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:RailSharesIcon"
-        },
-        {
-          "id": "railRailShareslabel",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:RailSharesLabel"
-        },
-        {
-          "id": "onRailAccount",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
-          "defaults": {
-            "B": "account"
-          }
-        },
-        {
-          "id": "railRailAccount",
-          "kind": "call",
-          "function": "self:StyleEditorToggle",
-          "defaults": {}
-        },
-        {
-          "id": "railRailAccountback",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:RailAccountBack"
-        },
-        {
-          "id": "railRailAccounticon",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:RailAccountIcon"
-        },
-        {
-          "id": "railRailAccountlabel",
-          "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:RailAccountLabel"
         },
         {
           "id": "subtitledefault",
@@ -73721,184 +76453,8 @@
           "AccountAreadone.execute"
         ],
         [
-          "entry.Area",
-          "onRailCompositions.A"
-        ],
-        [
-          "getCommunityPanel.CommunityPanel",
-          "railRailCompositionsback.self"
-        ],
-        [
-          "getCommunityPanel.CommunityPanel",
-          "railRailCompositionsicon.self"
-        ],
-        [
-          "getCommunityPanel.CommunityPanel",
-          "railRailCompositionslabel.self"
-        ],
-        [
-          "railRailCompositionsback.RailCompositionsBack",
-          "railRailCompositions.Back"
-        ],
-        [
-          "railRailCompositionsicon.RailCompositionsIcon",
-          "railRailCompositions.Icon"
-        ],
-        [
-          "railRailCompositionslabel.RailCompositionsLabel",
-          "railRailCompositions.Label"
-        ],
-        [
-          "onRailCompositions.ReturnValue",
-          "railRailCompositions.On"
-        ],
-        [
           "AccountAreadone.then_0",
-          "railRailCompositions.execute"
-        ],
-        [
-          "entry.Area",
-          "onRailDens.A"
-        ],
-        [
-          "getCommunityPanel.CommunityPanel",
-          "railRailDensback.self"
-        ],
-        [
-          "getCommunityPanel.CommunityPanel",
-          "railRailDensicon.self"
-        ],
-        [
-          "getCommunityPanel.CommunityPanel",
-          "railRailDenslabel.self"
-        ],
-        [
-          "railRailDensback.RailDensBack",
-          "railRailDens.Back"
-        ],
-        [
-          "railRailDensicon.RailDensIcon",
-          "railRailDens.Icon"
-        ],
-        [
-          "railRailDenslabel.RailDensLabel",
-          "railRailDens.Label"
-        ],
-        [
-          "onRailDens.ReturnValue",
-          "railRailDens.On"
-        ],
-        [
-          "railRailCompositions.then",
-          "railRailDens.execute"
-        ],
-        [
-          "entry.Area",
-          "onRailShare.A"
-        ],
-        [
-          "getCommunityPanel.CommunityPanel",
-          "railRailShareback.self"
-        ],
-        [
-          "getCommunityPanel.CommunityPanel",
-          "railRailShareicon.self"
-        ],
-        [
-          "getCommunityPanel.CommunityPanel",
-          "railRailSharelabel.self"
-        ],
-        [
-          "railRailShareback.RailShareBack",
-          "railRailShare.Back"
-        ],
-        [
-          "railRailShareicon.RailShareIcon",
-          "railRailShare.Icon"
-        ],
-        [
-          "railRailSharelabel.RailShareLabel",
-          "railRailShare.Label"
-        ],
-        [
-          "onRailShare.ReturnValue",
-          "railRailShare.On"
-        ],
-        [
-          "railRailDens.then",
-          "railRailShare.execute"
-        ],
-        [
-          "entry.Area",
-          "onRailShares.A"
-        ],
-        [
-          "getCommunityPanel.CommunityPanel",
-          "railRailSharesback.self"
-        ],
-        [
-          "getCommunityPanel.CommunityPanel",
-          "railRailSharesicon.self"
-        ],
-        [
-          "getCommunityPanel.CommunityPanel",
-          "railRailShareslabel.self"
-        ],
-        [
-          "railRailSharesback.RailSharesBack",
-          "railRailShares.Back"
-        ],
-        [
-          "railRailSharesicon.RailSharesIcon",
-          "railRailShares.Icon"
-        ],
-        [
-          "railRailShareslabel.RailSharesLabel",
-          "railRailShares.Label"
-        ],
-        [
-          "onRailShares.ReturnValue",
-          "railRailShares.On"
-        ],
-        [
-          "railRailShare.then",
-          "railRailShares.execute"
-        ],
-        [
-          "entry.Area",
-          "onRailAccount.A"
-        ],
-        [
-          "getCommunityPanel.CommunityPanel",
-          "railRailAccountback.self"
-        ],
-        [
-          "getCommunityPanel.CommunityPanel",
-          "railRailAccounticon.self"
-        ],
-        [
-          "getCommunityPanel.CommunityPanel",
-          "railRailAccountlabel.self"
-        ],
-        [
-          "railRailAccountback.RailAccountBack",
-          "railRailAccount.Back"
-        ],
-        [
-          "railRailAccounticon.RailAccountIcon",
-          "railRailAccount.Icon"
-        ],
-        [
-          "railRailAccountlabel.RailAccountLabel",
-          "railRailAccount.Label"
-        ],
-        [
-          "onRailAccount.ReturnValue",
-          "railRailAccount.On"
-        ],
-        [
-          "railRailShares.then",
-          "railRailAccount.execute"
+          "rail.execute"
         ],
         [
           "entry.Area",
@@ -73961,7 +76517,7 @@
           "subtitle.InText"
         ],
         [
-          "railRailAccount.then",
+          "rail.then",
           "subtitle.execute"
         ],
         [
@@ -73999,6 +76555,535 @@
         [
           "shares.then",
           "loadshares.execute"
+        ]
+      ]
+    },
+    {
+      "name": "OpenHolonetArea",
+      "inputs": [
+        {
+          "name": "Area",
+          "type": "string"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "remember",
+          "kind": "set",
+          "var": "CommunityArea"
+        },
+        {
+          "id": "getActivePanel",
+          "kind": "get",
+          "var": "ActivePanel"
+        },
+        {
+          "id": "isopen",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "community"
+          }
+        },
+        {
+          "id": "open",
+          "kind": "branch"
+        },
+        {
+          "id": "area",
+          "kind": "call",
+          "function": "self:SetCommunityArea",
+          "defaults": {}
+        },
+        {
+          "id": "panel",
+          "kind": "call",
+          "function": "self:SetEditorPanel",
+          "defaults": {
+            "Name": "community"
+          }
+        }
+      ],
+      "links": [
+        [
+          "entry.Area",
+          "remember.CommunityArea"
+        ],
+        [
+          "getActivePanel.ActivePanel",
+          "isopen.A"
+        ],
+        [
+          "isopen.ReturnValue",
+          "open.Condition"
+        ],
+        [
+          "entry.Area",
+          "area.Area"
+        ],
+        [
+          "entry.then",
+          "remember.execute"
+        ],
+        [
+          "remember.then",
+          "open.execute"
+        ],
+        [
+          "open.then",
+          "area.execute"
+        ],
+        [
+          "open.else",
+          "panel.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ImportCommunityCode",
+      "inputs": [
+        {
+          "name": "Input",
+          "type": "string"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "getActivePanel",
+          "kind": "get",
+          "var": "ActivePanel"
+        },
+        {
+          "id": "isopen",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": "community"
+          }
+        },
+        {
+          "id": "open",
+          "kind": "branch"
+        },
+        {
+          "id": "show",
+          "kind": "call",
+          "function": "self:OpenHolonetArea",
+          "defaults": {
+            "Area": "browse"
+          }
+        },
+        {
+          "id": "fetch",
+          "kind": "call",
+          "function": "self:StartCommunityFetch",
+          "defaults": {}
+        },
+        {
+          "id": "getCommunityPending",
+          "kind": "get",
+          "var": "CommunityPending"
+        },
+        {
+          "id": "busy",
+          "kind": "branch"
+        },
+        {
+          "id": "queue",
+          "kind": "set",
+          "var": "CommunityQueuedCode"
+        },
+        {
+          "id": "waiting",
+          "kind": "set",
+          "var": "CommunityMessage",
+          "defaults": {
+            "CommunityMessage": "Importing as soon as HoloNet finishes its current request\u2026"
+          }
+        },
+        {
+          "id": "feedback",
+          "kind": "call",
+          "function": "self:RefreshCommunityFeedback",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getActivePanel.ActivePanel",
+          "isopen.A"
+        ],
+        [
+          "isopen.ReturnValue",
+          "open.Condition"
+        ],
+        [
+          "entry.Input",
+          "fetch.Input"
+        ],
+        [
+          "getCommunityPending.CommunityPending",
+          "busy.Condition"
+        ],
+        [
+          "entry.Input",
+          "queue.CommunityQueuedCode"
+        ],
+        [
+          "entry.then",
+          "open.execute"
+        ],
+        [
+          "open.then",
+          "busy.execute"
+        ],
+        [
+          "busy.then",
+          "queue.execute"
+        ],
+        [
+          "queue.then",
+          "waiting.execute"
+        ],
+        [
+          "waiting.then",
+          "feedback.execute"
+        ],
+        [
+          "open.else",
+          "show.execute"
+        ],
+        [
+          "show.then",
+          "busy.execute"
+        ],
+        [
+          "busy.else",
+          "fetch.execute"
+        ]
+      ]
+    },
+    {
+      "name": "CancelHolonetRequest",
+      "nodes": [
+        {
+          "id": "drop",
+          "kind": "set",
+          "var": "CommunityQueuedCode",
+          "defaults": {
+            "CommunityQueuedCode": ""
+          }
+        },
+        {
+          "id": "cancel",
+          "kind": "call",
+          "function": "self:CancelCommunityFetch",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "entry.then",
+          "drop.execute"
+        ],
+        [
+          "drop.then",
+          "cancel.execute"
+        ]
+      ]
+    },
+    {
+      "name": "PollHolonetPreload",
+      "nodes": [
+        {
+          "id": "getCommunityPending",
+          "kind": "get",
+          "var": "CommunityPending"
+        },
+        {
+          "id": "idle",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:Not_PreBool",
+          "defaults": {}
+        },
+        {
+          "id": "getCommunityQueuedCode",
+          "kind": "get",
+          "var": "CommunityQueuedCode"
+        },
+        {
+          "id": "hasqueue",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:NotEqual_StrStr",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "queuedready0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "queued",
+          "kind": "branch"
+        },
+        {
+          "id": "code",
+          "kind": "get",
+          "var": "CommunityQueuedCode"
+        },
+        {
+          "id": "dequeue",
+          "kind": "set",
+          "var": "CommunityQueuedCode",
+          "defaults": {
+            "CommunityQueuedCode": ""
+          }
+        },
+        {
+          "id": "fetch",
+          "kind": "call",
+          "function": "self:StartCommunityFetch",
+          "defaults": {}
+        },
+        {
+          "id": "ready",
+          "kind": "call",
+          "function": "self:CanEdit",
+          "defaults": {}
+        },
+        {
+          "id": "getUIOpen",
+          "kind": "get",
+          "var": "UIOpen"
+        },
+        {
+          "id": "getHolonetPreload",
+          "kind": "get",
+          "var": "HolonetPreload"
+        },
+        {
+          "id": "first",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "startready0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "startready1",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "startready2",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "start",
+          "kind": "branch"
+        },
+        {
+          "id": "connecting",
+          "kind": "set",
+          "var": "HolonetPreload",
+          "defaults": {
+            "HolonetPreload": "1"
+          }
+        },
+        {
+          "id": "getCommunityProfile",
+          "kind": "get",
+          "var": "CommunityProfile"
+        },
+        {
+          "id": "noprofile",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:EqualEqual_StrStr",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "unknown",
+          "kind": "branch"
+        },
+        {
+          "id": "connect",
+          "kind": "call",
+          "function": "self:StartCommunityFetch",
+          "defaults": {
+            "Input": "CONNECT"
+          }
+        },
+        {
+          "id": "second",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:EqualEqual_IntInt",
+          "defaults": {
+            "B": "1"
+          }
+        },
+        {
+          "id": "connectdone0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
+          "defaults": {}
+        },
+        {
+          "id": "connected",
+          "kind": "branch"
+        },
+        {
+          "id": "done",
+          "kind": "set",
+          "var": "HolonetPreload",
+          "defaults": {
+            "HolonetPreload": "2"
+          }
+        },
+        {
+          "id": "shares",
+          "kind": "call",
+          "function": "self:EnsureHolonetShares",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getCommunityPending.CommunityPending",
+          "idle.A"
+        ],
+        [
+          "getCommunityQueuedCode.CommunityQueuedCode",
+          "hasqueue.A"
+        ],
+        [
+          "idle.ReturnValue",
+          "queuedready0.A"
+        ],
+        [
+          "hasqueue.ReturnValue",
+          "queuedready0.B"
+        ],
+        [
+          "queuedready0.ReturnValue",
+          "queued.Condition"
+        ],
+        [
+          "code.CommunityQueuedCode",
+          "fetch.Input"
+        ],
+        [
+          "getHolonetPreload.HolonetPreload",
+          "first.A"
+        ],
+        [
+          "idle.ReturnValue",
+          "startready0.A"
+        ],
+        [
+          "getUIOpen.UIOpen",
+          "startready0.B"
+        ],
+        [
+          "startready0.ReturnValue",
+          "startready1.A"
+        ],
+        [
+          "ready.Ready",
+          "startready1.B"
+        ],
+        [
+          "startready1.ReturnValue",
+          "startready2.A"
+        ],
+        [
+          "first.ReturnValue",
+          "startready2.B"
+        ],
+        [
+          "startready2.ReturnValue",
+          "start.Condition"
+        ],
+        [
+          "getCommunityProfile.CommunityProfile",
+          "noprofile.A"
+        ],
+        [
+          "noprofile.ReturnValue",
+          "unknown.Condition"
+        ],
+        [
+          "getHolonetPreload.HolonetPreload",
+          "second.A"
+        ],
+        [
+          "idle.ReturnValue",
+          "connectdone0.A"
+        ],
+        [
+          "second.ReturnValue",
+          "connectdone0.B"
+        ],
+        [
+          "connectdone0.ReturnValue",
+          "connected.Condition"
+        ],
+        [
+          "entry.then",
+          "queued.execute"
+        ],
+        [
+          "queued.then",
+          "fetch.execute"
+        ],
+        [
+          "fetch.then",
+          "dequeue.execute"
+        ],
+        [
+          "queued.else",
+          "ready.execute"
+        ],
+        [
+          "ready.then",
+          "start.execute"
+        ],
+        [
+          "start.then",
+          "connecting.execute"
+        ],
+        [
+          "connecting.then",
+          "unknown.execute"
+        ],
+        [
+          "unknown.then",
+          "connect.execute"
+        ],
+        [
+          "start.else",
+          "connected.execute"
+        ],
+        [
+          "connected.then",
+          "done.execute"
+        ],
+        [
+          "done.then",
+          "shares.execute"
         ]
       ]
     },
@@ -77919,17 +81004,9 @@
           "defaults": {}
         },
         {
-          "id": "countprefix",
-          "kind": "call",
-          "function": "/Script/Engine.KismetStringLibrary:Concat_StrStr",
-          "defaults": {
-            "A": "Shares: "
-          }
-        },
-        {
           "id": "known",
           "kind": "call",
-          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "function": "/Script/Engine.KismetMathLibrary:Greater_IntInt",
           "defaults": {
             "B": "0"
           }
@@ -77943,9 +81020,14 @@
           }
         },
         {
+          "id": "getToolbar",
+          "kind": "get",
+          "var": "Toolbar"
+        },
+        {
           "id": "countsetwidget",
           "kind": "get",
-          "var": "/DenDesignerGF/Editor/WBP_DenHolonet:SharesCount"
+          "var": "/DenDesignerGF/Editor/WBP_DenToolbar:RailSharesCount"
         },
         {
           "id": "countset",
@@ -77957,6 +81039,12 @@
           "id": "share",
           "kind": "call",
           "function": "self:RefreshHolonetShare",
+          "defaults": {}
+        },
+        {
+          "id": "railbadge",
+          "kind": "call",
+          "function": "self:RefreshEditorRail",
           "defaults": {}
         },
         {
@@ -77981,6 +81069,16 @@
           "kind": "call",
           "function": "self:MatchHolonetShareTitle",
           "defaults": {}
+        },
+        {
+          "id": "toolbarvalid",
+          "kind": "call",
+          "function": "/Script/Engine.KismetSystemLibrary:IsValid",
+          "defaults": {}
+        },
+        {
+          "id": "toolbar",
+          "kind": "branch"
         }
       ],
       "links": [
@@ -78369,15 +81467,11 @@
           "countnum.InInt"
         ],
         [
-          "countnum.ReturnValue",
-          "countprefix.B"
-        ],
-        [
           "getHolonetSharesTotal.HolonetSharesTotal",
           "known.A"
         ],
         [
-          "countprefix.ReturnValue",
+          "countnum.ReturnValue",
           "counttext.A"
         ],
         [
@@ -78385,11 +81479,11 @@
           "counttext.bPickA"
         ],
         [
-          "getCommunityPanel.CommunityPanel",
+          "getToolbar.Toolbar",
           "countsetwidget.self"
         ],
         [
-          "countsetwidget.SharesCount",
+          "countsetwidget.RailSharesCount",
           "countset.self"
         ],
         [
@@ -78437,6 +81531,14 @@
           "next.execute"
         ],
         [
+          "getToolbar.Toolbar",
+          "toolbarvalid.Object"
+        ],
+        [
+          "toolbarvalid.ReturnValue",
+          "toolbar.Condition"
+        ],
+        [
           "more.else",
           "fresh.execute"
         ],
@@ -78454,10 +81556,18 @@
         ],
         [
           "statusset.then",
+          "toolbar.execute"
+        ],
+        [
+          "toolbar.then",
           "countset.execute"
         ],
         [
           "countset.then",
+          "railbadge.execute"
+        ],
+        [
+          "railbadge.then",
           "matchpending.execute"
         ],
         [
@@ -78471,6 +81581,10 @@
         [
           "match.then",
           "share.execute"
+        ],
+        [
+          "toolbar.else",
+          "matchpending.execute"
         ],
         [
           "matchpending.else",
@@ -80733,6 +83847,22 @@
           "var": "CommunityExpected"
         },
         {
+          "id": "split",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:Split",
+          "defaults": {
+            "InStr": " ",
+            "SearchCase": "CaseSensitive",
+            "SearchDir": "FromEnd"
+          }
+        },
+        {
+          "id": "title",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectString",
+          "defaults": {}
+        },
+        {
           "id": "getCompositionService",
           "kind": "get",
           "var": "CompositionService"
@@ -80744,9 +83874,21 @@
           "defaults": {}
         },
         {
+          "id": "fullname",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPresets:NormalizeName",
+          "defaults": {}
+        },
+        {
           "id": "ensure",
           "kind": "call",
           "function": "self:EnsureCompositionService",
+          "defaults": {}
+        },
+        {
+          "id": "namesvalid0",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:BooleanAND",
           "defaults": {}
         },
         {
@@ -80757,6 +83899,24 @@
           "id": "name",
           "kind": "set",
           "var": "CommunityName"
+        },
+        {
+          "id": "coded",
+          "kind": "set",
+          "var": "CommunityFullName"
+        },
+        {
+          "id": "code",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectString",
+          "defaults": {
+            "B": ""
+          }
+        },
+        {
+          "id": "sharecode",
+          "kind": "set",
+          "var": "CommunityShareCode"
         },
         {
           "id": "boundedreport",
@@ -80865,20 +84025,68 @@
           "count.CommunityExpected"
         ],
         [
+          "entry.Name",
+          "split.SourceString"
+        ],
+        [
+          "split.LeftS",
+          "title.A"
+        ],
+        [
+          "entry.Name",
+          "title.B"
+        ],
+        [
+          "split.ReturnValue",
+          "title.bPickA"
+        ],
+        [
           "getCompositionService.CompositionService",
           "normalize.self"
         ],
         [
-          "entry.Name",
+          "title.ReturnValue",
           "normalize.Name"
         ],
         [
+          "getCompositionService.CompositionService",
+          "fullname.self"
+        ],
+        [
+          "entry.Name",
+          "fullname.Name"
+        ],
+        [
           "normalize.Valid",
+          "namesvalid0.A"
+        ],
+        [
+          "fullname.Valid",
+          "namesvalid0.B"
+        ],
+        [
+          "namesvalid0.ReturnValue",
           "namevalid.Condition"
         ],
         [
           "normalize.CleanName",
           "name.CommunityName"
+        ],
+        [
+          "fullname.CleanName",
+          "coded.CommunityFullName"
+        ],
+        [
+          "split.RightS",
+          "code.A"
+        ],
+        [
+          "split.ReturnValue",
+          "code.bPickA"
+        ],
+        [
+          "code.ReturnValue",
+          "sharecode.CommunityShareCode"
         ],
         [
           "entry.Report",
@@ -80938,6 +84146,10 @@
         ],
         [
           "normalize.then",
+          "fullname.execute"
+        ],
+        [
+          "fullname.then",
           "namevalid.execute"
         ],
         [
@@ -80946,6 +84158,14 @@
         ],
         [
           "name.then",
+          "coded.execute"
+        ],
+        [
+          "coded.then",
+          "sharecode.execute"
+        ],
+        [
+          "sharecode.then",
           "report.execute"
         ],
         [
@@ -81987,14 +85207,52 @@
           "kind": "branch"
         },
         {
-          "id": "getCompositionNames",
+          "id": "getCompositionService",
           "kind": "get",
-          "var": "CompositionNames"
+          "var": "CompositionService"
         },
         {
-          "id": "exists",
-          "kind": "array_call",
-          "function": "/Script/Engine.KismetArrayLibrary:Array_Contains",
+          "id": "getCommunityShareCode",
+          "kind": "get",
+          "var": "CommunityShareCode"
+        },
+        {
+          "id": "known",
+          "kind": "call",
+          "function": "/DenDesignerGF/Runtime/BP_DenPresets:FindShareCode",
+          "defaults": {}
+        },
+        {
+          "id": "already",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:GreaterEqual_IntInt",
+          "defaults": {
+            "B": "0"
+          }
+        },
+        {
+          "id": "imported",
+          "kind": "branch"
+        },
+        {
+          "id": "oldname",
+          "kind": "call",
+          "function": "self:CompositionNameTaken",
+          "defaults": {}
+        },
+        {
+          "id": "getCommunityFullName",
+          "kind": "get",
+          "var": "CommunityFullName"
+        },
+        {
+          "id": "duplicate",
+          "kind": "branch"
+        },
+        {
+          "id": "titletaken",
+          "kind": "call",
+          "function": "self:CompositionNameTaken",
           "defaults": {}
         },
         {
@@ -82003,13 +85261,10 @@
           "var": "CommunityName"
         },
         {
-          "id": "duplicate",
-          "kind": "branch"
-        },
-        {
-          "id": "getCompositionService",
-          "kind": "get",
-          "var": "CompositionService"
+          "id": "importname",
+          "kind": "call",
+          "function": "/Script/Engine.KismetMathLibrary:SelectString",
+          "defaults": {}
         },
         {
           "id": "save",
@@ -82220,28 +85475,60 @@
           "freshcheck.Condition"
         ],
         [
-          "getCompositionNames.CompositionNames",
-          "exists.TargetArray"
+          "getCompositionService.CompositionService",
+          "known.self"
+        ],
+        [
+          "getCommunityShareCode.CommunityShareCode",
+          "known.Code"
+        ],
+        [
+          "known.Index",
+          "already.A"
+        ],
+        [
+          "already.ReturnValue",
+          "imported.Condition"
+        ],
+        [
+          "getCommunityFullName.CommunityFullName",
+          "oldname.Name"
+        ],
+        [
+          "oldname.Taken",
+          "duplicate.Condition"
         ],
         [
           "getCommunityName.CommunityName",
-          "exists.ItemToFind"
+          "titletaken.Name"
         ],
         [
-          "exists.ReturnValue",
-          "duplicate.Condition"
+          "getCommunityFullName.CommunityFullName",
+          "importname.A"
+        ],
+        [
+          "getCommunityName.CommunityName",
+          "importname.B"
+        ],
+        [
+          "titletaken.Taken",
+          "importname.bPickA"
         ],
         [
           "getCompositionService.CompositionService",
           "save.self"
         ],
         [
-          "getCommunityName.CommunityName",
+          "importname.ReturnValue",
           "save.Name"
         ],
         [
           "getCommunityDocument.CommunityDocument",
           "save.Document"
+        ],
+        [
+          "getCommunityShareCode.CommunityShareCode",
+          "save.ShareCode"
         ],
         [
           "save.Status",
@@ -82341,10 +85628,26 @@
         ],
         [
           "freshcheck.then",
+          "known.execute"
+        ],
+        [
+          "known.then",
+          "imported.execute"
+        ],
+        [
+          "imported.else",
+          "oldname.execute"
+        ],
+        [
+          "oldname.then",
           "duplicate.execute"
         ],
         [
           "duplicate.else",
+          "titletaken.execute"
+        ],
+        [
+          "titletaken.then",
           "save.execute"
         ],
         [
@@ -82421,6 +85724,10 @@
         ],
         [
           "freshcheck.else",
+          "result.execute"
+        ],
+        [
+          "imported.then",
           "result.execute"
         ],
         [
@@ -85163,6 +88470,113 @@
         [
           "panel.else",
           "off.execute"
+        ]
+      ]
+    },
+    {
+      "name": "ReleaseCommunityMailbox",
+      "nodes": [
+        {
+          "id": "delete",
+          "kind": "call",
+          "function": "/Script/Engine.GameplayStatics:DeleteGameInSlot",
+          "defaults": {
+            "SlotName": "ZComDen/Community/v1/request",
+            "UserIndex": "0"
+          }
+        },
+        {
+          "id": "getCommunityWireLines",
+          "kind": "get",
+          "var": "CommunityWireLines"
+        },
+        {
+          "id": "release",
+          "kind": "array_call",
+          "function": "/Script/Engine.KismetArrayLibrary:Array_Clear",
+          "defaults": {}
+        },
+        {
+          "id": "cursor",
+          "kind": "set",
+          "var": "CommunityWireCursor",
+          "defaults": {
+            "CommunityWireCursor": "0"
+          }
+        },
+        {
+          "id": "getCommunityMessage",
+          "kind": "get",
+          "var": "CommunityMessage"
+        },
+        {
+          "id": "contacting",
+          "kind": "call",
+          "function": "/Script/Engine.KismetStringLibrary:StartsWith",
+          "defaults": {
+            "InPrefix": "Contacting HoloNet",
+            "SearchCase": "CaseSensitive"
+          }
+        },
+        {
+          "id": "progress",
+          "kind": "branch"
+        },
+        {
+          "id": "clear",
+          "kind": "set",
+          "var": "CommunityMessage",
+          "defaults": {
+            "CommunityMessage": ""
+          }
+        },
+        {
+          "id": "feedback",
+          "kind": "call",
+          "function": "self:RefreshCommunityFeedback",
+          "defaults": {}
+        }
+      ],
+      "links": [
+        [
+          "getCommunityWireLines.CommunityWireLines",
+          "release.TargetArray"
+        ],
+        [
+          "getCommunityMessage.CommunityMessage",
+          "contacting.SourceString"
+        ],
+        [
+          "contacting.ReturnValue",
+          "progress.Condition"
+        ],
+        [
+          "entry.then",
+          "delete.execute"
+        ],
+        [
+          "delete.then",
+          "release.execute"
+        ],
+        [
+          "release.then",
+          "cursor.execute"
+        ],
+        [
+          "cursor.then",
+          "progress.execute"
+        ],
+        [
+          "progress.then",
+          "clear.execute"
+        ],
+        [
+          "clear.then",
+          "feedback.execute"
+        ],
+        [
+          "progress.else",
+          "feedback.execute"
         ]
       ]
     },

@@ -46,8 +46,9 @@ def run(unreal, host, document, get, field, check, saved, finish_preview, settle
         values += [str(field(part, 'CollisionMode'))]
         return '\t'.join(values)
 
-    def wire(token, rows=None, title=name, version='1', extra=None):
-        records = ['ZCOM-COMMUNITY\t' + version + '\t' + token, 'ok', 'name\t' + title,
+    def wire(token, rows=None, title=name, version='1', extra=None, code='T93765D1'):
+        # The bridge names an import "<title> <code>"; the editor saves it as <title> with the code as ShareCode.
+        records = ['ZCOM-COMMUNITY\t' + version + '\t' + token, 'ok', 'name\t' + title + ' ' + code,
                    'report\tGame meshes; no prop packs', 'anchor\t' + '\t'.join(numbers(anchor)),
                    'count\t' + str(len(parts))]
         if rows is None:
@@ -308,6 +309,8 @@ def run(unreal, host, document, get, field, check, saved, finish_preview, settle
               'successful import selects its local card and reports dependencies')
         check(not mailbox[0].exists(), 'completed import releases the standalone transport request')
         unchanged('successful import adds one named composition only', names_before + [name])
+        index, found = service.call_method('FindShareCode', ('t93765d1',))
+        check(index >= 0 and found == name, 'an import is saved under its title, with its code kept as ShareCode')
 
         # Saved-card publication uses the selected snapshot and its exact cache
         # identity; it must not capture whichever world parts happen to be selected.
@@ -360,7 +363,7 @@ def run(unreal, host, document, get, field, check, saved, finish_preview, settle
         check(get(download_request,'Input')=='DOWNLOAD/PublicTest01' and get(download_request,'Wire')=='3',
               'Download pins the selected public revision and is separate from preview')
         downloaded_name='Community browser download'
-        download_token=get(host,'CommunityToken');deliver(download_token,wire(download_token,title=downloaded_name));pump()
+        download_token=get(host,'CommunityToken');deliver(download_token,wire(download_token,title=downloaded_name,code='H7854VMD'));pump()
         check(downloaded_name in library_names() and len(library_names())==len(before_preview)+1,
               'public Download adds the validated composition to the existing local library')
         check(list(get(get(host,'WorkingDocument'),'Entries'))==baseline and get(host,'SelectedComposition')==local_before,
@@ -411,7 +414,7 @@ def run(unreal, host, document, get, field, check, saved, finish_preview, settle
 
 
 
-        # A second response with the same title may not replace a saved arrangement.
+        # A second response for the same build (its code is already in the library) may not replace a saved arrangement.
         prior = list(get(loaded, 'Entries'))
         token = start()
         deliver(token, wire(token))
@@ -452,7 +455,7 @@ def run(unreal, host, document, get, field, check, saved, finish_preview, settle
             native_wire = get(received, 'Wire')
             check(native_wire.startswith('ZCOM-COMMUNITY\t1\t'+native_token+'\nok\n'),
                   'kit deserializes exact live native worker response without rebuilding its properties')
-            native_name = native_wire.splitlines()[2].split('\t')[1]
+            native_name = native_wire.splitlines()[2].split('\t')[1].rsplit(' ', 1)[0]
             setprop(host, 'CommunityToken', native_token)
             setprop(host, 'CommunityMailboxAt', -1e9)
             pump()

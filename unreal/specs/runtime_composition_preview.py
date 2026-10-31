@@ -42,7 +42,7 @@ def cancel():
     branch(g,'valid',validity(g,'alive',get(g,'CompositionPreview')))
     method(g,'cancel',APPLY,'CancelWork',get(g,'CompositionPreview'));method(g,'clear',WORLD,'Clear',get(g,'CompositionPreview'));call(g,'destroy',ACTOR+':K2_DestroyActor',{'self':get(g,'CompositionPreview')})
     g.set('release','CompositionPreview');g.set('document','CompositionDocument');g.chain('entry','wasactive','stop','ready','pose','valid','cancel','clear','destroy','release','document');g.chain('valid.else','release')
-    g.get('was','local:WasActive');branch(g,'clearfeedback','was.WasActive');g.set('message','SelectionMessage','');g.call('refresh','self:RefreshEditorUI');g.chain('document','clearfeedback','message','refresh')
+    g.get('was','local:WasActive');branch(g,'clearfeedback','was.WasActive');g.set('message','SelectionMessage','');g.set('unfold','RailAutoFold','false');g.call('refresh','self:RefreshEditorUI');g.chain('document','clearfeedback','message','unfold','refresh')
     return g.function('CancelCompositionPreview',locals=[v('WasActive','bool','false')])
 
 
@@ -54,8 +54,9 @@ def start():
     actor=call(g,'finish',GS+':FinishSpawningActor',{'Actor':actor,'SpawnTransform':identity});g.node('cast','cast',**{'class':APPLY});g.wire((actor,'cast.Object'));set_value(g,'remember','CompositionPreview','cast.AsBP Den Apply')
     g.set('ghost',APPLY+':PreviewOnly','true');g.wire((get(g,'CompositionPreview'),'ghost.self'));method(g,'begin',APPLY,'BeginLayout',get(g,'CompositionPreview'),{'Document':get(g,'CompositionDocument')});branch(g,'began','begin.Accepted')
     g.set('yaw','CompositionYaw','0');g.set('scale','CompositionScale','1');g.set('active','CompositionPlacing','true');g.set('message','SelectionMessage','Loading all composition parts…');g.call('close','self:SetEditorPanel',Name='');g.call('focus','self:FocusEditorViewport');g.set('yes','local:OK','true');finish_bool(g)
+    g.set('fold','RailAutoFold','true');g.call('rail','self:RefreshEditorRail')
     g.call('failed','self:CancelCompositionPreview');g.set('error','CompositionMessage','This composition could not be loaded. No props were added.');g.call('labels','self:RefreshCompositionFeedback')
-    g.chain('entry','ready','validate','allowed','cancel','single','parts','selection','document','spawn','finish','cast','remember','ghost','begin','began','yaw','scale','active','message','close','focus','yes','result')
+    g.chain('entry','ready','validate','allowed','cancel','single','parts','selection','document','spawn','finish','cast','remember','ghost','begin','began','yaw','scale','active','message','close','focus','fold','rail','yes','result')
     g.chain('allowed.else','error','labels','result');g.chain('cast.CastFailed','failed','error');g.chain('began.else','failed')
     return g.function('StartCompositionPreview',inputs=[v('Document','object:'+LAYOUT)],outputs=[v('Accepted','bool')],locals=[v('OK','bool','false')])
 

@@ -34,6 +34,8 @@ def cancel():
         g.set(field+'clear',field);g.chain(previous,field+'valid',field+'destroy',field+'clear');g.chain(field+'valid.else',field+'clear');previous=field+'clear'
     for field in ['PlacementMesh','PlacementPath','PlacementEntry','PlacementIndex','SelectionMessage']:
         g.set(field+'clear',field);g.chain(previous,field+'clear');previous=field+'clear'
+    # A drop, Esc or failure gives the rail back its pin.
+    branch(g,'folded',get(g,'RailAutoFold'));g.set('unfold','RailAutoFold','false');g.call('rail','self:RefreshEditorRail');g.chain(previous,'folded','unfold','rail')
     g.chain('entry','stop','pose');return g.function('CancelPlacement')
 
 
@@ -56,7 +58,8 @@ def choose():
     g.set('active','PlacementActive','true');set_value(g,'time','PlacementStartedAt',clock(g,'now'));spawn(g,'job',JOB,'PlacementJob')
     method(g,'request',JOB,'Request',get(g,'PlacementJob'),{'Path':get(g,'PlacementPath')});branch(g,'accepted','request.Accepted')
     g.call('close','self:SetEditorPanel',Name='');g.call('focus','self:FocusEditorViewport');g.set('message','SelectionMessage','Loading prop…');g.call('failed','self:CancelPlacement')
-    g.chain('entry','ready','available','splitok','valid','read','found','capturepath','captureindex','cancel','clear','press','pathsave','indexsave','active','time','jobspawn');g.chain('jobsave','request','accepted','close','focus','message');g.chain('accepted.else','failed');g.chain('jobcast.CastFailed','failed')
+    g.set('fold','RailAutoFold','true');g.call('rail','self:RefreshEditorRail')
+    g.chain('entry','ready','available','splitok','valid','read','found','capturepath','captureindex','cancel','clear','press','pathsave','indexsave','active','time','jobspawn');g.chain('jobsave','request','accepted','close','focus','message','fold','rail');g.chain('accepted.else','failed');g.chain('jobcast.CastFailed','failed')
     return g.function('ChooseCatalogItem',inputs=[v('Key','string')],locals=[v('ChosenPath','string'),v('ChosenIndex','int')])
 
 

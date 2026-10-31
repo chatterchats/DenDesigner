@@ -153,7 +153,7 @@ def handle():
     held=call(g,'held',KML+':Greater_DoubleDouble',{'A':'event.Scalar'},B=.5);g.call('looking','self:SetLooking');g.wire((held,'looking.Held'))
     previous='look.else'
     commands=[('confirm_save','EditorConfirmSave',{}),('confirm_discard','EditorConfirmDiscard',{}),('confirm_cancel','EditorConfirmCancel',{}),('back','EditorBack',{})]
-    normal=[('deselect','ClearSelection',{}),('community_refresh','RefreshCommunityGallery',{}),('community_previous','PreviousCommunityPage',{}),('community_next','NextCommunityPage',{}),('community_download','AddCommunityListingToLibrary',{}),('community','ToggleEditorPanel',{'Name':'community'}),('community_browse','SetCommunityArea',{'Area':'browse'}),('community_upload','SetCommunityArea',{'Area':'upload'}),('community_account','SetCommunityArea',{'Area':'account'}),('holonet_shares','SetCommunityArea',{'Area':'shares'}),('holonet_sort_newest','SortHolonetNewest',{}),('holonet_sort_imports','SortHolonetImports',{}),('holonet_usable','ToggleHolonetUsable',{}),('holonet_place','PlaceCommunityListing',{}),('holonet_get_pack','OpenHolonetPack',{}),('holonet_share_update','ShareHolonetUpdate',{}),('holonet_share_new','ShareHolonetNew',{}),('holonet_shares_previous','PreviousHolonetShares',{}),('holonet_shares_next','NextHolonetShares',{}),('holonet_shares_reload','ReloadHolonetShares',{}),('holonet_share_selected','ShareSelectedComposition',{}),('community_browse_dens','SetCommunityArea',{'Area':'browse_dens'}),('community_close','SetEditorPanel',{'Name':''}),('community_review','ReviewCommunityComposition',{}),('community_presets','SetEditorPanel',{'Name':'layouts'}),('community_website','OpenCommunityAccount',{}),('community_copy_url','CopyCommunityURL',{}),('community_copy_code','CopyCommunityCode',{}),('community_connect','ConnectCommunity',{}),('community_remember','ToggleRememberCommunity',{}),('community_forget','ForgetCommunity',{}),('community_disconnect','StartCommunityFetch',{'Input':'DISCONNECT'}),('community_submit','SubmitCommunityComposition',{}),('community_cancel','CancelCommunityFetch',{}),('rotation_pivot','CycleEditorSetting',{'Key':'rotation_pivot'}),('compositions','ToggleEditorPanel',{'Name':'compositions'}),('composition_select','ToggleCompositionSelection',{}),('composition_clear','ClearCompositionSelection',{}),('settings','ToggleEditorPanel',{'Name':'settings'}),('settings_close','SetEditorPanel',{'Name':''}),('settings_reset','ChangeEditorSetting',{'Reset':'true'}),('catalog','ToggleEditorPanel',{'Name':'catalog'}),('layouts','ToggleEditorPanel',{'Name':'layouts'}),('storeroom','ToggleEditorPanel',{'Name':'storeroom'}),('help','ToggleEditorHelp',{}),('snap','CycleEditorGrid',{}),('reach','CycleEditorReach',{}),('numeric_done','FocusEditorViewport',{}),('mode_select','SetGizmoMode',{'Mode':0}),('mode_move','SetGizmoMode',{'Mode':1}),('mode_rotate','SetGizmoMode',{'Mode':2}),('mode_scale','SetGizmoMode',{'Mode':3}),('gimbal','CycleGizmoMode',{})]
+    normal=[('deselect','ClearSelection',{}),('community_refresh','RefreshCommunityGallery',{}),('community_previous','PreviousCommunityPage',{}),('community_next','NextCommunityPage',{}),('community_download','AddCommunityListingToLibrary',{}),('community','ToggleEditorPanel',{'Name':'community'}),('community_browse','OpenHolonetArea',{'Area':'browse'}),('community_upload','OpenHolonetArea',{'Area':'upload'}),('community_account','OpenHolonetArea',{'Area':'account'}),('holonet_shares','OpenHolonetArea',{'Area':'shares'}),('holonet_sort_newest','SortHolonetNewest',{}),('holonet_sort_imports','SortHolonetImports',{}),('holonet_usable','ToggleHolonetUsable',{}),('holonet_place','PlaceCommunityListing',{}),('holonet_get_pack','OpenHolonetPack',{}),('holonet_share_update','ShareHolonetUpdate',{}),('holonet_share_new','ShareHolonetNew',{}),('holonet_shares_previous','PreviousHolonetShares',{}),('holonet_shares_next','NextHolonetShares',{}),('holonet_shares_reload','ReloadHolonetShares',{}),('holonet_share_selected','ShareSelectedComposition',{}),('community_browse_dens','OpenHolonetArea',{'Area':'browse_dens'}),('community_close','SetEditorPanel',{'Name':''}),('library_close','SetEditorPanel',{'Name':''}),('rail_fold','SetRailLabels',{'Labels':'false'}),('rail_labels','SetRailLabels',{'Labels':'true'}),('rail_code','OpenRailCode',{}),('community_review','ReviewCommunityComposition',{}),('community_presets','SetEditorPanel',{'Name':'layouts'}),('community_website','OpenCommunityAccount',{}),('community_copy_url','CopyCommunityURL',{}),('community_copy_code','CopyCommunityCode',{}),('community_connect','ConnectCommunity',{}),('community_remember','ToggleRememberCommunity',{}),('community_forget','ForgetCommunity',{}),('community_disconnect','StartCommunityFetch',{'Input':'DISCONNECT'}),('community_submit','SubmitCommunityComposition',{}),('community_cancel','CancelHolonetRequest',{}),('rotation_pivot','CycleEditorSetting',{'Key':'rotation_pivot'}),('compositions','ToggleEditorPanel',{'Name':'compositions'}),('composition_select','ToggleCompositionSelection',{}),('composition_clear','ClearCompositionSelection',{}),('settings','ToggleEditorPanel',{'Name':'settings'}),('settings_close','SetEditorPanel',{'Name':''}),('settings_reset','ChangeEditorSetting',{'Reset':'true'}),('catalog','ToggleEditorPanel',{'Name':'catalog'}),('layouts','ToggleEditorPanel',{'Name':'layouts'}),('storeroom','ToggleEditorPanel',{'Name':'storeroom'}),('help','ToggleEditorHelp',{}),('snap','CycleEditorGrid',{}),('reach','CycleEditorReach',{}),('numeric_done','FocusEditorViewport',{}),('mode_select','SetGizmoMode',{'Mode':0}),('mode_move','SetGizmoMode',{'Mode':1}),('mode_rotate','SetGizmoMode',{'Mode':2}),('mode_scale','SetGizmoMode',{'Mode':3}),('gimbal','CycleGizmoMode',{})]
     for i,(name,fn,defaults) in enumerate(commands+normal):
         if i==len(commands):
             branch(g,'modal',call(g,'ismodal',KML+':Greater_IntInt',{'A':get(g,'ConfirmMode')},B=0));g.chain(previous,'modal');branch(g,'select',call(g,'selectname',STR+'EqualEqual_StrStr',{'A':'event.EventName'},B='select'));g.call('pick','self:GizmoPointerButton');g.wire(('event.Scalar','pick.Value'));branch(g,'placing',get(g,'PlacementActive'));g.call('place','self:PlacementPointerButton');g.wire(('event.Scalar','place.Value'));branch(g,'composing',get(g,'CompositionPlacing'));g.call('composeclick','self:CompositionPointerButton');g.wire(('event.Scalar','composeclick.Value'));g.chain('modal.else','select','composing','composeclick');g.chain('composing.else','placing','place');g.chain('placing.else','pick');previous='select.else'
@@ -166,7 +166,7 @@ def handle():
         g.chain(previous,node,node+'apply');previous=node+'.else'
     branch(g,'cycle_setting',call(g,'cycle_setting_eq',STR+'EqualEqual_StrStr',{'A':'event.EventName'},B='setting_cycle'))
     g.call('cycle_setting_run','self:CycleEditorSetting');g.wire(('event.Argument','cycle_setting_run.Key'));g.chain(previous,'cycle_setting','cycle_setting_run');previous='cycle_setting.else'
-    for name,fn,pin in [('community_source','SelectCommunitySourceCard','Key'),('community_listing','SelectCommunityListing','Key'),('community_search','SearchCommunityGallery','Text'),('holonet_pick_source','PickHolonetSource','Key'),('holonet_pick_share','PickHolonetShare','Key'),('community_fetch','StartCommunityFetch','Input'),('search','SearchCatalog','Text'),('shelf','ChooseCatalogShelf','Key'),('item','ChooseCatalogItem','Key'),('stored_search','SearchStoreroom','Text'),('preset','SelectPresetCard','Key'),('composition_card','SelectCompositionCard','Key')]:
+    for name,fn,pin in [('community_source','SelectCommunitySourceCard','Key'),('community_listing','SelectCommunityListing','Key'),('community_search','SearchCommunityGallery','Text'),('holonet_pick_source','PickHolonetSource','Key'),('holonet_pick_share','PickHolonetShare','Key'),('community_fetch','ImportCommunityCode','Input'),('search','SearchCatalog','Text'),('shelf','ChooseCatalogShelf','Key'),('item','ChooseCatalogItem','Key'),('stored_search','SearchStoreroom','Text'),('preset','SelectPresetCard','Key'),('composition_card','SelectCompositionCard','Key')]:
         node='catalog'+name;branch(g,node,call(g,node+'name',STR+'EqualEqual_StrStr',{'A':'event.EventName'},B=name))
         g.call(node+'run','self:'+fn);g.wire(('event.Argument',node+'run.'+pin));g.chain(previous,node,node+'run');previous=node+'.else'
     for name in ['save_composition','load_composition','delete_composition']:
@@ -241,16 +241,98 @@ def refresh():
         text(g,field+'text','Toolbar',widgetname,value=full);g.chain(previous,field+'text');previous=field+'text'
     branch(g,'gridoff',call(g,'zero',KML+':EqualEqual_DoubleDouble',{'A':get(g,'GridStep')},B=0))
     text(g,'offlabel','Toolbar','SnapLabel',constant='Off');g.node('aftergrid','sequence',outputs=1);g.chain(previous,'gridoff','offlabel','aftergrid');g.chain('gridoff.else','aftergrid');previous='aftergrid.then_0'
-    # Grid and the selection filters are toggles; the library tabs show the open panel.
+    # Grid and the selection filters are toggles; the rail shows the open entry.
     toggles=[('Magnet',get(g,'SnapEnabled')),('Snap',call(g,'gridon',KML+':NotEqual_DoubleDouble',{'A':get(g,'GridStep')},B=0)),
              ('Floors',get(g,'FloorsEnabled')),('Walls',get(g,'WallsEnabled')),('Lock',get(g,'StructureEnabled'))]
-    toggles+=[(button,call(g,'tab'+button,STR+'EqualEqual_StrStr',{'A':get(g,'ActivePanel')},B=name)) for button,_,name,_ in editor.LIBRARY]
     for button,on in toggles:
         g.chain(previous,style_toggle(g,'style'+button,'Toolbar',button,on));previous='style'+button
+    g.call('rail','self:RefreshEditorRail');g.chain(previous,'rail');previous='rail'
     g.call('modes','self:RefreshGizmoModeUI');g.chain(previous,'modes');previous='modes'
     g.call('feedback','self:EditorFeedback');text(g,'hints','Toolbar','Hints',value='feedback.Message')
     set_value(g,'busycache','LastUIBusy',get(g,'Busy'));set_value(g,'draftcache','LastUIDraftStatus',get(g,'LastDraftStatus'));set_value(g,'prefcache','LastUIPreferencesStatus',get(g,'PreferencesStatus'));g.call('layoutfeedback','self:RefreshLayoutFeedback');g.call('scopelabels','self:RefreshLayoutScope');g.chain(previous,'feedback','hints','busycache','draftcache','prefcache','layoutfeedback','scopelabels')
     return g.function('RefreshEditorUI')
+
+
+def rail_refresh():
+    """The rail: labels or icons, with the open entry's content beside it; the open entry is lit, its window edge
+    joins the content, plus the connection dot and counts (badges when folded)."""
+    from runtime_community_ui import connected
+    from runtime_storeroom import version
+    g=Graph();branch(g,'valid',validity(g,'toolbarvalid',get(g,'Toolbar')));g.chain('entry','valid')
+    # Folded, RailIcons replaces RailFrame, the rail narrows to the icons and the content moves up to it.
+    # Placing folds it for the drop without touching the pin.
+    shown=combine(g,'shown',[get(g,'RailLabels'),call(g,'unplacing',KML+':Not_PreBool',{'A':get(g,'RailAutoFold')})])
+    branch(g,'labels',shown);g.node('labelsnext','sequence',outputs=1)
+    for name,on,off,width in [('labels','Visible','Collapsed',editor.RAIL_WIDTH),('folded','Collapsed','Visible',editor.ICON_RAIL_WIDTH)]:
+        visibility(g,name+'frame',widget(g,name+'framewidget','Toolbar','RailFrame'),on);visibility(g,name+'icons',widget(g,name+'iconswidget','Toolbar','RailIcons'),off)
+        slot=call(g,name+'slot','/Script/UMG.WidgetLayoutLibrary:SlotAsCanvasSlot',{'Widget':widget(g,name+'tabs','Toolbar','LibraryTabs')})
+        call(g,name+'width','/Script/UMG.CanvasPanelSlot:SetOffsets',{'self':slot},InOffset=f'(Left=12,Top=80,Right={width},Bottom=58)')
+    g.chain('valid','labels','labelsframe','labelsicons','labelswidth','labelsnext');g.chain('labels.else','foldedframe','foldedicons','foldedwidth','labelsnext')
+    left=call(g,'left',KML+':MakeVector2D',{'X':call(g,'leftx',KML+':SelectFloat',{'bPickA':shown},A=editor.LIBRARY_LEFT,B=editor.ICON_LEFT)},Y=80)
+    previous='labelsnext.then_0'
+    for var in ['CatalogPanel','LayoutsPanel','StoreroomPanel','CompositionsPanel','CommunityPanel']:
+        branch(g,var+'valid',validity(g,var+'check',get(g,var)));g.node(var+'next','sequence',outputs=1)
+        slot=call(g,var+'slot','/Script/UMG.WidgetLayoutLibrary:SlotAsCanvasSlot',{'Widget':widget(g,var+'panel',var,'Panel')})
+        call(g,var+'place','/Script/UMG.CanvasPanelSlot:SetPosition',{'self':slot,'InPosition':left})
+        g.chain(previous,var+'valid',var+'place',var+'next');g.chain(var+'valid.else',var+'next');previous=var+'next.then_0'
+    holonet=call(g,'holonet',STR+'EqualEqual_StrStr',{'A':get(g,'ActivePanel')},B='community')
+    toggles=[(button,call(g,'tab'+button,STR+'EqualEqual_StrStr',{'A':get(g,'ActivePanel')},B=name)) for button,_,name,_ in editor.LIBRARY]
+    toggles+=[(button,combine(g,'area'+button,[holonet,call(g,'is'+button,STR+'EqualEqual_StrStr',{'A':get(g,'CommunityArea')},B=area)]))
+              for button,_,_,_,area in editor.HOLONET if button!='RailDens']
+    for button,on in toggles:
+        g.chain(previous,style_toggle(g,'style'+button,'Toolbar',button,on),style_toggle(g,'icon'+button,'Toolbar',editor.icon_entry(button),on,('Back','Icon')));previous='icon'+button
+    # Settings use the inspector dock, so only a library panel or HoloNet sits beside the rail.
+    content=combine(g,'content',[call(g,'anypanel',STR+'NotEqual_StrStr',{'A':get(g,'ActivePanel')},B=''),call(g,'notsettings',STR+'NotEqual_StrStr',{'A':get(g,'ActivePanel')},B='settings')])
+    for name,flag in [('joined',content),('dot',connected(g))]:
+        branch(g,name,flag);g.node(name+'next','sequence',outputs=1)
+    for name,field,on,off in [('joined','RailJoined','HitTestInvisible','Collapsed'),('joinedalone','RailAlone','Collapsed','HitTestInvisible'),
+                              ('dot','HolonetDot','HitTestInvisible','Collapsed'),('doticon','HolonetIconDot','HitTestInvisible','Collapsed')]:
+        obj=widget(g,name+'widget','Toolbar',field)
+        visibility(g,name+'on',obj,on);visibility(g,name+'off',obj,off)
+    g.chain(previous,'joined','joinedon','joinedaloneon','joinednext');g.chain('joined.else','joinedoff','joinedaloneoff','joinednext')
+    g.chain('joinednext.then_0','dot','doton','doticonon','dotnext');g.chain('dot.else','dotoff','doticonoff','dotnext')
+    branch(g,'history',validity(g,'historyvalid',get(g,'History')))
+    current=combine(g,'storecurrent',[call(g,'listed',KML+':EqualEqual_IntInt',{'A':get(g,'StoreCountVersion'),'B':version(g)}),
+                                      call(g,'listdone',KML+':Not_PreBool',{'A':get(g,'StoreBuilding')}),call(g,'anystored',KML+':Greater_IntInt',{'A':get(g,'StoreTotal')},B=0)])
+    count=call(g,'storecount',KML+':SelectString',{'A':call(g,'storetotal',STR+'Conv_IntToString',{'InInt':get(g,'StoreTotal')}),'bPickA':current},B='')
+    text(g,'stored','Toolbar','StoreroomCount',value=count);text(g,'storedbadge','Toolbar','IconStoreroomBadgeText',value=count)
+    g.chain('dotnext.then_0','history','stored','storedbadge','storeshown');g.chain('history.else','sharesbadge')
+    # My Shares' count is written by ReadHolonetShares; its badge copies it.
+    shares=call(g,'sharescount','/Script/Engine.KismetTextLibrary:Conv_TextToString',{'InText':call(g,'sharestext','/Script/UMG.TextBlock:GetText',{'self':widget(g,'sharesfield','Toolbar','RailSharesCount')})})
+    text(g,'sharesbadge','Toolbar','IconSharesBadgeText',value=shares)
+    for name,field,shown in [('storeshown','IconStoreroomBadge',current),('sharesshown','IconSharesBadge',call(g,'anyshares',STR+'NotEqual_StrStr',{'A':shares},B=''))]:
+        branch(g,name,shown);g.node(name+'next','sequence',outputs=1);obj=widget(g,name+'widget','Toolbar',field)
+        visibility(g,name+'on',obj,'HitTestInvisible');visibility(g,name+'off',obj,'Collapsed')
+        g.chain(name,name+'on',name+'next');g.chain(name+'.else',name+'off',name+'next')
+    g.chain('storeshownnext.then_0','sharesbadge','sharesshown')
+    return g.function('RefreshEditorRail')
+
+
+def rail_labels():
+    """Fold to icons / Show labels: the rail's pinned state, remembered in preferences. It also ends a fold for placing."""
+    from runtime_preference_service import SERVICE
+    g=Graph();set_value(g,'pin','RailLabels','entry.Labels');g.set('unfold','RailAutoFold','false');g.call('refresh','self:RefreshEditorRail')
+    g.call('ensure','self:EnsurePreferenceService');branch(g,'service',validity(g,'servicevalid',get(g,'PreferenceService')))
+    value=call(g,'value',KML+':SelectString',{'bPickA':'entry.Labels'},A='true',B='false')
+    method(g,'save',SERVICE,'ChangePreference',get(g,'PreferenceService'),{'Value':value},Key='rail_labels')
+    set_value(g,'status','PreferencesStatus','save.Status');branch(g,'document',validity(g,'documentvalid','save.Document'))
+    set_value(g,'copy','PreferencesDocument','save.Document')
+    g.chain('entry','pin','unfold','refresh','ensure','service','save','status','document','copy')
+    return g.function('SetRailLabels',inputs=[v('Labels','bool')])
+
+
+def rail_code():
+    """The folded rail's code icon: show labels, then focus the code field once the rail has laid out (next tick)."""
+    g=Graph();g.call('labels','self:SetRailLabels',Labels='true');g.set('focus','RailCodeFocus','true');g.chain('entry','labels','focus')
+    return g.function('OpenRailCode')
+
+
+def focus_rail_code():
+    g=Graph();branch(g,'pending',get(g,'RailCodeFocus'));g.set('clear','RailCodeFocus','false')
+    branch(g,'valid',combine(g,'ready',[get(g,'UIOpen'),validity(g,'toolbarvalid',get(g,'Toolbar'))]))
+    call(g,'focus','/Script/UMG.Widget:SetKeyboardFocus',{'self':widget(g,'code','Toolbar','CommunityCode')})
+    g.chain('entry','pending','clear','valid','focus')
+    return g.function('PollRailCodeFocus')
 
 
 def feedback():
@@ -278,4 +360,4 @@ def poll():
     return g.function('PollEditorUI')
 
 
-def functions():return [toggle_style(),set_panel(),toggle_panel(),confirm(),offer_recovery(),exit_editor(),back(),confirm_choice('save'),confirm_choice('discard'),confirm_choice('cancel'),help_toggle(),focus_viewport(),cycle(True),cycle(False),handle(),process(),feedback(),refresh(),poll()]
+def functions():return [toggle_style(),rail_refresh(),rail_labels(),rail_code(),focus_rail_code(),set_panel(),toggle_panel(),confirm(),offer_recovery(),exit_editor(),back(),confirm_choice('save'),confirm_choice('discard'),confirm_choice('cancel'),help_toggle(),focus_viewport(),cycle(True),cycle(False),handle(),process(),feedback(),refresh(),poll()]

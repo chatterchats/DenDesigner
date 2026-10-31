@@ -94,14 +94,21 @@ def begin():
     g=Graph();branch(g,'current',current(g));branch(g,'bounded',combine(g,'countcheck',[op(g,'min','Greater_IntInt','entry.Count',B=0),op(g,'max','LessEqual_IntInt','entry.Count',B=128)]))
     call(g,'create',GS+':CreateSaveGameObject',SaveGameClass=LAYOUT);g.node('cast','cast',**{'class':LAYOUT});g.wire(('create.ReturnValue','cast.Object'))
     set_value(g,'document','CommunityDocument','cast.AsBP Den Layout Save');set_value(g,'count','CommunityExpected','entry.Count')
-    method(g,'normalize',PRESETS,'NormalizeName',get(g,'CompositionService'),{'Name':'entry.Name'})
+    # The bridge names an import "<title> <code>": the title becomes the name and the code its ShareCode;
+    # the full name is kept for when the title is taken.
+    call(g,'split',STR+'Split',{'SourceString':'entry.Name'},InStr=' ',SearchCase='CaseSensitive',SearchDir='FromEnd')
+    title=call(g,'title',KML+':SelectString',{'A':'split.LeftS','B':'entry.Name','bPickA':'split.ReturnValue'})
+    method(g,'normalize',PRESETS,'NormalizeName',get(g,'CompositionService'),{'Name':title})
+    method(g,'fullname',PRESETS,'NormalizeName',get(g,'CompositionService'),{'Name':'entry.Name'})
     # Ensure service before NormalizeName; names never become paths or save slots.
-    g.call('ensure','self:EnsureCompositionService');branch(g,'namevalid','normalize.Valid');set_value(g,'name','CommunityName','normalize.CleanName')
+    g.call('ensure','self:EnsureCompositionService');branch(g,'namevalid',combine(g,'namesvalid',['normalize.Valid','fullname.Valid']));set_value(g,'name','CommunityName','normalize.CleanName')
+    set_value(g,'coded','CommunityFullName','fullname.CleanName')
+    set_value(g,'sharecode','CommunityShareCode',call(g,'code',KML+':SelectString',{'A':'split.RightS','bPickA':'split.ReturnValue'},B=''))
     set_value(g,'report','CommunityReport',call(g,'boundedreport',STR+'Left',{'SourceString':'entry.Report'},Count=2048))
     g.set('anchorflag',LAYOUT+':HasCompositionAnchor','true');g.wire((get(g,'CommunityDocument'),'anchorflag.self'))
     set_value(g,'anchor',LAYOUT+':CompositionAnchor','entry.Anchor');g.wire((get(g,'CommunityDocument'),'anchor.self'))
     g.set('yes','local:OK','true');finish_bool(g)
-    g.chain('entry','current','bounded','create','cast','document','count','ensure','normalize','namevalid','name','report','anchorflag','anchor','yes','result')
+    g.chain('entry','current','bounded','create','cast','document','count','ensure','normalize','fullname','namevalid','name','coded','sharecode','report','anchorflag','anchor','yes','result')
     for pin in ['current.else','bounded.else','cast.CastFailed','namevalid.else']:g.chain(pin,'result')
     return g.function('BeginCommunityImport',inputs=[v('Token','string'),v('Name','string'),v('Count','int'),v('Anchor','vector'),v('Report','string')],outputs=[v('Accepted','bool')],locals=[v('OK','bool','false')])
 
@@ -140,8 +147,11 @@ def commit():
     g.call('validate','self:ValidateComposition');g.wire((get(g,'CommunityDocument'),'validate.Document'));branch(g,'valid','validate.Accepted')
     arr(g,'count','Length',prop(g,'rows',LAYOUT,'Entries',get(g,'CommunityDocument')));branch(g,'complete',op(g,'all','EqualEqual_IntInt','count.ReturnValue',get(g,'CommunityExpected')))
     g.call('refresh','self:RefreshCompositionLibrary');g.call('fresh','self:CompositionLibraryCurrent');branch(g,'freshcheck','fresh.Accepted')
-    arr(g,'exists','Contains',get(g,'CompositionNames'));g.wire((get(g,'CommunityName'),'exists.ItemToFind'));branch(g,'duplicate','exists.ReturnValue')
-    method(g,'save',PRESETS,'SavePreset',get(g,'CompositionService'),{'Name':get(g,'CommunityName'),'Document':get(g,'CommunityDocument')});branch(g,'saved',op(g,'success','EqualEqual_IntInt','save.Status',B=1))
+    method(g,'known',PRESETS,'FindShareCode',get(g,'CompositionService'),{'Code':get(g,'CommunityShareCode')});branch(g,'imported',op(g,'already','GreaterEqual_IntInt','known.Index',B=0))
+    g.call('oldname','self:CompositionNameTaken');g.wire((get(g,'CommunityFullName'),'oldname.Name'));branch(g,'duplicate','oldname.Taken')
+    g.call('titletaken','self:CompositionNameTaken');g.wire((get(g,'CommunityName'),'titletaken.Name'))
+    name=call(g,'importname',KML+':SelectString',{'A':get(g,'CommunityFullName'),'B':get(g,'CommunityName'),'bPickA':'titletaken.Taken'})
+    method(g,'save',PRESETS,'SavePreset',get(g,'CompositionService'),{'Name':name,'Document':get(g,'CommunityDocument'),'ShareCode':get(g,'CommunityShareCode')});branch(g,'saved',op(g,'success','EqualEqual_IntInt','save.Status',B=1))
     set_value(g,'selected','SelectedComposition','save.CleanName');g.set('pending','CommunityPending','false');g.set('token','CommunityToken','');g.set('release','CommunityDocument')
     set_value(g,'message','CommunityMessage',call(g,'caption',STR+'Concat_StrStr',{'B':get(g,'CommunityReport')},A='Added to your Compositions. ' ))
     g.call('cards','self:RefreshCompositionLibrary');g.call('badges','self:RefreshCommunityCardDetails');g.set('yes','local:OK','true');finish_bool(g)
@@ -150,17 +160,26 @@ def commit():
     # Start placing directly (Place selected ends here too); a failure leaves Compositions open with its message.
     g.call('compositions','self:SetEditorPanel',Name='compositions');g.call('placing','self:LoadEditorComposition');g.wire(('save.CleanName','placing.Name'))
     branch(g,'preview',call(g,'previewmode',STR+'StartsWith',{'SourceString':get(g,'CommunityRequest')},InPrefix='PREVIEW/',SearchCase='CaseSensitive'));g.call('cachepreview','self:FinishCommunityPreview');g.wire((get(g,'CommunityDocument'),'cachepreview.Document'))
-    g.chain('entry','current','ready','readycheck','validate','valid','complete','preview','cachepreview','yes','result');g.chain('preview.else','refresh','fresh','freshcheck','duplicate')
-    g.chain('duplicate.else','save','saved','pending','token','release','message','cards','badges','place','placed','compositions','placing','yes','result');g.chain('place.else','yes')
-    for pin in ['current.else','readycheck.else','valid.else','complete.else','freshcheck.else','duplicate.then','saved.else']:g.chain(pin,'result')
+    g.chain('entry','current','ready','readycheck','validate','valid','complete','preview','cachepreview','yes','result');g.chain('preview.else','refresh','fresh','freshcheck','known','imported');g.chain('imported.else','oldname','duplicate')
+    g.chain('duplicate.else','titletaken','save','saved','pending','token','release','message','cards','badges','place','placed','compositions','placing','yes','result');g.chain('place.else','yes')
+    for pin in ['current.else','readycheck.else','valid.else','complete.else','freshcheck.else','imported.then','duplicate.then','saved.else']:g.chain(pin,'result')
     return g.function('CommitCommunityImport',inputs=[v('Token','string')],outputs=[v('Accepted','bool')],locals=[v('OK','bool','false')])
+
+
+def name_taken():
+    """Whether a composition already has this name; the library matches names case-insensitively."""
+    g=Graph();g.get('i','local:Cursor');arr(g,'count','Length',get(g,'CompositionNames'));branch(g,'more',op(g,'within','Less_IntInt','i.Cursor','count.ReturnValue'))
+    arr(g,'name','Get',get(g,'CompositionNames'));g.wire(('i.Cursor','name.Index'));branch(g,'same',call(g,'samename',STR+'EqualEqual_StriStri',{'A':'name.Item','B':'entry.Name'}))
+    set_value(g,'next','local:Cursor',op(g,'inc','Add_IntInt','i.Cursor',B=1));g.set('yes','local:Found','true');g.get('found','local:Found');g.wire(('found.Found','result.Taken'))
+    g.chain('entry','more','same','yes','result');g.chain('same.else','next','more');g.chain('more.else','result')
+    return g.function('CompositionNameTaken',inputs=[v('Name','string')],outputs=[v('Taken','bool')],locals=[v('Cursor','int','0'),v('Found','bool','false')])
 
 
 def variables():
     from runtime_community_ui import variables as ui_variables
     from runtime_community_sources import variables as source_variables
     from runtime_community_browser import variables as browser_variables
-    return browser_variables()+source_variables()+ui_variables()+[v('CommunityRemember','bool','false'),v('CommunityOutgoing','string'),v('CommunityToken','string'),v('CommunityRequest','string'),v('CommunityStarted','double'),v('CommunityPending','bool'),v('CommunityDocument','object:'+LAYOUT),v('CommunityExpected','int'),v('CommunityName','string'),v('CommunityReport','string')]
+    return browser_variables()+source_variables()+ui_variables()+[v('CommunityRemember','bool','false'),v('CommunityOutgoing','string'),v('CommunityToken','string'),v('CommunityRequest','string'),v('CommunityStarted','double'),v('CommunityPending','bool'),v('CommunityDocument','object:'+LAYOUT),v('CommunityExpected','int'),v('CommunityName','string'),v('CommunityFullName','string'),v('CommunityShareCode','string'),v('CommunityReport','string')]
 
 
 def functions():
@@ -169,4 +188,4 @@ def functions():
     from runtime_community_ui import functions as ui_functions
     from runtime_community_sources import functions as source_functions
     from runtime_community_browser import functions as browser_functions
-    return browser_functions()+source_functions()+ui_functions()+[cancel(),normalize(),start(),start(True),poll(),fail(),begin(),append(),material(),commit(),serialize(),thumbnail_name()]+connection_functions()
+    return browser_functions()+source_functions()+ui_functions()+[cancel(),normalize(),start(),start(True),poll(),fail(),begin(),append(),material(),name_taken(),commit(),serialize(),thumbnail_name()]+connection_functions()

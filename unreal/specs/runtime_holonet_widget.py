@@ -1,26 +1,18 @@
 """The HoloNet window: browse, share and manage builds on zcom.app.
 
-A window over the Den, under the editor menu bar (approved mockup boards
-"In-game · Browse" and "In-game · Share a composition"). Its top-left corner
-matches the library panels beside the tab rail; it stretches with the screen and
-is 1640 wide at 1080p. Widget names the host already used for the Community panel
-are kept, so its logic carries over.
+The HoloNet entries' content in the editor's one window (approved board
+"One window: HoloNet"): beside the toolbar's rail, which holds the HoloNet entries
+and the code box, and stretched to the screen's right margin (1664 wide beside
+the labelled rail at 1080p). Widget names the host already used for the Community
+panel are kept, so its logic carries over.
 """
 import ui_templates as e
 
 PATH = e.ROOT + 'WBP_DenHolonet'
-# The right margin that makes the window 1640 wide on a 1920-wide screen.
-RIGHT = 1920 - e.LIBRARY_LEFT - 1640
-RAIL, DETAIL, FORM = 232, 400, 560
+DETAIL, FORM = 400, 560
 GREEN = e.slate(0.33, 0.57, 0.15)
 CARD_W, CARD_H = 238, 250
 SOURCE_W = 266
-# Rail entries: (widget, label, event, icon). The runtime marks the current area.
-RAIL_BROWSE = [('RailCompositions', 'Compositions', 'community_browse', 'compositions'),
-               ('RailDens', 'Dens', 'community_browse_dens', 'layouts')]
-RAIL_YOURS = [('RailShare', 'Share a build', 'community_upload', 'save'),
-              ('RailShares', 'My Shares', 'holonet_shares', 'storeroom'),
-              ('RailAccount', 'Account', 'community_account', 'settings')]
 AREAS = [('BrowseArea', 'browse'), ('BrowseDenArea', 'browse_dens'), ('UploadArea', 'upload'),
          ('SharesArea', 'shares'), ('AccountArea', 'account')]
 
@@ -97,7 +89,8 @@ def tiles(name, width, entry_width, entry_height=CARD_H):
 
 
 def title_bar():
-    close = e.button('CommunityClose', 'Close', 14, 'ghost', color=e.SOFT)
+    close = e.button('CommunityClose', None, style='ghost', icon_name='close', tooltip='Close')
+    close['slot'] = {'VerticalAlignment': 'VAlign_Center'}
     pill = {'class': '/Script/UMG.Border', 'name': 'ConnectionPill', 'props': e.surface(e.rgba(1, 1, 1, 0.06), None, 17, '(Left=12,Top=6,Right=14,Bottom=6)'),
             'slot': {'VerticalAlignment': 'VAlign_Center', 'Padding': '(Left=0,Top=0,Right=10,Bottom=0)'},
             'children': [e.text('ConnectionLabel', 'Not connected', 14, e.SOFT)]}
@@ -107,34 +100,6 @@ def title_bar():
                 e.text('HolonetTitle', 'HOLONET', 20, e.GOLD, role='title', slot={'VerticalAlignment': 'VAlign_Center', 'Padding': '(Left=0,Top=0,Right=14,Bottom=0)'}),
                 e.text('HolonetSubtitle', 'Builds shared by other captains', 15, e.SOFT, slot={'VerticalAlignment': 'VAlign_Center'}),
                 spacer('TitleSpace'), pill, close])]}
-
-
-def rail_entry(name, label, icon):
-    """A rail toggle with its icon and caption on the left, so every entry lines up."""
-    entry = e.toggle(name, label, icon)
-    entry['children'][0]['children'][0]['slot']['HorizontalAlignment'] = 'HAlign_Left'
-    return entry
-
-
-def rail():
-    # Hints sit under their entry's caption: button padding 10 + icon 20 + gap 7.
-    hint = {'Padding': '(Left=37,Top=0,Right=0,Bottom=4)'}
-    entries = [e.label('RailBrowseLabel', 'Browse', slot=gap(6, 8))]
-    entries += [rail_entry(n, l, i) for n, l, _, i in RAIL_BROWSE]
-    entries.append(e.text('RailDensSoon', 'Coming soon', 11, e.DIM, slot=hint))
-    entries.append(e.label('RailYoursLabel', 'Yours', slot=gap(18, 8)))
-    entries += [rail_entry(n, l, i) for n, l, _, i in RAIL_YOURS]
-    entries.append(e.text('SharesCount', '', 12, e.DIM, slot=hint))
-    entries.append(spacer('RailSpace'))
-    code = e.box('CommunityCode', 'Code or zcom.app link', select_all=True)
-    entries.append(panel('CodeBox', [
-        e.label('CodeLabel', 'Have a code?', 13, e.GOLD, slot=gap(0, 8)),
-        dict(code, slot=gap(0, 8)), primary('FetchCommunity', 'Import'),
-        e.text('CodeHint', 'Codes or zcom.app links both work.', 12, e.DIM, wrap=True)],
-        e.rgba(*e.ACCENT, 0.07), e.rgba(*e.ACCENT, 0.3)))
-    column = vbox('RailColumn', entries)
-    return sized('Rail', {'class': '/Script/UMG.Border', 'name': 'RailFrame', 'props': e.surface(e.rgba(0, 0, 0, 0.15), None, 0, '(Left=12,Top=16,Right=12,Bottom=16)'),
-                          'children': [column]}, width=RAIL)
 
 
 def chips():
@@ -254,11 +219,11 @@ def dens():
 
 
 def tree():
-    body = hbox('Body', [rail(), browse(), dens(), share(), shares(), account()], slot={'Size': '(SizeRule=Fill,Value=1)'})
+    body = hbox('Body', [browse(), dens(), share(), shares(), account()], slot={'Size': '(SizeRule=Fill,Value=1)'})
     # 'Panel': the host blocks world clicks while the pointer is over a panel.
     window = {'class': '/Script/UMG.Border', 'name': 'Panel', 'variable': True,
-              'props': dict(e.surface(e.rgba(0.0027, 0.003, 0.004, 0.94), e.rgba(*e.ACCENT, 0.3), 10, '(Left=0,Top=0,Right=0,Bottom=0)'), Clipping='ClipToBounds'),
-              'slot': {'LayoutData': f'(Offsets=(Left={e.LIBRARY_LEFT},Top=80,Right={RIGHT},Bottom=58),Anchors=(Minimum=(X=0,Y=0),Maximum=(X=1,Y=1)))'},
+              'props': dict(e.surface(e.rgba(0.0027, 0.003, 0.004, 0.94), e.EDGE, 8, '(Left=0,Top=0,Right=0,Bottom=0)', (0, 8, 8, 0)), Clipping='ClipToBounds'),
+              'slot': {'LayoutData': f'(Offsets=(Left={e.LIBRARY_LEFT},Top=80,Right=12,Bottom=58),Anchors=(Minimum=(X=0,Y=0),Maximum=(X=1,Y=1)))'},
               'children': [vbox('WindowColumn', [
                   title_bar(), body,
                   e.text('Footer', '', 13, e.DIM, wrap=True, slot={'Padding': '(Left=20,Top=6,Right=20,Bottom=10)'})])]}
@@ -277,8 +242,6 @@ def commit_on_enter(g, box, event):
 
 def spec():
     g = e.Graph()
-    for name, _, event, _ in RAIL_BROWSE + RAIL_YOURS:
-        g.click(name, event)
     for button, event in [('CommunityClose', 'community_close'), ('SortNewest', 'holonet_sort_newest'), ('SortImports', 'holonet_sort_imports'),
                           ('FilterUsable', 'holonet_usable'), ('PreviousCommunity', 'community_previous'), ('NextCommunity', 'community_next'),
                           ('RefreshCommunity', 'community_refresh'), ('DownloadCommunity', 'community_download'), ('PlaceCommunity', 'holonet_place'),
@@ -289,7 +252,6 @@ def spec():
                           ('RememberCommunity', 'community_remember'), ('DisconnectCommunity', 'community_disconnect'), ('ForgetCommunity', 'community_forget'),
                           ('CommunityWebsite', 'community_website')]:
         g.click(button, event)
-    g.click_with_text('FetchCommunity', 'community_fetch', 'CommunityCode')
     g.click_with_text('SearchCommunity', 'community_search', 'CommunitySearch')
     commit_on_enter(g, 'CommunitySearch', 'community_search')
     g.item('CommunityListings', 'community_listing')

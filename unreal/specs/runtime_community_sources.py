@@ -32,8 +32,8 @@ def feedback():
     from runtime_community_ui import connected
     who=call(g,'who',STR+'Replace',{'SourceString':get(g,'CommunityProfile')},From=' - Remembered connection.',To='',SearchCase='CaseSensitive')
     text(g,'pill','CommunityPanel','ConnectionLabel',value=call(g,'pilltext',KML+':SelectString',{'A':who,'bPickA':connected(g)},B='Not connected'))
-    g.call('share','self:RefreshHolonetShare')
-    g.chain('entry','valid','footer','remember','pill','share');return g.function('RefreshCommunityFeedback')
+    g.call('share','self:RefreshHolonetShare');g.call('rail','self:RefreshEditorRail')
+    g.chain('entry','valid','footer','remember','pill','share','rail');return g.function('RefreshCommunityFeedback')
 
 
 def changed():

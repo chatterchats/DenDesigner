@@ -207,18 +207,13 @@ def browse_available():
 
 
 def code_in_library(code_var='entry.Code'):
-    """Whether a local composition came from this share: imports are named
-    "<title> <code>" (CommitCommunityImport). Reads the store's names, so an
-    import shows at once."""
+    """Whether a local composition came from this share (FindShareCode: its ShareCode, or an old
+    "<title> <code>" name). Reads the store, so an import shows at once."""
     from runtime_layout_ui import PRESETS
     from runtime_session import method
-    g=Graph();g.call('ensure','self:EnsureCompositionService');method(g,'list',PRESETS,'ListPresets',get(g,'CompositionService'));set_value(g,'names','local:Names','list.Names')
-    g.get('i','local:Cursor');g.get('all','local:Names');arr(g,'count','Length','all.Names');branch(g,'more',op(g,'within','Less_IntInt','i.Cursor','count.ReturnValue'))
-    arr(g,'name','Get','all.Names');g.wire(('i.Cursor','name.Index'))
-    branch(g,'match',call(g,'contains',STR+'Contains',{'SearchIn':'name.Item','Substring':prefix(g,'spaced',' ',code_var)},bUseCase='false'))
-    set_value(g,'next','local:Cursor',op(g,'inc','Add_IntInt','i.Cursor',B=1));g.set('yes','local:InLibrary','true');g.get('found','local:InLibrary');g.wire(('found.InLibrary','result.Found'))
-    g.chain('entry','ensure','list','names','more','match','yes','result');g.chain('match.else','next','more');g.chain('more.else','result')
-    return g.function('CommunityCodeInLibrary',inputs=[v('Code','string')],outputs=[v('Found','bool')],locals=[v('Cursor','int','0'),v('InLibrary','bool','false'),v('Names','string[]')])
+    g=Graph();g.call('ensure','self:EnsureCompositionService');method(g,'coded',PRESETS,'FindShareCode',get(g,'CompositionService'),{'Code':code_var})
+    g.wire((op(g,'hascode','GreaterEqual_IntInt','coded.Index',B=0),'result.Found'));g.chain('entry','ensure','coded','result')
+    return g.function('CommunityCodeInLibrary',inputs=[v('Code','string')],outputs=[v('Found','bool')])
 
 
 def show_listings():

@@ -237,7 +237,7 @@ def trace_line():
 
 
 # The editor's look: translucent dark panels with thin outlines and an amber accent. The layout has a menu bar,
-# a library dock on the left (one panel at a time beside its side tabs), an inspector dock on the right and a status bar.
+# one window on the left (the rail plus the open entry's content), an inspector dock on the right and a status bar.
 # Colours are linear, as UMG stores them.
 ACCENT = (0.888, 0.479, 0.070)
 SOFT_RGB = (0.584, 0.611, 0.651)
@@ -274,9 +274,10 @@ AXES = {"X": (0.584, 0.045, 0.052), "Y": (0.042, 0.254, 0.07), "Z": (0.028, 0.17
 # Catalog, Storeroom and composition cards: two to a row in the library dock, so names and sizes fit.
 TILE_WIDTH, TILE_HEIGHT, PICTURE = 212, 250, 136
 LIBRARY_WIDTH, INSPECTOR_WIDTH = 470, 370
-# The library tabs are a rail down the left edge, so wide windows such as the HoloNet clear them.
-RAIL_WIDTH = 96
-LIBRARY_LEFT = 12 + RAIL_WIDTH + 6
+# One window on the left: the rail (Your Den and HoloNet entries), then the open entry's content.
+# Content starts on the rail's last pixel, so the two edges draw as one divider. Folded, the rail shows icons only.
+RAIL_WIDTH, ICON_RAIL_WIDTH = 232, 64
+LIBRARY_LEFT, ICON_LEFT = 12 + RAIL_WIDTH - 1, 12 + ICON_RAIL_WIDTH - 1
 
 
 def rounded(fill, edge=None, radius=6, corners=None):
@@ -331,9 +332,16 @@ def scrollbar(thickness=4):
             props[f"ScrollBarStyle.{state}ThumbImage.{key}"] = value
     return props
 
-# Menu bar: (widget name, label, event, icon). Widget names are runtime identities; labels may change.
+# Menu bar and rail: (widget name, label, event, icon). Widget names are runtime identities; labels may change.
+# Your Den entries open a library panel (event = ActivePanel name).
 LIBRARY = [("Catalog", "Catalog", "catalog", "catalog"), ("Storeroom", "Storeroom", "storeroom", "storeroom"),
-           ("Compositions", "Compositions", "compositions", "compositions"), ("Community", "HoloNet", "community", "community"), ("Layouts", "Layouts", "layouts", "layouts")]
+           ("Compositions", "Compositions", "compositions", "compositions"), ("Layouts", "Layouts", "layouts", "layouts")]
+# HoloNet entries open the HoloNet window on an area: (widget name, label, event, icon, CommunityArea).
+HOLONET = [("RailBrowse", "Browse", "community_browse", "browse", "browse"),
+           ("RailDens", "Dens", "community_browse_dens", "den", "browse_dens"),
+           ("RailShare", "Share a build", "community_upload", "share", "upload"),
+           ("RailShares", "My Shares", "holonet_shares", "shares", "shares"),
+           ("RailAccount", "Account", "community_account", "account", "account")]
 TOOLS = [("SelectMode", "Select", "mode_select", "select"), ("Move", "Move", "mode_move", "move"),
          ("Rotate", "Rotate", "mode_rotate", "rotate"), ("ScaleMode", "Scale", "mode_scale", "scale")]
 QUICK_CONTROLS = [("Magnet", "Snap", "neighbour_snap", "magnet"), ("Snap", "Off", "snap", "grid"), ("Reach", "20 m", "reach", "range")]
@@ -412,19 +420,144 @@ def toggle(name, label, icon_name, fill=False):
             "slot": slot, "children": [inner]}
 
 
-def side_tab(name, label, icon_name):
-    """A library tab in the rail: a toggle with its caption under its icon."""
-    tab = toggle(name, label, icon_name)
-    tab["slot"] = {"Padding": "(Left=0,Top=0,Right=0,Bottom=2)"}
-    inner = tab["children"][0]
-    inner["props"]["WidgetStyle.NormalPadding"] = "(Left=4,Top=10,Right=4,Bottom=8)"
-    inner["props"]["WidgetStyle.PressedPadding"] = "(Left=4,Top=11,Right=4,Bottom=7)"
+def rail_row(name, label, icon_name, extra=None, color=SOFT):
+    """A rail entry, 42 px tall: a toggle with its icon and caption on the left and `extra` (a count or tag) on the right."""
+    entry = toggle(name, label, icon_name)
+    if color != SOFT:
+        entry["children"][0] = button(name, label, 15, "ghost", icon_name, color)
+        entry["children"][0]["children"][0]["children"][0]["props"]["ColorAndOpacity"] = rgba(0.386, 0.423, 0.479)
+    entry["slot"] = {"Padding": "(Left=0,Top=0,Right=0,Bottom=2)"}
+    inner = entry["children"][0]
+    inner["slot"] = {"HorizontalAlignment": "HAlign_Fill", "VerticalAlignment": "VAlign_Fill"}
+    inner["props"]["WidgetStyle.NormalPadding"] = "(Left=12,Top=11,Right=12,Bottom=11)"
+    inner["props"]["WidgetStyle.PressedPadding"] = "(Left=12,Top=12,Right=12,Bottom=10)"
     content = inner["children"][0]
-    content["class"] = "/Script/UMG.VerticalBox"
+    content["slot"]["HorizontalAlignment"] = "HAlign_Fill"
     icon_part, caption = content["children"]
-    icon_part["slot"]["Padding"] = "(Left=0,Top=0,Right=0,Bottom=5)"
-    caption["props"]["Font.Size"] = 11
-    return tab
+    icon_part["slot"]["Padding"] = "(Left=0,Top=0,Right=12,Bottom=0)"
+    caption["props"].update({"Font.Size": 16, "Justification": "Left"})
+    caption["slot"] = {"Size": "(SizeRule=Fill,Value=1)", "VerticalAlignment": "VAlign_Center"}
+    if extra:
+        extra["slot"] = {"VerticalAlignment": "VAlign_Center"}
+        content["children"].append(extra)
+    return entry
+
+
+def icon_entry(name):
+    """The folded rail's button for a rail entry: IconCatalog, IconBrowse, ..."""
+    return "Icon" + name.removeprefix("Rail")
+
+
+def badge(name):
+    """A count over the top-right corner of a folded rail icon; the runtime shows it while there is a count."""
+    size = {"class": "/Script/UMG.SizeBox", "name": name + "Size",
+            "props": {"MinDesiredWidth": 8, "bOverride_MinDesiredWidth": "true", "HeightOverride": 16, "bOverride_HeightOverride": "true"},
+            "children": [label(name + "Text", "", 11, SOFT, slot={"HorizontalAlignment": "HAlign_Center", "VerticalAlignment": "VAlign_Center"})]}
+    pill = {"class": "/Script/UMG.Border", "name": name + "Pill", "props": surface(rgba(0.023, 0.026, 0.033), None, 8, "(Left=4,Top=0,Right=4,Bottom=0)"),
+            "children": [size]}
+    # The clear outer border holds the inset from the corner (Overlay slots here take no padding).
+    return {"class": "/Script/UMG.Border", "name": name, "variable": True,
+            "props": dict(surface(CLEAR, None, 0, "(Left=0,Top=3,Right=3,Bottom=0)"), Visibility="Collapsed"),
+            "slot": {"HorizontalAlignment": "HAlign_Right", "VerticalAlignment": "VAlign_Top"}, "children": [pill]}
+
+
+def rail_icon(name, icon_name, tooltip, extra=None, button_widget=None):
+    """A folded rail entry: a 44 px icon button (a toggle unless `button_widget` is given) with an optional badge."""
+    entry = button_widget or toggle(name, None, icon_name)
+    entry["slot"] = {"HorizontalAlignment": "HAlign_Fill", "VerticalAlignment": "VAlign_Fill"}
+    (entry["children"][0] if not button_widget else entry)["props"]["ToolTipText"] = tooltip
+    return {"class": "/Script/UMG.SizeBox", "name": name + "Size",
+            "props": {"WidthOverride": 44, "bOverride_WidthOverride": "true", "HeightOverride": 44, "bOverride_HeightOverride": "true"},
+            "slot": {"HorizontalAlignment": "HAlign_Center", "Padding": "(Left=0,Top=0,Right=0,Bottom=2)"},
+            "children": [{"class": "/Script/UMG.Overlay", "name": name + "Layers", "children": [entry] + ([extra] if extra else [])}]}
+
+
+def icon_rail():
+    """The folded rail (RailIcons): the same entries as icons with tooltips, counts as badges, a divider (with the
+    connection dot) for the HoloNet header, the code box as one icon, and Show labels."""
+    names = {n: label_ for n, label_, _, _ in LIBRARY}
+    rows = [rail_icon(icon_entry(n), i, names[n], badge("IconStoreroomBadge") if n == "Storeroom" else None) for n, _, _, i in LIBRARY]
+    ring = {"class": "/Script/UMG.Border", "name": "HolonetIconDot", "variable": True,
+            "props": dict(surface(rgba(0.0037, 0.004, 0.0052), None, 6.5, "(Left=3,Top=3,Right=3,Bottom=3)"), Visibility="Collapsed"),
+            "slot": {"HorizontalAlignment": "HAlign_Center", "VerticalAlignment": "VAlign_Center"},
+            "children": [{"class": "/Script/UMG.Border", "name": "HolonetIconDotFill", "props": surface(rgba(0.33, 0.57, 0.15), None, 3.5, "(Left=0,Top=0,Right=0,Bottom=0)"),
+                          "children": [{"class": "/Script/UMG.SizeBox", "name": "HolonetIconDotSize",
+                                        "props": {"WidthOverride": 7, "bOverride_WidthOverride": "true", "HeightOverride": 7, "bOverride_HeightOverride": "true"}}]}]}
+    line = divider("RailIconDivider", vertical=False, slot={"HorizontalAlignment": "HAlign_Center", "VerticalAlignment": "VAlign_Center"})
+    line["children"][0]["props"].update(WidthOverride=36, bOverride_WidthOverride="true")
+    rows.append({"class": "/Script/UMG.Overlay", "name": "RailIconHeader", "slot": {"HorizontalAlignment": "HAlign_Center", "Padding": "(Left=0,Top=16,Right=0,Bottom=12)"},
+                 "children": [line, ring]})
+    tips = {"RailBrowse": "Browse HoloNet", "RailDens": "Dens · coming soon", "RailShare": "Share a build", "RailShares": "My Shares", "RailAccount": "Account"}
+    rows += [rail_icon(icon_entry(n), i, tips[n], badge("IconSharesBadge") if n == "RailShares" else None) for n, _, _, i, _ in HOLONET]
+    # Dens is not available yet: shown dimmed, and never highlighted.
+    dens = next(row for row in rows if row["name"] == "IconDensSize")["children"][0]["children"][0]["children"][0]
+    dens["props"]["bIsEnabled"] = "false"
+    dens["children"][0]["props"]["ColorAndOpacity"] = rgba(0.386, 0.423, 0.479, 0.6)
+    code = button("RailCode", None, style="ghost", icon_name="code")
+    code["props"].update(button_style((rgba(*ACCENT, 0.07), rgba(*ACCENT, 0.35)), (rgba(*ACCENT, 0.14), HOVER_EDGE), (rgba(*ACCENT, 0.04), HOVER_EDGE), padding=(10, 7)))
+    code["children"][0]["props"]["ColorAndOpacity"] = rgba(*ACCENT)
+    labels = button("RailLabels", None, style="ghost", icon_name="unfold", color=DIM)
+    labels["children"][0]["props"]["ColorAndOpacity"] = rgba(0.386, 0.423, 0.479)
+    code_row = rail_icon("RailCode", "code", "Have a code?", button_widget=code)
+    code_row["slot"]["Padding"] = "(Left=0,Top=0,Right=0,Bottom=8)"
+    rows += [{"class": "/Script/UMG.Spacer", "name": "RailIconSpace", "slot": {"Size": "(SizeRule=Fill,Value=1)"}}, code_row,
+             divider("RailLabelsDivider", vertical=False, slot={"Padding": "(Left=0,Top=0,Right=0,Bottom=0)"}),
+             rail_icon("RailLabels", "unfold", "Show labels", button_widget=labels)]
+    return {"class": "/Script/UMG.Border", "name": "RailIcons", "variable": True,
+            "props": dict(surface(CLEAR, None, 0, "(Left=10,Top=12,Right=10,Bottom=10)"), Visibility="Collapsed"),
+            "slot": {"HorizontalAlignment": "HAlign_Fill", "VerticalAlignment": "VAlign_Fill"},
+            "children": [{"class": "/Script/UMG.VerticalBox", "name": "RailIconColumn", "children": rows}]}
+
+
+def rail():
+    """The window's rail (LibraryTabs): Your Den, HoloNet, then the code box and Fold to icons. A panel or the HoloNet
+    window opens beside it; RailJoined (square right corners) replaces RailAlone while one is open. Folded, RailIcons
+    replaces RailFrame and the runtime narrows LibraryTabs to ICON_RAIL_WIDTH."""
+    def count(name):
+        return text(name, "", 14, SOFT)
+    soon = {"class": "/Script/UMG.Border", "name": "RailDensSoon", "props": surface(rgba(1, 1, 1, 0.08), None, 3, "(Left=6,Top=3,Right=6,Bottom=3)"),
+            "children": [label("RailDensSoonText", "Soon", 11)]}
+    extras = {"Storeroom": count("StoreroomCount"), "RailShares": count("RailSharesCount"), "RailDens": soon}
+    rows = [label("RailDenLabel", "Your Den", slot={"Padding": "(Left=12,Top=4,Right=0,Bottom=8)"})]
+    rows += [rail_row(n, label_, i, extras.get(n)) for n, label_, _, i in LIBRARY]
+    dot = {"class": "/Script/UMG.Border", "name": "HolonetDot", "variable": True,
+           "props": dict(surface(rgba(0.33, 0.57, 0.15), None, 3.5, "(Left=0,Top=0,Right=0,Bottom=0)"), Visibility="Collapsed"),
+           "slot": {"VerticalAlignment": "VAlign_Center", "Padding": "(Left=8,Top=0,Right=0,Bottom=0)"},
+           "children": [{"class": "/Script/UMG.SizeBox", "name": "HolonetDotSize",
+                         "props": {"WidthOverride": 7, "bOverride_WidthOverride": "true", "HeightOverride": 7, "bOverride_HeightOverride": "true"}}]}
+    rows.append({"class": "/Script/UMG.HorizontalBox", "name": "RailHolonetHeader", "slot": {"Padding": "(Left=12,Top=20,Right=0,Bottom=8)"},
+                 "children": [label("RailHolonetLabel", "HoloNet", slot={"VerticalAlignment": "VAlign_Center"}), dot]})
+    rows += [rail_row(n, label_, i, extras.get(n)) for n, label_, _, i, _ in HOLONET]
+    # Dens is not available yet: shown dimmed, and never highlighted.
+    dens = next(row for row in rows if row["name"] == "RailDensBack")["children"][0]
+    dens["props"]["bIsEnabled"] = "false"
+    dens_icon, dens_caption = dens["children"][0]["children"][:2]
+    dens_icon["props"]["ColorAndOpacity"] = rgba(0.386, 0.423, 0.479, 0.6)
+    dens_caption["props"]["ColorAndOpacity"] = DIM
+    import_button = button("FetchCommunity", "Import", 15, "primary")
+    import_button["slot"] = {}
+    code = {"class": "/Script/UMG.Border", "name": "CodeBox",
+            "props": surface(rgba(*ACCENT, 0.07), rgba(*ACCENT, 0.3), 8, "(Left=12,Top=12,Right=12,Bottom=12)"),
+            "slot": {"Padding": "(Left=2,Top=0,Right=2,Bottom=10)"},
+            "children": [{"class": "/Script/UMG.VerticalBox", "name": "CodeColumn", "children": [
+                label("CodeLabel", "Have a code?", 13, GOLD, slot={"Padding": "(Left=0,Top=0,Right=0,Bottom=8)"}),
+                box("CommunityCode", "Code or link", select_all=True, slot={"Padding": "(Left=0,Top=0,Right=0,Bottom=8)"}),
+                import_button]}]}
+    fold = rail_row("RailFold", "Fold to icons", "fold", color=DIM)
+    fold["slot"]["Padding"] = "(Left=0,Top=0,Right=0,Bottom=0)"
+    rows += [{"class": "/Script/UMG.Spacer", "name": "RailSpace", "slot": {"Size": "(SizeRule=Fill,Value=1)"}}, code,
+             divider("RailFoldDivider", vertical=False, slot={"Padding": "(Left=0,Top=0,Right=0,Bottom=0)"}), fold]
+    fill = {"HorizontalAlignment": "HAlign_Fill", "VerticalAlignment": "VAlign_Fill"}
+    backing = [{"class": "/Script/UMG.Border", "name": name, "variable": True,
+                "props": dict(surface(PANEL, EDGE, 8, "(Left=0,Top=0,Right=0,Bottom=0)", corners), Visibility=shown),
+                "slot": fill} for name, corners, shown in (("RailAlone", None, "HitTestInvisible"), ("RailJoined", (8, 0, 0, 8), "Collapsed"))]
+    column = {"class": "/Script/UMG.Border", "name": "RailFrame", "variable": True, "props": surface(CLEAR, None, 0, "(Left=10,Top=14,Right=10,Bottom=10)"),
+              "slot": fill, "children": [{"class": "/Script/UMG.VerticalBox", "name": "LibraryRail", "children": rows}]}
+    # Pinned to the left edge, stretched top to bottom: Right is the width (the window's left edge, beside the content).
+    return {"class": "/Script/UMG.Border", "name": "LibraryTabs",
+            "props": surface(CLEAR, None, 0, "(Left=0,Top=0,Right=0,Bottom=0)"),
+            "slot": {"LayoutData": f"(Anchors=(Minimum=(X=0,Y=0),Maximum=(X=0,Y=1)),Offsets=(Left=12,Top=80,Right={RAIL_WIDTH},Bottom=58))"},
+            "children": [{"class": "/Script/UMG.Overlay", "name": "RailLayers", "children": backing + [column, icon_rail()]}]}
 
 
 def divider(name, vertical=True, slot=None):
@@ -477,12 +610,6 @@ def toolbar():
                  {"class": "/Script/UMG.Spacer", "name": "Gap", "slot": {"Size": "(SizeRule=Fill,Value=1)"}},
                  {"class": "/Script/UMG.HorizontalBox", "name": "NavigationRight", "slot": middle,
                   "children": right + [divider("SaveDivider"), save, done]}]}]}
-    tabs = {"class": "/Script/UMG.Border", "name": "LibraryTabs",
-            "props": surface(PANEL, EDGE, 8, "(Left=4,Top=4,Right=4,Bottom=2)"),
-            "slot": {"LayoutData": "(Anchors=(Minimum=(X=0,Y=0),Maximum=(X=0,Y=0)),Offsets=(Left=12,Top=80,Right=0,Bottom=0))", "bAutoSize": "true"},
-            "children": [{"class": "/Script/UMG.SizeBox", "name": "LibraryRailWidth", "props": {"WidthOverride": RAIL_WIDTH - 8, "bOverride_WidthOverride": "true"},
-                          "children": [{"class": "/Script/UMG.VerticalBox", "name": "LibraryRail",
-                                        "children": [side_tab(n, label_, i) for n, label_, _, i in LIBRARY]}]}]}
 
     help_panel = {"class": "/Script/UMG.SizeBox", "name": "HelpPanel", "variable": True,
                   "props": {"WidthOverride": 600, "bOverride_WidthOverride": "true", "Visibility": "Collapsed"},
@@ -520,18 +647,19 @@ def toolbar():
                    {"class": "/Script/UMG.HorizontalBox", "name": "ConfirmRow",
                     "children": [button(n, label_, 15, style) for n, label_, _, style in CONFIRM]},
                ]}]}
-    nodes, links = [], []
-    events = [(n, e) for n, _, e, _ in LIBRARY + TOOLS + QUICK_CONTROLS + LAYERS] + [(n, e) for n, e, _, _ in MENU] \
-        + [("Save", "save"), ("Exit", "exit"), ("CloseHelp", "help")] + [(n, e) for n, _, e, _ in CONFIRM]
+    g = Graph()
+    events = [(n, e) for n, _, e, _ in LIBRARY + TOOLS + QUICK_CONTROLS + LAYERS] + [(n, e) for n, _, e, _, _ in HOLONET] \
+        + [(icon_entry(n), e) for n, _, e, _ in LIBRARY] + [(icon_entry(n), e) for n, _, e, _, _ in HOLONET] \
+        + [("RailFold", "rail_fold"), ("RailLabels", "rail_labels"), ("RailCode", "rail_code")] \
+        + [(n, e) for n, e, _, _ in MENU] + [("Save", "save"), ("Exit", "exit"), ("CloseHelp", "help")] + [(n, e) for n, _, e, _ in CONFIRM]
     for name, event in events:
-        nodes.append({"id": name, "kind": "bound_event", "widget": name, "delegate": "OnClicked"})
-        nodes.append({"id": name + "_event", "kind": "call", "function": "self:Native_Event", "defaults": {"Name": event}})
-        links.append([name + ".then", name + "_event.execute"])
+        g.click(name, event)
+    g.click_with_text("FetchCommunity", "community_fetch", "CommunityCode")
     return {
         "kind": "widget", "path": ROOT + "WBP_DenToolbar",
-        "tree": {"class": "/Script/UMG.CanvasPanel", "name": "Root", "children": [panel, tabs, feedback, badge, help_panel, confirm]},
+        "tree": {"class": "/Script/UMG.CanvasPanel", "name": "Root", "children": [panel, rail(), feedback, badge, help_panel, confirm]},
         "functions": [{"name": "Native_Event", "inputs": [{"name": "Name", "type": "string"}, {"name": "Arg", "type": "string"}]}],
-        "graph": {"nodes": nodes, "links": links},
+        "graph": g.spec(),
     }
 
 
@@ -671,14 +799,18 @@ def cards(name):
 
 
 def library_panel(title, children):
-    """A panel in the library dock beside the tabs (only one shows at a time)."""
+    """A Your Den entry's content, beside the rail (only one shows at a time). Its X (ClosePanel) closes the window;
+    the panel's graph sends it as library_close."""
+    close = button("ClosePanel", None, style="ghost", icon_name="close", tooltip="Close")
+    close["slot"] = {"VerticalAlignment": "VAlign_Center"}
+    header = row("Header", [text("Title", title, 20, GOLD, role="title", slot={"Size": "(SizeRule=Fill,Value=1)", "VerticalAlignment": "VAlign_Center"}), close],
+                 "(Left=0,Top=0,Right=0,Bottom=10)")
     panel = {"class": "/Script/UMG.Border", "name": "Panel",
-             "props": surface(PANEL, EDGE, 8, "(Left=14,Top=14,Right=14,Bottom=12)"),
+             "props": surface(PANEL, EDGE, 8, "(Left=14,Top=14,Right=14,Bottom=12)", (0, 8, 8, 0)),
              # Pinned to the left edge, stretched top to bottom: Left is the x position and Right is the width;
              # Top and Bottom are margins (below the menu bar, above the status bar).
              "slot": {"LayoutData": f"(Anchors=(Minimum=(X=0,Y=0),Maximum=(X=0,Y=1)),Offsets=(Left={LIBRARY_LEFT},Top=80,Right={LIBRARY_WIDTH},Bottom=58))"},
-             "children": [{"class": "/Script/UMG.VerticalBox", "name": "Column", "children": [
-                 text("Title", title, 20, GOLD, role="title", slot={"Padding": "(Left=0,Top=0,Right=0,Bottom=10)"})] + children}]}
+             "children": [{"class": "/Script/UMG.VerticalBox", "name": "Column", "children": [header] + children}]}
     return {"class": "/Script/UMG.CanvasPanel", "name": "Root", "children": [panel]}
 
 
@@ -713,6 +845,9 @@ def catalog():
     nodes = [{"id": "search", "kind": "bound_event", "widget": "Search", "delegate": "OnTextChanged"},
              {"id": "search_event", "kind": "call", "function": "self:Native_Event", "defaults": {"Name": "search"}}]
     links = [["search.then", "search_event.execute"], ["search.Text", "search_event.Arg"]]
+    nodes += [{"id": "ClosePanel", "kind": "bound_event", "widget": "ClosePanel", "delegate": "OnClicked"},
+              {"id": "ClosePanel_event", "kind": "call", "function": "self:Native_Event", "defaults": {"Name": "library_close"}}]
+    links.append(["ClosePanel.then", "ClosePanel_event.execute"])
     for widget, event in (("Shelves", "shelf"), ("Items", "item")):
         w = widget.lower()
         nodes += [{"id": w, "kind": "bound_event", "widget": widget, "delegate": "BP_OnItemClicked"},
@@ -821,6 +956,7 @@ def layouts():
         row("PresetRow", [button("LoadPreset", "Load selected", 14), button("DeletePreset", "Delete selected", 14)]),
         text("Footer", "", 12, DIM, variable=True, wrap=True),
     ])
+    g.click("ClosePanel", "library_close")
     g.click("ScopeButton", "scope")
     g.click_with_text("SavePreset", "save_preset", "PresetName")
     g.commit("PresetName", "save_preset")
@@ -851,6 +987,7 @@ def storeroom():
     g.nodes += [{"id": "storedsearch", "kind": "bound_event", "widget": "StoredSearch", "delegate": "OnTextChanged"},
                 {"id": "storedsearchcall", "kind": "call", "function": "self:Native_Event", "defaults": {"Name": "stored_search"}}]
     g.links += [["storedsearch.then", "storedsearchcall.execute"], ["storedsearch.Text", "storedsearchcall.Arg"]]
+    g.click("ClosePanel", "library_close")
     g.item("Stored", "restore")
     g.click("RestoreAll", "restore_all")
     g.item("Dormant", "forget")

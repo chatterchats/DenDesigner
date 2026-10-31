@@ -1,5 +1,5 @@
 """An isolated composition library using the existing rotating native store."""
-from graph import Graph, variable as v, KML
+from graph import Graph, variable as v, KML, GS
 from runtime import LAYOUT, arr
 from runtime_store import call, branch, combine, STR
 from runtime_apply import get
@@ -73,6 +73,16 @@ def refresh():
     return spec
 
 
+def ensure():
+    """EnsurePresetService for compositions; a new service first adopts old imports' codes (AdoptShareCodes)."""
+    g=Graph();branch(g,'exists',validity(g,'valid',get(g,'CompositionService')));g.node('self','self')
+    obj=call(g,'create',GS+':SpawnObject',{'Outer':'self.self'},ObjectClass=PRESETS);g.node('cast','cast',**{'class':PRESETS});g.wire((obj,'cast.Object'));set_value(g,'remember','CompositionService','cast.AsBP Den Presets')
+    for name in ['key','newkey']:
+        set_value(g,name,PRESETS+':LibraryKey',get(g,'CompositionStorageKey'));g.wire((get(g,'CompositionService'),name+'.self'))
+    method(g,'adopt',PRESETS,'AdoptShareCodes',get(g,'CompositionService'))
+    g.chain('entry','exists','key');g.chain('exists.else','create','cast','remember','newkey','adopt');return g.function('EnsureCompositionService')
+
+
 def functions():
     from runtime_composition_thumbnails import decorate
-    return [adapt(fn()) for fn in [layout_ui.ensure,layout_ui.read_key,layout_ui.select,layout_ui.library_current,layout_ui.delete,layout_ui.request_delete,layout_ui.queue,layout_ui.run_action]]+[refresh(),decorate(),feedback(),changed(),save(),save(True)]
+    return [ensure()]+[adapt(fn()) for fn in [layout_ui.read_key,layout_ui.select,layout_ui.library_current,layout_ui.delete,layout_ui.request_delete,layout_ui.queue,layout_ui.run_action]]+[refresh(),decorate(),feedback(),changed(),save(),save(True)]

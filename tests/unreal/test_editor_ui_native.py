@@ -37,8 +37,8 @@ def run(unreal, host, get, set_, command, check):
         set_(host, 'SettingsPanel', settings)
         texture = get(toolbar, 'MoveIcon').get_editor_property('brush').get_editor_property('resource_object')
         check(texture is not None and texture.get_name() == 'T_Icon_move', 'menu bar icons reference the imported textures')
-        buttons = editor.LIBRARY + editor.TOOLS + editor.QUICK_CONTROLS + editor.LAYERS
-        check(all(get(toolbar, name + 'Back') for name, _, _, _ in buttons), 'every tab, tool and filter has a tintable backing')
+        buttons = editor.LIBRARY + editor.TOOLS + editor.QUICK_CONTROLS + editor.LAYERS + [row[:4] for row in editor.HOLONET]
+        check(all(get(toolbar, name + 'Back') for name, _, _, _ in buttons), 'every rail entry, tool and filter has a tintable backing')
 
         host.call_method('RefreshEditorUI')
         check(not on(toolbar, 'Snap') and label(toolbar, 'Snap') == 'Off' and label(toolbar, 'Reach') == '20 m',
@@ -51,11 +51,46 @@ def run(unreal, host, get, set_, command, check):
         check(on(toolbar, 'Lock') and not on(toolbar, 'Floors') and not on(toolbar, 'Walls'),
               'selection filters show their on/off state by colour')
 
+        visible = unreal.SlateVisibility.HIT_TEST_INVISIBLE
+        joined = lambda: (get(toolbar, 'RailJoined').get_visibility() == visible, get(toolbar, 'RailAlone').get_visibility() == visible)
         command('catalog')
-        check(on(toolbar, 'Catalog') and not any(on(toolbar, name) for name in ['Storeroom', 'Compositions', 'Layouts']),
-              'the open library panel lights its tab only')
+        check(on(toolbar, 'Catalog') and not any(on(toolbar, name) for name in ['Storeroom', 'Compositions', 'Layouts', 'RailBrowse']),
+              'the open library panel lights its rail entry only')
+        check(joined() == (True, False), 'the rail joins the open panel beside it')
+        command('library_close')
+        check(not on(toolbar, 'Catalog') and get(host, 'ActivePanel') == '', "a panel's X closes it and clears its rail entry")
+        check(joined() == (False, True), 'the rail stands alone while nothing is open')
+
+        def icon_on(name):
+            back = rounded(get(toolbar, name + 'Back').get_editor_property('brush_color'))
+            icon = rounded(get(toolbar, name + 'Icon').get_editor_property('color_and_opacity'))
+            assert (back == active_back) == (icon == accent), (name, back, icon)
+            return back == active_back
+
+        def folded():
+            shown = get(toolbar, 'RailIcons').get_visibility() != unreal.SlateVisibility.COLLAPSED
+            assert shown == (get(toolbar, 'RailFrame').get_visibility() == unreal.SlateVisibility.COLLAPSED)
+            return shown, get(toolbar, 'LibraryTabs').slot.get_offsets().right
+
+        def pinned():
+            return get(host, 'PreferencesDocument').call_method('ReadPreference', ('rail_labels',))[0]
+
+        check(folded() == (False, editor.RAIL_WIDTH), 'the rail opens with labels')
+        command('rail_fold')
+        check(not get(host, 'RailLabels') and folded() == (True, editor.ICON_RAIL_WIDTH) and pinned() == 'false',
+              'Fold to icons narrows the rail to its icons and remembers it')
         command('catalog')
-        check(not on(toolbar, 'Catalog'), 'closing the library panel clears its tab')
+        check(icon_on('IconCatalog') and not any(icon_on(editor.icon_entry(name)) for name, _, _, _ in editor.LIBRARY[1:]),
+              'the folded rail lights the open entry')
+        command('library_close')
+        host.call_method('ReadEditorPreferences')
+        host.call_method('ApplyEditorPreferences')
+        check(not get(host, 'RailLabels'), 'the fold pin is read back from preferences')
+        command('rail_code')
+        check(get(host, 'RailLabels') and folded() == (False, editor.RAIL_WIDTH) and pinned() == 'true' and get(host, 'RailCodeFocus'),
+              'the code icon shows labels and asks for the code field to take focus')
+        host.call_method('PollRailCodeFocus')
+        check(not get(host, 'RailCodeFocus'), 'the focus request is used once')
 
         command('mode_select')
         check(get(host, 'GizmoMode') == 0 and on(toolbar, 'SelectMode') and not on(toolbar, 'Move'),

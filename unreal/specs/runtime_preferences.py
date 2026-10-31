@@ -61,6 +61,8 @@ CHOICES = {
     'thumbnails': ('true', ['false', 'true']),
     'neighbour_snap': ('true', ['false', 'true']),
     'snap_guides': ('true', ['false', 'true']),
+    # The editor rail's Fold to icons / Show labels pin; not listed under Settings.
+    'rail_labels': ('true', ['false', 'true']),
     **{key: (default, EDITOR_KEYS) for key, _, default, _ in BINDINGS},
 }
 DEFAULTS = {**{key: row[0] for key, row in NUMBERS.items()}, **{key: row[0] for key, row in CHOICES.items()}}

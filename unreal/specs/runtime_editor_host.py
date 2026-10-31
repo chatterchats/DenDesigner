@@ -37,10 +37,10 @@ def text(g,node,panel,field,value=None,constant=None):
 def visibility(g,node,obj,mode):return call(g,node,WIDGET+':SetVisibility',{'self':obj},InVisibility=mode)
 
 
-def style_toggle(g,node,panel,button,on):
-    """Shows whether a tool, tab or filter (ui_templates.toggle) is on."""
+def style_toggle(g,node,panel,button,on,parts=('Back','Icon','Label')):
+    """Shows whether a tool, tab or filter (ui_templates.toggle) is on; an icon-only toggle has no Label part."""
     g.call(node,'self:StyleEditorToggle')
-    g.wire(*[(widget(g,node+part.lower(),panel,button+part),node+'.'+part) for part in ['Back','Icon','Label']],(on,node+'.On'))
+    g.wire(*[(widget(g,node+part.lower(),panel,button+part),node+'.'+part) for part in parts],(on,node+'.On'))
     return node
 
 
@@ -116,10 +116,12 @@ def mount():
     current=call(g,'current',PC+':GetViewTarget',{'self':'entry.Player'})
     branch(g,'accepted',call(g,'match',KML+':EqualEqual_ObjectObject',{'A':current,'B':get(g,'EditorRig')}))
     call(g,'mode',WBL+':SetInputMode_GameAndUIEx',{'PlayerController':'entry.Player'},InMouseLockMode='DoNotLock',bHideCursorDuringCapture='false',bFlushInput='false')
-    g.set('open','UIOpen','true');g.set('fontindex','FontIndex','0');g.set('confirmreset','ConfirmMode','0');g.set('panelreset','ActivePanel','');g.set('helpreset','HelpOpen','false')
+    g.set('open','UIOpen','true');g.set('fontindex','FontIndex','0');g.set('confirmreset','ConfirmMode','0');g.set('panelreset','ActivePanel','');g.set('helpreset','HelpOpen','false');g.set('preloadreset','HolonetPreload','0')
+    # The panels are new and empty: HoloNet's gallery and My Shares load into them again.
+    g.set('sharesreset','HolonetSharesStale','true');g.set('galleryreset','CommunityBrowseLoaded','false')
     g.call('selection','self:InitializeSelection');g.call('gizmo','self:InitializeEditorGizmo');g.call('refresh','self:RefreshEditorUI');g.call('recovery','self:OfferRecovery');g.call('entryinput','self:FinishEditorEntry');g.set('yes','local:OK','true');finish_bool(g)
     g.call('cleanup','self:DetachEditor',RestoreView='true')
-    g.chain('entry','available','level','den','camera','subcast','subsave','player','viewcopy',*capture,'captured','buscreate','buscast','bussave','spawn','finish','rigcast','rigsave','rigbus','preferences','applypreferences','panels','created','startbus','enable','mapping','mapped',*setters,'target','accepted','mode','open','fontindex','confirmreset','panelreset','helpreset','selection','gizmo','refresh','recovery','entryinput','yes','result')
+    g.chain('entry','available','level','den','camera','subcast','subsave','player','viewcopy',*capture,'captured','buscreate','buscast','bussave','spawn','finish','rigcast','rigsave','rigbus','preferences','applypreferences','panels','created','startbus','enable','mapping','mapped',*setters,'target','accepted','mode','open','fontindex','confirmreset','panelreset','helpreset','preloadreset','sharesreset','galleryreset','selection','gizmo','refresh','recovery','entryinput','yes','result')
     for pin in ['available.else','den.else','camera.else','subcast.CastFailed']:g.chain(pin,'result')
     for pin in ['buscast.CastFailed','rigcast.CastFailed','created.else','mapped.else','accepted.else']:g.chain(pin,'cleanup','result')
     return g.function('MountEditor',inputs=[v('Player','object:'+PC)],outputs=[v('Accepted','bool')],locals=[v('OK','bool','false')])
@@ -270,14 +272,16 @@ def full_spec():
     from runtime_community import functions as community_functions, variables as community_variables
     from runtime_community_mailbox import functions as mailbox_functions, variables as mailbox_variables
     g=Graph();g.node('tick','event',name='ReceiveTick')
-    for name,fn in [('pump','Pump'),('draft','PollDraft'),('events','ProcessEditorEvents'),('catalog','PollCatalogUI'),('storeroom','PollStoreroomUI'),('thumbnails','PollThumbnailUI'),('placement','PollPlacement'),('community','PollCommunityFetch'),('communitypreviews','PollCommunityPreviews'),('compositionpreview','PollCompositionPreview'),('drag','PollSelectionDrag'),('selection','PollSelection'),('copy','PollCopiedSelection'),('surface','PollSurfaceDrag'),('gizmo','PollEditorGizmo'),('edits','PumpEditorMutations'),('camera','KeepEditorCamera'),('pointer','PollEditorPointer'),('fonts','PollEditorFonts'),('refresh','PollEditorUI')]:g.call(name,'self:'+fn)
-    g.chain('tick','pump','draft','events','catalog','storeroom','thumbnails','placement','community','communitypreviews','compositionpreview','drag','selection','copy','surface','gizmo','edits','camera','pointer','fonts','refresh')
+    for name,fn in [('pump','Pump'),('draft','PollDraft'),('railfocus','PollRailCodeFocus'),('events','ProcessEditorEvents'),('catalog','PollCatalogUI'),('storeroom','PollStoreroomUI'),('thumbnails','PollThumbnailUI'),('placement','PollPlacement'),('community','PollCommunityFetch'),('holonetpreload','PollHolonetPreload'),('communitypreviews','PollCommunityPreviews'),('compositionpreview','PollCompositionPreview'),('drag','PollSelectionDrag'),('selection','PollSelection'),('copy','PollCopiedSelection'),('surface','PollSurfaceDrag'),('gizmo','PollEditorGizmo'),('edits','PumpEditorMutations'),('camera','KeepEditorCamera'),('pointer','PollEditorPointer'),('fonts','PollEditorFonts'),('refresh','PollEditorUI')]:g.call(name,'self:'+fn)
+    # The code field takes focus the tick after its click: by then the unfolded rail has laid out.
+    g.chain('tick','pump','draft','railfocus','events','catalog','storeroom','thumbnails','placement','community','holonetpreload','communitypreviews','compositionpreview','drag','selection','copy','surface','gizmo','edits','camera','pointer','fonts','refresh')
     g.node('end','event',name='ReceiveEndPlay');g.call('flush','self:FlushDraft');g.set('close','Editing','false')
     g.call('detach','self:DetachEditor',RestoreView='false');g.call('cancel','self:CancelWork');g.call('forget','self:Forget');g.chain('end','flush','close','detach','cancel','forget')
     variables=[v('EditorController','object:'+PC),v('PreviousView','object:'+ACTOR),v('EditorRig','object:'+RIG),v('InputSubsystem','object:'+SUB),v('InputBus','object:'+BUS),
         v('FontJob','object:'+JOB),v('FontRequestAt','double'),v('FontIndex','int'),v('UIOpen','bool'),v('ControllerCaptured','bool'),v('PreviousCursor','bool'),v('PointerRestoreFrame','int64','-1'),v('PreviousClicks','bool'),v('PreviousHover','bool'),
         v('Looking','bool'),v('ActivePanel','string'),v('HelpOpen','bool'),v('ConfirmMode','int'),v('GridIndex','int'),v('ReachIndex','int','1'),v('GridStep','double','0'),v('ReachCm','double','2000'),
-        v('StructureEnabled','bool','false'),v('FloorsEnabled','bool','true'),v('WallsEnabled','bool','false'),v('LastUIBusy','bool'),v('LastUIDraftStatus','int','-1'),v('UnhandledCommands','int'),v('LastUnhandled','string'),v('HUDHidden','bool'),v('RotationPivot','string','centre')]
+        v('StructureEnabled','bool','false'),v('FloorsEnabled','bool','true'),v('WallsEnabled','bool','false'),v('LastUIBusy','bool'),v('LastUIDraftStatus','int','-1'),v('UnhandledCommands','int'),v('LastUnhandled','string'),v('HUDHidden','bool'),v('RotationPivot','string','centre'),
+        v('RailLabels','bool','true'),v('RailAutoFold','bool'),v('RailCodeFocus','bool')]
     variables += composition_variables()+composition_library_variables()+composition_preview_variables()+selection_variables()+queue_variables()+drag_variables()+gizmo_variables()+surface_variables()+copy_variables()+catalog_variables()+placement_variables()+thumbnail_variables()+storeroom_variables()+layout_ui_variables()+scope_ui_variables()+preference_variables()+input_variables()+settings_variables()+snap_variables()+community_variables()+mailbox_variables()
     variables += [v(var,'object:'+UIROOT+cls) for var,cls,_ in PANELS]
     return dict(kind='blueprint',path=HOST,parent=SESSION,variables=variables,graph=g.spec(),functions=[*[create_panel(*panel) for panel in PANELS],create_panels(),mount(),detach(),look(),game_hud(True),game_hud(False),restore_pointer(),finish_entry(),poll_pointer(),keep_camera(),*composition_functions(),*composition_library_functions(),*composition_preview_functions(),*command_functions(),*font_functions(),*selection_functions(),*transform_functions(),*pivot_functions(),*queue_functions(),*drag_functions(),*gizmo_functions(),*surface_functions(),*copy_functions(),*catalog_functions(),*placement_functions(),*thumbnail_functions(),*storeroom_functions(),*layout_ui_functions(),*scope_ui_functions(),*preference_functions(),*input_functions(),*settings_functions(),*snap_functions(),*community_functions(),*mailbox_functions()])

@@ -82,7 +82,9 @@ def refresh_labels():
     dormant=call(g,'resolved',KML+':SelectString',{'B':dormant,'bPickA':op(g,'allfound','EqualEqual_IntInt','dormant.ReturnValue',B=0)},A='Every edit in this layout found its object.')
     text(g,'missing','StoreroomPanel','DormantText',value=dormant);text(g,'footer','StoreroomPanel','Footer',value=get(g,'StoreMessage'))
     call(g,'button',WIDGET+':SetIsEnabled',{'self':widget(g,'restoreall','StoreroomPanel','RestoreAll'),'bInIsEnabled':op(g,'any','Greater_IntInt',get(g,'StoreTotal'),B=0)})
-    g.chain('entry','panel','stored','missing','footer','button');return g.function('RefreshStoreroomLabels')
+    # The rail's Storeroom count is this listing's total while the layout stays at the version it listed.
+    set_value(g,'countversion','StoreCountVersion',get(g,'StoreSeenVersion'));g.call('rail','self:RefreshEditorRail')
+    g.chain('entry','panel','stored','missing','footer','button','countversion','rail');return g.function('RefreshStoreroomLabels')
 
 
 def poll():
@@ -146,5 +148,5 @@ def queue_action():
     allkey=call(g,'allkey',STR+'Concat_StrStr',{'A':string(g,'revision',get(g,'StoreRevision'))},B=':all');arg=call(g,'argument',KML+':SelectString',{'A':allkey,'B':'entry.Key','bPickA':all});g.wire((arg,'event.Argument'));g.call('queue','self:QueueEditorMutation',RequireSelection='false');g.wire(('event.ST_DenEditorEvent','queue.Event'));g.chain('entry','open','queue');return g.function('QueueStoreroomAction',inputs=[v('Name','string'),v('Key','string')])
 
 
-def variables():return [v('StoredRows','object:'+ITEM+'[]'),v('DormantRows','object:'+ITEM+'[]'),v('StoredIndexes','int[]'),v('DormantIndexes','int[]'),v('StoreQuery','string'),v('StoreMessage','string'),v('StoreBuilding','bool'),v('StoreCursor','int'),v('StoreRevision','int'),v('StoreTotal','int'),v('StoreSeenVersion','int','-1'),v('StoreSeenGeneration','int','-1')]
+def variables():return [v('StoredRows','object:'+ITEM+'[]'),v('DormantRows','object:'+ITEM+'[]'),v('StoredIndexes','int[]'),v('DormantIndexes','int[]'),v('StoreQuery','string'),v('StoreMessage','string'),v('StoreBuilding','bool'),v('StoreCursor','int'),v('StoreRevision','int'),v('StoreTotal','int'),v('StoreSeenVersion','int','-1'),v('StoreSeenGeneration','int','-1'),v('StoreCountVersion','int','-1')]
 def functions():return [classify(),clear_listing(),begin(),label(),step(),refresh_labels(),poll(),panel_changed(),search(),validate(),restore_changes(),action(),queue_action()]

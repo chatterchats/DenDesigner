@@ -1,7 +1,7 @@
 {
   "FileVersion": 3,
-  "Version": 37,
-  "VersionName": "0.9.20",
+  "Version": 42,
+  "VersionName": "0.9.25",
   "FriendlyName": "Den Designer",
   "Description": "Standalone Den customization editor. No UE4SS runtime required.",
   "Category": "Game Features",
