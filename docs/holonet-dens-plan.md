@@ -69,6 +69,8 @@ base_game_assets}`. `schema_version` > 1 is refused.
    in that list, so they stay not offered. Known gap: a Den applied
    and then saved over Home or a campaign layout has no code, so it could be shared as new. We
    accept that.
+   **Nothing to share:** if the pick has no entries left once `Kind=1` is dropped, Share is disabled and shows
+   "This layout has no changes to share yet."
 2. **Pictures**: five area cards with the automatic shot, each with Include toggle, **Use my camera**,
    **Retake automatic** and a Cover mark. At least one area must be included.
 3. **Describe it**: title, description; *Update <title> · CODE* vs *Share as a new Den*; **What

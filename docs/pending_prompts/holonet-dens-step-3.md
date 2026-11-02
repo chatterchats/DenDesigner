@@ -34,7 +34,7 @@ Read before designing:
   - `POST finalize` with `{"cover":"<area>"}`.
 - The server builds `metadata.areas` and `media`, and assigns new `prop-N` keys. Don't send them.
 - It refuses, and the game must never send or must explain:
-  - a Den with no entries (**the plan doesn't cover this in game; ask me what Share should say**);
+  - a Den with no entries (see the plan's Share section for what Share does instead);
   - any `Kind` other than 0 or 2;
   - a placed entry that is hidden, has a fingerprint or lacks a `Has*` flag;
   - a native entry without a fingerprint, with a PIE path or with a duplicate key;
