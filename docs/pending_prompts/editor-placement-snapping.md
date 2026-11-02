@@ -1,6 +1,6 @@
 # Editor: bounds snapping while placing
 
-Den Designer (this repo, branch `community`). **Bounds snapping with alignment guides** works
+Den Designer (this repo; start a feature branch from `main`). **Bounds snapping with alignment guides** works
 when you move a placed prop (Phase 2 of the UI rework): flush, stack and align against
 neighbours, centre-to-edge kinds, per-axis neighbours in a shared frame, a screen-scaled range
 (about 10 px), guides drawn by `BP_DenSnapGuides`, Alt = free. Code: `unreal/specs/runtime_snap.py`

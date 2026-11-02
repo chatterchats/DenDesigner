@@ -1,6 +1,6 @@
 # HoloNet: share whole Dens
 
-Den Designer (this repo, branch `community`) shares **compositions** (groups of props) through
+Den Designer (this repo; start a feature branch from `main`) shares **compositions** (groups of props) through
 HoloNet. The rail already shows **Dens · Soon** (disabled; command `community_browse_dens` opens
 `OpenHolonetArea` with `browse_dens`). This brief is about making it real: sharing and importing
 a whole Den layout.

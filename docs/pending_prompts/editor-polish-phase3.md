@@ -1,6 +1,6 @@
 # Editor polish: drag-to-scrub fields, selection brackets, optional blur
 
-Den Designer (this repo, branch `community`). The editor UI rework follows mockup board **D ·
+Den Designer (this repo; start a feature branch from `main`). The editor UI rework follows mockup board **D ·
 Command Deck look, Workbench layout** on the canvas
 https://claude.ai/artifact/58bWeSsyRPSB5vwT8mvJ77. Phase 1 (look and layout) and Phase 2 (bounds
 snapping while moving props) are done and in game. This is **Phase 3**, the three items left over:

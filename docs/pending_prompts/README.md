@@ -1,8 +1,8 @@
 # Pending prompts
 
 Briefs ready to paste into a fresh Claude Code session in this repository. Each is self-contained.
-Written 2026-10-30, when `community` and `main` were at 15586de (0.9.25, the one-window library
-and HoloNet). Release prep (choosing the public version number, a full regression pass) is
+Written 2026-10-30, at 15586de (0.9.25, the one-window library and HoloNet). Each piece of work gets its
+own feature branch from `main`. Release prep (choosing the public version number, a full regression pass) is
 expected to come first; these briefs don't depend on it.
 
 | File | Area | Size |

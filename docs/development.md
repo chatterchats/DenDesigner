@@ -27,6 +27,11 @@ The maintained project is the pak-only editor and its separate creator tools.
 | `dist/packages/` | Runtime and creator ZIPs with checksums. |
 | `dist/verification/`, `dist/state/` | Current test evidence and development-helper state. |
 
+## Branches
+
+`main` is current. Each piece of work gets its own feature branch from `main`, merged back when it's done;
+don't keep a long-lived branch that everything flows through.
+
 ## Prerequisites
 
 These prerequisites are for maintaining the full Den Designer runtime in Chats’ **private** build

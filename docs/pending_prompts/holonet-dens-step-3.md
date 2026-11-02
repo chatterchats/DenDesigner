@@ -1,6 +1,6 @@
 # HoloNet Dens, step 3: in game
 
-Den Designer (this repo, branch `community`) shares compositions through HoloNet. This brief makes
+Den Designer (this repo) shares compositions through HoloNet. This brief makes
 **Dens · Soon** real in the game: Browse Dens, Share, Import and Apply. It is step 3 of
 `docs/holonet-dens-plan.md`. Read the plan first: its decisions are settled, so don't reopen them.
 
@@ -109,6 +109,8 @@ Den on zcom.app; and 1280×800.
 
 ## Rules
 
+- Work on a feature branch from `main`: `holonet-dens-game` here, and one of its own in `../ZComShare` if the
+  backend needs a change. Leave `main` alone until I ask for a merge.
 - No new behaviour beyond the plan and the mockups. Ask if something conflicts with how the game's
   runtime works rather than inventing a workaround.
 - Saved identities stay stable; never rewrite existing layout keys.
